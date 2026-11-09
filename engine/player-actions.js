@@ -52,6 +52,7 @@ function releasePlayer(playerId) {
   p.contract = contractFor(p.ovr, p.age);
   team.roster = team.roster.filter(x => x.id !== p.id);
   G.league.freeAgents.push(p);
+  markYouthGraduateAvailable(p);
   addNews('release', `${team.name} разорвал контракт с ${p.name} (${p.ovr} OVR). Компенсация: ${cost} млн ₽`, p.ovr >= 78 ? 2 : 1);
   team.lines = null; initLines(team);
   return { success: true, cost, player: p };
