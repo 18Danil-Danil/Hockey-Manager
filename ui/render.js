@@ -96,7 +96,7 @@ function renderTabs() {
     { key: 'inbox', label: `📬 Почта${unread ? ` <span class="inbox-badge">${unread}</span>` : ''}` },
     { key: 'news', label: '📰 Новости' },
     { key: 'tactics', label: 'Тактика' }, { key: 'training', label: 'Тренировки' }, { key: 'staff', label: 'Штаб' },
-    { key: 'infrastructure', label: 'Инфраструктура' }, { key: 'academy', label: 'Академия' },
+    { key: 'infrastructure', label: 'Инфраструктура' }, { key: 'academy', label: 'Академия' }, { key: 'youth', label: 'Молодёжные лиги' },
     { key: 'finance', label: 'Финансы' }, { key: 'career', label: '💼 Карьера' },
     { key: 'playoffs', label: 'Плей-офф' }, { key: 'history', label: 'История' },
   ];
@@ -475,6 +475,53 @@ function renderAcademy() {
     html += `<table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>Потенциал</th><th>Прогноз</th></tr></thead><tbody>`;
     for (const p of players) { const prog = academyPrognosis(p); html += `<tr><td><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span></td><td>${p.name}</td><td>${p.age}</td><td class="ovr ${p.ovr >= 65 ? 'mid' : 'lo'}">${p.ovr}</td><td><span class="pot">▲${p.pot - p.ovr}</span></td><td><span class="academy-role-badge ${prog.cls}">${prog.label}</span></td></tr>`; }
     html += `</tbody></table>`;
+  }
+  return html;
+}
+
+function setYouthLeague(leagueId) {
+  if (!G.league.youth) return;
+  G.league.youth.activeLeague = leagueId;
+  render();
+}
+function renderYouthLeagues() {
+  const youth = G.league.youth;
+  if (!youth) return '<div class="subtitle">Молодёжные соревнования ещё не созданы.</div>';
+  const leagueId = youth.activeLeague === 'RHL' ? 'RHL' : 'MHL';
+  const league = youth.leagues[leagueId];
+  const table = getYouthStandings(league);
+  const completed = league.currentRound >= league.schedule.length;
+  const progress = Math.round(league.currentRound / league.schedule.length * 100);
+  let html = '<h2>Молодёжные соревнования</h2>';
+  html += '<div class="inbox-filter"><button class="' + (leagueId === 'MHL' ? 'active' : '') + '" onclick="setYouthLeague(\'MHL\')">МХЛ · Молодёжный чемпионат</button><button class="' + (leagueId === 'RHL' ? 'active' : '') + '" onclick="setYouthLeague(\'RHL\')">РХЛ · Молодёжное первенство</button></div>';
+  html += '<div class="subtitle">Сезон ' + league.season + ' · Тур ' + league.currentRound + ' из ' + league.schedule.length + ' · Команд: ' + league.teams.length + '</div>';
+  html += '<div class="progress-bar"><div style="width:' + progress + '%"></div></div>';
+  html += '<div style="margin:12px 0"><button class="btn" ' + (completed ? 'disabled' : '') + ' onclick="simYouthRound(\'' + leagueId + '\'); render();">▶ Симулировать тур</button></div>';
+  if (completed && table.length) html += '<div class="champion">🏆 Победитель регулярного чемпионата: ' + table[0].name + '</div>';
+  html += '<h2>Турнирная таблица</h2><table><thead><tr><th>#</th><th>Команда</th><th>И</th><th>В</th><th>ВО</th><th>ПО</th><th>П</th><th>О</th><th>ЗШ</th><th>ЗП</th></tr></thead><tbody>';
+  table.forEach((team, index) => {
+    const r = team.record;
+    html += '<tr><td>' + (index + 1) + '</td><td>' + team.name + '</td><td>' + r.gp + '</td><td>' + r.w + '</td><td>' + r.otw + '</td><td>' + r.otl + '</td><td>' + r.l + '</td><td><b>' + r.pts + '</b></td><td>' + r.gf + '</td><td>' + r.ga + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  const scorers = youthTopScorers(league, 10);
+  html += '<h2>Лучшие бомбардиры</h2>';
+  if (!scorers.length) html += '<div class="subtitle">Статистика появится после первых матчей.</div>';
+  else {
+    html += '<table><thead><tr><th>#</th><th>Игрок</th><th>Команда</th><th>И</th><th>Г</th><th>П</th><th>О</th></tr></thead><tbody>';
+    scorers.forEach((player, index) => {
+      html += '<tr><td>' + (index + 1) + '</td><td>' + player.name + '</td><td>' + player.teamName + '</td><td>' + player.stats.gp + '</td><td>' + player.stats.goals + '</td><td>' + player.stats.assists + '</td><td><b>' + player.stats.points + '</b></td></tr>';
+    });
+    html += '</tbody></table>';
+  }
+  const latestRound = league.results.filter(result => result.round === league.currentRound).slice(-league.teams.length / 2);
+  if (latestRound.length) {
+    html += '<h2>Последний тур</h2>';
+    latestRound.forEach(result => {
+      const home = league.teams.find(team => team.id === result.homeId);
+      const away = league.teams.find(team => team.id === result.awayId);
+      if (home && away) html += '<div class="game-row"><span class="away">' + away.name + '</span><span class="score">' + result.ag + ' : ' + result.hg + (result.overtime ? ' ОТ' : '') + '</span><span>' + home.name + '</span></div>';
+    });
   }
   return html;
 }
