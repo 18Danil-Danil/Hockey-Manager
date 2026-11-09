@@ -34,3 +34,25 @@ function individualTraining(playerId, attr) {
   p.lastIndTraining = G.league.currentRound;
   return { success: true, attr };
 }
+
+/* ============================================================
+   РАЗРЫВ КОНТРАКТА
+   ============================================================ */
+function releasePlayer(playerId) {
+  const team = G.league.teams.find(t => t.id === G.playerTeamId);
+  const p = team.roster.find(x => x.id === playerId);
+  if (!p) return { success: false, error: 'Игрок не найден' };
+  if (p.status === 'tryout') return { success: false, error: 'Просмотровый контракт нельзя разорвать' };
+  const remainingSalary = p.contract.salary * Math.max(0, p.contract.years);
+  const cost = Math.round(remainingSalary * 0.5 * 10) / 10;
+  if (team.finance.balance < cost) return { success: false, error: `Нужно ${cost} млн ₽` };
+  team.finance.balance -= cost;
+  team.finance.expenses.bonuses += cost;
+  p.status = 'ufa';
+  p.contract = contractFor(p.ovr, p.age);
+  team.roster = team.roster.filter(x => x.id !== p.id);
+  G.league.freeAgents.push(p);
+  addNews('release', `${team.name} разорвал контракт с ${p.name} (${p.ovr} OVR). Компенсация: ${cost} млн ₽`, p.ovr >= 78 ? 2 : 1);
+  team.lines = null; initLines(team);
+  return { success: true, cost, player: p };
+}
