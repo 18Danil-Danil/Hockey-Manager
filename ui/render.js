@@ -333,7 +333,8 @@ function renderMarket() {
     const cls = p.ovr >= 85 ? 'hi' : p.ovr >= 75 ? 'mid' : 'lo'; const foreign = p.nationality !== 'Россия';
     const char = CHARACTERS[p.character] || CHARACTERS.calm;
     const potTag = hasScout && p.pot > p.ovr ? `<span class="pot">▲${p.pot - p.ovr}</span>` : '';
-    return `<tr><td><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span></td><td><a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a> <span class="char-badge ${char.cls}">${char.label}</span> ${foreign ? '🌍' : ''}</td><td>${p.age}</td><td class="ovr ${cls}">${p.ovr}${potTag}</td><td class="salary">${p.contract.salary.toFixed(1)}M</td><td><button class="btn small" onclick="signFreeAgent(G.league.teams.find(t=>t.id===G.playerTeamId), G.league.freeAgents.find(x=>x.id===${p.id})); render();">Подписать</button><button class="btn small secondary" onclick="offerTryout(G.league.teams.find(t=>t.id===G.playerTeamId), G.league.freeAgents.find(x=>x.id===${p.id})); render();">Просмотр</button></td></tr>`;
+    const graduateTag = p.youthGraduated ? '<span class="tag" title="Выпускник молодёжной лиги">🎓 Выпускник</span>' : '';
+    return `<tr><td><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span></td><td><a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a> <span class="char-badge ${char.cls}">${char.label}</span> ${graduateTag} ${foreign ? '🌍' : ''}</td><td>${p.age}</td><td class="ovr ${cls}">${p.ovr}${potTag}</td><td class="salary">${p.contract.salary.toFixed(1)}M</td><td><button class="btn small" onclick="signFreeAgent(G.league.teams.find(t=>t.id===G.playerTeamId), G.league.freeAgents.find(x=>x.id===${p.id})); render();">Подписать</button><button class="btn small secondary" onclick="offerTryout(G.league.teams.find(t=>t.id===G.playerTeamId), G.league.freeAgents.find(x=>x.id===${p.id})); render();">Просмотр</button></td></tr>`;
   }).join('');
   return `<div class="market-filters"><button class="${G.marketFilter === 'all' ? 'active' : ''}" onclick="G.marketFilter='all'; render();">Все</button><button class="${G.marketFilter === 'F' ? 'active' : ''}" onclick="G.marketFilter='F'; render();">Форварды</button><button class="${G.marketFilter === 'D' ? 'active' : ''}" onclick="G.marketFilter='D'; render();">Защитники</button><button class="${G.marketFilter === 'G' ? 'active' : ''}" onclick="G.marketFilter='G'; render();">Вратари</button></div><h2>Свободные агенты (${sorted.length})</h2><table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>ЗП</th><th>Действия</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
@@ -522,6 +523,20 @@ function renderYouthLeagues() {
       const away = league.teams.find(team => team.id === result.awayId);
       if (home && away) html += '<div class="game-row"><span class="away">' + away.name + '</span><span class="score">' + result.ag + ' : ' + result.hg + (result.overtime ? ' ОТ' : '') + '</span><span>' + home.name + '</span></div>';
     });
+  }
+  const graduates = (youth.graduates || []).slice().reverse();
+  const availableGraduates = graduates.filter(item => item.status === 'available');
+  html += '<h2>🎓 Выпускники молодёжных лиг (' + availableGraduates.length + ' доступны)</h2>';
+  if (!graduates.length) {
+    html += '<div class="subtitle">Пока нет выпускников. Игроки, достигшие предельного возраста, будут автоматически выставлены на общий рынок.</div>';
+  } else {
+    html += '<div style="margin-bottom:10px"><button class="btn secondary" onclick="G.activeTab=\'market\'; render();">Открыть рынок игроков</button></div>';
+    html += '<table><thead><tr><th>Игрок</th><th>Возраст</th><th>Поз.</th><th>OVR</th><th>Команда</th><th>Статус</th></tr></thead><tbody>';
+    graduates.slice(0, 20).forEach(item => {
+      const status = item.status === 'available' ? '<span style="color:#4ade80">Доступен на рынке</span>' : 'Подписан: ' + (item.signedByTeamName || 'клуб');
+      html += '<tr><td>' + item.name + '</td><td>' + item.age + '</td><td>' + item.position + '</td><td>' + item.ovr + '</td><td>' + item.formerTeamName + '</td><td>' + status + '</td></tr>';
+    });
+    html += '</tbody></table>';
   }
   return html;
 }
