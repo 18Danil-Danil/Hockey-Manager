@@ -47,6 +47,7 @@ function loadGame() {
     G.lastRoundResults = Array.isArray(data.lastRoundResults) ? data.lastRoundResults : null;
     G.lastRoundNumber = data.lastRoundNumber || null;
     if (!G.league.youth) G.league.youth = initYouthLeagues();
+    normalizeYouthLeagues();
     G.difficulty = DIFFICULTIES[G.selectedDifficulty] || DIFFICULTIES.normal;
     G.league.aiTradeOffers = G.league.aiTradeOffers || [];
     G.league.allTimeLeaders = G.league.allTimeLeaders || { skaters: {} };
