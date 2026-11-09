@@ -103,6 +103,7 @@ function normalizeYouthLeagues() {
   youth.graduates = youth.graduates || [];
   youth.transferLog = youth.transferLog || [];
   youth.promotionHistory = youth.promotionHistory || [];
+  G.league.freeAgents = G.league.freeAgents || [];
   // Миграция сохранений, созданных до появления общего рынка выпускников.
   youth.graduates = youth.graduates.map(item => {
     if (!item.player) return item;
