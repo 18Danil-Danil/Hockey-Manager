@@ -51,13 +51,9 @@ function getTeamBySlug(slug) { return G.league.teams.find(t => t.slug === slug);
 /* ============================================================
    ИМЕНА / ИГРОК
    ============================================================ */
-const FIRST = ['Александр','Алексей','Андрей','Антон','Артём','Богдан','Вадим','Василий','Виктор','Владимир','Владислав','Глеб','Даниил','Денис','Дмитрий','Евгений','Егор','Иван','Игорь','Илья','Кирилл','Константин','Максим','Марат','Матвей','Михаил','Никита','Николай','Олег','Павел','Пётр','Роман','Семён','Сергей','Станислав','Степан','Тимур','Фёдор','Юрий','Ярослав'];
-const LAST = ['Иванов','Смирнов','Кузнецов','Попов','Васильев','Петров','Соколов','Михайлов','Новиков','Фёдоров','Морозов','Волков','Алексеев','Лебедев','Семёнов','Егоров','Павлов','Козлов','Степанов','Николаев','Орлов','Андреев','Макаров','Никитин','Захаров','Зайцев','Соловьёв','Борисов','Яковлев','Григорьев'];
+const { FIRST, LAST, SKATER_ATTRS, GOALIE_ATTRS, ATTR_LABELS, NATS } = window.PLAYER_DATA;
 let _idCounter = 1;
 function nextId() { return _idCounter++; }
-const SKATER_ATTRS = ['skating','shooting','passing','defense','physical','iq'];
-const GOALIE_ATTRS = ['reflexes','positioning','glove','stick','iq'];
-const ATTR_LABELS = { skating: 'Катание', shooting: 'Бросок', passing: 'Передача', defense: 'Защита', physical: 'Физика', iq: 'Игр. IQ', reflexes: 'Реакция', positioning: 'Позиция', glove: 'Ловушка', stick: 'Щиток' };
 function overallFromAttrs(attrs, isG) {
   if (isG) return Math.round(attrs.reflexes*0.3 + attrs.positioning*0.3 + attrs.glove*0.15 + attrs.stick*0.15 + attrs.iq*0.1);
   return Math.round(attrs.skating*0.15 + attrs.shooting*0.20 + attrs.passing*0.20 + attrs.defense*0.20 + attrs.physical*0.10 + attrs.iq*0.15);
@@ -89,7 +85,6 @@ function generateAttrPot(attrs, age, isG) {
   return pot;
 }
 function pickCharacter() { return pickWeighted(Object.keys(CHARACTER_WEIGHTS), k => CHARACTER_WEIGHTS[k]); }
-const NATS = ['Россия','Россия','Россия','Россия','Россия','Казахстан','Беларусь','Канада','США','Финляндия'];
 function genPlayer(position, targetOvr, opts = {}) {
   const isG = position === 'G';
   const age = pickAge(targetOvr);
