@@ -12,6 +12,15 @@ function markYouthGraduateSigned(player, team, method = 'contract') {
   record.signedByTeamName = team.name;
   record.signingMethod = method;
 }
+function markYouthGraduateAvailable(player) {
+  if (!player || !player.youthGraduated || !G.league.youth) return;
+  const record = (G.league.youth.graduates || []).find(item => item.playerId === player.id);
+  if (!record) return;
+  record.status = 'available';
+  record.signedByTeamId = null;
+  record.signedByTeamName = null;
+  record.signingMethod = null;
+}
 function signFreeAgent(team, player) {
   const idx = G.league.freeAgents.indexOf(player); if (idx === -1) return false;
   if (team.finance.balance < 0) return false;
@@ -229,7 +238,7 @@ function runAITransfers() {
     const foreigners = team.roster.filter(p => p.nationality !== 'Россия').length;
     if (target.nationality !== 'Россия' && foreigners >= 3) continue;
     const idx = freeAgents.indexOf(target);
-    if (idx !== -1) { freeAgents.splice(idx, 1); target.status = 'contract'; team.roster.push(target); }
+    if (idx !== -1) { freeAgents.splice(idx, 1); target.status = 'contract'; team.roster.push(target); markYouthGraduateSigned(target, team, 'contract'); }
   }
 }
 function runAIContractExtensions() {
