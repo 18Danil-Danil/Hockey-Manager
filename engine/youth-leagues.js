@@ -94,6 +94,40 @@ function initYouthLeagues() {
   };
 }
 
+function normalizeYouthLeagues() {
+  const youth = G.league && G.league.youth;
+  if (!youth) {
+    if (G.league) G.league.youth = initYouthLeagues();
+    return;
+  }
+  youth.graduates = youth.graduates || [];
+  youth.transferLog = youth.transferLog || [];
+  youth.promotionHistory = youth.promotionHistory || [];
+  for (const league of Object.values(youth.leagues || {})) {
+    if (!Array.isArray(league.teams)) league.teams = [];
+    if (!Array.isArray(league.schedule) || !league.schedule.length) league.schedule = makeSchedule(league.teams);
+    league.results = league.results || [];
+    league.history = league.history || [];
+    league.currentRound = league.currentRound || 0;
+    for (const team of league.teams) {
+      team.record = team.record || { gp: 0, w: 0, otw: 0, otl: 0, l: 0, gf: 0, ga: 0, pts: 0 };
+      team.history = team.history || [];
+      team.roster = team.roster || [];
+      for (const player of team.roster) {
+        player.stats = player.stats || { gp: 0, goals: 0, assists: 0, points: 0, shots: 0, pim: 0, wins: 0, saves: 0, goalsAgainst: 0, shotsAgainst: 0, shutouts: 0 };
+        player.youth = player.youth || { joinedSeason: 1, development: 'normal', graduated: false, signedBySeniorClubId: null };
+        player.attrPot = player.attrPot || generateAttrPot(player.attrs, player.age, player.position === 'G');
+        player.pot = player.pot || overallFromAttrs(player.attrPot, player.position === 'G');
+        player.contract = player.contract || contractFor(player.ovr, player.age);
+        player.status = 'youth';
+      }
+      while (team.roster.length < YOUTH_RULES.rosterSize) {
+        team.roster.push(createYouthPlayer(pick(['C', 'LW', 'RW', 'D', 'G']), league.id, youth.season || 1));
+      }
+    }
+  }
+}
+
 function youthTeamRating(team, role) {
   const players = team.roster.filter(p => role === 'goalie' ? p.position === 'G' : role === 'defense' ? p.position === 'D' : p.position !== 'D' && p.position !== 'G');
   if (!players.length) return 50;
@@ -262,6 +296,10 @@ function finishYouthSeason() {
   simulateYouthSeasonRemainder(rhl);
   const mhlTable = getYouthStandings(mhl);
   const rhlTable = getYouthStandings(rhl);
+  const finalPlaces = new Map([
+    ...mhlTable.map((team, index) => [team.id, index + 1]),
+    ...rhlTable.map((team, index) => [team.id, index + 1]),
+  ]);
   const snapshot = (league, table) => ({
     season: league.season,
     championId: table[0]?.id || null,
@@ -310,7 +348,8 @@ function finishYouthSeason() {
       }
       team.record = { gp: 0, w: 0, otw: 0, otl: 0, l: 0, gf: 0, ga: 0, pts: 0 };
       team.stats = { goals: [], goalies: [] };
-      team.history.push({ season: league.season - 1, place: getYouthStandings({ teams: league.teams }).findIndex(t => t.id === team.id) + 1 });
+      team.history = team.history || [];
+      team.history.push({ season: league.season - 1, place: finalPlaces.get(team.id) || null });
     });
     league.schedule = makeSchedule(league.teams);
     league.currentRound = 0;
