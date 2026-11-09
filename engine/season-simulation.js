@@ -17,8 +17,19 @@ function simRound(forceNoPrompt = false) {
     if (team) for (const p of team.roster) if (p.injury && p.injury.gamesLeft > 0 && !p.injuryPolicy) p.injuryPolicy = 'period';
   }
   if (G.league.currentRound >= G.league.schedule.length) return;
+  const roundNumber = G.league.currentRound + 1;
   const round = G.league.schedule[G.league.currentRound];
-  round.forEach(([h, a]) => { const res = simGame(h, a, false); res.round = G.league.currentRound; applyResult(res); G.league.results.push(res); });
+  const roundResults = [];
+  G.lastRoundResults = null;
+  round.forEach(([h, a]) => {
+    const res = simGame(h, a, false);
+    res.round = G.league.currentRound;
+    applyResult(res);
+    G.league.results.push(res);
+    roundResults.push({ homeId: res.homeId, awayId: res.awayId, hg: res.hg, ag: res.ag, ot: !!res.ot });
+  });
+  G.lastRoundNumber = roundNumber;
+  G.lastRoundResults = roundResults;
   G.league.currentRound++;
   G.league.teams.forEach(t => { paySalaries(t); paySponsors(t); processMerchRevenue(t); });
   if (G.league.currentRound % 10 === 0) G.league.teams.forEach(t => { payTVInstallment(t); processSponsorPayouts(t); });
@@ -40,6 +51,8 @@ function simRound(forceNoPrompt = false) {
 }
 function simSeason() {
   if (G.injuryPrompt) return;
+  G.lastRoundResults = null;
+  G.lastRoundNumber = null;
   const injured = checkInjuredStarters();
   if (injured.length > 0) {
     G.injuryPrompt = { injured: injured.map(p => p.id), choices: {} };
