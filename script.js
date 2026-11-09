@@ -9,6 +9,15 @@
      • LIVE-матч: 2D-трансляция (canvas), динамические тактики
        на перерывах, штрафы реально влияют на xG, 2-мин. PP
        заканчивается при голе, 5-мин. мажор — играется полностью.
+   Патч 2:
+     • ОТ — sudden death (гол в ОТ = конец), ОТ вничью = финиш
+     • exitLiveMatchEarly — корректный расчёт остатка времени
+     • Реабилитация доступна из модалки игрока
+     • Политика травм 'once' сбрасывается после матча
+     • Удалены дубли liveChangeTactic / renderLiveMatchScreen
+     • saveGame/loadGame сохраняют RNG seed
+     • Удалены мёртвые ветки executeInboxAction (extend_contract, rehab)
+     • Live-интервал чистится на перерыве/паузе (экономия CPU)
    ============================================================ */
 
 /* ============================================================
@@ -286,8 +295,6 @@ const VHL_TEAMS = [
     sponsorFlow: 1, govSupport: 2, hockeyLove: 3, youthFactor: 3,
     baseMarket: 1, gmType: 'Вредитель', coachStyle: 'Автобус', staffSkill: 2,
   },
-  
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 2/13
   {
     id: 13, slug: 'magnitka', name: 'Магнитка', shortName: 'Магнитка',
     city: 'Магнитогорск', region: 'Урал',
@@ -812,7 +819,6 @@ function updateFormMorale(team, lineup, won) {
   }
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 3/13
 /* ============================================================
    FANBASE / СЕРИИ / НОВОСТИ / ПОЧТА
    ============================================================ */
@@ -854,8 +860,8 @@ function executeInboxAction(msgId, actionIdx) {
   const a = action.action, p = action.payload || {};
   if (a === 'trade_accept') acceptAITradeOffer(p.offerId);
   else if (a === 'trade_decline') declineAITradeOffer(p.offerId);
-  else if (a === 'extend_contract') { const r = extendContract(p.playerId, p.years); if (r.success) addInboxMessage('coach', 'Тренер', `Контракт продлён`, `Новый контракт: ${r.salary} млн ₽ на ${p.years} лет.`, []); }
-  else if (a === 'rehab') { const r = rehabPlayer(p.playerId, p.games); if (r.success) addInboxMessage('coach', 'Врач', `Реабилитация ${p.games} игр`, `Стоимость: ${r.cost} млн ₽. Игрок вернётся раньше на ${r.gamesSkipped} игр.`, []); }
+  // #12: ветки extend_contract и rehab удалены — они не генерируются ни одной функцией.
+  // Их роль выполняют кнопки в renderModal() (продление контракта и реабилитация).
   msg.read = true;
   msg.actions = [];
   render();
@@ -1184,7 +1190,6 @@ function genTeam(meta) {
   return team;
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 4/13
 /* ============================================================
    ЗВЕНЬЯ / ХИМИЯ / СТИЛИ / РОЛИ
    ============================================================ */
@@ -1444,7 +1449,6 @@ function applyFanExpectation(team, expected, won, isHome) {
   for (const p of team.roster) p.morale = clamp(p.morale + moraleDelta, 20, 100);
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 5/13
 /* ============================================================
    СИМУЛЯЦИЯ МАТЧА (быстрая, без LIVE)
    ============================================================ */
@@ -1821,7 +1825,6 @@ function releasePlayer(playerId) {
   return { success: true, cost, player: p };
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 6/13
 /* ============================================================
    РЫНОК / ОБМЕНЫ / ДРАФТ ОТКАЗОВ
    ============================================================ */
@@ -2344,16 +2347,22 @@ function applyInjuryPolicies() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   const injured = G.injuryPrompt.injured.map(id => team.roster.find(p => p.id === id)).filter(Boolean);
   const choices = G.injuryPrompt.choices || {};
+  const onceIds = [];
   for (const p of injured) {
     const policy = choices[p.id] || 'period';
     p.injuryPolicy = policy;
     if (policy === 'pain') p.playingThroughPain = true;
+    if (policy === 'once') onceIds.push(p.id);
   }
   G.injuryPrompt = null;
   simRound(true);
+  // ⚙️ ФИКС #5: политика 'once' — на один матч, сбрасываем после симуляции
+  for (const id of onceIds) {
+    const p = team.roster.find(x => x.id === id);
+    if (p) p.injuryPolicy = null;
+  }
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 7/13
 /* ============================================================
    СИМ ТУРА / СЕЗОНА
    ============================================================ */
@@ -2500,7 +2509,6 @@ function simOnePlayoffGame(series) {
   const aHome = [1, 2, 5, 7].includes(gameNum);
   const homeId = aHome ? series.aId : series.bId, awayId = aHome ? series.bId : series.aId;
   const res = simGame(homeId, awayId, true); series.games.push(res);
-  // 📈 В плей-офф тоже начисляем матч-дэй выручку хозяину
   const homeTeam = G.league.teams.find(t => t.id === res.homeId);
   const awayTeam = G.league.teams.find(t => t.id === res.awayId);
   if (homeTeam) processMatchdayRevenue(homeTeam, true, awayTeam ? awayTeam.strength : 1.0);
@@ -2703,7 +2711,6 @@ function endSeason() {
   while (G.league.freeAgents.length < 25) G.league.freeAgents.push(genPlayer(pick(['C','LW','RW','D','G']), randInt(60, 80), { status: 'ufa' }));
   setupOpeningCup();
   autoPlayOpeningCup();
-  // ⚙️ ФИКС: передаём зафиксированные rank/pts/playoffResult
   generateCareerOffers(myRankFinal, myPtsFinal, myPlayoffResult);
   G.activeTab = 'career'; render();
 }
@@ -2714,7 +2721,7 @@ function endSeason() {
 function generateCareerOffers(finalRank, finalPts, playoffResult) {
   if (!G.playerTeamId) return;
   const myTeam = G.league.teams.find(t => t.id === G.playerTeamId);
-  const sorted = standingsSorted(); // уже обнулённая — используем только strength
+  const sorted = standingsSorted();
   const rep = G.career?.reputation || 50;
   const offers = [];
   offers.push({ teamId: myTeam.id, type: 'stay', label: `Остаться в ${myTeam.name}`, salaryCap: myTeam.finance.salaryCap });
@@ -2805,7 +2812,6 @@ function simSeasonFreeAgent() {
   render();
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 8/13
 /* ============================================================
    LIVE MATCH — состояние, движок, штрафы, PP
    ------------------------------------------------------------
@@ -2817,6 +2823,7 @@ function simSeasonFreeAgent() {
    • 2 мин PP: если забивают — PP заканчивается
    • 5 мин мажор: играется до конца, даже если забили (но PP-модификатор снимается)
    • На перерыве можно менять тактику → xG пересчитывается для оставшихся периодов
+   • ОТ — sudden death: гол в ОТ немедленно завершает матч
    ============================================================ */
 
 const LIVE_PERIOD_SEC = 1200;   // 20 минут = 1200 сек
@@ -2849,7 +2856,6 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
   const hTM = tacticMods(home.tactics, home), aTM = tacticMods(away.tactics, away);
   const { xgH, xgA } = computeXG(home, away, hTM, aTM);
 
-  // Позиции игроков для canvas (нормализованные: x 0..200, y 0..100)
   const positions = { home: [], away: [], puck: { x: 100, y: 50, vx: 0, vy: 0 } };
   const formHome = buildFormation('home');
   const formAway = buildFormation('away');
@@ -2863,16 +2869,16 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
     timeLeft: LIVE_PERIOD_SEC,
     totalSecPlayed: 0,
     paused: false,
-    speed: 1,                // 1 / 2 / 4
-    events: [],              // лента (для UI)
-    pbp: [],                 // для сохранения в results (совместимо с быстрой симуляцией)
-    penalties: { home: [], away: [] }, // { playerId, playerName, endsAt(totalSecPlayed), type: '2'|'5', scoredDuringPP: false }
+    speed: 1,
+    events: [],
+    pbp: [],
+    penalties: { home: [], away: [] },
     shots: { home: 0, away: 0 },
-    xgTotal: { home: xgH, away: xgA },      // per-60 baseline с текущей тактикой
-    xgCurrent: { home: xgH, away: xgA },    // пересчитывается на перерыве
+    xgTotal: { home: xgH, away: xgA },
+    xgCurrent: { home: xgH, away: xgA },
     homeLineup, awayLineup, hTM, aTM,
-    scorers: {},              // { playerId: goals }
-    assisters: {},            // { playerId: assists }
+    scorers: {},
+    assisters: {},
     goalieStats: {
       home: { shots: 0, goals: 0 },
       away: { shots: 0, goals: 0 },
@@ -2881,24 +2887,20 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
     isBreak: false,
     isFinished: false,
     ot: false,
-    periodStarts: [0],        // моменты начала периодов (в секундах с матча)
+    periodStarts: [0],
     lastGoalSide: null,
     goalFlashUntil: 0,
     intervalId: null,
   };
 
-  // Добавляем в ленту стартовое событие
   livePushEvent({ type: 'period', text: `Период 1`, time: '20:00', period: 1 });
   G.liveMatch.pbp.push({ period: 1, time: '—', type: 'period', text: 'Период 1' });
 
-  // Запускаем тик
   G.liveMatch.intervalId = setInterval(liveTick, LIVE_TICK_MS);
   render();
 }
 
 function buildFormation(side) {
-  // Базовые позиции (нормализованные координаты 0..200 по x, 0..100 по y)
-  // Домашние слева (в атаке идут вправо), гости справа (в атаке идут влево)
   const x = (a) => side === 'home' ? a : 200 - a;
   const slots = [
     { x: x(35),  y: 50, role: 'goalie' },
@@ -2915,7 +2917,6 @@ function livePushEvent(ev) {
   if (!G.liveMatch) return;
   G.liveMatch.events.unshift(ev);
   if (G.liveMatch.events.length > 80) G.liveMatch.events.pop();
-  // Дублируем в pbp (для сохранения в results)
   if (ev.type !== 'period' && ev.type !== 'shot') {
     G.liveMatch.pbp.push({ period: ev.period, time: ev.time, type: ev.type, text: ev.text });
   } else if (ev.type === 'shot' || ev.type === 'goal') {
@@ -2936,7 +2937,6 @@ function liveGetActivePenalties(side) {
 }
 
 function liveIsPP(side) {
-  // side в большинстве, если у соперника есть активный штраф
   const opp = side === 'home' ? 'away' : 'home';
   return liveGetActivePenalties(opp).length > 0;
 }
@@ -2944,10 +2944,7 @@ function liveIsPP(side) {
 function liveTick() {
   const lm = G.liveMatch;
   if (!lm || lm.paused || lm.isBreak || lm.isFinished) return;
-
-  // Сколько игровых секунд пройдёт за этот тик
   const tickSec = LIVE_TICK_SEC * lm.speed;
-  // Разбиваем на "микрошаги" по LIVE_TICK_SEC, чтобы при speed>1 корректно ловить штрафы/голы
   let remaining = tickSec;
   while (remaining > 0 && !lm.isFinished && !lm.isBreak) {
     const step = Math.min(LIVE_TICK_SEC, remaining);
@@ -2961,23 +2958,19 @@ function liveTick() {
 
 function liveAdvance(stepSec) {
   const lm = G.liveMatch;
-  if (!lm) return;
-  // Проверяем истёкшие штрафы
+  if (!lm || lm.isFinished) return;
   const tBefore = lm.totalSecPlayed;
   const tNow = tBefore + stepSec;
   for (const side of ['home', 'away']) {
     lm.penalties[side] = lm.penalties[side].filter(p => p.endsAt > tNow);
   }
 
-  // Считаем PP-модификаторы
   const homePP = liveIsPP('home');
   const awayPP = liveIsPP('away');
 
-  // Базовые xG в per-60 из текущих тактик
   const hXg = lm.xgCurrent.home;
   const aXg = lm.xgCurrent.away;
 
-  // Голы: prob = (xg_per_60) * (stepSec / 3600) * modifier
   let hMod = 1, aMod = 1;
   if (homePP) { hMod *= LIVE_PP_BOOST; aMod *= LIVE_PK_NERF; }
   if (awayPP) { aMod *= LIVE_PP_BOOST; hMod *= LIVE_PK_NERF; }
@@ -2985,20 +2978,16 @@ function liveAdvance(stepSec) {
   const pH = hXg * hMod * (stepSec / 3600);
   const pA = aXg * aMod * (stepSec / 3600);
 
-  // Порядок событий — приоритет маловероятным (голам), потом штрафам
-  // Проверяем по одному броску кубика
   const rGoal = rng();
-  if (rGoal < pH) { liveGoal('home'); }
-  else if (rGoal < pH + pA) { liveGoal('away'); }
+  if (rGoal < pH) { liveGoal('home'); if (lm.isFinished) return; }
+  else if (rGoal < pH + pA) { liveGoal('away'); if (lm.isFinished) return; }
   else {
-    // Штрафы
     const rPen = rng();
     if (rPen < LIVE_PENALTY_RATE * 2) {
       livePenalty('home');
     } else if (rPen < LIVE_PENALTY_RATE * 4) {
       livePenalty('away');
     } else {
-      // Броски (только для ленты и счётчика)
       const rShot = rng();
       if (rShot < 0.6) {
         lm.shots.home++;
@@ -3007,13 +2996,10 @@ function liveAdvance(stepSec) {
         const isPlayoff = lm.isPlayoff;
         (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).shots++;
         livePushEvent({ type: 'shot', text: `${p.name} (${p.position}) бросает — ${pick(['сейв','сейв','сейв','мимо','штанга'])}.`, time: liveFmtTime(lm.timeLeft), period: lm.period });
-      } else if (rShot < 1.0 - 0.6 + 0.6) {
-        // просто ничего, чтобы не спамить
       }
     }
   }
 
-  // Уменьшаем время периода
   lm.timeLeft -= stepSec;
   lm.totalSecPlayed = tNow;
   if (lm.timeLeft <= 0) {
@@ -3046,7 +3032,6 @@ function liveGoal(side) {
     assistPool.splice(assistPool.indexOf(a), 1);
   }
 
-  // Счёт
   if (side === 'home') lm.hg++; else lm.ag++;
   lm.goalieStats[side === 'home' ? 'away' : 'home'].goals++;
   lm.shots[side]++;
@@ -3054,21 +3039,18 @@ function liveGoal(side) {
   lm.lastGoalSide = side;
   lm.goalFlashUntil = Date.now() + 1200;
 
-  // PP-снятие: если забившая команда была в большинстве
   if (liveIsPP(side)) {
     const oppSide = side === 'home' ? 'away' : 'home';
     for (const p of lm.penalties[oppSide]) {
       if (p.endsAt > lm.totalSecPlayed && p.type === '2' && !p.scoredDuringPP) {
-        p.endsAt = lm.totalSecPlayed; // 2-мин PP завершается голом
+        p.endsAt = lm.totalSecPlayed;
       } else if (p.type === '5') {
-        p.scoredDuringPP = true; // 5-мин продолжает играться, но модификатор PP уже не должен помогать повторно
+        p.scoredDuringPP = true;
       }
     }
-    // Убираем истёкшие (2 мин)
     lm.penalties[oppSide] = lm.penalties[oppSide].filter(p => p.endsAt > lm.totalSecPlayed);
   }
 
-  // plusMinus
   const onIceScoring = new Set([scorer.id, ...assisters.map(a => a.id)]);
   while (onIceScoring.size < 5 && onIceScoring.size < scoringLineup.skaters.length) onIceScoring.add(pickWeighted(scoringLineup.skaters, x => x.ovr).id);
   for (const p of scoringLineup.skaters) if (onIceScoring.has(p.id)) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).plusMinus++;
@@ -3079,14 +3061,20 @@ function liveGoal(side) {
 
   const assistNames = assisters.map(a => a.name).join(', ');
   const sideName = side === 'home' ? G.league.teams.find(t => t.id === lm.homeId).name : G.league.teams.find(t => t.id === lm.awayId).name;
-  const ppText = '';
   const txt = `ГОЛ! ${scorer.name} (${scorer.position})${assisters.length ? ` — ассист: ${assistNames}` : ''} [${sideName}]`;
   livePushEvent({ type: 'goal', text: txt, time: liveFmtTime(lm.timeLeft), period: lm.period });
 
-  // Анимация шайбы в ворота
   const goalX = side === 'home' ? 195 : 5;
   lm.positions.puck.x = goalX;
   lm.positions.puck.y = 50;
+
+  // ⚙️ ФИКС #2: sudden death в ОТ — гол немедленно завершает матч
+  if (lm.period === 4) {
+    lm.isFinished = true;
+    if (lm.intervalId) { clearInterval(lm.intervalId); lm.intervalId = null; }
+    finishLiveMatch();
+    return;
+  }
 }
 
 function livePenalty(side) {
@@ -3095,7 +3083,7 @@ function livePenalty(side) {
   if (!lineup.skaters.length) return;
   const p = pick(lineup.skaters);
   const isMajor = rng() < 0.12;
-  const duration = isMajor ? 300 : 120; // секунд игрового времени
+  const duration = isMajor ? 300 : 120;
   const type = isMajor ? '5' : '2';
   const isPlayoff = lm.isPlayoff;
   (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).pim += isMajor ? 5 : 2;
@@ -3116,7 +3104,7 @@ function livePenalty(side) {
 
 function liveEndPeriod() {
   const lm = G.liveMatch;
-  if (!lm) return;
+  if (!lm || lm.isFinished) return;
   const isLast = lm.period >= 3;
   const tied = lm.hg === lm.ag;
   if (isLast && !tied) {
@@ -3125,24 +3113,29 @@ function liveEndPeriod() {
     return;
   }
   if (isLast && tied) {
-    // Овертайм
+    // ⚙️ ФИКС #2: если ОТ уже сыгран и снова ничья — финиш (в реальности буллиты)
+    if (lm.period === 4) {
+      lm.isFinished = true;
+      finishLiveMatch();
+      return;
+    }
     lm.period = 4;
-    lm.timeLeft = 300; // 5 минут OT
+    lm.timeLeft = 300;
     lm.ot = true;
     livePushEvent({ type: 'period', text: 'Овертайм', time: '05:00', period: 4 });
     lm.pbp.push({ period: 4, time: '—', type: 'period', text: 'Овертайм' });
     lm.periodStarts.push(lm.totalSecPlayed);
     return;
   }
-  // Перерыв между периодами
   lm.isBreak = true;
   lm.paused = true;
+  // ⚙️ ФИКС #14: чистим интервал на перерыве (не жечь CPU)
+  if (lm.intervalId) { clearInterval(lm.intervalId); lm.intervalId = null; }
 }
 
 function liveResumeFromBreak() {
   const lm = G.liveMatch;
   if (!lm) return;
-  // Пересчитываем xG с учётом текущих тактик
   const home = G.league.teams.find(t => t.id === lm.homeId);
   const away = G.league.teams.find(t => t.id === lm.awayId);
   const hTM = tacticMods(home.tactics, home), aTM = tacticMods(away.tactics, away);
@@ -3155,16 +3148,12 @@ function liveResumeFromBreak() {
   lm.periodStarts.push(lm.totalSecPlayed);
   lm.isBreak = false;
   lm.paused = false;
+  // ⚙️ ФИКС #14: перезапускаем интервал
+  if (!lm.intervalId && !lm.isFinished) {
+    lm.intervalId = setInterval(liveTick, LIVE_TICK_MS);
+  }
   livePushEvent({ type: 'period', text: lm.period === 4 ? 'Овертайм' : `Период ${lm.period}`, time: lm.period === 4 ? '05:00' : '20:00', period: lm.period });
   lm.pbp.push({ period: lm.period, time: '—', type: 'period', text: lm.period === 4 ? 'Овертайм' : `Период ${lm.period}` });
-  render();
-}
-
-function liveChangeTactic(key, val) {
-  if (!G.liveMatch) return;
-  const team = G.league.teams.find(t => t.id === G.playerTeamId);
-  if (!team) return;
-  team.tactics[key] = Number(val);
   render();
 }
 
@@ -3174,7 +3163,6 @@ function finishLiveMatch() {
   if (lm.intervalId) { clearInterval(lm.intervalId); lm.intervalId = null; }
   lm.isFinished = true;
 
-  // Формируем результат в том же формате, что simGame
   const res = {
     homeId: lm.homeId, awayId: lm.awayId,
     hg: lm.hg, ag: lm.ag, ot: lm.ot,
@@ -3182,7 +3170,6 @@ function finishLiveMatch() {
     round: G.league.currentRound,
   };
 
-  // Статистика вратарей
   const home = G.league.teams.find(t => t.id === lm.homeId);
   const away = G.league.teams.find(t => t.id === lm.awayId);
   const isPlayoff = lm.isPlayoff;
@@ -3203,7 +3190,6 @@ function finishLiveMatch() {
   for (const p of lm.homeLineup.skaters) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).gp++;
   for (const p of lm.awayLineup.skaters) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).gp++;
 
-  // Травмы, усталость, форма
   checkInjuries(home, lm.homeLineup); checkInjuries(away, lm.awayLineup);
   updateFatigue(home, lm.homeLineup); updateFatigue(away, lm.awayLineup);
   updateFormMorale(home, lm.homeLineup, lm.hg > lm.ag); updateFormMorale(away, lm.awayLineup, lm.ag > lm.hg);
@@ -3217,22 +3203,18 @@ function finishLiveMatch() {
     applyFanExpectation(away, awayExpected, lm.ag > lm.hg, false);
   }
 
-  // tryout
   home._lastPlayedIds = [...lm.homeLineup.skaters, lm.homeLineup.goalie].filter(Boolean).map(p => p.id);
   away._lastPlayedIds = [...lm.awayLineup.skaters, lm.awayLineup.goalie].filter(Boolean).map(p => p.id);
   processTryouts(home); processTryouts(away);
   for (const team of [home, away]) if (team.staff.psychologist) for (const p of team.roster) p.morale = clamp(p.morale + 1, 20, 100);
 
-  // Применяем результат
   applyResult(res);
   G.league.results.push(res);
 
-  // Если это был регулярный тур — досимируем остальные матчи тура
   if (!isPlayoff) {
     const round = G.league.schedule[G.league.currentRound];
     const others = round.filter(([h, a]) => !(h === lm.homeId && a === lm.awayId) && !(h === lm.awayId && a === lm.homeId));
     others.forEach(([h, a]) => {
-      // пропускаем, если это был наш матч (на случай бага)
       if (h === G.playerTeamId || a === G.playerTeamId) return;
       const r = simGame(h, a, false); r.round = G.league.currentRound; applyResult(r); G.league.results.push(r);
     });
@@ -3259,21 +3241,43 @@ function finishLiveMatch() {
 }
 
 function exitLiveMatchEarly() {
-  // Принудительное завершение (быстрая симуляция остатка)
   const lm = G.liveMatch;
   if (!lm) return;
   if (lm.intervalId) { clearInterval(lm.intervalId); lm.intervalId = null; }
-  // Досимировать остаток через быструю функцию
-  // Проверяем исход по уже забитым и доигрываем как обычный матч по остатку
-  // Проще: если матч не завершён — применить обычный simGame (но это сотрёт статистику уже сыгранного)
-  // Поэтому: добиваем быстрым расчётом xG по оставшемуся времени
-  const remainingPeriods = lm.period === 4 ? 1 : (3 - lm.period + 1);
-  const totalRemSec = remainingPeriods * LIVE_PERIOD_SEC;
+
+  // ⚙️ ФИКС #3: корректный расчёт остатка времени
+  // — если в ОТ: только остаток текущего ОТ
+  // — если в регуляке: остаток текущего периода + все оставшиеся периоды
+  const remInCurrent = Math.max(0, lm.timeLeft);
+  const periodNow = lm.period;
+  let totalRemSec;
+  if (periodNow === 4) {
+    totalRemSec = remInCurrent;
+  } else {
+    totalRemSec = remInCurrent + (3 - periodNow) * LIVE_PERIOD_SEC;
+  }
+
   const hXg = lm.xgCurrent.home, aXg = lm.xgCurrent.away;
   const addH = poisson(hXg * totalRemSec / 3600);
   const addA = poisson(aXg * totalRemSec / 3600);
   lm.hg += addH; lm.ag += addA;
-  lm.ot = false;
+  // добавляем броски пропорционально голам, чтобы не сломать SV% совсем уж грубо
+  lm.shots.home += addH;
+  lm.shots.away += addA;
+
+  // Если после регуляки всё ещё ничья — ОТ (или буллиты, если ОТ не помог)
+  if (lm.hg === lm.ag && periodNow < 4) {
+    lm.ot = true;
+    const otH = poisson(hXg * (300 / 3600));
+    const otA = poisson(aXg * (300 / 3600));
+    lm.hg += otH; lm.ag += otA;
+    lm.shots.home += otH;
+    lm.shots.away += otA;
+    if (lm.hg === lm.ag) {
+      if (rng() < 0.5) lm.hg++; else lm.ag++;
+    }
+  }
+
   finishLiveMatch();
 }
 
@@ -3284,20 +3288,17 @@ function closeLiveMatchModal() {
   render();
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 9/13
 /* ============================================================
    LIVE — CANVAS RENDER + UI SCREEN
    ============================================================ */
 let _liveCanvasEl = null;
 let _liveRafId = null;
-let _liveCanvasDirty = false;
 
 function drawLiveCanvas() {
   const lm = G.liveMatch;
   if (!lm) return;
   let canvas = document.getElementById('live-canvas');
   if (!canvas) return;
-  // Подгоняем размеры под контейнер (один раз)
   const wrap = canvas.parentElement;
   if (wrap && wrap.clientWidth > 0) {
     const targetW = wrap.clientWidth - 24;
@@ -3311,28 +3312,21 @@ function drawLiveCanvas() {
   const W = canvas.width, H = canvas.height;
   if (!W || !H) return;
 
-  // Фон площадки
   ctx.fillStyle = '#0f1117';
   ctx.fillRect(0, 0, W, H);
 
-  // Пропорциональные координаты: view x [0..200], y [0..100]
   const vx = (x) => (x / 200) * W;
   const vy = (y) => (y / 100) * H;
 
-  // Лёд
   ctx.fillStyle = '#e8eef8';
   ctx.fillRect(vx(3), vy(3), vx(197) - vx(3), vy(97) - vy(3));
 
-  // Продольные и поперечные линии
   ctx.strokeStyle = '#b8c4d8';
   ctx.lineWidth = 1;
-  // центральная
   ctx.beginPath(); ctx.moveTo(vx(100), vy(3)); ctx.lineTo(vx(100), vy(97)); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.stroke();
-  // синие линии
   ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 3;
   ctx.beginPath(); ctx.moveTo(vx(60), vy(3)); ctx.lineTo(vx(60), vy(97)); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(vx(140), vy(3)); ctx.lineTo(vx(140), vy(97)); ctx.stroke();
-  // круги вбрасывания
   ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2;
   const faceCircles = [
     { x: 30, y: 30 }, { x: 30, y: 70 }, { x: 70, y: 30 }, { x: 70, y: 70 },
@@ -3343,18 +3337,14 @@ function drawLiveCanvas() {
     ctx.arc(vx(c.x), vy(c.y), Math.min(vx(8) - vx(0), vy(16) - vy(0)), 0, Math.PI * 2);
     ctx.stroke();
   }
-  // центральный круг
   ctx.beginPath(); ctx.arc(vx(100), vy(50), Math.min(vx(10) - vx(0), vy(20) - vy(0)), 0, Math.PI * 2); ctx.stroke();
 
-  // Ворота
   ctx.fillStyle = '#ef4444';
   ctx.fillRect(vx(2), vy(42), vx(6) - vx(2), vy(58) - vy(42));
   ctx.fillRect(vx(194), vy(42), vx(198) - vx(194), vy(58) - vy(42));
-  // Синие зоны
   ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 1.5;
   ctx.strokeRect(vx(3), vy(3), vx(197) - vx(3), vy(97) - vy(3));
 
-  // Названия команд сверху/снизу на льду (мелко)
   ctx.fillStyle = 'rgba(15,17,23,0.15)';
   ctx.font = `bold ${Math.max(10, Math.round(W / 60))}px -apple-system, sans-serif`;
   ctx.textAlign = 'left';
@@ -3364,8 +3354,7 @@ function drawLiveCanvas() {
   ctx.textAlign = 'right';
   if (awayTeam) ctx.fillText(awayTeam.shortName || awayTeam.name, vx(192), vy(12));
 
-  // Игроки
-  const drawPlayer = (p, side, isPenalized) => {
+  const drawPlayer = (p, side) => {
     const x = vx(p.x), y = vy(p.y);
     const r = Math.max(5, Math.round(W / 100));
     ctx.beginPath();
@@ -3388,7 +3377,6 @@ function drawLiveCanvas() {
   for (const p of lm.positions.home) drawPlayer(p, 'home');
   for (const p of lm.positions.away) drawPlayer(p, 'away');
 
-  // Шайба
   const puckX = vx(lm.positions.puck.x);
   const puckY = vy(lm.positions.puck.y);
   ctx.beginPath();
@@ -3399,14 +3387,12 @@ function drawLiveCanvas() {
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  // Вспышка гола
   if (lm.goalFlashUntil > Date.now()) {
     const alpha = clamp((lm.goalFlashUntil - Date.now()) / 1200, 0, 1);
     ctx.fillStyle = `rgba(74,222,128,${alpha * 0.35})`;
     ctx.fillRect(0, 0, W, H);
   }
 
-  // Отладочная надпись периода (очень мелко)
   ctx.fillStyle = 'rgba(15,17,23,0.4)';
   ctx.textAlign = 'center';
   ctx.font = `bold ${Math.max(10, Math.round(W / 70))}px -apple-system, sans-serif`;
@@ -3430,7 +3416,6 @@ function updateLiveClock() {
   if (homeScoreEl) homeScoreEl.textContent = lm.hg;
   if (awayScoreEl) awayScoreEl.textContent = lm.ag;
 
-  // PP-баннер
   const ppEl = document.getElementById('live-pp-banner');
   if (ppEl) {
     const hp = liveGetActivePenalties('home');
@@ -3442,15 +3427,12 @@ function updateLiveClock() {
     else ppEl.style.display = 'none';
   }
 
-  // Лента — обновляем при каждом тике
   const feedEl = document.getElementById('live-feed');
   if (feedEl) {
-    // Собираем HTML один раз, чтобы не мигало
     const html = lm.events.slice(0, 30).map(ev => {
       const cls = ev.type === 'goal' ? 'goal' : ev.type === 'penalty' ? 'penalty' : ev.type === 'period' ? 'period' : 'shot';
       return `<div class="live-feed-item ${cls}"><span class="lfi-time">[${ev.time || '—'}]</span>${ev.text}</div>`;
     }).join('');
-    // Меняем только если изменился (по длине + первой строке)
     if (feedEl.dataset.sig !== String(lm.events.length) + '|' + (lm.events[0]?.text || '')) {
       feedEl.innerHTML = html;
       feedEl.dataset.sig = String(lm.events.length) + '|' + (lm.events[0]?.text || '');
@@ -3472,39 +3454,31 @@ function awayTeamNameShort() {
 function liveUpdatePositions() {
   const lm = G.liveMatch;
   if (!lm) return;
-  // Простая "дрожь" — точки медленно дрейфуют вокруг базовых позиций + притягиваются к шайбе
   const puck = lm.positions.puck;
-  const drift = (p, isHome) => {
-    // Случайный дрейф
+  const drift = (p) => {
     p.vx += (rng() - 0.5) * 0.3;
     p.vy += (rng() - 0.5) * 0.3;
-    // Тяга к базовой позиции
     p.vx += (p.baseX - p.x) * 0.02;
     p.vy += (p.baseY - p.y) * 0.02;
-    // Тяга к шайбе (если рядом)
     const dx = puck.x - p.x, dy = puck.y - p.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     if (dist < 40 && p.role !== 'goalie') {
       p.vx += dx * 0.02;
       p.vy += dy * 0.02;
     }
-    // Ограничение скорости
     p.vx = clamp(p.vx, -1.2, 1.2);
     p.vy = clamp(p.vy, -1.2, 1.2);
     p.x += p.vx;
     p.y += p.vy;
-    // Стены площадки
     p.x = clamp(p.x, 5, 195);
     p.y = clamp(p.y, 5, 95);
   };
-  lm.positions.home.forEach(p => drift(p, true));
-  lm.positions.away.forEach(p => drift(p, false));
-  // Шайба тоже дрейфует к центру
+  lm.positions.home.forEach(drift);
+  lm.positions.away.forEach(drift);
   puck.x += (100 - puck.x) * 0.01;
   puck.y += (50 - puck.y) * 0.01;
 }
 
-// Анимационный цикл (каждый кадр — двигаем позиции и рисуем)
 function liveAnimationLoop() {
   if (!G.liveMatch) { _liveRafId = null; return; }
   const lm = G.liveMatch;
@@ -3523,15 +3497,37 @@ function stopLiveAnimation() {
 }
 
 /* ============================================================
-   LIVE UI SCREEN
+   ТАКТИЧЕСКИЕ СЛАЙДЕРЫ (общее определение)
    ============================================================ */
+const SLIDER_DEFS = [
+  { key: 'forecheck', label: 'Форчек', left: 'Пассивный', right: 'Агрессивный' },
+  { key: 'pressure', label: 'Давление', left: 'Ловушка', right: 'Прессинг' },
+  { key: 'style', label: 'Стиль атаки', left: 'Позиционный', right: 'Вертикальный' },
+  { key: 'physical', label: 'Жёсткость', left: 'Мягкая', right: 'Жёсткая' },
+  { key: 'risk', label: 'Риск', left: 'Спокойно', right: 'Ва-банк' },
+];
+
+function liveChangeTactic(key, val) {
+  if (!G.liveMatch) return;
+  const team = G.league.teams.find(t => t.id === G.playerTeamId);
+  if (!team) return;
+  team.tactics[key] = Number(val);
+  const inputs = document.querySelectorAll('.live-tactic-row input[type=range]');
+  for (const input of inputs) {
+    if (input.getAttribute('oninput')?.includes(`'${key}'`)) {
+      const valEl = input.parentElement.querySelector('.lt-val');
+      if (valEl) valEl.textContent = val;
+      break;
+    }
+  }
+}
+
 function renderLiveMatchScreen() {
   const lm = G.liveMatch;
   if (!lm) return '';
   const home = G.league.teams.find(t => t.id === lm.homeId);
   const away = G.league.teams.find(t => t.id === lm.awayId);
   const myTeam = G.league.teams.find(t => t.id === G.playerTeamId);
-  const isHomeMe = G.playerTeamId === lm.homeId;
 
   const speedBtns = [1, 2, 4].map(s => `<button class="btn small ${lm.speed === s ? 'active' : ''}" onclick="setLiveSpeed(${s})">${s}×</button>`).join('');
   const pauseBtn = lm.paused && !lm.isBreak && !lm.isFinished
@@ -3551,7 +3547,6 @@ function renderLiveMatchScreen() {
     `;
   }
 
-  // Тактические слайдеры (только для команды игрока) — доступны на перерыве и в паузе
   const canEditTactics = myTeam && (lm.isBreak || lm.paused) && !lm.isFinished;
   const tacticSliders = canEditTactics ? `
     <div class="live-break-overlay">
@@ -3623,10 +3618,18 @@ function setLiveSpeed(s) {
 function toggleLivePause() {
   if (!G.liveMatch) return;
   G.liveMatch.paused = !G.liveMatch.paused;
+  // ⚙️ ФИКС #14: если встали на паузу — гасим интервал, чтобы не жечь CPU
+  if (G.liveMatch.paused && G.liveMatch.intervalId) {
+    clearInterval(G.liveMatch.intervalId);
+    G.liveMatch.intervalId = null;
+  }
+  // На возобновление — перезапускаем интервал, если матч не завершён и не перерыв
+  if (!G.liveMatch.paused && !G.liveMatch.isFinished && !G.liveMatch.isBreak && !G.liveMatch.intervalId) {
+    G.liveMatch.intervalId = setInterval(liveTick, LIVE_TICK_MS);
+  }
   render();
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 10/13
 /* ============================================================
    UI — ВЫБОР КЛУБА / ХЕДЕР / ТАБЫ
    ============================================================ */
@@ -3887,7 +3890,6 @@ function renderLines() {
   return html;
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 11/13
 /* ============================================================
    СТАТИСТИКА / ФИНАНСЫ
    ============================================================ */
@@ -3976,13 +3978,6 @@ function renderWaivers() {
 /* ============================================================
    ТАКТИКА / ТРЕНИРОВКИ / ШТАБ
    ============================================================ */
-const SLIDER_DEFS = [
-  { key: 'forecheck', label: 'Форчек', left: 'Пассивный', right: 'Агрессивный' },
-  { key: 'pressure', label: 'Давление', left: 'Ловушка', right: 'Прессинг' },
-  { key: 'style', label: 'Стиль атаки', left: 'Позиционный', right: 'Вертикальный' },
-  { key: 'physical', label: 'Жёсткость', left: 'Мягкая', right: 'Жёсткая' },
-  { key: 'risk', label: 'Риск', left: 'Спокойно', right: 'Ва-банк' },
-];
 function setTactic(key, value) { const team = G.league.teams.find(t => t.id === G.playerTeamId); team.tactics[key] = Number(value); render(); }
 function renderTactics() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId); const t = team.tactics; const mods = tacticMods(t, team);
@@ -4025,7 +4020,6 @@ function renderStaff() {
   return html;
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 12/13
 /* ============================================================
    ИНФРАСТРУКТУРА / АКАДЕМИЯ
    ============================================================ */
@@ -4226,7 +4220,7 @@ function renderHistory() {
 }
 
 /* ============================================================
-   МОДАЛКА ИГРОКА
+   МОДАЛКА ИГРОКА (с кнопкой реабилитации — фиксы #4/#13)
    ============================================================ */
 function renderModal() {
   if (!G.popupPlayerId) return '';
@@ -4257,6 +4251,10 @@ function renderModal() {
   const releaseCost = Math.round(remainingSalary * 0.5 * 10) / 10;
   const canIndTraining = isMyTeam && (G.league.currentRound - (p.lastIndTraining || -10)) >= 5;
   const attrButtons = canIndTraining ? attrs.filter(a => p.attrs[a] < p.attrPot[a]).map(a => `<button class="btn small secondary" onclick="handleIndTraining(${p.id}, '${a}')">${ATTR_LABELS[a]}</button>`).join('') : '';
+  // ⚙️ ФИКС #4/#13: кнопка реабилитации для травмированного игрока моей команды
+  const canRehab = isMyTeam && p.injury && p.injury.gamesLeft > 0
+    && (G.league.currentRound - (foundTeam.lastRehabRound || -10)) >= 5;
+  const rehabCost = Math.min(3, p.injury ? p.injury.gamesLeft : 0) * 1;
   return `<div class="modal-overlay" onclick="if(event.target===this){G.popupPlayerId=null; render();}">
     <div class="modal">
       <button class="close-btn" onclick="G.popupPlayerId=null; render();">✕</button>
@@ -4273,6 +4271,7 @@ function renderModal() {
       <h2>Сезон (плей-офф)</h2>${statsPo}
       <h2>Контракт</h2><div class="attr-grid"><div class="attr-row"><span>Зарплата</span><span>${p.contract.salary.toFixed(1)} млн</span></div><div class="attr-row"><span>Лет</span><span>${p.contract.years}</span></div></div>
       ${canExtend ? `<div style="margin-top:12px"><button class="btn" onclick="handleExtend(${p.id}, 1)">Продлить на 1</button><button class="btn" onclick="handleExtend(${p.id}, 2)">Продлить на 2</button></div>` : ''}
+      ${canRehab ? `<div style="margin-top:12px"><button class="btn" onclick="handleRehab(${p.id}, 3)">🏥 Реабилитация (3 игры, ${rehabCost} млн)</button></div>` : ''}
       ${canRelease ? `<div style="margin-top:12px"><button class="btn danger" onclick="handleRelease(${p.id})">🗑 Разорвать контракт (${releaseCost} млн)</button></div>` : ''}
     </div>
   </div>`;
@@ -4431,7 +4430,6 @@ function renderOpeningCupModal() {
   </div>`;
 }
 
-// ПРОДОЛЖЕНИЕ СЛЕДУЕТ В ЧАСТИ 13/13
 /* ============================================================
    ГЛОБАЛЬНОЕ СОСТОЯНИЕ
    ============================================================ */
@@ -4454,117 +4452,8 @@ const G = {
   injuryPrompt: null,
   skipInjuryPrompt: false,
   openingCupModal: null,
-  liveMatch: null, // ← LIVE MATCH state
+  liveMatch: null,
 };
-
-/* ============================================================
-   LIVE — финальные версии (переопределяют черновики из части 9)
-   ============================================================ */
-function liveChangeTactic(key, val) {
-  if (!G.liveMatch) return;
-  const team = G.league.teams.find(t => t.id === G.playerTeamId);
-  if (!team) return;
-  team.tactics[key] = Number(val);
-  // Точечное обновление без перерисовки всего экрана:
-  // находим span .lt-val рядом со слайдером через активный элемент
-  const inputs = document.querySelectorAll('.live-tactic-row input[type=range]');
-  for (const input of inputs) {
-    if (input.getAttribute('oninput')?.includes(`'${key}'`)) {
-      const valEl = input.parentElement.querySelector('.lt-val');
-      if (valEl) valEl.textContent = val;
-      break;
-    }
-  }
-}
-
-function renderLiveMatchScreen() {
-  const lm = G.liveMatch;
-  if (!lm) return '';
-  const home = G.league.teams.find(t => t.id === lm.homeId);
-  const away = G.league.teams.find(t => t.id === lm.awayId);
-  const myTeam = G.league.teams.find(t => t.id === G.playerTeamId);
-  const isHomeMe = G.playerTeamId === lm.homeId;
-
-  const speedBtns = [1, 2, 4].map(s => `<button class="btn small ${lm.speed === s ? 'active' : ''}" onclick="setLiveSpeed(${s})">${s}×</button>`).join('');
-  const pauseBtn = lm.paused && !lm.isBreak && !lm.isFinished
-    ? `<button class="btn small" onclick="toggleLivePause()">▶ Продолжить</button>`
-    : (!lm.isFinished && !lm.isBreak) ? `<button class="btn small secondary" onclick="toggleLivePause()">⏸ Пауза</button>` : '';
-
-  let controlBlock = '';
-  if (lm.isFinished) {
-    controlBlock = `<button class="btn" onclick="closeLiveMatchModal()">✅ Готово — к таблице</button>`;
-  } else if (lm.isBreak) {
-    controlBlock = `<button class="btn" onclick="liveResumeFromBreak()">▶ Продолжить период</button>`;
-  } else {
-    controlBlock = `
-      ${pauseBtn}
-      ${speedBtns}
-      <button class="btn small secondary" onclick="exitLiveMatchEarly()">⏭ До конца матча</button>
-    `;
-  }
-
-  const canEditTactics = myTeam && (lm.isBreak || lm.paused) && !lm.isFinished;
-  const tacticSliders = canEditTactics ? `
-    <div class="live-break-overlay">
-      <div class="live-break-card">
-        <h2>${lm.isBreak ? '⏸ Перерыв — корректировка тактики' : '⏸ Пауза — корректировка тактики'}</h2>
-        <div class="subtitle">Изменения влияют на xG следующих периодов</div>
-        <h3>Тактика</h3>
-        ${SLIDER_DEFS.map(s => `
-          <div class="live-tactic-row">
-            <label>${s.label}</label>
-            <input type="range" min="0" max="100" value="${myTeam.tactics[s.key]}" oninput="liveChangeTactic('${s.key}', this.value)">
-            <span class="lt-val">${myTeam.tactics[s.key]}</span>
-          </div>
-        `).join('')}
-        <div style="margin-top:16px;text-align:right">
-          ${lm.isBreak
-            ? `<button class="btn" onclick="liveResumeFromBreak()">▶ Продолжить период</button>`
-            : `<button class="btn" onclick="toggleLivePause()">▶ Продолжить</button>`}
-        </div>
-      </div>
-    </div>
-  ` : '';
-
-  const endedHint = lm.isFinished
-    ? `<div class="regular-champion" style="margin-top:8px">Матч завершён: ${home.shortName || home.name} ${lm.hg} : ${lm.ag} ${away.shortName || away.name}${lm.ot ? ' (ОТ)' : ''}</div>`
-    : '';
-
-  const logoHome = home.logo ? `<img src="${home.logo}" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px">` : '';
-  const logoAway = away.logo ? `<img src="${away.logo}" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px">` : '';
-
-  return `<div class="live-screen">
-    <div class="live-topbar">
-      <button class="btn small secondary" onclick="if(confirm('Выйти из матча? Остаток будет досимитирован.')) exitLiveMatchEarly()">✕ Выйти</button>
-      <div class="live-scoreboard">
-        <div class="live-teams">
-          <span class="home-name">${logoHome}${home.shortName || home.name}</span>
-          <span class="live-score-box"><span id="live-score-home">${lm.hg}</span> : <span id="live-score-away">${lm.ag}</span></span>
-          <span class="away-name">${logoAway}${away.shortName || away.name}</span>
-        </div>
-        <div class="live-period-info" id="live-period-info">${lm.period === 4 ? 'Овертайм' : 'Период ' + lm.period}</div>
-        <div class="live-clock" id="live-clock">${liveFmtTime(Math.max(0, Math.ceil(lm.timeLeft)))}</div>
-      </div>
-      <div style="min-width:120px"></div>
-    </div>
-
-    <div id="live-pp-banner" class="live-pp-banner" style="display:none"></div>
-
-    <div class="live-canvas-wrap">
-      <canvas id="live-canvas" class="live-canvas"></canvas>
-    </div>
-
-    <div class="live-controls">
-      ${controlBlock}
-    </div>
-
-    <h2>Ход матча</h2>
-    <div class="live-feed" id="live-feed"></div>
-
-    ${endedHint}
-    ${tacticSliders}
-  </div>`;
-}
 
 /* ============================================================
    ГЛАВНЫЙ RENDER
@@ -4573,7 +4462,6 @@ function render() {
   const root = document.getElementById('app');
   if (!G.league) return;
 
-  // 1) Экран выбора клуба
   if (G.screen === 'select') {
     stopLiveAnimation();
     if (G.liveMatch && G.liveMatch.intervalId) { clearInterval(G.liveMatch.intervalId); G.liveMatch.intervalId = null; }
@@ -4584,7 +4472,6 @@ function render() {
     return;
   }
 
-  // 2) LIVE-МАТЧ (перекрывает всё остальное)
   if (G.liveMatch) {
     root.innerHTML = renderLiveMatchScreen();
     drawLiveCanvas();
@@ -4595,13 +4482,11 @@ function render() {
 
   stopLiveAnimation();
 
-  // 3) Свободный агент
   if (!G.playerTeamId) {
     root.innerHTML = renderFreeAgentScreen() + renderModal() + renderTeamModal() + renderInjuryPromptModal() + renderOpeningCupModal();
     return;
   }
 
-  // 4) Обычный экран с табами
   const content =
     G.activeTab === 'standings' ? renderStandings() :
     G.activeTab === 'games' ? renderGames() :
@@ -4631,7 +4516,7 @@ function render() {
 }
 
 /* ============================================================
-   СОХРАНЕНИЕ
+   СОХРАНЕНИЕ (с seed — фикс #9)
    ============================================================ */
 const SAVE_KEY = 'hockey_save_v2';
 
@@ -4644,6 +4529,7 @@ function saveGame() {
       selectedDifficulty: G.selectedDifficulty, noFireMode: G.noFireMode, career: G.career,
       careerOffers: G.careerOffers, freeAgentOffers: G.freeAgentOffers,
       lastRegularChampionId: G.lastRegularChampionId, lastCupHolderId: G.lastCupHolderId, lastFinalistId: G.lastFinalistId,
+      seed: _seed,  // ⚙️ ФИКС #9
     }));
   } catch (e) {}
 }
@@ -4656,6 +4542,8 @@ function loadGame() {
     G.activeTab = data.activeTab || 'standings'; G.screen = data.screen || 'select';
     G.standingsSort = data.standingsSort || { key: 'pts', dir: 'desc' };
     _idCounter = data.idCounter || 1;
+    // ⚙️ ФИКС #9: восстанавливаем RNG seed
+    _seed = data.seed || 20241111;
     G.selectedDifficulty = data.selectedDifficulty || 'normal';
     G.noFireMode = data.noFireMode || false;
     G.career = data.career || { reputation: 50, history: [] };
@@ -4672,7 +4560,7 @@ function loadGame() {
     G.league.retiredPlayers = G.league.retiredPlayers || [];
     G.league.openingCup = G.league.openingCup || null;
     G.league.retroMatch = G.league.retroMatch || null;
-    G.liveMatch = null; // live не сохраняется
+    G.liveMatch = null;
     G.league.teams.forEach(t => {
       if (!t.ratings) { const meta = VHL_TEAMS.find(m => m.id === t.id); t.ratings = meta ? { ...meta.ratings } : { att: 70, def: 70, gk: 70, st: 70 }; }
       if (t.talent === undefined) t.talent = 70;
