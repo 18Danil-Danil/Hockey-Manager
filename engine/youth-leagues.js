@@ -284,6 +284,38 @@ function simulateYouthSeasonRemainder(league) {
   while (league.currentRound < league.schedule.length) simYouthRound(league.id, true);
 }
 
+function youthTransferPrice(player, leagueId) {
+  const leagueFactor = leagueId === 'MHL' ? 1.25 : 1;
+  const potential = Math.max(0, (player.pot || player.ovr) - player.ovr);
+  return Math.max(0.5, Math.round((player.ovr * 0.12 + potential * 0.08) * leagueFactor * 10) / 10);
+}
+
+function acquireYouthPlayer(team, youthTeamId, playerId) {
+  const youth = G.league?.youth;
+  if (!team || !youth) return { success: false, error: 'Команда или молодёжная лига не найдена' };
+  if (team.roster.length >= 30) return { success: false, error: 'В основном составе нет места (максимум 30 игроков)' };
+  const youthLeague = Object.values(youth.leagues || {}).find(league => league.teams.some(club => club.id === youthTeamId));
+  const youthTeam = youthLeague?.teams.find(club => club.id === youthTeamId);
+  const player = youthTeam?.roster.find(item => item.id === playerId);
+  if (!player) return { success: false, error: 'Игрок уже недоступен или перешёл в другую команду' };
+  if (team.roster.some(item => item.id === player.id)) return { success: false, error: 'Игрок уже в твоём составе' };
+  const ownSystem = (youthTeam.seniorLinks || []).includes(team.id);
+  const foreigners = team.roster.filter(item => item.nationality !== 'Россия').length;
+  if (player.nationality !== 'Россия' && foreigners >= 3) return { success: false, error: 'Превысится лимит легионеров (3)' };
+  const price = ownSystem ? 0 : youthTransferPrice(player, youthLeague.id);
+  if (team.finance.balance < price) return { success: false, error: 'Недостаточно средств для трансфера' };
+  if (price > 0) { team.finance.balance -= price; team.finance.expenses.transfers = (team.finance.expenses.transfers || 0) + price; }
+  youthTeam.roster = youthTeam.roster.filter(item => item.id !== player.id);
+  player.status = 'contract'; player.contract = contractFor(player.ovr, player.age);
+  player.youth = player.youth || {}; player.youth.signedBySeniorClubId = team.id;
+  player.youth.signedFromTeamId = youthTeam.id; player.youth.signedFromTeamName = youthTeam.name; player.youth.transferFee = price;
+  player.stats = player.stats || { gp: 0, goals: 0, assists: 0, points: 0, shots: 0, pim: 0, wins: 0, saves: 0, goalsAgainst: 0, shotsAgainst: 0, shutouts: 0 };
+  team.roster.push(player); team.lines = null; if (typeof syncLines === 'function') syncLines(team);
+  youth.transferLog = youth.transferLog || [];
+  youth.transferLog.push({ playerId: player.id, playerName: player.name, fromTeamId: youthTeam.id, fromTeamName: youthTeam.name, toTeamId: team.id, toTeamName: team.name, fee: price, season: youth.season || 1 });
+  if (typeof addNews === 'function') addNews('signing', price > 0 ? team.name + ' приобрёл молодого игрока ' + player.name + ' из ' + youthTeam.name + ' за ' + price.toFixed(1) + ' млн ₽' : team.name + ' перевёл игрока ' + player.name + ' из своей молодёжной системы', 1);
+  return { success: true, player, price, ownSystem };
+}
 function youthTopScorers(league, limit = 10) {
   if (!league) return [];
   return league.teams.flatMap(team => team.roster.map(player => ({ ...player, teamName: team.name })))
