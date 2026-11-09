@@ -474,12 +474,51 @@ function renderAcademy() {
     html += `<h2>${group} (${players.length})</h2>`;
     if (!players.length) { html += `<div class="subtitle">Нет игроков.</div>`; continue; }
     html += `<table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>Потенциал</th><th>Прогноз</th></tr></thead><tbody>`;
-    for (const p of players) { const prog = academyPrognosis(p); html += `<tr><td><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span></td><td>${p.name}</td><td>${p.age}</td><td class="ovr ${p.ovr >= 65 ? 'mid' : 'lo'}">${p.ovr}</td><td><span class="pot">▲${p.pot - p.ovr}</span></td><td><span class="academy-role-badge ${prog.cls}">${prog.label}</span></td></tr>`; }
+    for (const p of players) { const prog = academyPrognosis(p); html += `<tr style="cursor:pointer" onclick="openYouthPlayerCard('academy', '${group}', null, null, ${p.id})"><td><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span></td><td>${p.name}</td><td>${p.age}</td><td class="ovr ${p.ovr >= 65 ? 'mid' : 'lo'}">${p.ovr}</td><td><span class="pot">▲${p.pot - p.ovr}</span></td><td><span class="academy-role-badge ${prog.cls}">${prog.label}</span></td></tr>`; }
     html += `</tbody></table>`;
   }
   return html;
 }
 
+function openYouthPlayerCard(source, group, leagueId, teamId, playerId) { G.youthPlayerModal = { source, group, leagueId, teamId, playerId }; render(); }
+function closeYouthPlayerCard() { G.youthPlayerModal = null; render(); }
+function renderYouthPlayerModal() {
+  const modal = G.youthPlayerModal; if (!modal) return '';
+  const senior = G.league.teams.find(team => team.id === G.playerTeamId);
+  let player = null, sourceName = '', action = '', price = 0;
+  if (modal.source === 'academy') {
+    player = (senior?.academy?.[modal.group] || []).find(item => item.id === modal.playerId);
+    sourceName = senior?.name + ' · академия ' + modal.group; action = 'В основную команду';
+  } else {
+    const league = G.league.youth?.leagues?.[modal.leagueId];
+    const club = league?.teams.find(item => item.id === modal.teamId);
+    player = club?.roster.find(item => item.id === modal.playerId);
+    if (club && player) { const own = (club.seniorLinks || []).includes(senior?.id); price = own ? 0 : youthTransferPrice(player, modal.leagueId); sourceName = club.name + ' · ' + league.name; action = own ? 'Вызвать в основную команду' : 'Приобрести за ' + price.toFixed(1) + ' млн ₽'; }
+  }
+  if (!player) return '<div class="modal-overlay"><div class="modal"><button class="close-btn" onclick="closeYouthPlayerCard()">✕</button><div class="subtitle">Игрок больше недоступен.</div></div></div>';
+  const stats = player.stats || {}; const ownSystem = modal.source === 'youth' && (Object.values(G.league.youth.leagues).find(l => l.teams.some(t => t.id === modal.teamId))?.teams.find(t => t.id === modal.teamId)?.seniorLinks || []).includes(senior?.id);
+  const disabled = !senior || senior.roster.length >= 30 || (player.nationality !== 'Россия' && senior.roster.filter(p => p.nationality !== 'Россия').length >= 3) || senior.finance.balance < price;
+  const attrs = Object.entries(player.attrs || {}).map(([key, value]) => '<div class="attr-row"><span>' + key + '</span><span>' + value + '</span></div>').join('');
+  return '<div class="modal-overlay" onclick="if(event.target===this) closeYouthPlayerCard()"><div class="modal"><button class="close-btn" onclick="closeYouthPlayerCard()">✕</button><h1 style="font-size:22px">' + player.name + '</h1><div class="subtitle">' + player.position + ' · ' + player.age + ' лет · ' + (player.nationality || '—') + ' · ' + sourceName + '</div><div class="finance-grid" style="margin-top:12px"><div class="finance-card"><div class="fc-title">OVR</div><div class="fc-value">' + player.ovr + '</div></div><div class="finance-card"><div class="fc-title">Потенциал</div><div class="fc-value">' + (player.pot || player.ovr) + '</div></div></div><h2>Атрибуты</h2><div class="attr-grid">' + attrs + '</div><h2>Статистика</h2><div class="attr-grid"><div class="attr-row"><span>Игры</span><span>' + (stats.gp || 0) + '</span></div><div class="attr-row"><span>Голы</span><span>' + (stats.goals || 0) + '</span></div><div class="attr-row"><span>Передачи</span><span>' + (stats.assists || 0) + '</span></div><div class="attr-row"><span>Очки</span><span>' + (stats.points || 0) + '</span></div></div><div style="margin-top:16px"><button class="btn" ' + (disabled ? 'disabled' : '') + ' onclick="acquireYouthPlayerFromCard()">' + action + '</button><button class="btn secondary" onclick="closeYouthPlayerCard()">Закрыть</button></div>' + (disabled ? '<div class="subtitle" style="margin-top:8px">Проверь место в составе, лимит легионеров и баланс клуба.</div>' : '') + '</div></div>';
+}
+function acquireYouthPlayerFromCard() {
+  const modal = G.youthPlayerModal; if (!modal) return;
+  const senior = G.league.teams.find(team => team.id === G.playerTeamId);
+  if (modal.source === 'academy') {
+    const list = senior?.academy?.[modal.group] || []; const index = list.findIndex(player => player.id === modal.playerId);
+    if (index < 0 || !senior) { showToast('Игрок больше недоступен'); closeYouthPlayerCard(); return; }
+    const player = list[index];
+    if (senior.roster.length >= 30) { showToast('В основном составе нет места'); return; }
+    if (player.nationality !== 'Россия' && senior.roster.filter(p => p.nationality !== 'Россия').length >= 3) { showToast('Превысится лимит легионеров'); return; }
+    list.splice(index, 1); player.status = 'contract'; player.contract = contractFor(player.ovr, player.age); senior.roster.push(player); senior.lines = null; if (typeof syncLines === 'function') syncLines(senior);
+    showToast(player.name + ' переведён в основную команду', 'success');
+  } else {
+    const result = acquireYouthPlayer(senior, modal.teamId, modal.playerId);
+    if (!result.success) { showToast(result.error); return; }
+    showToast(result.ownSystem ? result.player.name + ' вызван из молодёжной системы' : result.player.name + ' приобретён за ' + result.price.toFixed(1) + ' млн ₽', 'success');
+  }
+  G.youthPlayerModal = null; render();
+}
 function setYouthLeague(leagueId) {
   if (!G.league.youth) return;
   G.league.youth.activeLeague = leagueId;
@@ -505,6 +544,12 @@ function renderYouthLeagues() {
     html += '<tr><td>' + (index + 1) + '</td><td>' + team.name + '</td><td>' + r.gp + '</td><td>' + r.w + '</td><td>' + r.otw + '</td><td>' + r.otl + '</td><td>' + r.l + '</td><td><b>' + r.pts + '</b></td><td>' + r.gf + '</td><td>' + r.ga + '</td></tr>';
   });
   html += '</tbody></table>';
+  const rosterTeam = league.teams.find(team => String(team.id) === String(G.youthRosterTeamId)) || table[0] || league.teams[0];
+  if (rosterTeam) {
+    html += '<h2>Игроки команды</h2><div class="inbox-filter"><select onchange="G.youthRosterTeamId=this.value;render()" style="max-width:100%">' + table.map(team => '<option value="' + team.id + '" ' + (team.id === rosterTeam.id ? 'selected' : '') + '>' + team.name + '</option>').join('') + '</select></div>' +
+      '<table><thead><tr><th>Поз.</th><th>Игрок</th><th>Возраст</th><th>OVR</th><th>Пот.</th><th>И</th><th>О</th></tr></thead><tbody>' +
+      rosterTeam.roster.slice().sort((a,b) => b.ovr-a.ovr).map(player => '<tr style="cursor:pointer" onclick="openYouthPlayerCard(\'youth\', null, \'' + leagueId + '\', \'' + rosterTeam.id + '\', ' + player.id + ')"><td>' + player.position + '</td><td>' + player.name + '</td><td>' + player.age + '</td><td>' + player.ovr + '</td><td>' + (player.pot || player.ovr) + '</td><td>' + (player.stats?.gp || 0) + '</td><td>' + (player.stats?.points || 0) + '</td></tr>').join('') + '</tbody></table>';
+  }
   const scorers = youthTopScorers(league, 10);
   html += '<h2>Лучшие бомбардиры</h2>';
   if (!scorers.length) html += '<div class="subtitle">Статистика появится после первых матчей.</div>';
