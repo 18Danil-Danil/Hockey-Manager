@@ -12,6 +12,7 @@ function saveGame() {
       selectedDifficulty: G.selectedDifficulty, noFireMode: G.noFireMode, career: G.career,
       careerOffers: G.careerOffers, freeAgentOffers: G.freeAgentOffers,
       lastRegularChampionId: G.lastRegularChampionId, lastCupHolderId: G.lastCupHolderId, lastFinalistId: G.lastFinalistId,
+      lastRoundResults: G.lastRoundResults, lastRoundNumber: G.lastRoundNumber,
       seed: getSeed(),  // ⚙️ ФИКС #9
     }));
     return true;
@@ -43,6 +44,8 @@ function loadGame() {
     G.lastRegularChampionId = data.lastRegularChampionId;
     G.lastCupHolderId = data.lastCupHolderId;
     G.lastFinalistId = data.lastFinalistId;
+    G.lastRoundResults = Array.isArray(data.lastRoundResults) ? data.lastRoundResults : null;
+    G.lastRoundNumber = data.lastRoundNumber || null;
     G.difficulty = DIFFICULTIES[G.selectedDifficulty] || DIFFICULTIES.normal;
     G.league.aiTradeOffers = G.league.aiTradeOffers || [];
     G.league.allTimeLeaders = G.league.allTimeLeaders || { skaters: {} };
