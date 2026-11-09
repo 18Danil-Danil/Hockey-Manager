@@ -273,12 +273,16 @@ function advanceYouthPlayer(player, leagueId, season, team, youth) {
   player.pot = overallFromAttrs(player.attrPot, player.position === 'G');
   if (player.age > YOUTH_RULES.maxAge) {
     player.youth.graduated = true;
+    player.status = 'ufa';
+    player.contract = contractFor(player.ovr, player.age);
+    player.youthGraduated = { formerTeamId: team.id, formerTeamName: team.name, season };
+    if (!Array.isArray(G.league.freeAgents)) G.league.freeAgents = [];
+    if (!G.league.freeAgents.some(candidate => candidate.id === player.id)) G.league.freeAgents.push(player);
     youth.graduates.push({
-      player,
-      formerTeamId: team.id,
-      formerTeamName: team.name,
-      season,
-      status: 'available',
+      playerId: player.id, name: player.name, position: player.position,
+      age: player.age, ovr: player.ovr, formerTeamId: team.id,
+      formerTeamName: team.name, season, status: 'available',
+      signedByTeamId: null, signedByTeamName: null,
     });
     return false;
   }
