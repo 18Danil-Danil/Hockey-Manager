@@ -129,33 +129,6 @@ function processRetirements(team) {
   return retiring;
 }
 
-/* ============================================================
-   СЛУЧАЙНЫЕ СОБЫТИЯ
-   ============================================================ */
-const RANDOM_EVENTS = [
-  { key: 'fans', weight: 2, apply: (team) => { team.finance.fanBase = clamp(team.finance.fanBase + 0.02, 0.15, 1.0); for (const p of team.roster) p.morale = clamp(p.morale + 2, 20, 100); return { title: 'Встреча с болельщиками', body: 'Фанбаза +2%, мораль +2.' }; }, applyAI: (team) => { team.finance.fanBase = clamp(team.finance.fanBase + 0.02, 0.15, 1.0); for (const p of team.roster) p.morale = clamp(p.morale + 2, 20, 100); } },
-  { key: 'scandal', weight: 1, apply: (team) => { team.finance.fanBase = clamp(team.finance.fanBase - 0.03, 0.15, 1.0); for (const p of team.roster) p.morale = clamp(p.morale - 2, 20, 100); return { title: 'Медиа-скандал', body: 'Фанбаза -3%, мораль -2.' }; }, applyAI: (team) => { team.finance.fanBase = clamp(team.finance.fanBase - 0.03, 0.15, 1.0); for (const p of team.roster) p.morale = clamp(p.morale - 2, 20, 100); } },
-  { key: 'charity', weight: 1, apply: (team) => { if (team.finance.balance < 2) return null; team.finance.balance -= 2; team.finance.expenses.operations += 2; team.finance.fanBase = clamp(team.finance.fanBase + 0.03, 0.15, 1.0); return { title: 'Благотворительность', body: '-2 млн ₽, фанбаза +3%.' }; }, applyAI: (team) => { if (team.finance.balance < 2) return; team.finance.balance -= 2; team.finance.fanBase = clamp(team.finance.fanBase + 0.03, 0.15, 1.0); } },
-  { key: 'training_camp', weight: 2, apply: (team) => { for (const p of team.roster) p.form = clamp(p.form + 5, 30, 99); return { title: 'Тренировочный сбор', body: 'Форма +5.' }; }, applyAI: (team) => { for (const p of team.roster) p.form = clamp(p.form + 5, 30, 99); } },
-  { key: 'conflict', weight: 1, apply: (team) => { const hasPsy = !!team.staff.psychologist; if (hasPsy && rng() < 0.7) return { title: 'Конфликт погашен психологом', body: 'Психолог сгладил конфликт.' }; const targets = team.roster.slice().sort(() => rng() - 0.5).slice(0, 2); for (const p of targets) p.morale = clamp(p.morale - 3, 20, 100); return { title: 'Конфликт в раздевалке', body: `${targets.map(p => p.name).join(', ')}. Мораль -3.` }; }, applyAI: (team) => { const hasPsy = !!team.staff.psychologist; if (hasPsy && rng() < 0.7) return; const targets = team.roster.slice().sort(() => rng() - 0.5).slice(0, 2); for (const p of targets) p.morale = clamp(p.morale - 3, 20, 100); } },
-  { key: 'personal_joy', weight: 1, apply: (team) => { if (!team.roster.length) return null; const p = pick(team.roster); p.morale = clamp(p.morale + 3, 20, 100); return { title: 'Радостное событие', body: `У ${p.name} радостное событие. Мораль +3.` }; }, applyAI: (team) => { if (!team.roster.length) return; const p = pick(team.roster); p.morale = clamp(p.morale + 3, 20, 100); } },
-  { key: 'family_problem', weight: 1, apply: (team) => { if (!team.roster.length) return null; const p = pick(team.roster); p.morale = clamp(p.morale - 3, 20, 100); return { title: 'Семейные проблемы', body: `У ${p.name} семейные проблемы. Мораль -3.` }; }, applyAI: (team) => { if (!team.roster.length) return; const p = pick(team.roster); p.morale = clamp(p.morale - 3, 20, 100); } },
-  { key: 'sponsor_bonus', weight: 1, apply: (team) => { if (team.finance.balance <= 0) return null; team.finance.balance += 2; team.finance.income.sponsorBonuses += 2; return { title: 'Спонсорский бонус', body: '+2 млн ₽.' }; }, applyAI: (team) => { if (team.finance.balance <= 0) return; team.finance.balance += 2; } },
-  { key: 'open_training', weight: 2, apply: (team) => { team.finance.fanBase = clamp(team.finance.fanBase + 0.01, 0.15, 1.0); for (const p of team.roster) p.form = clamp(p.form + 2, 30, 99); return { title: 'Открытая тренировка', body: 'Фанбаза +1%, форма +2.' }; }, applyAI: (team) => { team.finance.fanBase = clamp(team.finance.fanBase + 0.01, 0.15, 1.0); for (const p of team.roster) p.form = clamp(p.form + 2, 30, 99); } },
-];
-function generateRandomEvent() {
-  if (!G.league) return;
-  const evt = pickWeighted(RANDOM_EVENTS, e => e.weight); if (!evt) return;
-  const myTeam = G.league.teams.find(t => t.id === G.playerTeamId);
-  if (myTeam && rng() < 0.5) {
-    const result = evt.apply(myTeam);
-    if (result) { addInboxMessage('coach', 'Тренер', `📰 ${result.title}`, result.body, []); addNews('event', `${myTeam.name}: ${result.title}`, 1); }
-  } else {
-    const aiTeams = G.league.teams.filter(t => t.id !== G.playerTeamId); if (!aiTeams.length) return;
-    const aiTeam = pick(aiTeams); evt.applyAI(aiTeam);
-    addNews('event', `${aiTeam.name}: событие (${evt.key})`, 1);
-  }
-}
 
 /* ============================================================
    ГЕНЕРАЦИЯ КОМАНДЫ (из VHL_TEAMS)
@@ -629,50 +602,6 @@ function developPlayer(p, team) {
 }
 function developPlayers(teams) { teams.forEach(t => t.roster.forEach(p => developPlayer(p, t))); }
 
-/* ============================================================
-   ПРЕСС-КОНФЕРЕНЦИЯ
-   ============================================================ */
-function generatePressConference() {
-  const team = G.league.teams.find(t => t.id === G.playerTeamId);
-  const questions = [];
-  if (team.streak && team.streak.type === 'l' && team.streak.count >= 2) {
-    questions.push({ q: `Команда проигрывает ${team.streak.count} матчей подряд. Как объясните?`,
-      answers: [{ label: 'Работаем дальше, не ищем оправданий', morale: 2, fanbase: 0 }, { label: 'Соперники были сильнее', morale: 0, fanbase: -0.01 }, { label: 'Судьи и обстоятельства не в нашу пользу', morale: -2, fanbase: -0.03 }] });
-  } else if (team.streak && team.streak.type === 'w' && team.streak.count >= 3) {
-    questions.push({ q: `${team.streak.count} побед подряд — в чём секрет?`,
-      answers: [{ label: 'Каждый вносит вклад, работаем на максимум', morale: 3, fanbase: 0.02 }, { label: 'Пока рано делать выводы', morale: 0, fanbase: 0 }, { label: 'Соперники попались слабые', morale: -2, fanbase: -0.03 }] });
-  } else {
-    questions.push({ q: 'Как оцените форму команды?',
-      answers: [{ label: 'Идём правильным курсом', morale: 2, fanbase: 0.01 }, { label: 'Есть над чем работать', morale: 0, fanbase: 0 }, { label: 'Разочарован результатом', morale: -1, fanbase: -0.01 }] });
-  }
-  const stars = team.roster.filter(p => p.ovr >= 78).sort((a, b) => b.ovr - a.ovr).slice(0, 1);
-  if (stars.length) {
-    questions.push({ q: `Что скажете об игре ${stars[0].name}?`,
-      answers: [{ label: 'Полностью доверяю', morale: 2, fanbase: 0.01 }, { label: 'Может больше', morale: 0, fanbase: 0 }, { label: 'Жду большего', morale: -2, fanbase: 0 }] });
-  } else {
-    questions.push({ q: 'Кто из игроков вас удивил?',
-      answers: [{ label: 'Молодёжь прогрессирует', morale: 2, fanbase: 0.01 }, { label: 'Все играют как умеют', morale: 0, fanbase: 0 }, { label: 'Пока никто', morale: -2, fanbase: 0 }] });
-  }
-  questions.push({ q: 'Где видите команду по итогам сезона?',
-    answers: [{ label: 'Боремся за плей-офф', morale: 2, fanbase: 0.01 }, { label: 'Работаем от матча к матчу', morale: 0, fanbase: 0 }, { label: 'Целимся в Кубок Петрова', morale: 3, fanbase: 0.02 }] });
-  return { questions, current: 0 };
-}
-function answerPressQuestion(qIdx, aIdx) {
-  const pc = G.pressConference; if (!pc) return;
-  const q = pc.questions[qIdx]; const a = q.answers[aIdx];
-  const team = G.league.teams.find(t => t.id === G.playerTeamId);
-  for (const p of team.roster) p.morale = clamp(p.morale + a.morale, 20, 100);
-  team.finance.fanBase = clamp(team.finance.fanBase + a.fanbase, 0.15, 1.0);
-  pc.current++;
-  if (pc.current >= pc.questions.length) { G.pressConference = null; render(); } else render();
-}
-function maybeStartPressConference() {
-  if (!G.playerTeamId) return;
-  if (G.league.currentRound === 0) return;
-  if (G.league.currentRound % 10 !== 0) return;
-  if (G.league.currentRound >= G.league.schedule.length) return;
-  G.pressConference = generatePressConference();
-}
 
 /* ============================================================
    ЛИДЕРЫ / ТАБЛИЦА / СИМ
