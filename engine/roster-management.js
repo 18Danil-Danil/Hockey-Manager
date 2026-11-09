@@ -90,7 +90,7 @@ function suggestTraining() {
 function putOnWaivers(playerId) {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   const p = team.roster.find(x => x.id === playerId); if (!p || p.status === 'tryout') return;
-  if ((team.waiversUsed || 0) >= 3) { alert('Лимит: 3 игрока за сезон'); return; }
+  if ((team.waiversUsed || 0) >= 3) { showToast('Лимит: 3 игрока за сезон'); return; }
   team.waiversUsed = (team.waiversUsed || 0) + 1;
   G.league.waivers.push({ player: p, fromTeamId: team.id, expiresRound: G.league.currentRound + 2 });
   team.roster = team.roster.filter(x => x.id !== playerId); p.status = 'waivers';
@@ -149,17 +149,17 @@ function executeMultiTrade(myIds, theirIds, aiTeamId, myCash = 0, theirCash = 0)
   return { success: true };
 }
 function proposeMultiTrade() {
-  if (isTradeDeadlinePassed()) { alert('Трансферный дедлайн закрыт'); return; }
+  if (isTradeDeadlinePassed()) { showToast('Трансферный дедлайн закрыт'); return; }
   const myIds = Array.from(document.querySelectorAll('.trade-my-pick:checked')).map(el => Number(el.value));
   const theirIds = Array.from(document.querySelectorAll('.trade-their-pick:checked')).map(el => Number(el.value));
   const aiTeamId = G.tradeTargetTeamId;
   const myCash = Number(document.getElementById('my-cash')?.value || 0);
   const theirCash = Number(document.getElementById('their-cash')?.value || 0);
-  if (!myIds.length && !myCash) { alert('Выбери хотя бы одного игрока или деньги'); return; }
-  if (!theirIds.length && !theirCash) { alert('Выбери хотя бы одного игрока соперника или деньги'); return; }
-  if (!aiTeamId) { alert('Выбери команду соперника'); return; }
+  if (!myIds.length && !myCash) { showToast('Выбери хотя бы одного игрока или деньги'); return; }
+  if (!theirIds.length && !theirCash) { showToast('Выбери хотя бы одного игрока соперника или деньги'); return; }
+  if (!aiTeamId) { showToast('Выбери команду соперника'); return; }
   const r = executeMultiTrade(myIds, theirIds, aiTeamId, myCash, theirCash);
-  if (r.success) { alert('Обмен состоялся!'); render(); } else alert('Обмен отклонён: ' + (r.error || ''));
+  if (r.success) { showToast('Обмен состоялся!'); render(); } else showToast('Обмен отклонён: ' + (r.error || ''));
 }
 function setTradeTeam(teamId) { G.tradeTargetTeamId = Number(teamId); render(); }
 function generateAITradeOffer() {
@@ -189,8 +189,8 @@ function acceptAITradeOffer(offerId) {
   const myTeam = G.league.teams.find(t => t.id === G.playerTeamId);
   const aiTeam = G.league.teams.find(t => t.id === offer.fromTeamId);
   if (!myTeam || !aiTeam) { G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId); render(); return; }
-  if (!offer.theyWant.every(id => myTeam.roster.some(p => p.id === id))) { alert('Игрок не в твоей команде'); G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId); render(); return; }
-  if (!offer.theyOffer.every(id => aiTeam.roster.some(p => p.id === id))) { alert('Игрок не в команде соперника'); G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId); render(); return; }
+  if (!offer.theyWant.every(id => myTeam.roster.some(p => p.id === id))) { showToast('Игрок не в твоей команде'); G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId); render(); return; }
+  if (!offer.theyOffer.every(id => aiTeam.roster.some(p => p.id === id))) { showToast('Игрок не в команде соперника'); G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId); render(); return; }
   const myOut = myTeam.roster.filter(p => offer.theyWant.includes(p.id));
   const theirOut = aiTeam.roster.filter(p => offer.theyOffer.includes(p.id));
   myTeam.roster = myTeam.roster.filter(p => !offer.theyWant.includes(p.id)).concat(theirOut);
@@ -198,7 +198,7 @@ function acceptAITradeOffer(offerId) {
   myTeam.lines = null; aiTeam.lines = null;
   syncLines(myTeam); syncLines(aiTeam);
   G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId);
-  alert('Обмен принят!'); render();
+  showToast('Обмен принят!'); render();
 }
 function declineAITradeOffer(offerId) { G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId); render(); }
 function runAITransfers() {
