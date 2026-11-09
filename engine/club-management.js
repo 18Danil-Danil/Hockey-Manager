@@ -61,7 +61,7 @@ function initAcademy(team) {
 function searchForTalent() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   if (!team) return;
-  if (team.finance.balance < 5) { alert('Нужно 5 млн ₽'); return; }
+  if (team.finance.balance < 5) { showToast('Нужно 5 млн ₽'); return; }
   team.finance.balance -= 5; team.finance.expenses.operations += 5;
   const lvl = team.infrastructure.youthAcademy;
   const isStar = rng() < 0.10;
@@ -75,8 +75,8 @@ function searchForTalent() {
 function sendScoutMission() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   if (!team) return;
-  if (team.scoutMission && team.scoutMission.active) { alert('Скаут уже в миссии'); return; }
-  if (team.finance.balance < 2) { alert('Нужно 2 млн ₽'); return; }
+  if (team.scoutMission && team.scoutMission.active) { showToast('Скаут уже в миссии'); return; }
+  if (team.finance.balance < 2) { showToast('Нужно 2 млн ₽'); return; }
   team.finance.balance -= 2; team.finance.expenses.operations += 2;
   team.scoutMission = { active: true, endsRound: G.league.currentRound + 5, reported: false };
   addInboxMessage('scout', 'Скаут', 'Скаут отправлен', 'Скаут отправился в поездку. Отчёт через 5 туров.', []);
