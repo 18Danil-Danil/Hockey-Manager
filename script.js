@@ -44,68 +44,6 @@ function getTeamBySlug(slug) { return G.league.teams.find(t => t.slug === slug);
 const { FIRST, LAST, SKATER_ATTRS, GOALIE_ATTRS, ATTR_LABELS, NATS } = window.PLAYER_DATA;
 let _idCounter = 1;
 function nextId() { return _idCounter++; }
-function overallFromAttrs(attrs, isG) {
-  if (isG) return Math.round(attrs.reflexes*0.3 + attrs.positioning*0.3 + attrs.glove*0.15 + attrs.stick*0.15 + attrs.iq*0.1);
-  return Math.round(attrs.skating*0.15 + attrs.shooting*0.20 + attrs.passing*0.20 + attrs.defense*0.20 + attrs.physical*0.10 + attrs.iq*0.15);
-}
-function contractFor(ovr, age) {
-  let base = Math.pow(Math.max(0, ovr - 60) / 30, 2) * 22;
-  if (age <= 23) base *= 0.55; else if (age >= 30) base *= 0.9;
-  const salary = Math.max(0.5, Math.round(base * 10) / 10);
-  return {
-    salary, years: randInt(1, 5),
-    bonusGoal: Math.round((0.02 + Math.max(0, ovr - 60) * 0.002) * 100) / 100,
-    bonusGames: Math.round((0.08 + Math.max(0, ovr - 60) * 0.008) * 10) / 10,
-    bonusPlayoff: Math.round((0.3 + Math.max(0, ovr - 60) * 0.03) * 10) / 10,
-    bonusMvp: Math.round((0.8 + Math.max(0, ovr - 60) * 0.05) * 10) / 10,
-    bonusTopScorer: Math.round((0.4 + Math.max(0, ovr - 60) * 0.03) * 10) / 10,
-  };
-}
-function pickAge(targetOvr) {
-  if (targetOvr >= 88) return randInt(23, 32);
-  if (targetOvr >= 80) return randInt(21, 34);
-  if (targetOvr >= 72) return randInt(20, 35);
-  return randInt(19, 35);
-}
-function generateAttrPot(attrs, age, isG) {
-  const list = isG ? GOALIE_ATTRS : SKATER_ATTRS;
-  const bonus = age <= 21 ? randInt(8, 18) : age <= 23 ? randInt(3, 10) : age <= 26 ? randInt(0, 4) : 0;
-  const pot = {};
-  for (const a of list) pot[a] = clamp(attrs[a] + bonus + randInt(-2, 4), 40, 99);
-  return pot;
-}
-function pickCharacter() { return pickWeighted(Object.keys(CHARACTER_WEIGHTS), k => CHARACTER_WEIGHTS[k]); }
-function genPlayer(position, targetOvr, opts = {}) {
-  const isG = position === 'G';
-  const age = pickAge(targetOvr);
-  const attrs = {};
-  const pool = isG ? GOALIE_ATTRS : SKATER_ATTRS;
-  for (const a of pool) attrs[a] = clamp(Math.round(gauss(targetOvr, 4)), 40, 99);
-  const ovr = overallFromAttrs(attrs, isG);
-  const attrPot = generateAttrPot(attrs, age, isG);
-  const nat = opts.nationality || (rng() < 0.85 ? 'Россия' : pick(NATS.slice(5)));
-  return {
-    id: nextId(), name: pick(FIRST) + ' ' + pick(LAST), position, age, attrs, attrPot, nationality: nat,
-    ovr, pot: overallFromAttrs(attrPot, isG),
-    morale: randInt(65, 90), form: randInt(55, 85),
-    character: opts.character || pickCharacter(),
-    contract: opts.contract || contractFor(ovr, age),
-    stats: null, playoffStats: null,
-    careerStats: { seasons: 0, gp: 0, goals: 0, assists: 0, points: 0, wins: 0, shutouts: 0 },
-    seasonHistory: [],
-    seasonGoal: null,
-    status: opts.status || 'contract',
-    tryoutGames: opts.tryoutGames || 0,
-    developmentFocus: null, onTradeBlock: false,
-    injury: null, fatigue: 0,
-    injuryPolicy: null,
-    goalieStreak: 0, lastGameBad: false,
-    playingThroughPain: false,
-    mentorName: null,
-    isStarAcademy: false,
-    lastIndTraining: -10,
-  };
-}
 function ensurePlayoffStats(p) {
   if (!p.playoffStats) {
     if (p.position === 'G') p.playoffStats = { gp: 0, wins: 0, losses: 0, otl: 0, saves: 0, shotsAgainst: 0, goalsAgainst: 0, shutouts: 0 };
