@@ -62,7 +62,7 @@ function loadGame() {
       if (!t.rivals) t.rivals = [];
       if (!t.logo) { const meta = VHL_TEAMS.find(m => m.id === t.id); t.logo = meta ? meta.logo : ''; }
       if (t.sponsorFlow === undefined) { const meta = VHL_TEAMS.find(m => m.id === t.id); t.sponsorFlow = meta ? meta.sponsorFlow : 3; }
-      if (t.govSupport === undefined) t.govSupport = meta ? meta.govSupport : 2;
+      if (t.govSupport === undefined) { const meta = VHL_TEAMS.find(m => m.id === t.id); t.govSupport = meta ? meta.govSupport : 2; }
       t.waiversUsed = t.waiversUsed || 0;
       t.bench = t.bench || [];
       if (!Array.isArray(t.sponsors)) t.sponsors = [];
