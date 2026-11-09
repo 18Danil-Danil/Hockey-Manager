@@ -299,7 +299,7 @@ function acquireYouthPlayer(team, youthTeamId, playerId) {
   const player = youthTeam?.roster.find(item => item.id === playerId);
   if (!player) return { success: false, error: 'Игрок уже недоступен или перешёл в другую команду' };
   if (team.roster.some(item => item.id === player.id)) return { success: false, error: 'Игрок уже в твоём составе' };
-  const ownSystem = (youthTeam.seniorLinks || []).includes(team.id);
+  const ownSystem = false; // Справочная связь с клубом не даёт автоматического права на бесплатный переход.
   const foreigners = team.roster.filter(item => item.nationality !== 'Россия').length;
   if (player.nationality !== 'Россия' && foreigners >= 3) return { success: false, error: 'Превысится лимит легионеров (3)' };
   const price = ownSystem ? 0 : youthTransferPrice(player, youthLeague.id);
