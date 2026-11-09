@@ -26,7 +26,7 @@ function render() {
   stopLiveAnimation();
 
   if (!G.playerTeamId) {
-    root.innerHTML = renderFreeAgentScreen() + renderModal() + renderTeamModal() + renderInjuryPromptModal() + renderOpeningCupModal() + renderRoundResultsModal();
+    root.innerHTML = renderFreeAgentScreen() + renderModal() + renderTeamModal() + renderInjuryPromptModal() + renderOpeningCupModal() + renderRoundResultsModal() + renderYouthPlayerModal();
     return;
   }
 
