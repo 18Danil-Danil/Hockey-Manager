@@ -22,8 +22,16 @@
     return stack;
   }
 
-  window.showToast = function showToast(message, type = 'info', duration = 3600) {
-    const kind = Object.prototype.hasOwnProperty.call(ICONS, type) ? type : 'info';
+  function inferType(message) {
+    const value = String(message ?? '').toLowerCase();
+    if (/ошибк|отклонён|не удалось|не найден|нельзя|недостаточно|отказ/.test(value)) return 'error';
+    if (/успешно|состоялся|принят|продлено|расторгнуто|реабилитация:|найден талант|отправлен|^\+\d/.test(value)) return 'success';
+    if (/лимит|дедлайн|нужно \d|выбери|уже в миссии|контракт длинный/.test(value)) return 'warning';
+    return 'info';
+  }
+
+  window.showToast = function showToast(message, type = null, duration = 3600) {
+    const kind = Object.prototype.hasOwnProperty.call(ICONS, type) ? type : inferType(message);
     const stack = getToastStack();
     const toast = document.createElement('div');
     toast.className = 'toast ' + kind;
