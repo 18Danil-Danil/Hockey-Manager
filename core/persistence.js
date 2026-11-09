@@ -4,7 +4,7 @@
 const SAVE_KEY = 'hockey_save_v2';
 
 function saveGame() {
-  if (!G.league) return;
+  if (!G.league) return false;
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       league: G.league, playerTeamId: G.playerTeamId, activeTab: G.activeTab, screen: G.screen,
@@ -14,7 +14,15 @@ function saveGame() {
       lastRegularChampionId: G.lastRegularChampionId, lastCupHolderId: G.lastCupHolderId, lastFinalistId: G.lastFinalistId,
       seed: getSeed(),  // ⚙️ ФИКС #9
     }));
-  } catch (e) {}
+    return true;
+  } catch (e) {
+    // Не скрываем ошибки хранилища: игрок должен знать, что прогресс не сохранён.
+    if (typeof showToast === 'function' && document.visibilityState !== 'hidden') {
+      showToast('Не удалось сохранить карьеру. Проверьте свободное место и настройки браузера.', 'error', 6000);
+    }
+    console.error('Ошибка сохранения карьеры:', e);
+    return false;
+  }
 }
 
 function loadGame() {
@@ -54,7 +62,7 @@ function loadGame() {
       if (!t.rivals) t.rivals = [];
       if (!t.logo) { const meta = VHL_TEAMS.find(m => m.id === t.id); t.logo = meta ? meta.logo : ''; }
       if (t.sponsorFlow === undefined) { const meta = VHL_TEAMS.find(m => m.id === t.id); t.sponsorFlow = meta ? meta.sponsorFlow : 3; }
-      if (t.govSupport === undefined) { const meta = VHL_TEAMS.find(m => m.id === t.id); t.govSupport = meta ? meta.govSupport : 2; }
+      if (t.govSupport === undefined) t.govSupport = meta ? meta.govSupport : 2;
       t.waiversUsed = t.waiversUsed || 0;
       t.bench = t.bench || [];
       if (!Array.isArray(t.sponsors)) t.sponsors = [];
@@ -95,3 +103,13 @@ function loadGame() {
   } catch (e) { return false; }
 }
 function clearSave() { try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem('hockey_save_v1'); } catch (e) {} }
+
+// Мобильные браузеры могут выгружать вкладку при переключении приложений.
+// Сохраняем карьеру при уходе со страницы, но не перезаписываем её
+// промежуточной статистикой незавершённого LIVE-матча.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden' && !G.liveMatch) saveGame();
+});
+window.addEventListener('pagehide', () => {
+  if (!G.liveMatch) saveGame();
+});
