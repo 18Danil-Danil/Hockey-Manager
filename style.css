@@ -223,7 +223,9 @@ select:focus { outline: none; border-color: #ff6b35; }
 .live-controls .btn { margin: 0; min-width: 60px; text-align: center; }
 .live-controls .btn.active { background: #ff6b35; color: #0f1117; }
 .live-feed { background: #1a1e2a; border-radius: 8px; padding: 12px 16px; max-height: 220px; overflow-y: auto; font-family: 'SF Mono', Consolas, monospace; font-size: 12px; line-height: 1.7; }
-.live-feed-item { padding: 2px 0; border-bottom: 1px solid #232838; }
+.live-feed-item { padding: 3px 8px; border-bottom: 1px solid #232838; border-left: 3px solid transparent; }
+.live-feed-item.side-home { border-left-color: #ff6b35; background: rgba(255,107,53,0.07); }
+.live-feed-item.side-away { border-left-color: #60a5fa; background: rgba(96,165,250,0.07); }
 .live-feed-item:last-child { border-bottom: none; }
 .live-feed-item .lfi-time { color: #7a8299; margin-right: 8px; }
 .live-feed-item.goal { color: #4ade80; font-weight: 700; }
