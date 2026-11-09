@@ -20,5 +20,7 @@ const G = {
   injuryPrompt: null,
   skipInjuryPrompt: false,
   openingCupModal: null,
+  lastRoundResults: null,
+  lastRoundNumber: null,
   liveMatch: null,
 };
