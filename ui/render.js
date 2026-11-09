@@ -497,7 +497,7 @@ function renderYouthLeagues() {
   html += '<div class="inbox-filter"><button class="' + (leagueId === 'MHL' ? 'active' : '') + '" onclick="setYouthLeague(\'MHL\')">МХЛ · Молодёжный чемпионат</button><button class="' + (leagueId === 'RHL' ? 'active' : '') + '" onclick="setYouthLeague(\'RHL\')">РХЛ · Молодёжное первенство</button></div>';
   html += '<div class="subtitle">Сезон ' + league.season + ' · Тур ' + league.currentRound + ' из ' + league.schedule.length + ' · Команд: ' + league.teams.length + '</div>';
   html += '<div class="progress-bar"><div style="width:' + progress + '%"></div></div>';
-  html += '<div style="margin:12px 0"><button class="btn" ' + (completed ? 'disabled' : '') + ' onclick="simYouthRound(\'' + leagueId + '\'); render();">▶ Симулировать тур</button></div>';
+  html += '<div class="subtitle">⏩ Молодёжные лиги перематываются автоматически вместе с основной лигой. Используйте кнопки «Симулировать тур» или «Симулировать сезон» в основном календаре.</div>';
   if (completed && table.length) html += '<div class="champion">🏆 Победитель регулярного чемпионата: ' + table[0].name + '</div>';
   html += '<h2>Турнирная таблица</h2><table><thead><tr><th>#</th><th>Команда</th><th>И</th><th>В</th><th>ВО</th><th>ПО</th><th>П</th><th>О</th><th>ЗШ</th><th>ЗП</th></tr></thead><tbody>';
   table.forEach((team, index) => {
