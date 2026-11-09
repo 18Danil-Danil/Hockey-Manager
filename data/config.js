@@ -25,13 +25,13 @@ DIFFICULTIES: {
     startBalancePct: 0.50, sponsorMult: 0.70, boardRequirement: 4,
     boardPatience: 1, startReputation: 25, salaryCapPct: 0.45,
   },
-};
+},
 
 CHARACTERS: {
   leader:   { key: 'leader',   label: 'Лидер',        cls: 'char-leader',   desc: 'Вдохновляет команду. +1 мораль всем при победе, −1 при поражении. Снижает конфликты.' },
   worker:   { key: 'worker',   label: 'Трудяга',      cls: 'char-worker',   desc: 'Форма растёт быстрее, но устаёт на 20% быстрее.' },
   egoist:   { key: 'egoist',   label: 'Эгоист',       cls: 'char-egoist',   desc: '+5% к голам. −2 морали, если не в топ-6 или команда проигрывает.' },
   calm:     { key: 'calm',     label: 'Хладнокровный', cls: 'char-calm',    desc: 'Не падает мораль от поражений (только от личных провалов), но и не растёт от побед.' },
-};
-CHARACTER_WEIGHTS: { leader: 0.25, worker: 0.30, egoist: 0.20, calm: 0.25 };
+},
+CHARACTER_WEIGHTS: { leader: 0.25, worker: 0.30, egoist: 0.20, calm: 0.25 },
 };
