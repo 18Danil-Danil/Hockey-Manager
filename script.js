@@ -21,19 +21,9 @@
    ============================================================ */
 
 /* ============================================================
-   RNG
+   RNG / ОБЩИЕ МАТЕМАТИЧЕСКИЕ ФУНКЦИИ
    ============================================================ */
-let _seed = 20241111;
-function setSeed(s) { _seed = Math.max(1, Math.floor(s)); }
-function rng() { _seed = (_seed * 16807) % 2147483647; return (_seed - 1) / 2147483646; }
-function randInt(a, b) { return Math.floor(rng() * (b - a + 1)) + a; }
-function pick(arr) { return arr[Math.floor(rng() * arr.length)]; }
-function gauss(m, sd) { const u = 1 - rng(), v = rng(); return m + sd * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
-function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
-function poisson(lambda) { const L = Math.exp(-lambda); let k = 0, p = 1; do { k++; p *= rng(); } while (p > L); return k - 1; }
-function pickWeighted(items, weightFn) { let total = 0; for (const it of items) total += weightFn(it); if (total <= 0) return pick(items); let r = rng() * total; for (const it of items) { r -= weightFn(it); if (r <= 0) return it; } return items[items.length - 1]; }
-function timeToSec(t) { const [m, s] = t.split(':').map(Number); return m * 60 + s; }
-function randomTime() { return `${randInt(1, 19)}:${String(randInt(0, 59)).padStart(2, '0')}`; }
+const { setSeed, getSeed, rng, randInt, pick, gauss, clamp, poisson, pickWeighted, timeToSec, randomTime } = window.GAME_RNG;
 
 /* ============================================================
    КОНСТАНТЫ: СЛОЖНОСТЬ / ХАРАКТЕРЫ
@@ -3939,7 +3929,7 @@ function saveGame() {
       selectedDifficulty: G.selectedDifficulty, noFireMode: G.noFireMode, career: G.career,
       careerOffers: G.careerOffers, freeAgentOffers: G.freeAgentOffers,
       lastRegularChampionId: G.lastRegularChampionId, lastCupHolderId: G.lastCupHolderId, lastFinalistId: G.lastFinalistId,
-      seed: _seed,  // ⚙️ ФИКС #9
+      seed: getSeed(),  // ⚙️ ФИКС #9
     }));
   } catch (e) {}
 }
@@ -3953,7 +3943,7 @@ function loadGame() {
     G.standingsSort = data.standingsSort || { key: 'pts', dir: 'desc' };
     _idCounter = data.idCounter || 1;
     // ⚙️ ФИКС #9: восстанавливаем RNG seed
-    _seed = data.seed || 20241111;
+    setSeed(data.seed || 20241111);
     G.selectedDifficulty = data.selectedDifficulty || 'normal';
     G.noFireMode = data.noFireMode || false;
     G.career = data.career || { reputation: 50, history: [] };
