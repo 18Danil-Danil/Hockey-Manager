@@ -23,4 +23,5 @@ const G = {
   lastRoundResults: null,
   lastRoundNumber: null,
   liveMatch: null,
+  youthPlayerModal: null,
 };
