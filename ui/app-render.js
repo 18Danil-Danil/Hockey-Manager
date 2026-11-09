@@ -47,6 +47,7 @@ function render() {
     G.activeTab === 'staff' ? renderStaff() :
     G.activeTab === 'infrastructure' ? renderInfrastructure() :
     G.activeTab === 'academy' ? renderAcademy() :
+    G.activeTab === 'youth' ? renderYouthLeagues() :
     G.activeTab === 'finance' ? renderFinance() :
     G.activeTab === 'career' ? renderCareer() :
     G.activeTab === 'playoffs' ? renderPlayoffs() :
