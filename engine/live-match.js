@@ -248,7 +248,7 @@ function liveGoal(side) {
   const assistNames = assisters.map(a => a.name).join(', ');
   const sideName = side === 'home' ? G.league.teams.find(t => t.id === lm.homeId).name : G.league.teams.find(t => t.id === lm.awayId).name;
   const txt = `ГОЛ! ${scorer.name} (${scorer.position})${assisters.length ? ` — ассист: ${assistNames}` : ''} [${sideName}]`;
-  livePushEvent({ type: 'goal', text: txt, time: liveFmtTime(lm.timeLeft), period: lm.period });
+  livePushEvent({ type: 'goal', side, text: txt, time: liveFmtTime(lm.timeLeft), period: lm.period });
 
   const goalX = side === 'home' ? 195 : 5;
   lm.positions.puck.x = goalX;
@@ -283,6 +283,7 @@ function livePenalty(side) {
   const sideName = side === 'home' ? G.league.teams.find(t => t.id === lm.homeId).name : G.league.teams.find(t => t.id === lm.awayId).name;
   livePushEvent({
     type: 'penalty',
+    side,
     text: `${isMajor ? '5 мин (мажор)' : '2 мин'}: ${p.name} (${p.position}) [${sideName}] — ${reason}.`,
     time: liveFmtTime(lm.timeLeft), period: lm.period,
   });
