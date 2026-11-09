@@ -135,6 +135,39 @@ function renderStandings() {
   return `${controls}<h2>Турнирная таблица</h2><table><thead><tr>${sh('gp','#')}${sh('pts','Команда')}${sh('gp','И')}${sh('w','В')}${sh('l','П')}${sh('otl','ПО')}${sh('pts','О')}${sh('gf','ЗШ')}${sh('ga','ЗП')}${sh('diff','Р')}</tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+
+function closeRoundResults() {
+  G.lastRoundResults = null;
+  G.lastRoundNumber = null;
+  render();
+}
+function renderRoundResultsModal() {
+  if (!G.lastRoundResults || !G.lastRoundResults.length) return '';
+  const rows = G.lastRoundResults.map(res => {
+    const home = G.league.teams.find(t => t.id === res.homeId);
+    const away = G.league.teams.find(t => t.id === res.awayId);
+    if (!home || !away) return '';
+    const isMe = res.homeId === G.playerTeamId || res.awayId === G.playerTeamId;
+    const homeWon = res.hg > res.ag;
+    const scoreColor = homeWon ? '#4ade80' : '#ef4444';
+    return `<div class="game-row ${isMe ? 'player-game' : ''}" style="padding:10px 8px;margin:4px 0">
+      <span class="away" style="flex:1;text-align:right">${away.name}</span>
+      <span class="score" style="min-width:76px;text-align:center;font-weight:800;color:${scoreColor}">${res.ag} : ${res.hg}${res.ot ? '<span class="ot-tag">ОТ</span>' : ''}</span>
+      <span style="flex:1">${home.name}</span>
+      ${isMe ? '<span class="tag" style="margin-left:6px">Ваш клуб</span>' : ''}
+    </div>`;
+  }).join('');
+  return `<div class="modal-overlay" onclick="if(event.target===this) closeRoundResults();">
+    <div class="modal" style="max-width:620px;max-height:85vh;overflow-y:auto">
+      <button class="close-btn" onclick="closeRoundResults()">✕</button>
+      <h1 style="font-size:22px;margin-bottom:6px">🏒 Итоги тура ${G.lastRoundNumber || ''}</h1>
+      <div class="subtitle" style="margin-bottom:14px">Все результаты игрового дня · матч вашего клуба выделен</div>
+      ${rows}
+      <div style="margin-top:16px;text-align:center"><button class="btn" onclick="closeRoundResults()">Продолжить</button></div>
+    </div>
+  </div>`;
+}
+
 function renderGames() {
   if (G.selectedGamePbp) {
     const game = G.selectedGamePbp; const home = G.league.teams.find(t => t.id === game.homeId); const away = G.league.teams.find(t => t.id === game.awayId);
