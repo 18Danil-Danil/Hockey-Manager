@@ -33,6 +33,15 @@ function generateAttrPot(attrs, age, isG) {
   return pot;
 }
 function pickCharacter() { return pickWeighted(Object.keys(CHARACTER_WEIGHTS), k => CHARACTER_WEIGHTS[k]); }
+function pickPlayerNationality() {
+  const weights = window.PLAYER_DATA.NATIONALITY_WEIGHTS;
+  return pickWeighted(Object.keys(weights), nationality => weights[nationality]);
+}
+function generatePlayerName(nationality) {
+  const pool = window.PLAYER_DATA.NAME_POOLS[nationality];
+  if (!pool || !pool.first?.length || !pool.last?.length) return pick(FIRST) + ' ' + pick(LAST);
+  return pick(pool.first) + ' ' + pick(pool.last);
+}
 function genPlayer(position, targetOvr, opts = {}) {
   const isG = position === 'G';
   const age = pickAge(targetOvr);
@@ -41,9 +50,9 @@ function genPlayer(position, targetOvr, opts = {}) {
   for (const a of pool) attrs[a] = clamp(Math.round(gauss(targetOvr, 4)), 40, 99);
   const ovr = overallFromAttrs(attrs, isG);
   const attrPot = generateAttrPot(attrs, age, isG);
-  const nat = opts.nationality || (rng() < 0.85 ? 'Россия' : pick(NATS.slice(5)));
+  const nat = opts.nationality || pickPlayerNationality();
   return {
-    id: nextId(), name: pick(FIRST) + ' ' + pick(LAST), position, age, attrs, attrPot, nationality: nat,
+    id: nextId(), name: generatePlayerName(nat), position, age, attrs, attrPot, nationality: nat,
     ovr, pot: overallFromAttrs(attrPot, isG),
     morale: randInt(65, 90), form: randInt(55, 85),
     character: opts.character || pickCharacter(),
