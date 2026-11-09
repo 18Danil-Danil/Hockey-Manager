@@ -28,7 +28,7 @@ function isMyGameInRound() {
 
 function startMyLiveMatch() {
   const myGame = isMyGameInRound();
-  if (!myGame) { alert('В этом туре у твоей команды нет матча'); return; }
+  if (!myGame) { showToast('В этом туре у твоей команды нет матча'); return; }
   if (G.liveMatch) return;
   startLiveMatch(myGame[0], myGame[1], false);
 }
