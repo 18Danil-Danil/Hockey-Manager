@@ -103,6 +103,26 @@ function normalizeYouthLeagues() {
   youth.graduates = youth.graduates || [];
   youth.transferLog = youth.transferLog || [];
   youth.promotionHistory = youth.promotionHistory || [];
+  // Миграция сохранений, созданных до появления общего рынка выпускников.
+  youth.graduates = youth.graduates.map(item => {
+    if (!item.player) return item;
+    const player = item.player;
+    player.status = 'ufa';
+    player.contract = player.contract || contractFor(player.ovr, player.age);
+    player.youthGraduated = {
+      formerTeamId: item.formerTeamId,
+      formerTeamName: item.formerTeamName,
+      season: item.season,
+    };
+    if (!G.league.freeAgents.some(candidate => candidate.id === player.id)) G.league.freeAgents.push(player);
+    return {
+      playerId: player.id, name: player.name, position: player.position,
+      age: player.age, ovr: player.ovr, formerTeamId: item.formerTeamId,
+      formerTeamName: item.formerTeamName, season: item.season,
+      status: item.status || 'available',
+      signedByTeamId: null, signedByTeamName: null,
+    };
+  });
   for (const league of Object.values(youth.leagues || {})) {
     if (!Array.isArray(league.teams)) league.teams = [];
     if (!Array.isArray(league.schedule) || !league.schedule.length) league.schedule = makeSchedule(league.teams);
