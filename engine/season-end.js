@@ -54,6 +54,7 @@ function getPlayoffResult(team, playoffs) {
   return null;
 }
 function endSeason() {
+  finishYouthSeason();
   const sorted = standingsSorted(); const p = G.league.playoffs;
   const regularChampion = sorted[0];
   const awards = computeAwards();
