@@ -618,7 +618,8 @@ function updateLiveClock() {
   if (feedEl) {
     const html = lm.events.slice(0, 30).map(ev => {
       const cls = ev.type === 'goal' ? 'goal' : ev.type === 'penalty' ? 'penalty' : ev.type === 'period' ? 'period' : 'shot';
-      return `<div class="live-feed-item ${cls}"><span class="lfi-time">[${ev.time || '—'}]</span>${ev.text}</div>`;
+      const sideCls = ev.side === 'home' ? 'side-home' : ev.side === 'away' ? 'side-away' : '';
+      return `<div class="live-feed-item ${cls} ${sideCls}"><span class="lfi-time">[${ev.time || '—'}]</span>${ev.text}</div>`;
     }).join('');
     if (feedEl.dataset.sig !== String(lm.events.length) + '|' + (lm.events[0]?.text || '')) {
       feedEl.innerHTML = html;
