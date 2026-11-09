@@ -644,10 +644,10 @@ function renderModal() {
     </div>
   </div>`;
 }
-function handleExtend(playerId, years) { const r = extendContract(playerId, years); if (r.success) alert(`Продлено! ЗП: ${r.salary} млн на ${years} лет`); else if (r.reason === 'contract too long') alert('Контракт длинный'); else alert(`Отказ. Запрос: ${r.salary} млн`); render(); }
-function handleRehab(playerId, games) { const r = rehabPlayer(playerId, games); if (r.success) alert(`Реабилитация: ${r.gamesSkipped} игр. Стоимость: ${r.cost} млн`); else alert('Ошибка: ' + r.error); render(); }
-function handleIndTraining(playerId, attr) { const r = individualTraining(playerId, attr); if (r.success) alert(`+1 к ${ATTR_LABELS[r.attr]}`); else alert('Ошибка: ' + r.error); render(); }
-function handleRelease(playerId) { if (!confirm('Точно разорвать контракт? Компенсация 50% остатка зарплаты.')) return; const r = releasePlayer(playerId); if (r.success) alert(`Расторгнуто. Компенсация: ${r.cost} млн`); else alert('Ошибка: ' + r.error); G.popupPlayerId = null; render(); }
+function handleExtend(playerId, years) { const r = extendContract(playerId, years); if (r.success) showToast(`Продлено! ЗП: ${r.salary} млн на ${years} лет`); else if (r.reason === 'contract too long') showToast('Контракт длинный'); else showToast(`Отказ. Запрос: ${r.salary} млн`); render(); }
+function handleRehab(playerId, games) { const r = rehabPlayer(playerId, games); if (r.success) showToast(`Реабилитация: ${r.gamesSkipped} игр. Стоимость: ${r.cost} млн`); else showToast('Ошибка: ' + r.error); render(); }
+function handleIndTraining(playerId, attr) { const r = individualTraining(playerId, attr); if (r.success) showToast(`+1 к ${ATTR_LABELS[r.attr]}`); else showToast('Ошибка: ' + r.error); render(); }
+function handleRelease(playerId) { if (!confirm('Точно разорвать контракт? Компенсация 50% остатка зарплаты.')) return; const r = releasePlayer(playerId); if (r.success) showToast(`Расторгнуто. Компенсация: ${r.cost} млн`); else showToast('Ошибка: ' + r.error); G.popupPlayerId = null; render(); }
 function extendContract(playerId, years) {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   const p = team.roster.find(x => x.id === playerId);
