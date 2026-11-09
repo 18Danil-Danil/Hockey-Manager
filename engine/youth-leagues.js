@@ -262,9 +262,21 @@ function simYouthRound(leagueId, silent = false) {
   return roundResults;
 }
 
-function simYouthRoundBoth(silent = true) {
-  simYouthRound('MHL', silent);
-  simYouthRound('RHL', silent);
+function simYouthRoundBoth(silent = true, completedMainRounds = null) {
+  const youth = G.league?.youth;
+  if (!youth) return;
+  const mainTotal = Math.max(1, G.league.schedule?.length || 1);
+  const completed = Math.max(0, Math.min(mainTotal,
+    completedMainRounds == null ? G.league.currentRound + 1 : completedMainRounds));
+  for (const leagueId of ['MHL', 'RHL']) {
+    const league = youth.leagues?.[leagueId];
+    if (!league || !league.schedule?.length) continue;
+    // Распределяем туры молодёжного календаря по всей длине основной регулярки.
+    // Так все соревнования доходят до конца одновременно, даже если число туров различается.
+    const targetRound = Math.min(league.schedule.length,
+      Math.round(completed / mainTotal * league.schedule.length));
+    while (league.currentRound < targetRound) simYouthRound(leagueId, true);
+  }
 }
 
 function simulateYouthSeasonRemainder(league) {
