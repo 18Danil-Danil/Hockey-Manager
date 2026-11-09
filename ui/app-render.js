@@ -26,7 +26,7 @@ function render() {
   stopLiveAnimation();
 
   if (!G.playerTeamId) {
-    root.innerHTML = renderFreeAgentScreen() + renderModal() + renderTeamModal() + renderInjuryPromptModal() + renderOpeningCupModal();
+    root.innerHTML = renderFreeAgentScreen() + renderModal() + renderTeamModal() + renderInjuryPromptModal() + renderOpeningCupModal() + renderRoundResultsModal();
     return;
   }
 
@@ -53,7 +53,7 @@ function render() {
     G.activeTab === 'history' ? renderHistory() :
     renderRoster();
 
-  root.innerHTML = renderHeader() + renderTabs() + content + renderModal() + renderTeamModal() + renderPressConferenceModal() + renderPlayoffInjuryModal() + renderInjuryPromptModal() + renderOpeningCupModal();
+  root.innerHTML = renderHeader() + renderTabs() + content + renderModal() + renderTeamModal() + renderPressConferenceModal() + renderPlayoffInjuryModal() + renderInjuryPromptModal() + renderOpeningCupModal() + renderRoundResultsModal();
   document.querySelectorAll('.tab').forEach(el => { el.onclick = () => { G.activeTab = el.dataset.tab; render(); }; });
   saveGame();
 }
