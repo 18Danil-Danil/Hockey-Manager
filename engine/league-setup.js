@@ -19,6 +19,7 @@ function genLeague() {
     aiTradeOffers: [], allTimeLeaders: { skaters: {} }, inbox: [], news: [],
     retiredPlayers: [], openingCup: null, retroMatch: null,
     tradeDeadlineNotified: false,
+    youth: initYouthLeagues(),
   };
   teams.forEach(t => { t.staff.headCoach = { id: nextId(), role: 'headCoach', name: pick(FIRST) + ' ' + pick(LAST), level: 2, xp: 0, salary: 2.4, age: randInt(38, 58) }; });
   teams.forEach(t => { const cands = t.roster.filter(p => p.ovr >= 65 && p.age >= 22 && p.age <= 32); if (cands.length) pick(cands).onTradeBlock = true; });
