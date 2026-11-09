@@ -96,7 +96,7 @@ function endSeason() {
   G.league.teams.forEach(t => progressAcademy(t));
   G.league.teams.forEach(t => {
     t.roster = t.roster.filter(pl => {
-      if (pl.contract.years <= 0) { if (rng() < 0.8) { pl.contract = contractFor(pl.ovr, pl.age); pl.status = 'contract'; return true; } G.league.freeAgents.push(pl); pl.status = 'ufa'; return false; }
+      if (pl.contract.years <= 0) { if (rng() < 0.8) { pl.contract = contractFor(pl.ovr, pl.age); pl.status = 'contract'; return true; } G.league.freeAgents.push(pl); pl.status = 'ufa'; markYouthGraduateAvailable(pl); return false; }
       return true;
     });
     while (t.roster.length < 22) t.roster.push(genPlayer(pick(['C','LW','RW','D','G']), randInt(58, 74)));
