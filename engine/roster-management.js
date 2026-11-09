@@ -3,12 +3,22 @@
    РЫНОК / ОБМЕНЫ / ДРАФТ ОТКАЗОВ
    ============================================================ */
 function generateFreeAgents(count = 30) { const agents = []; for (let i = 0; i < count; i++) agents.push(genPlayer(pick(['C','LW','RW','D','G']), randInt(60, 82), { status: 'ufa' })); return agents; }
+function markYouthGraduateSigned(player, team, method = 'contract') {
+  if (!player || !player.youthGraduated || !G.league.youth) return;
+  const record = (G.league.youth.graduates || []).find(item => item.playerId === player.id);
+  if (!record) return;
+  record.status = 'signed';
+  record.signedByTeamId = team.id;
+  record.signedByTeamName = team.name;
+  record.signingMethod = method;
+}
 function signFreeAgent(team, player) {
   const idx = G.league.freeAgents.indexOf(player); if (idx === -1) return false;
   if (team.finance.balance < 0) return false;
   const foreigners = team.roster.filter(p => p.nationality !== 'Россия').length;
   if (player.nationality !== 'Россия' && foreigners >= 3) return false;
   G.league.freeAgents.splice(idx, 1); player.status = 'contract'; team.roster.push(player);
+  markYouthGraduateSigned(player, team, 'contract');
   if (player.ovr >= 78) addNews('signing', `${team.name} подписал ${player.name} (${player.position}, ${player.ovr})`, 2);
   return true;
 }
@@ -16,7 +26,9 @@ function offerTryout(team, player) {
   const idx = G.league.freeAgents.indexOf(player); if (idx === -1) return false;
   G.league.freeAgents.splice(idx, 1); player.status = 'tryout'; player.tryoutGames = 10;
   player.contract = { salary: 0.5, years: 0, bonusGoal: 0, bonusGames: 0, bonusPlayoff: 0, bonusMvp: 0, bonusTopScorer: 0 };
-  team.roster.push(player); return true;
+  team.roster.push(player);
+  markYouthGraduateSigned(player, team, 'tryout');
+  return true;
 }
 function hireStaff(candId) {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
