@@ -2,34 +2,130 @@
    СОХРАНЕНИЕ (с seed — фикс #9)
    ============================================================ */
 const SAVE_KEY = 'hockey_save_v2';
+const SAVE_DB_NAME = 'hockey_manager_storage';
+const SAVE_DB_VERSION = 1;
+const SAVE_DB_STORE = 'saves';
+let _saveDbPromise = null;
+let _saveTimer = null;
+let _saveQueue = Promise.resolve();
+let _saveWaiters = [];
+let _saveNotify = false;
+let _lastSaveError = null;
 
-function saveGame() {
-  if (!G.league) return false;
+function openSaveDatabase() {
+  if (!('indexedDB' in window)) return Promise.resolve(null);
+  if (_saveDbPromise) return _saveDbPromise;
+  _saveDbPromise = new Promise(resolve => {
+    try {
+      const request = indexedDB.open(SAVE_DB_NAME, SAVE_DB_VERSION);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(SAVE_DB_STORE)) db.createObjectStore(SAVE_DB_STORE, { keyPath: 'id' });
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => { _saveDbPromise = null; resolve(null); };
+      request.onblocked = () => { _saveDbPromise = null; resolve(null); };
+    } catch (error) { _saveDbPromise = null; resolve(null); }
+  });
+  return _saveDbPromise;
+}
+
+async function readStoredSave() {
+  const db = await openSaveDatabase();
+  if (db) {
+    const value = await new Promise(resolve => {
+      try {
+        const tx = db.transaction(SAVE_DB_STORE, 'readonly');
+        const request = tx.objectStore(SAVE_DB_STORE).get('career');
+        request.onsuccess = () => resolve(request.result?.value || null);
+        request.onerror = () => resolve(null);
+        tx.onabort = () => resolve(null);
+      } catch (error) { resolve(null); }
+    });
+    if (value) return value;
+  }
+  try { return localStorage.getItem(SAVE_KEY) || localStorage.getItem('hockey_save_v1'); }
+  catch (error) { return null; }
+}
+
+async function writeStoredSave(serialized) {
+  const db = await openSaveDatabase();
+  if (db) {
+    const stored = await new Promise(resolve => {
+      try {
+        const tx = db.transaction(SAVE_DB_STORE, 'readwrite');
+        tx.objectStore(SAVE_DB_STORE).put({ id: 'career', value: serialized, updatedAt: Date.now() });
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => resolve(false);
+        tx.onabort = () => resolve(false);
+      } catch (error) { resolve(false); }
+    });
+    if (stored) { _lastSaveError = null; return true; }
+  }
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({
-      league: G.league, playerTeamId: G.playerTeamId, activeTab: G.activeTab, screen: G.screen,
-      standingsSort: G.standingsSort, idCounter: _idCounter,
-      selectedDifficulty: G.selectedDifficulty, noFireMode: G.noFireMode, career: G.career,
-      careerOffers: G.careerOffers, freeAgentOffers: G.freeAgentOffers,
-      lastRegularChampionId: G.lastRegularChampionId, lastCupHolderId: G.lastCupHolderId, lastFinalistId: G.lastFinalistId,
-      lastRoundResults: G.lastRoundResults, lastRoundNumber: G.lastRoundNumber,
-      seed: getSeed(),  // ⚙️ ФИКС #9
-    }));
+    localStorage.setItem(SAVE_KEY, serialized);
+    _lastSaveError = null;
     return true;
-  } catch (e) {
-    // Не скрываем ошибки хранилища: игрок должен знать, что прогресс не сохранён.
-    if (typeof showToast === 'function' && document.visibilityState !== 'hidden') {
-      showToast('Не удалось сохранить карьеру. Проверьте свободное место и настройки браузера.', 'error', 6000);
-    }
-    console.error('Ошибка сохранения карьеры:', e);
+  } catch (error) {
+    _lastSaveError = error;
+    console.error('Ошибка сохранения карьеры:', error);
     return false;
   }
 }
 
-function loadGame() {
+function getSaveSnapshot() {
+  return {
+    league: G.league, playerTeamId: G.playerTeamId, activeTab: G.activeTab, screen: G.screen,
+    standingsSort: G.standingsSort, idCounter: _idCounter,
+    selectedDifficulty: G.selectedDifficulty, noFireMode: G.noFireMode, career: G.career,
+    careerOffers: G.careerOffers, freeAgentOffers: G.freeAgentOffers,
+    lastRegularChampionId: G.lastRegularChampionId, lastCupHolderId: G.lastCupHolderId, lastFinalistId: G.lastFinalistId,
+    lastRoundResults: G.lastRoundResults, lastRoundNumber: G.lastRoundNumber,
+    seed: getSeed(),
+  };
+}
+
+async function saveGame(options = {}) {
+  if (!G.league) return false;
+  const promise = new Promise(resolve => _saveWaiters.push(resolve));
+  _saveNotify = _saveNotify || options.notify === true;
+  if (_saveTimer) clearTimeout(_saveTimer);
+  const runSave = () => {
+    _saveTimer = null;
+    const waiters = _saveWaiters.splice(0);
+    const notify = _saveNotify;
+    _saveNotify = false;
+    const task = _saveQueue.then(async () => {
+      try { return await writeStoredSave(JSON.stringify(getSaveSnapshot())); }
+      catch (error) { _lastSaveError = error; console.error('Ошибка сохранения карьеры:', error); return false; }
+    });
+    _saveQueue = task.catch(() => false);
+    task.then(success => {
+      waiters.forEach(resolve => resolve(success));
+      if (notify && typeof showToast === 'function') {
+        if (success) showToast('Игра успешно сохранена', 'success');
+        else showToast('Не удалось сохранить игру. Хранилище браузера недоступно или переполнено.', 'error', 7000);
+      }
+    });
+  };
+  if (options.immediate) runSave();
+  else _saveTimer = setTimeout(runSave, 900);
+  return promise;
+}
+
+async function manualSaveGame() {
+  const success = await saveGame({ immediate: true, notify: false });
+  if (success) showToast('Игра успешно сохранена', 'success');
+  else showToast('Не удалось сохранить игру. Попробуйте освободить место в браузере.', 'error', 7000);
+  return success;
+}
+
+async function loadGame() {
   try {
-    const raw = localStorage.getItem(SAVE_KEY); if (!raw) return false;
-    const data = JSON.parse(raw); if (!data || !data.league) return false;
+    const raw = await readStoredSave();
+    if (!raw) return false;
+    const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if (!data || !data.league) return false;
     G.league = data.league;
     G.league.season = normalizeSeasonLabel(G.league.season);
     (G.league.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
@@ -117,17 +213,24 @@ function loadGame() {
       });
     });
     G.league.freeAgents.forEach(p => { ensureStats(p); if (!p.careerStats) p.careerStats = { seasons: 0, gp: 0, goals: 0, assists: 0, points: 0, wins: 0, shutouts: 0 }; if (!p.character) p.character = 'calm'; });
+    // Сохраняем мигрированное состояние в IndexedDB, если оно было загружено из старого localStorage.
+    if (!await openSaveDatabase().then(db => !!db)) saveGame();
+    else if (typeof raw === 'string' && !localStorageHasCurrentSave()) saveGame();
     return true;
-  } catch (e) { return false; }
+  } catch (e) { console.error('Ошибка загрузки сохранения:', e); return false; }
 }
-function clearSave() { try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem('hockey_save_v1'); } catch (e) {} }
+function localStorageHasCurrentSave() {
+  try { return !!localStorage.getItem(SAVE_KEY); } catch (error) { return false; }
+}
+function clearSave() {
+  try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem('hockey_save_v1'); } catch (e) {}
+}
 
 // Мобильные браузеры могут выгружать вкладку при переключении приложений.
-// Сохраняем карьеру при уходе со страницы, но не перезаписываем её
-// промежуточной статистикой незавершённого LIVE-матча.
+// Сохранение запускается без задержки при уходе со страницы.
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden' && !G.liveMatch) saveGame();
+  if (document.visibilityState === 'hidden' && !G.liveMatch) saveGame({ immediate: true });
 });
 window.addEventListener('pagehide', () => {
-  if (!G.liveMatch) saveGame();
+  if (!G.liveMatch) saveGame({ immediate: true });
 });
