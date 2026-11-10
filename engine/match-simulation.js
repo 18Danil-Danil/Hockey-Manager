@@ -39,9 +39,9 @@ function updateGoalieStatus(team, playedGoalie, ga, shotsAgainst) {
 }
 
 /* Быстрый расчёт xG на матч (не для LIVE). Упрощённые штрафы per-period. */
-function computeXG(home, away, hTM, aTM) {
-  const hAtt = teamAttackRating(home), aAtt = teamAttackRating(away);
-  const hDef = teamDefenseRating(home), aDef = teamDefenseRating(away);
+function computeXG(home, away, hTM, aTM, homeLineup = getLineup(home), awayLineup = getLineup(away)) {
+  const hAtt = teamAttackRating(home, homeLineup), aAtt = teamAttackRating(away, awayLineup);
+  const hDef = teamDefenseRating(home, homeLineup), aDef = teamDefenseRating(away, awayLineup);
   const hLineMods = teamLineMods(home), aLineMods = teamLineMods(away);
   let xgH = clamp(2.8 + (hAtt - aDef) * 0.08 + 0.3, 0.4, 7.5);
   let xgA = clamp(2.8 + (aAtt - hDef) * 0.08, 0.4, 7.5);
