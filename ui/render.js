@@ -883,8 +883,9 @@ function renderModal() {
   const transferHtml=transfers.length?'<div class="profile-transfer-list">'+transfers.slice().reverse().map(t=>'<div><span>'+t.season+'</span><b>'+t.from+' → '+t.to+'</b></div>').join('')+'</div>':'<div class="profile-empty">Зафиксированных переходов между клубами пока нет.</div>';
   const canExtend=isMyTeam&&contract.years<=1&&p.status==='contract', canRelease=isMyTeam&&p.status==='contract';
   const releaseCost=Math.round(contract.salary*Math.max(0,contract.years)*.5*10)/10;
-  const ownYouth=isMyTeam&&p.age>=YOUTH_RULES.minAge&&p.age<=YOUTH_RULES.maxAge?getOwnYouthTeam(team):null;
-  const canSendToYouth=!!ownYouth&&p.status==='contract';
+  const ownYouthTeams=isMyTeam&&p.age>=YOUTH_RULES.minAge&&p.age<=YOUTH_RULES.maxAge?getOwnYouthTeams(team):[];
+  const canSendToYouth=ownYouthTeams.length>0&&p.status==='contract';
+  const youthTransferButtons=ownYouthTeams.map(item => '<button class="btn secondary" onclick="handleSendToYouth('+p.id+', \''+item.team.id+'\')">🎓 Перевести в '+item.team.name+' ('+(item.league.id==='MHL'?'МХЛ':'РХЛ')+')</button>').join('');
   const canIndTraining=isMyTeam&&(G.league.currentRound-(p.lastIndTraining||-10))>=5;
   const attrButtons=canIndTraining?attrs.filter(a=>p.attrs[a]<p.attrPot[a]).map(a=>'<button class="btn small secondary" onclick="handleIndTraining('+p.id+', \''+a+'\')">'+ATTR_LABELS[a]+'</button>').join(''):'';
   const canRehab=isMyTeam&&injured&&(G.league.currentRound-(team.lastRehabRound||-10))>=5, rehabCost=Math.min(3,p.injury?p.injury.gamesLeft:0);
@@ -906,16 +907,16 @@ function renderModal() {
     (mentor?'<section class="profile-section"><span class="profile-eyebrow">РАЗВИТИЕ</span><h2>Наставник</h2><p class="profile-mentor">🎓 '+mentor.name+'</p></section>':'')+
     (canIndTraining&&attrButtons?'<section class="profile-section"><span class="profile-eyebrow">ТРЕНИРОВКИ</span><h2>Индивидуальная работа</h2><p class="profile-muted">0,5 млн ₽ · раз в 5 туров</p><div class="profile-action-group profile-training-actions">'+attrButtons+'</div></section>':'')+
     (canRehab?'<section class="profile-section"><span class="profile-eyebrow">МЕДИЦИНА</span><h2>Реабилитация</h2><p class="profile-muted">Восстановление за '+rehabCost+' млн ₽</p><button class="btn" onclick="handleRehab('+p.id+',3)">🏥 Реабилитация</button></section>':'')+
-    (canSendToYouth?'<section class="profile-section"><span class="profile-eyebrow">АКАДЕМИЯ</span><h2>Молодёжная команда</h2><button class="btn secondary" onclick="handleSendToYouth('+p.id+')">🎓 Перевести в '+ownYouth.team.name+'</button></section>':'')+
+    (canSendToYouth?'<section class="profile-section"><span class="profile-eyebrow">АКАДЕМИЯ</span><h2>Молодёжная команда</h2><div class="profile-action-group">'+youthTransferButtons+'</div></section>':'')+
     '</aside></div></div></div>';
 }
 function handleExtend(playerId, years) { const r = extendContract(playerId, years); if (r.success) showToast(`Продлено! ЗП: ${r.salary} млн на ${years} лет`); else if (r.reason === 'contract too long') showToast('Контракт длинный'); else showToast(`Отказ. Запрос: ${r.salary} млн`); render(); }
 function handleRehab(playerId, games) { const r = rehabPlayer(playerId, games); if (r.success) showToast(`Реабилитация: ${r.gamesSkipped} игр. Стоимость: ${r.cost} млн`); else showToast('Ошибка: ' + r.error); render(); }
 function handleIndTraining(playerId, attr) { const r = individualTraining(playerId, attr); if (r.success) showToast(`+1 к ${ATTR_LABELS[r.attr]}`); else showToast('Ошибка: ' + r.error); render(); }
 function handleRelease(playerId) { if (!confirm('Точно разорвать контракт? Компенсация 50% остатка зарплаты.')) return; const r = releasePlayer(playerId); if (r.success) showToast(`Расторгнуто. Компенсация: ${r.cost} млн`); else showToast('Ошибка: ' + r.error); G.popupPlayerId = null; render(); }
-function handleSendToYouth(playerId) {
+function handleSendToYouth(playerId, youthTeamId = null) {
   const team = G.league.teams.find(item => item.id === G.playerTeamId);
-  const result = sendSeniorPlayerToYouth(team, playerId);
+  const result = sendSeniorPlayerToYouth(team, playerId, youthTeamId);
   if (!result.success) { showToast(result.error); return; }
   G.popupPlayerId = null;
   showToast(result.player.name + ' переведён в ' + result.youthTeam.name, 'success');
