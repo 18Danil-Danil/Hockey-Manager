@@ -71,7 +71,7 @@ function bindTeamSelect() {
 function renderHeader() {
   if (!G.playerTeamId) {
     const rep = G.career?.reputation ?? 50;
-    return `<div class="topbar"><div><h1>💼 Свободный агент</h1><div class="subtitle">Репутация: <b>${Math.round(rep)}/100</b>${G.career?.lastTeamName ? ` · Последний клуб: ${G.career.lastTeamName}` : ''}</div></div><div><button class="btn danger" onclick="if(confirm('Начать заново?')) newGame()">🔄 Новая игра</button></div></div>`;
+    return `<div class="topbar"><div><h1>💼 Свободный агент</h1><div class="subtitle">Репутация: <b>${Math.round(rep)}/100</b>${G.career?.lastTeamName ? ` · Последний клуб: ${G.career.lastTeamName}` : ''}</div></div><div><button class="btn secondary" onclick="manualSaveGame()">💾 Сохранить</button> <button class="btn danger" onclick="if(confirm('Начать заново?')) newGame()">🔄 Новая игра</button></div></div>`;
   }
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   const playerSal = team.roster.reduce((s, p) => s + p.contract.salary, 0);
@@ -85,7 +85,7 @@ function renderHeader() {
   const diffLabel = G.difficulty?.label || '🟡 Средний';
   const streakTxt = team.streak && team.streak.count >= 2 ? ` · ${team.streak.type === 'w' ? '🔥' : '❄️'} ${team.streak.count}` : '';
   const noFireTxt = G.career?.noFireMode ? ' · 🚫' : '';
-  return `<div class="topbar"><div><h1 style="display:flex;align-items:center">${logoHeader(team)}${team.name}</h1><div class="subtitle">Сезон ${G.league.season} · ${diffLabel}${noFireTxt} · ${r.w}-${r.l}-${r.otl} · ${r.pts} очк. · #${myRank} · ЗП: ${Math.round(playerSal + staffSal)}/${team.finance.salaryCap} · Баланс: <b style="color:${bal >= 0 ? '#4ade80' : '#ef4444'}">${Math.round(bal)} млн ₽</b> · Реп: ${Math.round(rep)}/100${injured ? ` · 🚑 ${injured}` : ''}${offers ? ` · 💼 ${offers}` : ''}${unread ? ` · ✉ ${unread}` : ''}${streakTxt}</div></div><div><button class="btn secondary" onclick="if(confirm('Сбросить и начать заново?')) newGame()">🔄 Новая игра</button></div></div>`;
+  return `<div class="topbar"><div><h1 style="display:flex;align-items:center">${logoHeader(team)}${team.name}</h1><div class="subtitle">Сезон ${G.league.season} · ${diffLabel}${noFireTxt} · ${r.w}-${r.l}-${r.otl} · ${r.pts} очк. · #${myRank} · ЗП: ${Math.round(playerSal + staffSal)}/${team.finance.salaryCap} · Баланс: <b style="color:${bal >= 0 ? '#4ade80' : '#ef4444'}">${Math.round(bal)} млн ₽</b> · Реп: ${Math.round(rep)}/100${injured ? ` · 🚑 ${injured}` : ''}${offers ? ` · 💼 ${offers}` : ''}${unread ? ` · ✉ ${unread}` : ''}${streakTxt}</div></div><div><button class="btn secondary" onclick="manualSaveGame()">💾 Сохранить</button> <button class="btn secondary" onclick="if(confirm('Сбросить и начать заново?')) newGame()">🔄 Новая игра</button></div></div>`;
 }
 function renderTabs() {
   const unread = unreadInboxCount();
