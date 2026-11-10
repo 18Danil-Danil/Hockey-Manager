@@ -74,8 +74,8 @@ function newGame() {
   G.liveMatch = null;
   render();
 }
-function start() {
-  if (loadGame()) { ensureAllLines(); initAISponsors(); render(); return; }
+async function start() {
+  if (await loadGame()) { ensureAllLines(); initAISponsors(); render(); return; }
   setSeed(20241111);
   G.difficulty = DIFFICULTIES.normal;
   G.career = { reputation: 50, history: [], noFireMode: false };
