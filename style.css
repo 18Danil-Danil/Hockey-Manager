@@ -571,3 +571,74 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 @media(max-width:900px){.dashboard-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.dashboard-welcome{align-items:flex-start;padding:18px}.dashboard-rank{flex-basis:82px;padding-left:12px}.dashboard-rank strong{font-size:34px}.dashboard-main-grid{grid-template-columns:1fr}.dashboard-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-panel{padding:15px}}
 @media(max-width:390px){.dashboard-kpi{padding:12px}.dashboard-kpi span{font-size:8px}.dashboard-kpi strong{font-size:19px}.dashboard-welcome{gap:8px}.dashboard-rank{flex-basis:70px;padding-left:8px}.dashboard-rank span{font-size:8px}}
+
+
+/* ROSTER MANAGEMENT — PLAYER CARDS */
+.roster-management{display:flex;flex-direction:column;gap:18px}
+.roster-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding:22px 24px;border:1px solid var(--ui-line);border-radius:15px;background:radial-gradient(circle at 82% 10%,rgba(255,120,79,.15),transparent 30%),linear-gradient(120deg,#1c3048,#142238)}
+.roster-hero h2{margin:5px 0;color:#f4f7fc;font-size:25px;letter-spacing:-.03em}
+.roster-hero p{margin:0;color:var(--ui-muted);font-size:12px}
+.roster-eyebrow{color:#ff9b79;font-size:9px;font-weight:800;letter-spacing:.14em}
+.roster-sort-control{display:flex;flex-direction:column;gap:6px;min-width:160px}
+.roster-sort-control label{color:var(--ui-muted);font-size:10px;font-weight:700}
+.roster-sort-control select{padding:9px 11px;border:1px solid var(--ui-line);border-radius:8px;color:var(--ui-text);background:#111c2c}
+.roster-overview-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.roster-overview-stats>div{display:flex;flex-direction:column;gap:3px;padding:13px 15px;border:1px solid var(--ui-line);border-radius:11px;background:rgba(19,29,46,.85)}
+.roster-overview-stats span{color:var(--ui-muted);font-size:8px;font-weight:800;letter-spacing:.08em}
+.roster-overview-stats b{color:#f2f5fb;font-size:23px;line-height:1.2}
+.roster-overview-stats small{color:var(--ui-muted);font-size:10px}
+.roster-section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:4px 0 -7px}
+.roster-section-heading h3{margin:4px 0 0;color:#f0f4fa;font-size:18px}
+.roster-section-heading h3 small{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;margin-left:5px;padding:0 6px;border-radius:20px;color:#ffb092;background:rgba(255,120,79,.13);font-size:11px}
+.roster-section-heading>span{color:var(--ui-muted);font-size:10px;text-align:right}
+.roster-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.roster-player-card{position:relative;display:flex;flex-direction:column;min-width:0;padding:15px;border:1px solid var(--ui-line);border-radius:13px;background:linear-gradient(145deg,rgba(26,40,61,.97),rgba(15,25,40,.98));box-shadow:0 7px 18px rgba(0,0,0,.1);transition:border-color .16s,transform .16s}
+.roster-player-card:hover{border-color:rgba(255,145,109,.4);transform:translateY(-2px)}
+.roster-player-card.elite{border-top:2px solid #e7bd69}
+.roster-player-card.strong{border-top:2px solid #78b9ee}
+.roster-player-card.developing{border-top:2px solid #697b94}
+.roster-player-card.is-injured{background:linear-gradient(145deg,rgba(67,35,43,.92),rgba(25,25,39,.98))}
+.roster-card-top{display:flex;justify-content:space-between;align-items:center}
+.roster-position{display:inline-flex;align-items:center;justify-content:center;min-width:39px;padding:4px 8px;border-radius:6px;font-size:9px;font-weight:900;letter-spacing:.06em}
+.roster-position.forward{color:#ffc08e;background:rgba(255,145,74,.14)}
+.roster-position.defence{color:#91c8ff;background:rgba(76,151,231,.14)}
+.roster-position.goalie{color:#c6a8ff;background:rgba(161,119,235,.15)}
+.roster-player-age{color:var(--ui-muted);font-size:10px}
+.roster-player-identity{min-height:55px;margin:12px 0 7px}
+.roster-player-name a{color:#f2f5fb;font-size:15px;font-weight:800;text-decoration:none}
+.roster-player-name a:hover{color:#ffad91}
+.roster-player-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:6px}
+.roster-country{color:var(--ui-muted);font-size:9px}
+.roster-rating-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--ui-line);border-bottom:1px solid var(--ui-line)}
+.roster-rating{display:flex;align-items:baseline;gap:4px}
+.roster-rating strong{color:#f7f8fc;font-size:30px;line-height:1}
+.roster-rating small{color:var(--ui-muted);font-size:8px;font-weight:800}
+.roster-rating-caption{display:flex;flex:1;flex-direction:column;gap:4px;color:var(--ui-muted);font-size:9px}
+.roster-potential{color:#85dfa4;font-weight:700}
+.roster-salary{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.roster-salary b{color:#e8edf6;font-size:13px}
+.roster-salary small{color:var(--ui-muted);font-size:8px}
+.roster-player-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:12px 0}
+.roster-player-stats>div{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.roster-player-stats b{color:#eaf0f8;font-size:14px;font-variant-numeric:tabular-nums}
+.roster-player-stats small{color:var(--ui-muted);font-size:7px;font-weight:800;letter-spacing:.04em}
+.roster-player-stats .highlight b{color:#ff9b79}
+.roster-card-bottom{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:auto;padding-top:9px;border-top:1px solid var(--ui-line)}
+.roster-status{font-size:9px;font-weight:700}
+.roster-status.healthy{color:#80dba0}.roster-status.fresh{color:#8dc8ff}.roster-status.tired{color:#f5ce7c}.roster-status.injured{color:#ff9b9b}
+.roster-card-actions{display:flex;gap:5px}
+.roster-card-actions .btn{min-width:31px;padding:5px 7px}
+.roster-empty{padding:20px;border:1px dashed var(--ui-line);border-radius:10px;color:var(--ui-muted);font-size:12px;text-align:center}
+.roster-bench{padding:17px;border:1px solid var(--ui-line);border-radius:13px;background:rgba(16,25,40,.8)}
+.roster-bench .roster-section-heading{margin:0 0 10px}
+.roster-bench-list{display:flex;flex-direction:column}
+.roster-bench-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--ui-line)}
+.roster-bench-row>div{display:flex;flex-direction:column;gap:3px}
+.roster-bench-row b{color:#eef2f8;font-size:12px}
+.roster-bench-row span{color:var(--ui-muted);font-size:10px}
+.roster-bench-row .btn{margin:0;white-space:nowrap}
+.roster-footer-note{padding:11px 14px;border-radius:9px;color:var(--ui-muted);background:rgba(255,255,255,.035);font-size:10px}
+.roster-footer-note b{color:#ffad91}
+@media(max-width:1050px){.roster-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.roster-hero{align-items:stretch;flex-direction:column;padding:18px}.roster-sort-control{min-width:0}.roster-overview-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.roster-card-grid{grid-template-columns:1fr}.roster-section-heading{align-items:flex-start;flex-direction:column;gap:5px}.roster-section-heading>span{text-align:left}.roster-player-card{padding:14px}}
+@media(max-width:380px){.roster-overview-stats>div{padding:11px}.roster-overview-stats b{font-size:20px}.roster-player-name a{font-size:14px}}
