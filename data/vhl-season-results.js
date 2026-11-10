@@ -128,7 +128,7 @@ window.VHL_SEASON_RESULTS = [
       { historicalId: 'izhstal-izhevsk', clubName: 'Ижсталь', regularPlace: 26, games: 52, wins: 11, overtimeWins: 1, shootoutWins: 3, shootoutLosses: 7, overtimeLosses: 2, losses: 28, goalsFor: 100, goalsAgainst: 163, points: 50, playoffStage: 'missed' },
       { historicalId: 'ryazan', clubName: 'ХК Рязань', regularPlace: 27, games: 52, wins: 9, overtimeWins: 1, shootoutWins: 2, shootoutLosses: 7, overtimeLosses: 1, losses: 32, goalsFor: 112, goalsAgainst: 196, points: 41, playoffStage: 'missed' }
     ]
-  },,
+  },
   {
     season: '2013/14',
     leagueParticipants: 26,
