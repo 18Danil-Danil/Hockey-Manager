@@ -18,7 +18,7 @@ function extractFunction(name, nextName) {
 // A normal non-goal shot must be credited symmetrically to either side.
 const advanceSource = extractFunction('liveAdvance', 'liveGoal');
 const liveAdvance = new Function(
-  'G', 'rng', 'liveIsPP', 'liveGoal', 'livePenalty', 'pickWeighted',
+  'G', 'rng', 'liveIsPP', 'liveGoal', 'livePenalty', 'pickWeighted', 'pick',
   'shotWeight', 'ensureStats', 'ensurePlayoffStats', 'livePushEvent',
   'liveFmtTime', 'homeTeamNameShort', 'awayTeamNameShort',
   'LIVE_PENALTY_RATE', 'LIVE_PP_BOOST', 'LIVE_PK_NERF', 'clamp',
@@ -52,7 +52,7 @@ const ensureStats = p => {
 };
 const advance = liveAdvance(
   { liveMatch: state.lm }, rng, () => false, () => {}, () => {},
-  players => players[0], () => 1, ensureStats, ensureStats,
+  players => players[0], arr => arr[0], () => 1, ensureStats, ensureStats,
   ev => state.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
   0.0065, 2.6, 0.55, (v, min, max) => Math.max(min, Math.min(max, v))
 );
