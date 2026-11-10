@@ -12,7 +12,7 @@ window.VHL_HISTORICAL_SEASONS = [
   { season: '2016/17', participants: 26, champion: 'Динамо', championCity: 'Балашиха', finalist: 'Торпедо', finalistCity: 'Усть-Каменогорск', regularWinner: 'Торпедо', regularWinnerCity: 'Усть-Каменогорск', status: 'completed' },
   { season: '2017/18', participants: 27, champion: 'Динамо', championCity: 'Санкт-Петербург', finalist: 'СКА-Нева', finalistCity: 'Санкт-Петербург', regularWinner: 'Динамо', regularWinnerCity: 'Санкт-Петербург', status: 'completed' },
   { season: '2018/19', participants: 29, champion: 'Сарыарка', championCity: 'Караганда', finalist: 'Рубин', finalistCity: 'Тюмень', regularWinner: 'СКА-Нева', regularWinnerCity: 'Санкт-Петербург', status: 'completed' },
-  { season: '2019/20', participants: 34, champion: null, championCity: null, finalist: null, finalistCity: null, regularWinner: 'Звезда', regularWinnerCity: 'Москва', seasonWinner: 'Звезда', seasonWinnerCity: 'Москва', status: 'season_awarded_playoffs_cancelled', note: 'Кубок Петрова не разыгран: плей-офф остановлен в четвертьфинале. 03.07.2020 ФХР признала «Звезду» победителем Всероссийского соревнования сезона 2019/20.' },
+  { season: '2019/20', participants: 34, champion: null, championCity: null, finalist: null, finalistCity: null, regularWinner: 'Звезда', regularWinnerCity: 'Москва', seasonWinner: 'Звезда', seasonWinnerCity: 'Москва', seasonSilver: 'Динамо СПб', seasonSilverCity: 'Санкт-Петербург', seasonBronze: 'СКА-Нева', seasonBronzeCity: 'Санкт-Петербург', status: 'season_awarded_playoffs_cancelled', note: 'Кубок Петрова не разыгран: плей-офф остановлен в четвертьфинале. 03.07.2020 ФХР признала «Звезду» победителем Всероссийского соревнования сезона 2019/20.' },
   { season: '2020/21', participants: 26, champion: 'Югра', championCity: 'Ханты-Мансийск', finalist: 'Металлург', finalistCity: 'Новокузнецк', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
   { season: '2021/22', participants: 27, champion: 'Рубин', championCity: 'Тюмень', finalist: 'Динамо', finalistCity: 'Санкт-Петербург', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
   { season: '2022/23', participants: 26, champion: 'Химик', championCity: 'Воскресенск', finalist: 'Сокол', finalistCity: 'Красноярск', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
@@ -35,8 +35,8 @@ window.VHL_HISTORICAL_CLUB_HONOURS = {
   'Торпедо-Горький (Нижний Новгород)': { championships: ['2024/25'], regularTitles: [], finals: [] },
   'Ижсталь (Ижевск)': { championships: [], regularTitles: [], finals: ['2014/15', '2015/16'] },
   'Торпедо (Усть-Каменогорск)': { championships: [], regularTitles: ['2016/17'], finals: ['2016/17'] },
-  'Динамо (Санкт-Петербург)': { championships: ['2017/18'], regularTitles: ['2017/18'], finals: ['2021/22'] },
-  'СКА-Нева (Санкт-Петербург)': { championships: [], regularTitles: ['2018/19'], finals: ['2017/18'] },
+  'Динамо (Санкт-Петербург)': { championships: ['2017/18'], regularTitles: ['2017/18'], finals: ['2021/22'], seasonSilvers: ['2019/20'] },
+  'СКА-Нева (Санкт-Петербург)': { championships: [], regularTitles: ['2018/19'], finals: ['2017/18'], seasonBronzes: ['2019/20'] },
   'ТХК (Тверь)': { championships: [], regularTitles: ['2015/16'], finals: [] },
   'Металлург (Новокузнецк)': { championships: [], regularTitles: ['2024/25', '2025/26'], finals: ['2020/21'] },
   'Молот (Пермь)': { championships: [], regularTitles: ['2023/24'], finals: [] },
@@ -49,6 +49,7 @@ window.VHL_HISTORICAL_CLUB_HONOURS = {
 // Названия команд в интерфейсе не меняются; ключи справочника — исторические идентификаторы.
 const VHL_HONOURS_KEY_BY_SLUG = {
   zvezda: 'Звезда (Москва)',
+  'ska-neva': 'СКА-Нева (Санкт-Петербург)',
   akm: 'АКМ (Тульская область)',
   'dinamo-spb': 'Динамо (Санкт-Петербург)',
   izhstal: 'Ижсталь (Ижевск)',
@@ -71,7 +72,9 @@ if (Array.isArray(window.VHL_TEAMS)) {
       petrov: [...honours.championships],
       regular: [...honours.regularTitles],
       finals: [...honours.finals],
-      seasonWins: [...(honours.seasonWins || [])]
+      seasonWins: [...(honours.seasonWins || [])],
+      seasonSilvers: [...(honours.seasonSilvers || [])],
+      seasonBronzes: [...(honours.seasonBronzes || [])]
     };
   });
 }
