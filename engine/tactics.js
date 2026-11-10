@@ -1,16 +1,36 @@
 /* ============================================================
    РЕЙТИНГИ / СОСТАВ / ТАКТИКА
    ============================================================ */
-function teamAttackRating(t) {
-  const fs = t.roster.filter(p => p.position !== 'D' && p.position !== 'G' && getEffectiveOvr(p) > 0).sort((a,b) => getEffectiveOvr(b) - getEffectiveOvr(a)).slice(0, 9);
+// Рейтинги строятся по фактическому составу на матч, а не по всему ростеру.
+// Если lineup не передан, получаем его теми же правилами, что использует симуляция.
+function teamAttackRating(t, lineup = getLineup(t)) {
+  const available = Array.isArray(lineup?.forwards)
+    ? lineup.forwards
+    : (Array.isArray(lineup?.skaters) ? lineup.skaters.filter(p => p.position !== 'D' && p.position !== 'G') : []);
+  const fs = available
+    .map(p => ({ player: p, rating: Number(getEffectiveOvr(p)) }))
+    .filter(x => Number.isFinite(x.rating) && x.rating > 0)
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 9);
   if (!fs.length) return 50;
-  return fs.reduce((s, p) => s + getEffectiveOvr(p), 0) / fs.length;
+  return fs.reduce((sum, x) => sum + x.rating, 0) / fs.length;
 }
-function teamDefenseRating(t) {
-  const ds = t.roster.filter(p => p.position === 'D' && getEffectiveOvr(p) > 0).sort((a,b) => getEffectiveOvr(b) - getEffectiveOvr(a)).slice(0, 6);
-  const g = t.roster.filter(p => p.position === 'G' && getEffectiveOvr(p) > 0).sort((a,b) => getEffectiveOvr(b) - getEffectiveOvr(a))[0];
-  const dAvg = ds.length ? ds.reduce((s, p) => s + getEffectiveOvr(p), 0) / ds.length : 50;
-  const gVal = g ? getEffectiveOvr(g) * 0.7 + g.form * 0.3 : 60;
+function teamDefenseRating(t, lineup = getLineup(t)) {
+  const available = Array.isArray(lineup?.defense)
+    ? lineup.defense
+    : (Array.isArray(lineup?.skaters) ? lineup.skaters.filter(p => p.position === 'D') : []);
+  const ds = available
+    .map(p => Number(getEffectiveOvr(p)))
+    .filter(rating => Number.isFinite(rating) && rating > 0)
+    .sort((a, b) => b - a)
+    .slice(0, 6);
+  const dAvg = ds.length ? ds.reduce((sum, rating) => sum + rating, 0) / ds.length : 50;
+  const goalie = lineup?.goalie || null;
+  const goalieOvr = goalie ? Number(getEffectiveOvr(goalie)) : NaN;
+  const goalieForm = goalie && Number.isFinite(Number(goalie.form)) ? Number(goalie.form) : 50;
+  const gVal = Number.isFinite(goalieOvr) && goalieOvr > 0
+    ? goalieOvr * 0.7 + goalieForm * 0.3
+    : 60;
   return dAvg * 0.7 + gVal * 0.3;
 }
 function shouldRestGoalie(starter, backup) {
