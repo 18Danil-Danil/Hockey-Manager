@@ -737,16 +737,69 @@ function renderAllTimeLeaders() {
     table('⭐ Бомбардиры', skaters.slice().sort((a, b) => b.points - a.points).slice(0, 10), ['И', 'Г', 'А', 'О'], e => [e.gp, e.goals, e.assists, e.points]) +
     table('🧤 Вратари', goalies.slice().sort((a, b) => b.wins - a.wins).slice(0, 10), ['И', 'В', 'Сух'], e => [e.gp, e.wins, e.shutouts]);
 }
+function renderClubDirectory() {
+  const clubs = Array.isArray(window.VHL_CLUB_DIRECTORY) ? window.VHL_CLUB_DIRECTORY : [];
+  const activeCount = clubs.filter(c => c.currentTeamSlug).length;
+  const historicCount = clubs.length - activeCount;
+  const safe = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const cards = clubs.map(club => {
+    const rows = (club.seasons || []).slice().sort((a, b) => b.season.localeCompare(a.season));
+    const bestPlace = rows.length ? Math.min(...rows.map(r => r.regularPlace)) : '—';
+    const titles = rows.filter(r => r.playoffStage === 'champion' || r.seasonAward === 'winner').length;
+    const last = rows[0]?.season || '—';
+    const first = rows[rows.length - 1]?.season || '—';
+    const aliases = (club.aliases || []).filter(name => name !== club.name);
+    const status = club.currentTeamSlug ? 'current' : 'historic';
+    const searchText = [club.name, club.id, ...(club.aliases || []), ...(club.historicalIds || [])].join(' ').toLowerCase();
+    const seasonRows = rows.map(row => {
+      const wins = row.wins + row.overtimeWins + row.shootoutWins;
+      const otl = row.overtimeLosses + row.shootoutLosses;
+      const stage = getTeamPlayoffLabel({playoff:row.playoffStage,seasonAward:row.seasonAward});
+      return `<tr><td>${safe(row.season)}</td><td>${safe(row.clubName)}</td><td>${row.regularPlace}</td><td>${row.games}</td><td>${wins}-${row.losses}-${otl}</td><td>${row.points}</td><td>${row.goalsFor}:${row.goalsAgainst}</td><td>${safe(stage)}</td></tr>`;
+    }).join('');
+    return `<article class="club-directory-card" data-status="${status}" data-search="${safe(searchText)}">
+      <div class="directory-card-top"><span class="directory-status ${status}">${club.currentTeamSlug ? 'Клуб в игре' : 'Исторический участник'}</span><span class="directory-seasons">${rows.length} сез.</span></div>
+      <h3>${safe(club.name)}</h3>
+      <div class="directory-years">${first} — ${last}</div>
+      <div class="directory-metrics"><span><b>${bestPlace}</b><small>лучшее место</small></span><span><b>${titles}</b><small>титулов ВХЛ</small></span><span><b>${rows.length}</b><small>сезонов</small></span></div>
+      ${aliases.length ? `<div class="directory-aliases">Названия: ${aliases.map(safe).join(' · ')}</div>` : ''}
+      ${club.note ? `<div class="directory-note">${safe(club.note)}</div>` : ''}
+      <details class="directory-details"><summary>Сезонная история</summary><div class="table-scroll"><table><thead><tr><th>Сезон</th><th>Название клуба</th><th>Место</th><th>И</th><th>В-П-ПО</th><th>О</th><th>Шайбы</th><th>Плей-офф</th></tr></thead><tbody>${seasonRows}</tbody></table></div></details>
+    </article>`;
+  }).join('');
+  return `<div class="directory-intro"><div><h2>🏒 Клубы в истории ВХЛ</h2><p>Все исторические участники лиги за 16 сезонов. Совпадение названий само по себе не означает, что это один клуб.</p></div><div class="directory-count">${clubs.length}<small>исторических карточек</small></div></div>
+    <div class="directory-stats"><div><b>${clubs.length}</b><span>клубов в архиве</span></div><div><b>${activeCount}</b><span>представлены в игре</span></div><div><b>${historicCount}</b><span>другие участники</span></div><div><b>2010/11–2025/26</b><span>охват архива</span></div></div>
+    <div class="directory-tools"><input id="club-directory-search" type="search" placeholder="Найти клуб или прежнее название…" oninput="filterClubDirectory(this.value)" /><select aria-label="Фильтр клубов" onchange="filterClubDirectory(document.getElementById('club-directory-search').value,this.value)"><option value="all">Все клубы</option><option value="current">Клубы текущей игры</option><option value="historic">Остальные участники</option></select><span id="club-directory-count">${clubs.length} из ${clubs.length}</span></div>
+    <div class="club-directory-grid">${cards}</div>`;
+}
+function filterClubDirectory(query, status) {
+  const statusSelect = document.querySelector('.directory-tools select');
+  const selectedStatus = status || (statusSelect ? statusSelect.value : 'all');
+  const term = String(query || '').trim().toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('.club-directory-card').forEach(card => {
+    const matchesText = !term || (card.dataset.search || '').includes(term);
+    const matchesStatus = selectedStatus === 'all' || card.dataset.status === selectedStatus;
+    const show = matchesText && matchesStatus;
+    card.hidden = !show;
+    if (show) visible++;
+  });
+  const counter = document.getElementById('club-directory-count');
+  if (counter) counter.textContent = visible + ' из ' + document.querySelectorAll('.club-directory-card').length;
+}
 function renderHistory() {
-  const hist = G.league.history;
-  if (hist.length === 0) return `<div class="subtitle">История пуста.</div>`;
+  const hist = G.league.history || [];
+  const directoryView = G.clubDirectoryView === 'directory';
+  let html = `<div class="history-view-switch"><button class="btn ${!directoryView ? '' : 'secondary'}" onclick="G.clubDirectoryView='seasons';render();">История карьеры</button><button class="btn ${directoryView ? '' : 'secondary'}" onclick="G.clubDirectoryView='directory';render();">Справочник клубов ВХЛ</button></div>`;
+  if (directoryView) return html + renderClubDirectory();
+  if (hist.length === 0) return html + `<div class="subtitle">История карьеры пока пуста. Справочник клубов ВХЛ доступен на соседней вкладке.</div>`;
   const allTime = allTimeTeamRecords(hist);
-  let html = `<h2>🏆 Сводная таблица</h2><table><thead><tr><th>#</th><th>Команда</th><th>Сезонов</th><th>В</th><th>П</th><th>Очки</th><th>🥇</th><th>🏆</th></tr></thead><tbody>${allTime.map((r, i) => `<tr><td style="color:#7a8299">${i + 1}</td><td>${r.name}</td><td>${r.seasons}</td><td>${r.w}</td><td>${r.l}</td><td style="font-weight:700">${r.pts}</td><td>${r.regular > 0 ? '🥇'.repeat(Math.min(r.regular, 3)) : '—'}</td><td>${r.cups > 0 ? '🏆'.repeat(Math.min(r.cups, 5)) : '—'}</td></tr>`).join('')}</tbody></table>`;
+  html += `<h2>🏆 Сводная таблица</h2><div class="table-scroll"><table><thead><tr><th>#</th><th>Команда</th><th>Сезонов</th><th>В</th><th>П</th><th>Очки</th><th>🥇</th><th>🏆</th></tr></thead><tbody>${allTime.map((r, i) => `<tr><td>${i + 1}</td><td>${r.name}</td><td>${r.seasons}</td><td>${r.w}</td><td>${r.l}</td><td style="font-weight:700">${r.pts}</td><td>${r.regular > 0 ? '🥇'.repeat(Math.min(r.regular, 3)) : '—'}</td><td>${r.cups > 0 ? '🏆'.repeat(Math.min(r.cups, 5)) : '—'}</td></tr>`).join('')}</tbody></table></div>`;
   html += renderAllTimeLeaders();
   hist.slice().reverse().forEach(h => {
     html += `<div class="season-card"><div class="head"><span class="season-num">${h.season}</span><span class="champ">🥇 ${h.regularChampionName} · 🏆 ${h.championName}${h.openingCupWinnerName ? ` · ⚡ ${h.openingCupWinnerName}` : ''}</span></div>`;
     html += `<details><summary>Награды</summary>${renderAwards(h.awards)}</details>`;
-    html += `<details><summary>Таблица</summary><table><thead><tr><th>#</th><th>Команда</th><th>В</th><th>П</th><th>О</th></tr></thead><tbody>${h.standings.map((t, i) => `<tr><td>${i + 1}</td><td>${t.name}</td><td>${t.w}</td><td>${t.l}</td><td>${t.pts}</td></tr>`).join('')}</tbody></table></details>`;
+    html += `<details><summary>Таблица</summary><div class="table-scroll"><table><thead><tr><th>#</th><th>Команда</th><th>В</th><th>П</th><th>О</th></tr></thead><tbody>${h.standings.map((t, i) => `<tr><td>${i + 1}</td><td>${t.name}</td><td>${t.w}</td><td>${t.l}</td><td>${t.pts}</td></tr>`).join('')}</tbody></table></div></details>`;
     html += `</div>`;
   });
   return html;
