@@ -1,6 +1,24 @@
 /* ============================================================
    ИСТОРИЯ КАРЬЕРЫ / ЛИДЕРЫ / НАГРАДЫ / ИТОГИ СЕЗОНА
    ============================================================ */
+function seasonLabelFromNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return String(value || '2026/27');
+  const startYear = 2025 + Math.max(1, Math.floor(number));
+  return `${startYear}/${String(startYear + 1).slice(-2)}`;
+}
+function normalizeSeasonLabel(value) {
+  if (typeof value === 'number' || /^\\d+$/.test(String(value || ''))) return seasonLabelFromNumber(value);
+  return String(value || '2026/27');
+}
+function nextSeasonLabel(value) {
+  const label = normalizeSeasonLabel(value);
+  const match = label.match(/^(\\d{4})\\/(\\d{2})$/);
+  if (!match) return '2027/28';
+  const startYear = Number(match[1]) + 1;
+  return `${startYear}/${String(startYear + 1).slice(-2)}`;
+}
+
 function updateCareerStats(team) {
   for (const p of team.roster) {
     const s = ensureStats(p);
