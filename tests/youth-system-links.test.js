@@ -56,7 +56,19 @@ const seniorSlugs = new Set(seniorWindow.VHL_TEAMS.map(team => team.slug));
 for (const meta of window.YOUTH_CLUBS.teams.filter(team => team.seniorTeamSlug)) {
   assert(seniorSlugs.has(meta.seniorTeamSlug), meta.id + ' points to a missing VHL club slug');
 }
-assert.strictEqual(window.YOUTH_CLUBS.teams.find(team => team.id === 'rhl-kaluga-rockets').org, 'org-independent-kaluga-rockets');
+const kalugaRocketsMeta = window.YOUTH_CLUBS.teams.find(team => team.id === 'rhl-kaluga-rockets');
+assert.strictEqual(kalugaRocketsMeta.org, 'org-kaluga');
+assert.strictEqual(kalugaRocketsMeta.seniorTeamSlug, 'kaluga');
+assert.deepStrictEqual(Array.from(kalugaRocketsMeta.senior), ['Калуга']);
+const kalugaYouth = {
+  id: kalugaRocketsMeta.id,
+  name: kalugaRocketsMeta.name,
+  seniorLinks: kalugaRocketsMeta.senior,
+  seniorTeamSlug: kalugaRocketsMeta.seniorTeamSlug,
+};
+const kalugaSenior = { id: 11, slug: 'kaluga', name: 'Калуга' };
+assert.strictEqual(api.youthTeamBelongsToSeniorClub(kalugaYouth, kalugaSenior), true,
+  'Калужские Ракеты должны быть связаны с ХК Калуга');
 assert.strictEqual(window.YOUTH_CLUBS.teams.find(team => team.id === 'rhl-dynamo-karelia').org, 'org-independent-dynamo-karelia');
 const reactorMeta = window.YOUTH_CLUBS.teams.find(team => team.id === 'mhl-reactor');
 assert.strictEqual(reactorMeta.org, 'org-neftekhimik', 'Reactor belongs to Neftekhimik, not Toros');
@@ -150,13 +162,15 @@ assert.strictEqual(legacyTeam.seniorTeamSlug, 'omskie-krylya',
 assert.strictEqual(legacyTeam.roster[0].youth.parentSeniorClubId, 19);
 assert.strictEqual(legacyTeam.roster[0].youth.parentSeniorClubName, 'Омские Крылья');
 assert.strictEqual(legacyReactor.roster[0].youth.parentSeniorClubId, null);
-assert.strictEqual(legacyKalugaRockets.roster[0].youth.parentSeniorClubId, null);
+assert.strictEqual(legacyKalugaRockets.roster[0].youth.parentSeniorClubId, 11);
+assert.strictEqual(legacyKalugaRockets.roster[0].youth.parentSeniorClubName, 'Калуга');
 assert.strictEqual(legacyReactor.organizationId, 'org-neftekhimik');
 assert.deepStrictEqual(Array.from(legacyReactor.seniorLinks), ['Нефтехимик (КХЛ)']);
 assert.strictEqual(legacyReactor.seniorTeamSlug, null,
   'Reactor must no longer retain the incorrect Toros link in old saves');
-assert.strictEqual(legacyKalugaRockets.organizationId, 'org-independent-kaluga-rockets');
-assert.strictEqual(legacyKalugaRockets.independent, true);
-assert.deepStrictEqual(Array.from(legacyKalugaRockets.seniorLinks), []);
+assert.strictEqual(legacyKalugaRockets.organizationId, 'org-kaluga');
+assert.strictEqual(legacyKalugaRockets.independent, false);
+assert.deepStrictEqual(Array.from(legacyKalugaRockets.seniorLinks), ['Калуга']);
+assert.strictEqual(legacyKalugaRockets.seniorTeamSlug, 'kaluga');
 
 console.log('Youth system links: all checks passed.');
