@@ -44,7 +44,7 @@
 | 2025/26 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/6704/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6996/) |
 | 2024/25 | [Турнирная таблица](https://www.sport-express.net/hockey/L/vhl/2024-2025/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6448/) |
 | 2023/24 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/5601/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5852/) |
-| 2022/23 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/5111/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5257/) |
+| 2022/23 | [Итоговая таблица](https://silasporta.ru/vhl/standings/2022-2023/); [таблица Чемпионата](https://www.championat.com/hockey/_highleague/tournament/5111/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5257/); [официальные медалисты](https://vhlru.ru/lenta/459755/) |
 | 2021/22 | [Итоговая таблица регулярного чемпионата](https://www.championat.com/hockey/_highleague/tournament/4691/table/); [официальный календарь](https://www.vhlru.ru/upload/iblock/012/%D0%9A%D0%B0%D0%BB%D0%B5%D0%BD%D0%B4%D0%B0%D1%80%D1%8C%20%D0%BC%D0%B0%D1%82%D1%87%D0%B5%D0%B8%CC%86%20%D0%9F%D0%B0%D1%80%D0%B8%D0%BC%D0%B0%D1%82%D1%87%20%D0%92%D0%A5%D0%9B-%D0%9A%D0%A8%D0%9F%202021_2022.pdf) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/4887/); [официальные медалисты](https://www.vhlru.ru/lenta/418962/) |
 | 2015/16 | [Итоговая таблица](https://www.championat.com/hockey/_highleague/tournament/1645/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/1731/table/) |
 | 2014/15 | [Официальный путеводитель ВХЛ, итоговая таблица сезона 2014/15](https://www.vhlru.ru/upload/all11_w.pdf); [архивная таблица](https://www.championat.com/hockey/_highleague/tournament/1092/table/) | [Официальный путеводитель ВХЛ](https://www.vhlru.ru/upload/all11_w.pdf); [сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/1220/table/) |
@@ -87,3 +87,11 @@
 - Очковая система: 2 за любую победу, 1 за поражение в овертайме/по буллитам, 0 за поражение в основное время.
 - Чемпион Кубка Петрова — «Рубин»; финалист — «Динамо СПб».
 - Медальные места Всероссийского соревнования: «Рубин» — золото, «Динамо СПб» — серебро, «Югра» — бронза. Медали не заменяют сведения о фактической стадии плей-офф.
+
+
+## Сезон 2022/23: правила интерпретации
+
+- 26 участников, по 50 матчей на команду; всего 650 матчей регулярного чемпионата.
+- Очковая система: 2 за любую победу, 1 за поражение в овертайме/по буллитам, 0 за поражение в основное время.
+- Чемпион Кубка Петрова — «Химик»; финалист — «Сокол».
+- Медальные места Всероссийского соревнования: «Химик» — золото, «Сокол» — серебро, «Металлург» (Новокузнецк) — бронза.
