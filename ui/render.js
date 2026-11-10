@@ -737,7 +737,7 @@ function renderHistory() {
   let html = `<h2>🏆 Сводная таблица</h2><table><thead><tr><th>#</th><th>Команда</th><th>Сезонов</th><th>В</th><th>П</th><th>Очки</th><th>🥇</th><th>🏆</th></tr></thead><tbody>${allTime.map((r, i) => `<tr><td style="color:#7a8299">${i + 1}</td><td>${r.name}</td><td>${r.seasons}</td><td>${r.w}</td><td>${r.l}</td><td style="font-weight:700">${r.pts}</td><td>${r.regular > 0 ? '🥇'.repeat(Math.min(r.regular, 3)) : '—'}</td><td>${r.cups > 0 ? '🏆'.repeat(Math.min(r.cups, 5)) : '—'}</td></tr>`).join('')}</tbody></table>`;
   html += renderAllTimeLeaders();
   hist.slice().reverse().forEach(h => {
-    html += `<div class="season-card"><div class="head"><span class="season-num">Сезон ${h.season}</span><span class="champ">🥇 ${h.regularChampionName} · 🏆 ${h.championName}${h.openingCupWinnerName ? ` · ⚡ ${h.openingCupWinnerName}` : ''}</span></div>`;
+    html += `<div class="season-card"><div class="head"><span class="season-num">${h.season}</span><span class="champ">🥇 ${h.regularChampionName} · 🏆 ${h.championName}${h.openingCupWinnerName ? ` · ⚡ ${h.openingCupWinnerName}` : ''}</span></div>`;
     html += `<details><summary>Награды</summary>${renderAwards(h.awards)}</details>`;
     html += `<details><summary>Таблица</summary><table><thead><tr><th>#</th><th>Команда</th><th>В</th><th>П</th><th>О</th></tr></thead><tbody>${h.standings.map((t, i) => `<tr><td>${i + 1}</td><td>${t.name}</td><td>${t.w}</td><td>${t.l}</td><td>${t.pts}</td></tr>`).join('')}</tbody></table></details>`;
     html += `</div>`;
@@ -855,8 +855,8 @@ function renderTeamModal() {
     ? `<img src="${team.logo}" class="team-logo-big" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="team-logo-fallback" style="display:none">${initials}</div>`
     : `<div class="team-logo-fallback">${initials}</div>`;
   const historyRows = (team.history && team.history.length)
-    ? team.history.map(h => `<tr><td>${h.season}</td><td style="font-weight:700">${h.place}</td><td>${h.pts}</td><td>${h.playoff === 'champion' ? '🏆 чемпион' : h.playoff === 'finalist' ? 'финалист' : h.playoff === 'semifinal' ? '1/2' : h.playoff === 'quarterfinal' ? '1/4' : h.playoff === 'round16' ? '1/8' : h.playoff === 'missed' ? 'не вышел' : '—'}</td></tr>`).join('')
-    : `<tr><td colspan="4" style="color:#7a8299">История клуба начинается с текущего сезона</td></tr>`;
+    ? team.history.map(h => `<tr><td>${h.season}</td><td style="font-weight:700">${h.place}</td><td>${h.w ?? '—'}-${h.l ?? '—'}-${h.otl ?? '—'}</td><td>${h.pts}</td><td>${h.gf ?? '—'}:${h.ga ?? '—'}</td><td>${h.playoff === 'champion' ? '🏆 чемпион' : h.playoff === 'finalist' ? 'финалист' : h.playoff === 'semifinal' ? '1/2' : h.playoff === 'quarterfinal' ? '1/4' : h.playoff === 'round16' ? '1/8' : h.playoff === 'missed' ? 'не вышел' : '—'}</td></tr>`).join('')
+    : `<tr><td colspan="6" style="color:#7a8299">История клуба пополнится после завершения первого сезона в карьере</td></tr>`;
   const trophyRow = (label, arr) => arr && arr.length ? `<div class="attr-row"><span>${label}</span><span style="color:#fbbf24">${arr.join(', ')}</span></div>` : `<div class="attr-row"><span>${label}</span><span style="color:#7a8299">—</span></div>`;
   const trophiesHtml = `<div class="attr-grid">${trophyRow('🏆 Главный трофей ВХЛ', team.trophies.petrov)}${trophyRow('🥇 Регулярка', team.trophies.regular)}${trophyRow('⚡ Матч Открытия', team.trophies.opening)}${trophyRow('🥈 Финалы', team.trophies.finals)}</div>`;
   let topPlayersHtml = `<div class="subtitle" style="font-size:12px">Нет данных</div>`;
