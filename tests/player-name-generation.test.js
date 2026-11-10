@@ -6,20 +6,15 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
+const playerDataSource = fs.readFileSync(path.join(__dirname, '..', 'data/player-data.js'), 'utf8');
 const poolsSource = fs.readFileSync(path.join(__dirname, '..', 'data/player-name-pools.js'), 'utf8');
 const generationSource = fs.readFileSync(path.join(__dirname, '..', 'data/player-generation.js'), 'utf8');
+new Function(playerDataSource);
 new Function(poolsSource);
 new Function(generationSource);
 
-const windowStub = {
-  PLAYER_DATA: {
-    FIRST: ['Иван', 'Пётр'],
-    LAST: ['Иванов', 'Петров'],
-    NAME_POOLS: {
-      Россия: { first: ['Иван', 'Пётр'], last: ['Иванов', 'Петров'] },
-    },
-  },
-};
+const windowStub = {};
+new Function('window', playerDataSource)(windowStub);
 new Function('window', poolsSource)(windowStub);
 
 const randInt = min => min;
