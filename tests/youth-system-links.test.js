@@ -13,8 +13,33 @@ const context = {
   window,
   G: { league: { youth: { leagues: {} } } },
 };
-vm.runInNewContext(source + '\nthis.__exports = { createYouthTeam, youthTeamBelongsToSeniorClub, getOwnYouthTeam, normalizeYouthLeagues };', context);
+vm.runInNewContext(source + '\nthis.__exports = { createYouthTeam, youthTeamBelongsToSeniorClub, getOwnYouthTeam, getOwnYouthTeams, normalizeYouthLeagues };', context);
 const api = context.__exports;
+
+
+const expectedLinks = {
+  'mhl-spartak': 'khimik',
+  'mhl-spartak-max': 'khimik',
+  'mhl-irbis': 'bars',
+  'mhl-steel-foxes': 'magnitka',
+  'mhl-white-bears': 'chelmet',
+  'mhl-avto': 'gornyak',
+  'mhl-red-army': 'zvezda',
+  'mhl-ska-academy': 'ska-vmf',
+  'mhl-ska-1946': 'ska-vmf',
+  'mhl-dynamo-spb': 'dinamo-spb',
+  'rhl-dynamo-576': 'dinamo-spb',
+  'mhl-kuznetskie-medvedi': 'metallurg',
+  'rhl-kristall-saratov': 'kristall',
+};
+for (const [teamId, slug] of Object.entries(expectedLinks)) {
+  const meta = window.YOUTH_CLUBS.teams.find(team => team.id === teamId);
+  assert(meta, 'Missing youth team metadata: ' + teamId);
+  assert.strictEqual(meta.seniorTeamSlug, slug, teamId + ' must link to ' + slug);
+}
+const reactorMeta = window.YOUTH_CLUBS.teams.find(team => team.id === 'mhl-reactor');
+assert.strictEqual(reactorMeta.org, 'org-neftekhimik', 'Reactor belongs to Neftekhimik, not Toros');
+assert.deepStrictEqual(Array.from(reactorMeta.senior), ['Нефтехимик (КХЛ)']);
 
 const omskMeta = window.YOUTH_CLUBS.teams.find(team => team.id === 'mhl-omsk-hawks');
 assert.strictEqual(omskMeta.seniorTeamSlug, 'omskie-krylya', 'Омские Ястребы должны быть привязаны к клубу ВХЛ Омские Крылья');
@@ -40,6 +65,23 @@ assert.strictEqual(api.youthTeamBelongsToSeniorClub(ryazanYouth, ryazan), true,
 context.G.league.youth.leagues = { MHL: { id: 'MHL', teams: [omskYouth] }, RHL: { id: 'RHL', teams: [] } };
 assert.strictEqual(api.getOwnYouthTeam(krylya).team.id, 'mhl-omsk-hawks',
   'Крылья должны находить собственную молодёжную команду');
+
+
+const spartak = { id: 50, slug: 'khimik', name: 'Химик' };
+context.G.league.youth.leagues = {
+  MHL: { id: 'MHL', teams: [
+    { id: 'mhl-spartak', name: 'МХК Спартак', seniorLinks: ['Спартак (КХЛ)'], seniorTeamSlug: 'khimik' },
+    { id: 'mhl-spartak-max', name: 'МХК Спартак МАХ', seniorLinks: ['Спартак (КХЛ)'], seniorTeamSlug: 'khimik' },
+  ] },
+  RHL: { id: 'RHL', teams: [] },
+};
+assert.deepStrictEqual(
+  Array.from(api.getOwnYouthTeams(spartak), item => item.team.id),
+  ['mhl-spartak', 'mhl-spartak-max'],
+  'The adult club must see every linked youth team, not only the first one'
+);
+assert.strictEqual(api.getOwnYouthTeam(spartak).team.id, 'mhl-spartak',
+  'The legacy singular helper must remain backwards-compatible');
 
 const legacyTeam = {
   id: 'mhl-omsk-hawks',
