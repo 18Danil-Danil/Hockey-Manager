@@ -394,7 +394,7 @@ window.VHL_SEASON_RESULTS = [
       {historicalId:'sokol-krasnoyarsk',clubName:'Сокол',regularPlace:12,games:56,wins:23,overtimeWins:2,shootoutWins:5,shootoutLosses:2,overtimeLosses:6,losses:18,goalsFor:132,goalsAgainst:125,points:68,playoffStage:'playoff_participant',playoffOpponent:'СКА-Нева',seriesScore:'1:4'},
       {historicalId:'hk-ryazan',clubName:'ХК Рязань',regularPlace:13,games:56,wins:23,overtimeWins:3,shootoutWins:2,shootoutLosses:3,overtimeLosses:8,losses:17,goalsFor:131,goalsAgainst:133,points:67,playoffStage:'playoff_participant',playoffOpponent:'Рубин',seriesScore:'0:3'},
       {historicalId:'dynamo-spb',clubName:'Динамо СПб',regularPlace:14,games:56,wins:24,overtimeWins:4,shootoutWins:3,shootoutLosses:4,overtimeLosses:1,losses:20,goalsFor:132,goalsAgainst:112,points:67,playoffStage:'playoff_participant',playoffOpponent:'Торос',seriesScore:'2:3'},
-      {historicalId:'tseng-tou',clubName:'Цэнг Тоу',regularPlace:15,games:56,wins:21,overtimeWins:2,shootoutWins:4,shootoutLosses:6,overtimeLosses:1,losses:22,goalsFor:132,goalsAgainst:134,points:61,playoffStage:'playoff_participant',playoffOpponent:'Нефтяник',seriesScore:'0:3'},
+      {historicalId:'tseng-tou',clubName:'Чэн Тоу',regularPlace:15,games:56,wins:21,overtimeWins:2,shootoutWins:4,shootoutLosses:6,overtimeLosses:1,losses:22,goalsFor:132,goalsAgainst:134,points:61,playoffStage:'playoff_participant',playoffOpponent:'Нефтяник',seriesScore:'0:3'},
       {historicalId:'yuzhny-ural-orsk',clubName:'Южный Урал',regularPlace:16,games:56,wins:22,overtimeWins:2,shootoutWins:3,shootoutLosses:4,overtimeLosses:3,losses:22,goalsFor:135,goalsAgainst:132,points:61,playoffStage:'playoff_participant',playoffOpponent:'СКА-Нева',seriesScore:'0:3'},
       {historicalId:'bars-kazan',clubName:'Барс',regularPlace:17,games:56,wins:19,overtimeWins:3,shootoutWins:5,shootoutLosses:3,overtimeLosses:4,losses:22,goalsFor:130,goalsAgainst:140,points:61,playoffStage:'missed'},
       {historicalId:'torpedo-ust-kamenogorsk',clubName:'Торпедо',regularPlace:18,games:56,wins:21,overtimeWins:1,shootoutWins:3,shootoutLosses:5,overtimeLosses:6,losses:20,goalsFor:173,goalsAgainst:147,points:61,playoffStage:'missed'},
@@ -420,7 +420,7 @@ window.VHL_SEASON_RESULTS = [
       sourceType: 'secondary_archive',
       verified: true,
       pointsSystem: '2 points for any win (regulation, overtime or shootout); 1 point for overtime or shootout loss; 0 points for regulation loss.',
-      note: 'В регулярном чемпионате участвовали 34 клуба, каждый провёл 54 матча (всего 918 игр). Очки начислялись по двухочковой системе: 2 за любую победу, 1 за поражение в овертайме или по буллитам, 0 за поражение в основное время. Места указаны по общей таблице архива «Чемпионата», а не по отдельным конференциям.'
+      note: 'В регулярном чемпионате участвовали 34 клуба, каждый провёл 54 матча (всего 918 игр). Очки начислялись по двухочковой системе: 2 за любую победу, 1 за поражение в овертайме или по буллитам, 0 за поражение в основное время. Места указаны по общей таблице архива «Чемпионата», а не по отдельным конференциям. В написании двух азиатских клубов сохранена форма итоговой таблицы: «ОЭРДЖИ» и «Чэн Тоу»; в отдельных сезонных справочниках встречаются варианты «ОРДЖИ» и «Ценг Тоу».'
     },
     playoffs: {
       source: 'https://www.championat.com/hockey/_highleague/tournament/3305/',
@@ -456,7 +456,7 @@ window.VHL_SEASON_RESULTS = [
       {historicalId:'molot-prikamye-perm',clubName:'Молот-Прикамье',regularPlace:23,games:54,wins:15,overtimeWins:3,shootoutWins:3,shootoutLosses:3,overtimeLosses:8,losses:22,goalsFor:132,goalsAgainst:135,points:53,playoffStage:'missed'},
       {historicalId:'rostov-rostov-na-donu',clubName:'Ростов',regularPlace:24,games:54,wins:13,overtimeWins:3,shootoutWins:6,shootoutLosses:2,overtimeLosses:4,losses:26,goalsFor:114,goalsAgainst:151,points:50,playoffStage:'missed'},
       {historicalId:'torpedo-gorky-nizhny-novgorod',clubName:'Торпедо-Горький',regularPlace:25,games:54,wins:10,overtimeWins:5,shootoutWins:7,shootoutLosses:1,overtimeLosses:5,losses:26,goalsFor:99,goalsAgainst:131,points:50,playoffStage:'missed'},
-      {historicalId:'krs-oerji',clubName:'ОРДЖИ',regularPlace:26,games:54,wins:17,overtimeWins:3,shootoutWins:0,shootoutLosses:4,overtimeLosses:5,losses:25,goalsFor:140,goalsAgainst:178,points:49,playoffStage:'missed'},
+      {historicalId:'krs-oerji',clubName:'ОЭРДЖИ',regularPlace:26,games:54,wins:17,overtimeWins:3,shootoutWins:0,shootoutLosses:4,overtimeLosses:5,losses:25,goalsFor:140,goalsAgainst:178,points:49,playoffStage:'missed'},
       {historicalId:'nomad-nur-sultan',clubName:'Номад',regularPlace:27,games:54,wins:16,overtimeWins:0,shootoutWins:2,shootoutLosses:9,overtimeLosses:2,losses:25,goalsFor:118,goalsAgainst:163,points:47,playoffStage:'missed'},
       {historicalId:'yuzhny-ural-orsk',clubName:'Южный Урал',regularPlace:28,games:54,wins:15,overtimeWins:5,shootoutWins:1,shootoutLosses:3,overtimeLosses:2,losses:28,goalsFor:119,goalsAgainst:150,points:47,playoffStage:'missed'},
       {historicalId:'buran-voronezh',clubName:'Буран',regularPlace:29,games:54,wins:13,overtimeWins:3,shootoutWins:3,shootoutLosses:4,overtimeLosses:5,losses:26,goalsFor:118,goalsAgainst:154,points:47,playoffStage:'missed'},
