@@ -20,7 +20,7 @@ function generateCareerOffers(finalRank, finalPts, playoffResult) {
   if (!G.career) G.career = { reputation: 50, history: [], noFireMode: false };
   if (!G.career.history) G.career.history = [];
   G.career.history.push({
-    season: G.league.season - 1,
+    season: G.league.history?.[G.league.history.length - 1]?.season || normalizeSeasonLabel(G.league.season),
     teamName: myTeam.name,
     rank: finalRank,
     pts: finalPts,
