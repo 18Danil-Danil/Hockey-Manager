@@ -290,6 +290,26 @@ function youthTransferPrice(player, leagueId) {
   return Math.max(0.5, Math.round((player.ovr * 0.12 + potential * 0.08) * leagueFactor * 10) / 10);
 }
 
+function normalizeClubName(name) {
+  return String(name || '').toLowerCase().replace(/ё/g, 'е').replace(/^(хк|мхк|хк\.)\s*/i, '').replace(/[^a-zа-я0-9]/gi, '');
+}
+
+function youthTeamBelongsToSeniorClub(youthTeam, seniorTeam) {
+  if (!youthTeam || !seniorTeam) return false;
+  const seniorName = normalizeClubName(seniorTeam.name);
+  return (youthTeam.seniorLinks || []).some(link => normalizeClubName(link) === seniorName);
+}
+
+function getOwnYouthTeam(seniorTeam) {
+  const youth = G.league?.youth;
+  if (!youth || !seniorTeam) return null;
+  for (const league of Object.values(youth.leagues || {})) {
+    const team = (league.teams || []).find(item => youthTeamBelongsToSeniorClub(item, seniorTeam));
+    if (team) return { league, team };
+  }
+  return null;
+}
+
 function acquireYouthPlayer(team, youthTeamId, playerId) {
   const youth = G.league?.youth;
   if (!team || !youth) return { success: false, error: 'Команда или молодёжная лига не найдена' };
@@ -299,7 +319,8 @@ function acquireYouthPlayer(team, youthTeamId, playerId) {
   const player = youthTeam?.roster.find(item => item.id === playerId);
   if (!player) return { success: false, error: 'Игрок уже недоступен или перешёл в другую команду' };
   if (team.roster.some(item => item.id === player.id)) return { success: false, error: 'Игрок уже в твоём составе' };
-  const ownSystem = false; // Справочная связь с клубом не даёт автоматического права на бесплатный переход.
+  if (player.youth?.parentSeniorClubId) return { success: false, error: 'Игрок закреплён за другой взрослой командой' };
+  const ownSystem = youthTeamBelongsToSeniorClub(youthTeam, team);
   const foreigners = team.roster.filter(item => item.nationality !== 'Россия').length;
   if (player.nationality !== 'Россия' && foreigners >= 3) return { success: false, error: 'Превысится лимит легионеров (3)' };
   const price = ownSystem ? 0 : youthTransferPrice(player, youthLeague.id);
@@ -313,8 +334,58 @@ function acquireYouthPlayer(team, youthTeamId, playerId) {
   team.roster.push(player); team.lines = null; if (typeof syncLines === 'function') syncLines(team);
   youth.transferLog = youth.transferLog || [];
   youth.transferLog.push({ playerId: player.id, playerName: player.name, fromTeamId: youthTeam.id, fromTeamName: youthTeam.name, toTeamId: team.id, toTeamName: team.name, fee: price, season: youth.season || 1 });
-  if (typeof addNews === 'function') addNews('signing', price > 0 ? team.name + ' приобрёл молодого игрока ' + player.name + ' из ' + youthTeam.name + ' за ' + price.toFixed(1) + ' млн ₽' : team.name + ' перевёл игрока ' + player.name + ' из своей молодёжной системы', 1);
+  if (typeof addNews === 'function') addNews('signing', price > 0 ? team.name + ' приобрёл молодого игрока ' + player.name + ' из ' + youthTeam.name + ' за ' + price.toFixed(1) + ' млн ₽' : team.name + ' вызвал игрока ' + player.name + ' из своей молодёжной команды', 1);
   return { success: true, player, price, ownSystem };
+}
+
+function sendSeniorPlayerToYouth(team, playerId) {
+  const own = getOwnYouthTeam(team);
+  if (!own) return { success: false, error: 'У клуба пока нет собственной команды в молодёжных лигах' };
+  const player = team?.roster.find(item => item.id === playerId);
+  if (!player) return { success: false, error: 'Игрок не найден в основном составе' };
+  if (player.age < YOUTH_RULES.minAge || player.age > YOUTH_RULES.maxAge) return { success: false, error: 'В молодёжные лиги можно переводить игроков от 15 до 20 лет' };
+  if (own.team.roster.some(item => item.id === player.id)) return { success: false, error: 'Игрок уже находится в молодёжной команде' };
+  own.team.roster.push(player);
+  team.roster = team.roster.filter(item => item.id !== player.id);
+  team.bench = (team.bench || []).filter(id => id !== player.id);
+  player.youth = player.youth || {};
+  player.youth.parentSeniorClubId = team.id;
+  player.youth.parentSeniorClubName = team.name;
+  player.youth.assignedToYouthTeamId = own.team.id;
+  player.youth.assignedToYouthTeamName = own.team.name;
+  player.youth.assignedSeason = G.league.youth.season || 1;
+  player.youth.graduated = false;
+  player.status = 'youth';
+  team.lines = null;
+  if (typeof syncLines === 'function') syncLines(team);
+  G.league.youth.transferLog = G.league.youth.transferLog || [];
+  G.league.youth.transferLog.push({ playerId: player.id, playerName: player.name, fromTeamId: team.id, fromTeamName: team.name, toTeamId: own.team.id, toTeamName: own.team.name, fee: 0, type: 'assignment', season: G.league.youth.season || 1 });
+  if (typeof addNews === 'function') addNews('signing', team.name + ' отправил игрока ' + player.name + ' в собственную молодёжную команду ' + own.team.name, 1);
+  return { success: true, player, youthTeam: own.team, leagueId: own.league.id };
+}
+
+function recallYouthPlayerToSenior(team, youthTeamId, playerId) {
+  const youth = G.league?.youth;
+  if (!team || !youth) return { success: false, error: 'Команда или молодёжная лига не найдена' };
+  if (team.roster.length >= 30) return { success: false, error: 'В основном составе нет места (максимум 30 игроков)' };
+  const league = Object.values(youth.leagues || {}).find(item => item.teams.some(club => club.id === youthTeamId));
+  const youthTeam = league?.teams.find(club => club.id === youthTeamId);
+  const player = youthTeam?.roster.find(item => item.id === playerId);
+  if (!player || player.youth?.parentSeniorClubId !== team.id) return { success: false, error: 'Игрок не закреплён за вашим клубом' };
+  const foreigners = team.roster.filter(item => item.nationality !== 'Россия').length;
+  if (player.nationality !== 'Россия' && foreigners >= 3) return { success: false, error: 'Превысится лимит легионеров (3)' };
+  youthTeam.roster = youthTeam.roster.filter(item => item.id !== player.id);
+  player.status = 'contract';
+  player.youth.assignedToYouthTeamId = null;
+  player.youth.assignedToYouthTeamName = null;
+  player.youth.parentSeniorClubId = null;
+  player.youth.parentSeniorClubName = null;
+  team.roster.push(player);
+  team.lines = null;
+  if (typeof syncLines === 'function') syncLines(team);
+  youth.transferLog = youth.transferLog || [];
+  youth.transferLog.push({ playerId: player.id, playerName: player.name, fromTeamId: youthTeam.id, fromTeamName: youthTeam.name, toTeamId: team.id, toTeamName: team.name, fee: 0, type: 'recall', season: youth.season || 1 });
+  return { success: true, player };
 }
 function youthTopScorers(league, limit = 10) {
   if (!league) return [];
@@ -337,6 +408,22 @@ function advanceYouthPlayer(player, leagueId, season, team, youth) {
   player.ovr = overallFromAttrs(player.attrs, player.position === 'G');
   player.pot = overallFromAttrs(player.attrPot, player.position === 'G');
   if (player.age > YOUTH_RULES.maxAge) {
+    if (player.youth.parentSeniorClubId) {
+      const parent = G.league.teams.find(item => item.id === player.youth.parentSeniorClubId);
+      if (parent && !parent.roster.some(item => item.id === player.id) && parent.roster.length < 30) {
+        player.status = 'contract';
+        player.youth.graduated = true;
+        player.youth.assignedToYouthTeamId = null;
+        player.youth.assignedToYouthTeamName = null;
+        player.youth.parentSeniorClubId = null;
+        player.youth.parentSeniorClubName = null;
+        parent.roster.push(player);
+        parent.lines = null;
+        if (typeof syncLines === 'function') syncLines(parent);
+        youth.graduates.push({ playerId: player.id, name: player.name, position: player.position, age: player.age, ovr: player.ovr, formerTeamId: team.id, formerTeamName: team.name, season, status: 'returned', signedByTeamId: parent.id, signedByTeamName: parent.name });
+        return false;
+      }
+    }
     player.youth.graduated = true;
     player.status = 'ufa';
     player.contract = contractFor(player.ovr, player.age);
@@ -352,7 +439,7 @@ function advanceYouthPlayer(player, leagueId, season, team, youth) {
     return false;
   }
   player.stats = { gp: 0, goals: 0, assists: 0, points: 0, shots: 0, pim: 0, wins: 0, saves: 0, goalsAgainst: 0, shotsAgainst: 0, shutouts: 0 };
-  player.contract = contractFor(player.ovr, player.age);
+  if (!player.youth.parentSeniorClubId) player.contract = contractFor(player.ovr, player.age);
   return true;
 }
 
