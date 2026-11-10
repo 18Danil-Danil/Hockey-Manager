@@ -60,7 +60,12 @@ async function writeStoredSave(serialized) {
         tx.onabort = () => resolve(false);
       } catch (error) { resolve(false); }
     });
-    if (stored) { _lastSaveError = null; return true; }
+    if (stored) {
+      _lastSaveError = null;
+      // Освобождаем старую квоту localStorage после успешного переноса сохранения в IndexedDB.
+      try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem('hockey_save_v1'); } catch (error) {}
+      return true;
+    }
   }
   try {
     localStorage.setItem(SAVE_KEY, serialized);
