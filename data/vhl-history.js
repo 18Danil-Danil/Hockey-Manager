@@ -42,3 +42,33 @@ window.VHL_HISTORICAL_CLUB_HONOURS = {
   'АКМ (Тульская область)': { championships: [], regularTitles: [], finals: ['2023/24'] },
   'Сокол (Красноярск)': { championships: [], regularTitles: [], finals: ['2022/23'] }
 };
+
+
+// Применяем проверенные исторические награды к действующим клубам по устойчивым slug.
+// Названия команд в интерфейсе не меняются; ключи справочника — исторические идентификаторы.
+const VHL_HONOURS_KEY_BY_SLUG = {
+  akm: 'АКМ (Тульская область)',
+  'dinamo-spb': 'Динамо (Санкт-Петербург)',
+  izhstal: 'Ижсталь (Ижевск)',
+  khimik: 'Химик (Воскресенск)',
+  metallurg: 'Металлург (Новокузнецк)',
+  molot: 'Молот (Пермь)',
+  neftyanik: 'Нефтяник (Альметьевск)',
+  rubin: 'Рубин (Тюмень)',
+  sokol: 'Сокол (Красноярск)',
+  toros: 'Торос (Нефтекамск)',
+  yugra: 'Югра (Ханты-Мансийск)'
+};
+if (Array.isArray(window.VHL_TEAMS)) {
+  window.VHL_TEAMS.forEach(team => {
+    const key = VHL_HONOURS_KEY_BY_SLUG[team.slug];
+    const honours = key && window.VHL_HISTORICAL_CLUB_HONOURS[key];
+    if (!honours) return;
+    team.trophies = {
+      ...(team.trophies || {}),
+      petrov: [...honours.championships],
+      regular: [...honours.regularTitles],
+      finals: [...honours.finals]
+    };
+  });
+}
