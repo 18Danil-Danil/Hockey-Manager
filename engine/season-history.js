@@ -8,12 +8,12 @@ function seasonLabelFromNumber(value) {
   return `${startYear}/${String(startYear + 1).slice(-2)}`;
 }
 function normalizeSeasonLabel(value) {
-  if (typeof value === 'number' || /^\\d+$/.test(String(value || ''))) return seasonLabelFromNumber(value);
+  if (typeof value === 'number' || /^\d+$/.test(String(value || ''))) return seasonLabelFromNumber(value);
   return String(value || '2026/27');
 }
 function nextSeasonLabel(value) {
   const label = normalizeSeasonLabel(value);
-  const match = label.match(/^(\\d{4})\\/(\\d{2})$/);
+  const match = label.match(/^(\d{4})\/(\d{2})$/);
   if (!match) return '2027/28';
   const startYear = Number(match[1]) + 1;
   return `${startYear}/${String(startYear + 1).slice(-2)}`;
