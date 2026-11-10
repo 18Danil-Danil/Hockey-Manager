@@ -37,6 +37,8 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
   const home = G.league.teams.find(t => t.id === homeId);
   const away = G.league.teams.find(t => t.id === awayId);
   if (!home || !away) return;
+  // Новый визуальный seed не расходует и не изменяет игровой RNG.
+  window.GAME_RNG.setVisualSeed(Date.now());
   advanceInjuries(home); advanceInjuries(away);
   const homeLineup = getLineup(home), awayLineup = getLineup(away);
   const hTM = tacticMods(home.tactics, home), aTM = tacticMods(away.tactics, away);
@@ -644,8 +646,8 @@ function liveUpdatePositions() {
   if (!lm) return;
   const puck = lm.positions.puck;
   const drift = (p) => {
-    p.vx += (rng() - 0.5) * 0.3;
-    p.vy += (rng() - 0.5) * 0.3;
+    p.vx += (window.GAME_RNG.visualRng() - 0.5) * 0.3;
+    p.vy += (window.GAME_RNG.visualRng() - 0.5) * 0.3;
     p.vx += (p.baseX - p.x) * 0.02;
     p.vy += (p.baseY - p.y) * 0.02;
     const dx = puck.x - p.x, dy = puck.y - p.y;
