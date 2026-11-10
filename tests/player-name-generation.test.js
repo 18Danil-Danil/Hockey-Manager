@@ -49,7 +49,7 @@ const save = {
   ] }],
   freeAgents: [{ name: 'Джек Смит', position: 'LW', nationality: 'Канада', attrs: {} }],
   youth: { leagues: { MHL: { teams: [{ roster: [
-    { name: 'Александр Иванов', position: 'G', nationality: 'Россия', attrs: {} },
+    { name: 'Александр Иванов', position: 'G', nationality: 'Россия' },
   ] }] } } },
 };
 const originalNames = [
