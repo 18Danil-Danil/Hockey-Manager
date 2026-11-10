@@ -359,6 +359,57 @@ window.VHL_SEASON_RESULTS = [
       {historicalId:'sputnik-nizhny-tagil',clubName:'Спутник',regularPlace:26,games:52,wins:8,overtimeWins:2,shootoutWins:2,shootoutLosses:2,overtimeLosses:1,losses:37,goalsFor:88,goalsAgainst:176,points:35,playoffStage:'missed'},
       {historicalId:'csk-vvs-samara',clubName:'ЦСК ВВС',regularPlace:27,games:52,wins:3,overtimeWins:0,shootoutWins:1,shootoutLosses:0,overtimeLosses:5,losses:43,goalsFor:82,goalsAgainst:237,points:16,playoffStage:'missed'}
     ]
+  },
+  {
+    season: '2018/19',
+    leagueParticipants: 29,
+    regularSeason: {
+      source: 'https://news.sportbox.ru/Vidy_sporta/Hokkej/VHL/stats/turnir_14881',
+      secondarySources: ['https://ru.wikipedia.org/wiki/ВХЛ_в_сезоне_2018/2019','https://www.eliteprospects.com/league/vhl/standings/2018-2019'],
+      sourceType: 'secondary_archive',
+      verified: true,
+      pointsSystem: '2 points for any win; 1 point for overtime or shootout loss; 0 points for regulation loss.',
+      note: 'В сезоне применялась двухочковая система: 2 очка за победу (в основное время, овертайме или по буллитам), 1 очко за поражение в овертайме или по буллитам. Поэтому формула очков отличается от предыдущих сезонов. Показатели голов Сарыарки и Химика в источниках расходятся; в базе сохранены данные Sportbox: 164:116 и 127:99 соответственно.'
+    },
+    playoffs: {
+      source: 'https://www.championat.ru/hockey/_highleague/tournament/2887/table/',
+      secondarySource: 'https://ru.wikipedia.org/wiki/ВХЛ_в_сезоне_2018/2019',
+      sourceType: 'secondary_archive',
+      verified: true,
+      format: '16 команд; серии до трёх побед в 1/8 финала и до четырёх побед в последующих раундах.',
+      note: '«Сарыарка» выиграла финальную серию у «Рубина» 4:1. Полуфиналисты: «Сарыарка», «Рубин», СКА-Нева и «Торос».'
+    },
+    teams: [
+      {historicalId:'ska-neva',clubName:'СКА-Нева',regularPlace:1,games:56,wins:37,overtimeWins:5,shootoutWins:2,shootoutLosses:1,overtimeLosses:1,losses:10,goalsFor:181,goalsAgainst:93,points:90,playoffStage:'championship_semifinal',playoffOpponent:'Сарыарка',seriesScore:'0:4'},
+      {historicalId:'neftyanik-almetyevsk',clubName:'Нефтяник',regularPlace:2,games:56,wins:36,overtimeWins:4,shootoutWins:1,shootoutLosses:6,overtimeLosses:1,losses:8,goalsFor:173,goalsAgainst:99,points:89,playoffStage:'playoff_participant',playoffOpponent:'Сарыарка',seriesScore:'3:4'},
+      {historicalId:'toros-neftekamsk',clubName:'Торос',regularPlace:3,games:56,wins:32,overtimeWins:5,shootoutWins:3,shootoutLosses:3,overtimeLosses:3,losses:10,goalsFor:162,goalsAgainst:104,points:86,playoffStage:'championship_semifinal',playoffOpponent:'Рубин',seriesScore:'2:4'},
+      {historicalId:'rubin-tyumen',clubName:'Рубин',regularPlace:4,games:56,wins:29,overtimeWins:6,shootoutWins:3,shootoutLosses:2,overtimeLosses:3,losses:13,goalsFor:149,goalsAgainst:110,points:81,playoffStage:'finalist',playoffOpponent:'Сарыарка',seriesScore:'1:4'},
+      {historicalId:'lada-tolyatti',clubName:'Лада',regularPlace:5,games:56,wins:30,overtimeWins:8,shootoutWins:0,shootoutLosses:2,overtimeLosses:1,losses:15,goalsFor:171,goalsAgainst:120,points:79,playoffStage:'playoff_participant',playoffOpponent:'Сокол',seriesScore:'1:3'},
+      {historicalId:'zvezda-moscow',clubName:'Звезда',regularPlace:6,games:56,wins:32,overtimeWins:0,shootoutWins:4,shootoutLosses:3,overtimeLosses:3,losses:14,goalsFor:159,goalsAgainst:108,points:78,playoffStage:'playoff_participant',playoffOpponent:'Металлург (Новокузнецк)',seriesScore:'3:1'},
+      {historicalId:'yugra-khanty-mansiysk',clubName:'Югра',regularPlace:7,games:56,wins:28,overtimeWins:6,shootoutWins:2,shootoutLosses:2,overtimeLosses:1,losses:17,goalsFor:173,goalsAgainst:120,points:75,playoffStage:'playoff_participant',playoffOpponent:'Сарыарка',seriesScore:'0:3'},
+      {historicalId:'zauralye-kurgan',clubName:'Зауралье',regularPlace:8,games:56,wins:23,overtimeWins:7,shootoutWins:2,shootoutLosses:5,overtimeLosses:6,losses:13,goalsFor:161,goalsAgainst:134,points:75,playoffStage:'playoff_participant',playoffOpponent:'Химик',seriesScore:'3:1'},
+      {historicalId:'khimik-voskresensk',clubName:'Химик',regularPlace:9,games:56,wins:23,overtimeWins:3,shootoutWins:7,shootoutLosses:4,overtimeLosses:2,losses:17,goalsFor:127,goalsAgainst:99,points:72,playoffStage:'playoff_participant',playoffOpponent:'Зауралье',seriesScore:'1:3'},
+      {historicalId:'saryarka-karaganda',clubName:'Сарыарка',regularPlace:10,games:56,wins:27,overtimeWins:0,shootoutWins:7,shootoutLosses:2,overtimeLosses:2,losses:18,goalsFor:164,goalsAgainst:116,points:72,playoffStage:'champion',playoffOpponent:'Рубин',seriesScore:'4:1'},
+      {historicalId:'metallurg-novokuznetsk',clubName:'Металлург Нк',regularPlace:11,games:56,wins:27,overtimeWins:1,shootoutWins:5,shootoutLosses:0,overtimeLosses:3,losses:20,goalsFor:173,goalsAgainst:144,points:69,playoffStage:'playoff_participant',playoffOpponent:'Звезда',seriesScore:'1:3'},
+      {historicalId:'sokol-krasnoyarsk',clubName:'Сокол',regularPlace:12,games:56,wins:23,overtimeWins:2,shootoutWins:5,shootoutLosses:2,overtimeLosses:6,losses:18,goalsFor:132,goalsAgainst:125,points:68,playoffStage:'playoff_participant',playoffOpponent:'СКА-Нева',seriesScore:'1:4'},
+      {historicalId:'hk-ryazan',clubName:'ХК Рязань',regularPlace:13,games:56,wins:23,overtimeWins:3,shootoutWins:2,shootoutLosses:3,overtimeLosses:8,losses:17,goalsFor:131,goalsAgainst:133,points:67,playoffStage:'playoff_participant',playoffOpponent:'Рубин',seriesScore:'0:3'},
+      {historicalId:'dynamo-spb',clubName:'Динамо СПб',regularPlace:14,games:56,wins:24,overtimeWins:4,shootoutWins:3,shootoutLosses:4,overtimeLosses:1,losses:20,goalsFor:132,goalsAgainst:112,points:67,playoffStage:'playoff_participant',playoffOpponent:'Торос',seriesScore:'2:3'},
+      {historicalId:'tseng-tou',clubName:'Цэнг Тоу',regularPlace:15,games:56,wins:21,overtimeWins:2,shootoutWins:4,shootoutLosses:6,overtimeLosses:1,losses:22,goalsFor:132,goalsAgainst:134,points:61,playoffStage:'playoff_participant',playoffOpponent:'Нефтяник',seriesScore:'0:3'},
+      {historicalId:'yuzhny-ural-orsk',clubName:'Южный Урал',regularPlace:16,games:56,wins:22,overtimeWins:2,shootoutWins:3,shootoutLosses:4,overtimeLosses:3,losses:22,goalsFor:135,goalsAgainst:132,points:61,playoffStage:'playoff_participant',playoffOpponent:'СКА-Нева',seriesScore:'0:3'},
+      {historicalId:'bars-kazan',clubName:'Барс',regularPlace:17,games:56,wins:19,overtimeWins:3,shootoutWins:5,shootoutLosses:3,overtimeLosses:4,losses:22,goalsFor:130,goalsAgainst:140,points:61,playoffStage:'missed'},
+      {historicalId:'torpedo-ust-kamenogorsk',clubName:'Торпедо',regularPlace:18,games:56,wins:21,overtimeWins:1,shootoutWins:3,shootoutLosses:5,overtimeLosses:6,losses:20,goalsFor:173,goalsAgainst:147,points:61,playoffStage:'missed'},
+      {historicalId:'csk-vvs-samara',clubName:'ЦСК ВВС',regularPlace:19,games:56,wins:16,overtimeWins:7,shootoutWins:2,shootoutLosses:3,overtimeLosses:4,losses:24,goalsFor:156,goalsAgainst:174,points:57,playoffStage:'missed'},
+      {historicalId:'chelmet-chelyabinsk',clubName:'Челмет',regularPlace:20,games:56,wins:16,overtimeWins:3,shootoutWins:6,shootoutLosses:2,overtimeLosses:4,losses:25,goalsFor:125,goalsAgainst:155,points:56,playoffStage:'missed'},
+      {historicalId:'dizel-penza',clubName:'Дизель',regularPlace:21,games:56,wins:15,overtimeWins:4,shootoutWins:4,shootoutLosses:1,overtimeLosses:4,losses:28,goalsFor:132,goalsAgainst:167,points:51,playoffStage:'missed'},
+      {historicalId:'buran-voronezh',clubName:'Буран',regularPlace:22,games:56,wins:19,overtimeWins:3,shootoutWins:1,shootoutLosses:2,overtimeLosses:3,losses:28,goalsFor:131,goalsAgainst:182,points:51,playoffStage:'missed'},
+      {historicalId:'tambov',clubName:'Тамбов',regularPlace:23,games:56,wins:16,overtimeWins:2,shootoutWins:3,shootoutLosses:6,overtimeLosses:3,losses:26,goalsFor:123,goalsAgainst:153,points:51,playoffStage:'missed'},
+      {historicalId:'gornyak-uchaly',clubName:'Горняк',regularPlace:24,games:56,wins:17,overtimeWins:1,shootoutWins:4,shootoutLosses:0,overtimeLosses:5,losses:29,goalsFor:160,goalsAgainst:175,points:49,playoffStage:'missed'},
+      {historicalId:'hk-sarov',clubName:'ХК Саров',regularPlace:25,games:56,wins:12,overtimeWins:2,shootoutWins:3,shootoutLosses:5,overtimeLosses:3,losses:31,goalsFor:119,goalsAgainst:176,points:42,playoffStage:'missed'},
+      {historicalId:'izhstal-izhevsk',clubName:'Ижсталь',regularPlace:26,games:56,wins:11,overtimeWins:2,shootoutWins:3,shootoutLosses:4,overtimeLosses:4,losses:32,goalsFor:108,goalsAgainst:185,points:40,playoffStage:'missed'},
+      {historicalId:'molot-prikamye-perm',clubName:'Молот-Прикамье',regularPlace:27,games:56,wins:11,overtimeWins:2,shootoutWins:1,shootoutLosses:5,overtimeLosses:1,losses:36,goalsFor:112,goalsAgainst:192,points:34,playoffStage:'missed'},
+      {historicalId:'ermak-angarsk',clubName:'Ермак',regularPlace:28,games:56,wins:9,overtimeWins:1,shootoutWins:3,shootoutLosses:5,overtimeLosses:2,losses:36,goalsFor:97,goalsAgainst:175,points:33,playoffStage:'missed'},
+      {historicalId:'krs-oerji',clubName:'КРС-ОЭРДЖИ',regularPlace:29,games:56,wins:8,overtimeWins:4,shootoutWins:1,shootoutLosses:2,overtimeLosses:5,losses:36,goalsFor:129,goalsAgainst:247,points:33,playoffStage:'missed'}
+    ]
   }
 ];
 
