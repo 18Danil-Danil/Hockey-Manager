@@ -285,7 +285,7 @@ window.VHL_TEAMS = [
       { season: '2022/23', place: 7, pts: 65, playoff: 'round16' },
       { season: '2021/22', place: 15, pts: 57, playoff: 'round16' },
     ],
-    trophies: { petrov: ['2023/24'], regular: [], opening: [] },
+    trophies: { petrov: ['2023/24', '2019/20', '2015/16'], regular: [], opening: [] },
     rivals: ['АКМ', 'Югра', 'Омские Крылья'],
     logo: 'https://www.vhlru.ru/upload/iblock/087/Нефтяник.png',
     sponsorFlow: 3, govSupport: 4, hockeyLove: 3, youthFactor: 2,
