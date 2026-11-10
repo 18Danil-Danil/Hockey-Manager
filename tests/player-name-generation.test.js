@@ -38,8 +38,8 @@ const latinEntries = Object.entries(pools).flatMap(([nationality, pool]) =>
 assert.deepEqual(latinEntries, [], 'name pools must use consistent Cyrillic spelling');
 
 api.resetPlayerNameRegistry();
-const russianNames = Array.from({ length: 1000 }, () => api.generatePlayerName('Россия'));
-assert.equal(new Set(russianNames.map(api.normalizePlayerNameKey)).size, 1000,
+const russianNames = Array.from({ length: 1900 }, () => api.generatePlayerName('Россия'));
+assert.equal(new Set(russianNames.map(api.normalizePlayerNameKey)).size, 1900,
   'newly generated Russian full names must be unique');
 
 const save = {
