@@ -6,9 +6,12 @@ const vm = require('vm');
 const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'engine/youth-leagues.js'), 'utf8');
 const clubsSource = fs.readFileSync(path.join(root, 'data/youth-clubs.js'), 'utf8');
+const seniorSource = fs.readFileSync(path.join(root, 'data/teams.js'), 'utf8');
 
 const window = {};
 vm.runInNewContext(clubsSource, { window });
+const seniorWindow = {};
+vm.runInNewContext(seniorSource, { window: seniorWindow });
 const context = {
   window,
   G: { league: { youth: { leagues: {} } } },
@@ -31,12 +34,30 @@ const expectedLinks = {
   'rhl-dynamo-576': 'dinamo-spb',
   'mhl-kuznetskie-medvedi': 'metallurg',
   'rhl-kristall-saratov': 'kristall',
+  'mhl-krasnoyarsk-lynx': 'sokol',
+  'mhl-mammoths': 'yugra',
+  'mhl-sputnik-al': 'neftyanik',
+  'mhl-molot': 'molot',
+  'mhl-akm-junior': 'akm',
+  'mhl-academy-mikhailov': 'akm',
+  'rhl-ryazan-vdv': 'ryazan-vdv',
+  'rhl-proton': 'buran',
+  'rhl-ekoniva-bobrov': 'buran',
+  'rhl-dizelist': 'dizel',
+  'rhl-tambov': 'tambov',
+  'rhl-progress-glazov': 'izhstal',
 };
 for (const [teamId, slug] of Object.entries(expectedLinks)) {
   const meta = window.YOUTH_CLUBS.teams.find(team => team.id === teamId);
   assert(meta, 'Missing youth team metadata: ' + teamId);
   assert.strictEqual(meta.seniorTeamSlug, slug, teamId + ' must link to ' + slug);
 }
+const seniorSlugs = new Set(seniorWindow.VHL_TEAMS.map(team => team.slug));
+for (const meta of window.YOUTH_CLUBS.teams.filter(team => team.seniorTeamSlug)) {
+  assert(seniorSlugs.has(meta.seniorTeamSlug), meta.id + ' points to a missing VHL club slug');
+}
+assert.strictEqual(window.YOUTH_CLUBS.teams.find(team => team.id === 'rhl-kaluga-rockets').org, 'org-independent-kaluga-rockets');
+assert.strictEqual(window.YOUTH_CLUBS.teams.find(team => team.id === 'rhl-dynamo-karelia').org, 'org-independent-dynamo-karelia');
 const reactorMeta = window.YOUTH_CLUBS.teams.find(team => team.id === 'mhl-reactor');
 assert.strictEqual(reactorMeta.org, 'org-neftekhimik', 'Reactor belongs to Neftekhimik, not Toros');
 assert.deepStrictEqual(Array.from(reactorMeta.senior), ['Нефтехимик (КХЛ)']);
