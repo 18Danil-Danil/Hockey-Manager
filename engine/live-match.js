@@ -692,14 +692,28 @@ function drawLiveCanvas() {
   const homeJersey = window.getTeamJersey ? window.getTeamJersey(homeTeam, 'home') : { base:'#A71930', secondary:'#171717', accent:'#FFFFFF', pattern:'stripe' };
   const awayJersey = window.getTeamJersey ? window.getTeamJersey(awayTeam, 'away') : { base:'#F4F6F8', secondary:'#334155', accent:'#94A3B8', pattern:'stripe' };
 
-  // Рисуем маленькую хоккейную майку сверху: корпус, рукава, ворот и клубный рисунок.
-  const drawPlayer = (p, side) => {
+  // Хоккейная майка с клубным рисунком, номером на спине и фамилией игрока.
+  const drawPlayer = (p, side, usedNumbers) => {
     const x = vx(p.x), y = vy(p.y);
     const r = Math.max(5, Math.round(W / 100));
     const jersey = side === 'home' ? homeJersey : awayJersey;
     const puckState = lm.positions.puck;
     const isCarrier = puckState && !(puckState.looseFrames > 0)
       && puckState.possessionSide === side && puckState.carrierIndex === p.idx;
+
+    // Номер постоянен для игрока при повторных LIVE-матчах; старые сохранения поддерживаются.
+    const rawNumber = Number(p.jerseyNumber ?? p.number);
+    let jerseyNumber = Number.isInteger(rawNumber) && rawNumber >= 1 && rawNumber <= 99
+      ? rawNumber : null;
+    if (jerseyNumber === null) {
+      const seed = String(p.playerId || p.playerName || p.idx);
+      let hash = 0;
+      for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+      jerseyNumber = 1 + (hash % 99);
+    }
+    const preferredNumber = jerseyNumber;
+    while (usedNumbers.has(jerseyNumber)) jerseyNumber = jerseyNumber % 99 + 1;
+    usedNumbers.add(jerseyNumber);
 
     ctx.save();
     ctx.translate(x, y);
@@ -767,13 +781,12 @@ function drawLiveCanvas() {
       ctx.fillRect(-11, 0.8, 22, 0.8);
     }
 
-    // Полосы на рукавах связывают боковые части формы с основным рисунком.
+    // Полосы на рукавах и контрастный ворот.
     ctx.fillStyle = jersey.secondary;
     ctx.fillRect(-10, 0.1, 4.2, 1.1);
     ctx.fillRect(5.8, 0.1, 4.2, 1.1);
     ctx.restore();
 
-    // Ворот и контур остаются видимыми поверх рисунка.
     ctx.strokeStyle = 'rgba(8,12,20,0.9)';
     ctx.lineWidth = 1.35;
     silhouette();
@@ -790,12 +803,39 @@ function drawLiveCanvas() {
       ctx.beginPath(); ctx.arc(0, 0, 8.6, 0, Math.PI * 2); ctx.stroke();
     }
 
-    const label = p.position === 'G' || p.role === 'goalie' ? 'В' : p.position === 'D' || p.role === 'D' ? 'З' : 'Н';
-    ctx.fillStyle = side === 'away' ? '#172033' : '#FFFFFF';
-    ctx.font = 'bold 5.5px -apple-system, sans-serif';
+    // Номер расположен по центру спины. На выездной форме используется тёмная окантовка.
+    const numberColor = side === 'away' ? '#172033' : '#FFFFFF';
+    ctx.font = '900 7.2px -apple-system, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(label, 0, 1.1);
+    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = side === 'away' ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.75)';
+    ctx.strokeText(String(jerseyNumber), 0, 1.2);
+    ctx.fillStyle = numberColor;
+    ctx.fillText(String(jerseyNumber), 0, 1.2);
+    ctx.restore();
+
+    // Фамилия показывается компактной плашкой под игроком, чтобы читаться и на телефоне.
+    const fullName = String(p.playerName || '').trim();
+    const surname = fullName ? fullName.split(/\s+/).slice(-1)[0] : 'Игрок';
+    const surnameText = surname.length > 10 ? surname.slice(0, 9) + '…' : surname;
+    const labelFont = Math.max(6, Math.min(9, W / 58));
+    ctx.save();
+    ctx.font = `600 ${labelFont}px -apple-system, sans-serif`;
+    const numberText = String(jerseyNumber);
+    const labelText = `${numberText} ${surnameText}`;
+    const labelWidth = Math.min(Math.max(27, ctx.measureText(labelText).width + 7), Math.max(38, W / 7));
+    const labelY = Math.min(H - 5, y + r + labelFont + 2);
+    ctx.fillStyle = 'rgba(10,16,27,0.78)';
+    ctx.beginPath();
+    const left = x - labelWidth / 2, top = labelY - labelFont / 2 - 2;
+    const radius = 3;
+    ctx.roundRect(left, top, labelWidth, labelFont + 4, radius);
+    ctx.fill();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(labelText, x, labelY, labelWidth - 5);
     ctx.restore();
 
     if (isCarrier) {
@@ -807,8 +847,10 @@ function drawLiveCanvas() {
     }
   };
 
-  for (const p of lm.positions.home) drawPlayer(p, 'home');
-  for (const p of lm.positions.away) drawPlayer(p, 'away');
+  const homeNumbers = new Set();
+  const awayNumbers = new Set();
+  for (const p of lm.positions.home) drawPlayer(p, 'home', homeNumbers);
+  for (const p of lm.positions.away) drawPlayer(p, 'away', awayNumbers);
 
   const puckX = vx(lm.positions.puck.x);
   const puckY = vy(lm.positions.puck.y);
