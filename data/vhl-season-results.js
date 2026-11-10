@@ -736,7 +736,7 @@ window.VHL_SEASON_RESULTS = [
     playoffs: {
       source: 'https://www.championat.com/hockey/_highleague/tournament/6996/table/',
       officialSource: 'https://www.vhlru.ru/lenta/603534/',
-      officialBronzeSource: 'https://www.vhlru.ru/lenta/602963/',
+      officialBronzeSource: 'https://www.vhlru.ru/lenta/602677/',
       sourceType: 'playoff_bracket_official_champion_confirmation',
       verified: true,
       format: 'В плей-офф вышли 16 лучших команд регулярного чемпионата. Четыре раунда, серии до четырёх побед. «Югра» победила «Химик» в финале 4:1 и завоевала Кубок Чемпиона России.'
