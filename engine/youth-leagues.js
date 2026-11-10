@@ -50,6 +50,8 @@ function createYouthTeam(meta) {
     organizationName: organization ? organization.name : meta.name,
     independent: organization ? organization.independent : true,
     seniorLinks: [...(meta.senior || [])],
+    // Игровая взрослая команда-партнёр в вертикали ВХЛ (может отличаться от владельца системы КХЛ).
+    seniorTeamSlug: meta.seniorTeamSlug || null,
     roster: createYouthRoster(meta.league),
     coach: null,
     budget: { source: organization && organization.independent ? 'independent' : 'club-system', balance: 0 },
@@ -131,6 +133,9 @@ function normalizeYouthLeagues() {
     league.history = league.history || [];
     league.currentRound = league.currentRound || 0;
     for (const team of league.teams) {
+      // Подхватываем новые связи с взрослыми клубами и в уже созданных сохранениях.
+      const meta = (window.YOUTH_CLUBS?.teams || []).find(item => item.id === team.id);
+      if (meta?.seniorTeamSlug) team.seniorTeamSlug = meta.seniorTeamSlug;
       team.record = team.record || { gp: 0, w: 0, otw: 0, otl: 0, l: 0, gf: 0, ga: 0, pts: 0 };
       team.history = team.history || [];
       team.roster = team.roster || [];
@@ -296,6 +301,9 @@ function normalizeClubName(name) {
 
 function youthTeamBelongsToSeniorClub(youthTeam, seniorTeam) {
   if (!youthTeam || !seniorTeam) return false;
+  // В игровых карьерах взрослым звеном вертикали может быть клуб ВХЛ,
+  // тогда как юридический/брендовый владелец молодёжной команды выступает в КХЛ.
+  if (youthTeam.seniorTeamSlug) return youthTeam.seniorTeamSlug === seniorTeam.slug;
   const seniorName = normalizeClubName(seniorTeam.name);
   const primarySeniorLink = (youthTeam.seniorLinks || [])[0];
   return !!primarySeniorLink && normalizeClubName(primarySeniorLink) === seniorName;
