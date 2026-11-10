@@ -133,9 +133,16 @@ function normalizeYouthLeagues() {
     league.history = league.history || [];
     league.currentRound = league.currentRound || 0;
     for (const team of league.teams) {
-      // Подхватываем новые связи с взрослыми клубами и в уже созданных сохранениях.
+      // Синхронизируем проверенную клубную структуру и в уже созданных сохранениях.
       const meta = (window.YOUTH_CLUBS?.teams || []).find(item => item.id === team.id);
-      if (meta?.seniorTeamSlug) team.seniorTeamSlug = meta.seniorTeamSlug;
+      if (meta) {
+        const organization = (window.YOUTH_CLUBS.organizations || []).find(item => item.id === meta.org);
+        team.organizationId = meta.org;
+        team.organizationName = organization ? organization.name : meta.name;
+        team.independent = organization ? organization.independent : true;
+        team.seniorLinks = [...(meta.senior || [])];
+        team.seniorTeamSlug = meta.seniorTeamSlug || null;
+      }
       team.record = team.record || { gp: 0, w: 0, otw: 0, otl: 0, l: 0, gf: 0, ga: 0, pts: 0 };
       team.history = team.history || [];
       team.roster = team.roster || [];
