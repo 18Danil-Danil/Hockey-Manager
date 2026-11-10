@@ -37,10 +37,63 @@ function pickPlayerNationality() {
   const weights = window.PLAYER_DATA.NATIONALITY_WEIGHTS;
   return pickWeighted(Object.keys(weights), nationality => weights[nationality]);
 }
+function normalizePlayerNameKey(name) {
+  return String(name || '').normalize('NFKC').toLocaleLowerCase('ru')
+    .replace(/ё/g, 'е').replace(/\\s+/g, ' ').trim();
+}
+function getPlayerNameRegistry() {
+  if (!(window.PLAYER_NAME_REGISTRY instanceof Set)) window.PLAYER_NAME_REGISTRY = new Set();
+  return window.PLAYER_NAME_REGISTRY;
+}
+function resetPlayerNameRegistry() {
+  window.PLAYER_NAME_REGISTRY = new Set();
+}
+function hydratePlayerNameRegistry(league) {
+  resetPlayerNameRegistry();
+  const registry = getPlayerNameRegistry();
+  const visited = new Set();
+  const scan = value => {
+    if (!value || typeof value !== 'object' || visited.has(value)) return;
+    visited.add(value);
+    if (typeof value.name === 'string' && value.position && value.attrs) {
+      const key = normalizePlayerNameKey(value.name);
+      if (key) registry.add(key);
+    }
+    for (const child of Object.values(value)) scan(child);
+  };
+  scan(league);
+  return registry.size;
+}
 function generatePlayerName(nationality) {
-  const pool = window.PLAYER_DATA.NAME_POOLS[nationality];
-  if (!pool || !pool.first?.length || !pool.last?.length) return pick(FIRST) + ' ' + pick(LAST);
-  return pick(pool.first) + ' ' + pick(pool.last);
+  const registry = getPlayerNameRegistry();
+  const pool = window.PLAYER_DATA.NAME_POOLS[nationality] || { first: FIRST, last: LAST };
+  const takeUnique = source => {
+    const first = source?.first || [];
+    const last = source?.last || [];
+    if (!first.length || !last.length) return null;
+    const combinations = first.length * last.length;
+    const start = randInt(0, combinations - 1);
+    for (let offset = 0; offset < combinations; offset++) {
+      const index = (start + offset) % combinations;
+      const candidate = first[Math.floor(index / last.length)] + ' ' + last[index % last.length];
+      const key = normalizePlayerNameKey(candidate);
+      if (!registry.has(key)) {
+        registry.add(key);
+        return candidate;
+      }
+    }
+    return null;
+  };
+  const uniqueName = takeUnique(pool);
+  if (uniqueName) return uniqueName;
+  const fallbackName = takeUnique({ first: FIRST, last: LAST });
+  if (fallbackName) return fallbackName;
+  const base = (pick(pool.first?.length ? pool.first : FIRST) + ' ' + pick(pool.last?.length ? pool.last : LAST)).trim();
+  let candidate = base;
+  let suffix = 2;
+  while (registry.has(normalizePlayerNameKey(candidate))) candidate = base + ' ' + suffix++;
+  registry.add(normalizePlayerNameKey(candidate));
+  return candidate;
 }
 function genPlayer(position, targetOvr, opts = {}) {
   const isG = position === 'G';
