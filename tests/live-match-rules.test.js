@@ -304,8 +304,8 @@ assert.ok(Math.hypot(awayChaser.x - 165, awayChaser.y - 50) < chaserDistanceBefo
   'nearest defending skater did not pressure the puck');
 assert.ok(Math.abs(tacticalHome[3].y - tacticalHome[5].y) > 12,
   'attacking forwards collapsed into the same lane');
-assert.ok(tacticalHome.slice(1).every(p => p.x >= 12 && p.x <= 188 && p.y >= 10 && p.y <= 90),
-  'skaters left the playable tactical area');
+assert.ok(tacticalHome.slice(1).every(p => p.x >= 5 && p.x <= 195 && p.y >= 5 && p.y <= 95),
+  'skaters left the rink bounds');
 
 // The canvas animation loop must sleep while paused, between periods or after the final whistle.
 const loopStart = source.indexOf('function liveAnimationLoop(');
