@@ -113,7 +113,7 @@ window.VHL_TEAMS = [
       { season: '2021/22', place: 4, pts: 78, playoff: 'finalist' },
       { season: '2020/21', place: 7, pts: 66, playoff: 'semifinal' },
       { season: '2019/20', place: 2, pts: 88, playoff: 'season_silver' },
-    ]
+    ],
     trophies: { petrov: ['2017/18'], regular: ['2017/18'], opening: [], finals: ['2021/22'], seasonWins: [], seasonSilvers: ['2019/20', '2021/22'], seasonBronzes: ['2024/25'] },
     rivals: ['СКА-ВМФ', 'Рубин'],
     logo: 'https://www.vhlru.ru/upload/iblock/3c2/Динамо%20СПб.png',
@@ -171,7 +171,7 @@ window.VHL_TEAMS = [
       { season: '2021/22', place: 18, pts: 50, playoff: 'missed' },
       { season: '2020/21', place: 11, pts: 59, playoff: 'round16' },
       { season: '2019/20', place: 1, pts: 89, playoff: 'season_winner' },
-    ]
+    ],
     trophies: { petrov: [], regular: ['2019/20'], opening: [], finals: [], seasonWins: ['2019/20'], seasonSilvers: [], seasonBronzes: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/a2c/Звезда.png',
