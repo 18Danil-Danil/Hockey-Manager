@@ -56,9 +56,9 @@ function simGame(homeId, awayId, isPlayoff = false) {
   advanceInjuries(home); advanceInjuries(away);
   const homeLineup = getLineup(home), awayLineup = getLineup(away);
   const hTM = tacticMods(home.tactics, home), aTM = tacticMods(away.tactics, away);
-  const { xgH, xgA } = computeXG(home, away, hTM, aTM);
+  const { xgH, xgA } = computeXG(home, away, hTM, aTM, homeLineup, awayLineup);
   let hg = poisson(xgH), ag = poisson(xgA), ot = false, otWinner = null;
-  if (hg === ag) { ot = true; if (rng() < clamp(0.5 + (teamAttackRating(home) + teamDefenseRating(home) - teamAttackRating(away) - teamDefenseRating(away)) * 0.005, 0.3, 0.7)) { hg++; otWinner = 'h'; } else { ag++; otWinner = 'a'; } }
+  if (hg === ag) { ot = true; if (rng() < clamp(0.5 + (teamAttackRating(home, homeLineup) + teamDefenseRating(home, homeLineup) - teamAttackRating(away, awayLineup) - teamDefenseRating(away, awayLineup)) * 0.005, 0.3, 0.7)) { hg++; otWinner = 'h'; } else { ag++; otWinner = 'a'; } }
   const hShots = Math.max(hg, Math.round(poisson(24))), aShots = Math.max(ag, Math.round(poisson(22)));
   const allEvents = [];
   for (let i = 0; i < hg; i++) { const isOt = otWinner === 'h' && i === hg - 1; allEvents.push(simulateGoalEvent(homeLineup, awayLineup, isOt ? 4 : null, isPlayoff).pbp); }
