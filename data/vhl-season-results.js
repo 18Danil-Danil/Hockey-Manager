@@ -82,9 +82,55 @@ window.VHL_SEASON_RESULTS = [
       { historicalId: 'kristall-saratov', clubName: 'Кристалл', regularPlace: 23, games: 53, wins: 8, overtimeWins: 3, shootoutWins: 2, shootoutLosses: 0, overtimeLosses: 3, losses: 37, goalsFor: 108, goalsAgainst: 194, points: 37, playoffStage: 'missed' }
     ]
   },
+  {
+    season: '2012/13',
+    leagueParticipants: 27,
+    regularSeason: {
+      source: 'https://ru.wikipedia.org/wiki/ВХЛ_в_сезоне_2012/2013',
+      sourceType: 'season_archive_cross_checked',
+      verified: true,
+      note: 'Полная таблица сезона; 52 матча у каждого клуба. Сверено с таблицей Sports.ru и архивом Силы Спорта.'
+    },
+    playoffs: {
+      source: 'https://www.championat.com/hockey/_highleague/tournament/705/',
+      officialSource: 'https://www.vhlru.ru/upload/vhl2013_3.pdf',
+      sourceType: 'match_archive_and_official_report',
+      verified: true,
+      format: 'Три раунда конференций и финальная серия Кубка Братины; финал до четырёх побед.'
+    },
+    teams: [
+      { historicalId: 'saryarka-karaganda', clubName: 'Сарыарка', regularPlace: 1, games: 52, wins: 33, overtimeWins: 1, shootoutWins: 6, shootoutLosses: 2, overtimeLosses: 0, losses: 10, goalsFor: 150, goalsAgainst: 89, points: 115, playoffStage: 'finalist', playoffOpponent: 'Торос', seriesScore: '3:4' },
+      { historicalId: 'rubin-tyumen', clubName: 'Рубин', regularPlace: 2, games: 52, wins: 31, overtimeWins: 2, shootoutWins: 4, shootoutLosses: 4, overtimeLosses: 3, losses: 8, goalsFor: 162, goalsAgainst: 105, points: 112, playoffStage: 'playoff_participant' },
+      { historicalId: 'toros-neftekamsk', clubName: 'Торос', regularPlace: 3, games: 52, wins: 27, overtimeWins: 3, shootoutWins: 6, shootoutLosses: 3, overtimeLosses: 1, losses: 12, goalsFor: 152, goalsAgainst: 105, points: 103, playoffStage: 'champion', playoffOpponent: 'Сарыарка', seriesScore: '4:3' },
+      { historicalId: 'neftyanik-almetyevsk', clubName: 'Нефтяник', regularPlace: 4, games: 52, wins: 24, overtimeWins: 2, shootoutWins: 6, shootoutLosses: 6, overtimeLosses: 1, losses: 13, goalsFor: 156, goalsAgainst: 115, points: 95, playoffStage: 'playoff_participant' },
+      { historicalId: 'yuzhny-ural', clubName: 'Южный Урал', regularPlace: 5, games: 52, wins: 29, overtimeWins: 2, shootoutWins: 0, shootoutLosses: 3, overtimeLosses: 0, losses: 18, goalsFor: 136, goalsAgainst: 104, points: 94, playoffStage: 'playoff_participant' },
+      { historicalId: 'sputnik-nizhny-tagil', clubName: 'Спутник', regularPlace: 6, games: 52, wins: 25, overtimeWins: 2, shootoutWins: 5, shootoutLosses: 1, overtimeLosses: 4, losses: 15, goalsFor: 173, goalsAgainst: 135, points: 94, playoffStage: 'playoff_participant' },
+      { historicalId: 'buran-voronezh', clubName: 'Буран', regularPlace: 7, games: 52, wins: 25, overtimeWins: 0, shootoutWins: 5, shootoutLosses: 3, overtimeLosses: 0, losses: 19, goalsFor: 160, goalsAgainst: 139, points: 88, playoffStage: 'playoff_participant' },
+      { historicalId: 'ermak-angarsk', clubName: 'Ермак', regularPlace: 8, games: 52, wins: 24, overtimeWins: 2, shootoutWins: 4, shootoutLosses: 3, overtimeLosses: 1, losses: 18, goalsFor: 132, goalsAgainst: 142, points: 88, playoffStage: 'playoff_participant' },
+      { historicalId: 'lada-togliatti', clubName: 'Лада', regularPlace: 9, games: 52, wins: 24, overtimeWins: 0, shootoutWins: 5, shootoutLosses: 4, overtimeLosses: 2, losses: 17, goalsFor: 149, goalsAgainst: 130, points: 88, playoffStage: 'playoff_participant' },
+      { historicalId: 'lokomotiv-2-yaroslavl', clubName: 'Локомотив-2', regularPlace: 10, games: 52, wins: 22, overtimeWins: 3, shootoutWins: 6, shootoutLosses: 2, overtimeLosses: 2, losses: 17, goalsFor: 123, goalsAgainst: 118, points: 88, playoffStage: 'playoff_participant', note: 'В таблице регулярного чемпионата указан именно «Локомотив-2»; не объединять автоматически с прежним «Локомотивом».' },
+      { historicalId: 'dynamo-balashikha', clubName: 'Динамо', regularPlace: 11, games: 52, wins: 23, overtimeWins: 1, shootoutWins: 5, shootoutLosses: 2, overtimeLosses: 2, losses: 19, goalsFor: 158, goalsAgainst: 160, points: 85, playoffStage: 'playoff_participant' },
+      { historicalId: 'ariada-akpars', clubName: 'Ариада-Акпарс', regularPlace: 12, games: 52, wins: 21, overtimeWins: 1, shootoutWins: 6, shootoutLosses: 5, overtimeLosses: 3, losses: 16, goalsFor: 163, goalsAgainst: 151, points: 85, playoffStage: 'playoff_participant' },
+      { historicalId: 'molot-perm', clubName: 'Молот-Прикамье', regularPlace: 13, games: 52, wins: 23, overtimeWins: 2, shootoutWins: 2, shootoutLosses: 4, overtimeLosses: 3, losses: 18, goalsFor: 145, goalsAgainst: 141, points: 84, playoffStage: 'playoff_participant' },
+      { historicalId: 'kazzinc-torpedo', clubName: 'Казцинк-Торпедо', regularPlace: 14, games: 52, wins: 22, overtimeWins: 3, shootoutWins: 3, shootoutLosses: 5, overtimeLosses: 1, losses: 18, goalsFor: 147, goalsAgainst: 123, points: 84, playoffStage: 'playoff_participant' },
+      { historicalId: 'sarov', clubName: 'ХК Саров', regularPlace: 15, games: 52, wins: 19, overtimeWins: 0, shootoutWins: 7, shootoutLosses: 5, overtimeLosses: 2, losses: 19, goalsFor: 147, goalsAgainst: 133, points: 78, playoffStage: 'playoff_participant' },
+      { historicalId: 'dizel-penza', clubName: 'Дизель', regularPlace: 16, games: 52, wins: 21, overtimeWins: 2, shootoutWins: 1, shootoutLosses: 6, overtimeLosses: 1, losses: 21, goalsFor: 137, goalsAgainst: 121, points: 76, playoffStage: 'playoff_participant' },
+      { historicalId: 'kuban-krasnodar', clubName: 'Кубань', regularPlace: 17, games: 52, wins: 18, overtimeWins: 2, shootoutWins: 7, shootoutLosses: 4, overtimeLosses: 0, losses: 21, goalsFor: 126, goalsAgainst: 116, points: 76, playoffStage: 'missed' },
+      { historicalId: 'khk-vmf', clubName: 'ХК ВМФ', regularPlace: 18, games: 52, wins: 18, overtimeWins: 2, shootoutWins: 3, shootoutLosses: 6, overtimeLosses: 2, losses: 21, goalsFor: 142, goalsAgainst: 154, points: 72, playoffStage: 'missed' },
+      { historicalId: 'thk-tver', clubName: 'ТХК', regularPlace: 19, games: 52, wins: 16, overtimeWins: 1, shootoutWins: 5, shootoutLosses: 3, overtimeLosses: 3, losses: 24, goalsFor: 147, goalsAgainst: 180, points: 66, playoffStage: 'missed' },
+      { historicalId: 'chelmet-chelyabinsk', clubName: 'Челмет', regularPlace: 20, games: 52, wins: 17, overtimeWins: 3, shootoutWins: 2, shootoutLosses: 1, overtimeLosses: 3, losses: 26, goalsFor: 129, goalsAgainst: 141, points: 65, playoffStage: 'missed' },
+      { historicalId: 'kristall-saratov', clubName: 'Кристалл', regularPlace: 21, games: 52, wins: 15, overtimeWins: 3, shootoutWins: 2, shootoutLosses: 3, overtimeLosses: 2, losses: 27, goalsFor: 120, goalsAgainst: 154, points: 60, playoffStage: 'missed' },
+      { historicalId: 'titan-klin', clubName: 'Титан', regularPlace: 22, games: 52, wins: 15, overtimeWins: 1, shootoutWins: 1, shootoutLosses: 4, overtimeLosses: 2, losses: 29, goalsFor: 117, goalsAgainst: 159, points: 55, playoffStage: 'missed' },
+      { historicalId: 'yunost-minsk', clubName: 'Юность-Минск', regularPlace: 23, games: 52, wins: 12, overtimeWins: 1, shootoutWins: 5, shootoutLosses: 6, overtimeLosses: 1, losses: 27, goalsFor: 104, goalsAgainst: 160, points: 55, playoffStage: 'missed' },
+      { historicalId: 'sokol-krasnoyarsk', clubName: 'Сокол', regularPlace: 24, games: 52, wins: 11, overtimeWins: 2, shootoutWins: 6, shootoutLosses: 4, overtimeLosses: 2, losses: 27, goalsFor: 113, goalsAgainst: 152, points: 55, playoffStage: 'missed' },
+      { historicalId: 'zauralye-kurgan', clubName: 'Зауралье', regularPlace: 25, games: 52, wins: 11, overtimeWins: 3, shootoutWins: 3, shootoutLosses: 7, overtimeLosses: 2, losses: 26, goalsFor: 120, goalsAgainst: 163, points: 54, playoffStage: 'missed' },
+      { historicalId: 'izhstal-izhevsk', clubName: 'Ижсталь', regularPlace: 26, games: 52, wins: 11, overtimeWins: 1, shootoutWins: 3, shootoutLosses: 7, overtimeLosses: 2, losses: 28, goalsFor: 100, goalsAgainst: 163, points: 50, playoffStage: 'missed' },
+      { historicalId: 'ryazan', clubName: 'ХК Рязань', regularPlace: 27, games: 52, wins: 9, overtimeWins: 1, shootoutWins: 2, shootoutLosses: 7, overtimeLosses: 1, losses: 32, goalsFor: 112, goalsAgainst: 196, points: 41, playoffStage: 'missed' }
+    ]
+  },
 ];
 
-// Допустимые playoffStage: missed, conference_quarterfinal,
+// Допустимые playoffStage: missed, playoff_participant, conference_quarterfinal,
 // conference_semifinal, conference_finalist, championship_semifinal,
 // finalist, champion.
 // Исторические идентификаторы здесь не являются утверждением о правопреемстве.
