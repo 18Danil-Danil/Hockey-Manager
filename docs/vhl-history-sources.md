@@ -30,6 +30,7 @@
 Для регулярных чемпионатов и плей-офф использованы сезонные архивы и турнирные сетки:
 
 | Сезон | Регулярный чемпионат | Плей-офф |
+| 2015/16 | [Итоговая таблица](https://www.championat.com/hockey/_highleague/tournament/1645/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/1731/table/) |
 |---|---|---|
 | 2014/15 | [Официальный путеводитель ВХЛ, итоговая таблица сезона 2014/15](https://www.vhlru.ru/upload/all11_w.pdf); [архивная таблица](https://www.championat.com/hockey/_highleague/tournament/1092/table/) | [Официальный путеводитель ВХЛ](https://www.vhlru.ru/upload/all11_w.pdf); [сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/1220/table/) |
 | 2025/26 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/6704/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6996/) |
