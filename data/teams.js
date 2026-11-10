@@ -31,7 +31,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 25, pts: 46, playoff: 'missed' },
       { season: '2022/23', place: 22, pts: 43, playoff: 'missed' },
       { season: '2021/22', place: 16, pts: 57, playoff: 'round16' },
-    ],
+    
+      { season: '2020/21', place: 10, pts: 60, playoff: 'round16' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/b1c/Барс.png',
@@ -50,7 +51,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 11, pts: 70, playoff: 'round16' },
       { season: '2022/23', place: 25, pts: 32, playoff: 'missed' },
       { season: '2021/22', place: 24, pts: 36, playoff: 'missed' },
-    ],
+    
+      { season: '2020/21', place: 24, pts: 37, playoff: 'missed' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/aaa/Буран.png',
@@ -69,7 +71,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 19, pts: 60, playoff: 'missed' },
       { season: '2022/23', place: 16, pts: 58, playoff: 'quarterfinal' },
       { season: '2021/22', place: 12, pts: 65, playoff: 'quarterfinal' },
-    ],
+    
+      { season: '2020/21', place: 4, pts: 71, playoff: 'quarterfinal' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/02c/Горняк.png',
@@ -88,7 +91,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 22, pts: 52, playoff: 'missed' },
       { season: '2022/23', place: 4, pts: 68, playoff: 'round16' },
       { season: '2021/22', place: 21, pts: 42, playoff: 'missed' },
-    ],
+    
+      { season: '2020/21', place: 3, pts: 72, playoff: 'quarterfinal' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/0ef/Дизель.png',
@@ -108,7 +112,8 @@ window.VHL_TEAMS = [
       { season: '2022/23', place: 17, pts: 56, playoff: 'missed' },
       { season: '2021/22', place: 4, pts: 78, playoff: 'finalist' },
       { season: '2019/20', place: 2, pts: 88, playoff: 'season_silver' },
-    ],
+    
+      { season: '2020/21', place: 7, pts: 66, playoff: 'semifinal' },],
     trophies: { petrov: ["2017/18"], regular: ["2017/18"], opening: [] , finals: ["2021/22"] },
     rivals: ['СКА-ВМФ', 'Рубин'],
     logo: 'https://www.vhlru.ru/upload/iblock/3c2/Динамо%20СПб.png',
@@ -144,7 +149,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 3, pts: 83, playoff: 'quarterfinal' },
       { season: '2022/23', place: 10, pts: 62, playoff: 'quarterfinal' },
       { season: '2021/22', place: 14, pts: 57, playoff: 'round16' },
-    ],
+    
+      { season: '2020/21', place: 20, pts: 47, playoff: 'missed' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/a12/Зауралье.png',
@@ -164,7 +170,8 @@ window.VHL_TEAMS = [
       { season: '2022/23', place: 24, pts: 41, playoff: 'missed' },
       { season: '2021/22', place: 18, pts: 50, playoff: 'missed' },
       { season: '2019/20', place: 1, pts: 89, playoff: 'season_winner' },
-    ],
+    
+      { season: '2020/21', place: 11, pts: 59, playoff: 'round16' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/a2c/Звезда.png',
@@ -183,7 +190,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 26, pts: 41, playoff: 'missed' },
       { season: '2022/23', place: 18, pts: 56, playoff: 'missed' },
       { season: '2021/22', place: 25, pts: 31, playoff: 'missed' },
-    ],
+    
+      { season: '2020/21', place: 26, pts: 26, playoff: 'missed' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: ["2014/15","2015/16"] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/403/Ижсталь.png',
@@ -248,7 +256,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 17, pts: 63, playoff: 'missed' },
       { season: '2022/23', place: 2, pts: 71, playoff: 'semifinal' },
       { season: '2021/22', place: 5, pts: 78, playoff: 'round16' },
-    ],
+    
+      { season: '2020/21', place: 6, pts: 69, playoff: 'finalist' },],
     trophies: { petrov: [], regular: ["2025/26","2024/25"], opening: [] , finals: ["2020/21"] },
     rivals: ['Химик', 'Рубин', 'Югра'],
     logo: 'https://www.vhlru.ru/upload/iblock/2f1/Металлург.png',
@@ -267,7 +276,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 1, pts: 84, playoff: 'round16' },
       { season: '2022/23', place: 14, pts: 59, playoff: 'round16' },
       { season: '2021/22', place: 8, pts: 72, playoff: 'round16' },
-    ],
+    
+      { season: '2020/21', place: 25, pts: 34, playoff: 'missed' },],
     trophies: { petrov: [], regular: ["2023/24"], opening: [] , finals: [] },
     rivals: ['Рубин'],
     logo: 'https://www.vhlru.ru/upload/iblock/27f/Молот.png',
@@ -286,7 +296,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 9, pts: 73, playoff: 'champion' },
       { season: '2022/23', place: 7, pts: 65, playoff: 'round16' },
       { season: '2021/22', place: 15, pts: 57, playoff: 'round16' },
-    ],
+    
+      { season: '2020/21', place: 2, pts: 75, playoff: 'quarterfinal' },],
     trophies: { petrov: ["2023/24","2015/16"], regular: [], opening: [] , finals: ["2010/11"] },
     rivals: ['АКМ', 'Югра', 'Омские Крылья'],
     logo: 'https://www.vhlru.ru/upload/iblock/087/Нефтяник.png',
@@ -357,7 +368,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 2, pts: 84, playoff: 'semifinal' },
       { season: '2022/23', place: 5, pts: 68, playoff: 'semifinal' },
       { season: '2021/22', place: 3, pts: 79, playoff: 'champion' },
-    ],
+    
+      { season: '2020/21', place: 5, pts: 70, playoff: 'semifinal' },],
     trophies: { petrov: ["2021/22","2010/11"], regular: ["2011/12","2010/11"], opening: [] , finals: ["2011/12","2013/14","2018/19"] },
     rivals: ['Молот', 'Металлург', 'Динамо СПб'],
     logo: 'https://www.vhlru.ru/upload/iblock/a6f/Рубин%20-%20светлый%20фон.png',
@@ -414,7 +426,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 16, pts: 64, playoff: 'quarterfinal' },
       { season: '2022/23', place: 3, pts: 70, playoff: 'finalist' },
       { season: '2021/22', place: 11, pts: 66, playoff: 'round16' },
-    ],
+    
+      { season: '2020/21', place: 19, pts: 51, playoff: 'missed' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: ["2022/23"] },
     rivals: ['Химик'],
     logo: 'https://www.vhlru.ru/upload/iblock/fc8/Sokol-25_26.png',
@@ -433,7 +446,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 12, pts: 70, playoff: 'round16' },
       { season: '2022/23', place: 8, pts: 63, playoff: 'round16' },
       { season: '2021/22', place: 22, pts: 41, playoff: 'missed' },
-    ],
+    
+      { season: '2020/21', place: 13, pts: 58, playoff: 'round16' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/a44/ХК%20Тамбов%20темный.png',
@@ -452,7 +466,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 13, pts: 67, playoff: 'round16' },
       { season: '2022/23', place: 13, pts: 60, playoff: 'quarterfinal' },
       { season: '2021/22', place: 9, pts: 72, playoff: 'quarterfinal' },
-    ],
+    
+      { season: '2020/21', place: 12, pts: 58, playoff: 'round16' },],
     trophies: { petrov: ["2014/15","2012/13","2011/12"], regular: ["2013/14"], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/e4a/Торос.png',
@@ -471,7 +486,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 6, pts: 79, playoff: 'quarterfinal' },
       { season: '2022/23', place: 9, pts: 62, playoff: 'champion' },
       { season: '2021/22', place: 6, pts: 75, playoff: 'quarterfinal' },
-    ],
+    
+      { season: '2020/21', place: 8, pts: 65, playoff: 'round16' },],
     trophies: { petrov: ["2022/23"], regular: [], opening: [] , finals: ["2024/25","2025/26"] },
     rivals: ['Югра', 'Металлург', 'Сокол'],
     logo: 'https://www.vhlru.ru/upload/iblock/d6f/Химик.png',
@@ -489,7 +505,8 @@ window.VHL_TEAMS = [
       { season: '2024/25', place: 28, pts: 53, playoff: 'missed' },
       { season: '2023/24', place: 23, pts: 49, playoff: 'missed' },
       { season: '2021/22', place: 27, pts: 12, playoff: 'missed' },
-    ],
+    
+      { season: '2020/21', place: 21, pts: 46, playoff: 'missed' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/61b/ЦСК%20ВВС.png',
@@ -508,7 +525,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 18, pts: 63, playoff: 'missed' },
       { season: '2022/23', place: 12, pts: 60, playoff: 'round16' },
       { season: '2021/22', place: 13, pts: 58, playoff: 'round16' },
-    ],
+    
+      { season: '2020/21', place: 9, pts: 62, playoff: 'round16' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/63a/Челмет%20чб%20тонкая%20обводка.png',
@@ -527,7 +545,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 5, pts: 82, playoff: 'semifinal' },
       { season: '2022/23', place: 1, pts: 78, playoff: 'round16' },
       { season: '2021/22', place: 1, pts: 85, playoff: 'semifinal' },
-    ],
+    
+      { season: '2020/21', place: 1, pts: 84, playoff: 'champion' },],
     trophies: { petrov: ["2025/26","2020/21"], regular: ["2022/23","2021/22","2020/21"], opening: [] , finals: [] },
     rivals: ['Химик', 'Металлург', 'Нефтяник', 'Рубин'],
     logo: 'https://www.vhlru.ru/upload/iblock/e0f/Югра.png',
@@ -546,7 +565,8 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 10, pts: 70, playoff: 'round16' },
       { season: '2022/23', place: 21, pts: 46, playoff: 'missed' },
       { season: '2021/22', place: 19, pts: 50, playoff: 'missed' },
-    ],
+    
+      { season: '2020/21', place: 22, pts: 42, playoff: 'missed' },],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
     logo: 'https://www.vhlru.ru/upload/iblock/f37/ЮУ.png',
