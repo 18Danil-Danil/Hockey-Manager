@@ -855,10 +855,10 @@ function renderTeamModal() {
     ? `<img src="${team.logo}" class="team-logo-big" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="team-logo-fallback" style="display:none">${initials}</div>`
     : `<div class="team-logo-fallback">${initials}</div>`;
   const historyRows = (team.history && team.history.length)
-    ? team.history.map(h => `<tr><td>${h.season}</td><td style="font-weight:700">${h.place}</td><td>${h.pts}</td><td>${h.playoff === 'champion' ? '🏆 чемпион' : h.playoff === 'finalist' ? 'финалист' : h.playoff === 'semifinal' ? '1/2' : h.playoff === 'quarterfinal' ? '1/4' : h.playoff === 'round16' ? '1/8' : '—'}</td></tr>`).join('')
+    ? team.history.map(h => `<tr><td>${h.season}</td><td style="font-weight:700">${h.place}</td><td>${h.pts}</td><td>${h.playoff === 'champion' ? '🏆 чемпион' : h.playoff === 'finalist' ? 'финалист' : h.playoff === 'semifinal' ? '1/2' : h.playoff === 'quarterfinal' ? '1/4' : h.playoff === 'round16' ? '1/8' : h.playoff === 'missed' ? 'не вышел' : '—'}</td></tr>`).join('')
     : `<tr><td colspan="4" style="color:#7a8299">История клуба начинается с текущего сезона</td></tr>`;
   const trophyRow = (label, arr) => arr && arr.length ? `<div class="attr-row"><span>${label}</span><span style="color:#fbbf24">${arr.join(', ')}</span></div>` : `<div class="attr-row"><span>${label}</span><span style="color:#7a8299">—</span></div>`;
-  const trophiesHtml = `<div class="attr-grid">${trophyRow('🏆 Кубок Петрова', team.trophies.petrov)}${trophyRow('🥇 Регулярка', team.trophies.regular)}${trophyRow('⚡ Матч Открытия', team.trophies.opening)}</div>`;
+  const trophiesHtml = `<div class="attr-grid">${trophyRow('🏆 Главный трофей ВХЛ', team.trophies.petrov)}${trophyRow('🥇 Регулярка', team.trophies.regular)}${trophyRow('⚡ Матч Открытия', team.trophies.opening)}</div>`;
   let topPlayersHtml = `<div class="subtitle" style="font-size:12px">Нет данных</div>`;
   if (G.league.allTimeLeaders && G.league.allTimeLeaders.skaters) {
     const all = Object.values(G.league.allTimeLeaders.skaters);
@@ -893,7 +893,7 @@ function renderTeamModal() {
       </div>
       <h2>Сила</h2>${talentHtml}
       ${financeHtml}
-      <h2>История (5 сезонов)</h2>
+      <h2>История выступлений (до 5 сезонов)</h2>
       <table><thead><tr><th>Сезон</th><th>Место</th><th>Очки</th><th>Плей-офф</th></tr></thead><tbody>${historyRows}</tbody></table>
       <h2>Трофеи</h2>${trophiesHtml}
       <h2>Лучшие игроки (всего)</h2>${topPlayersHtml}
