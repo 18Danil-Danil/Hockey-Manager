@@ -342,7 +342,39 @@ assert.ok(shotState.positions.puck.x > shotStartX, 'shot did not travel toward t
 assert.equal(shotState.positions.puck.shotAnimation, null, 'shot animation did not finish');
 assert.equal(shotState.positions.puck.looseFrames, 18, 'saved shot did not create a rebound');
 assert.equal(shotState.positions.puck.nextPossessionSide, 'away', 'saved shot did not award rebound to defending side');
+
 assert.ok(shotState.positions.away[0].y < 50, 'goalie did not react toward the shot lane');
+
+// Opposing skaters contest a loose puck; a board-side battle lasts longer.
+const battleHome = formation.map(p => ({ ...p, x: p.role === 'goalie' ? p.x : 100, y: p.role === 'goalie' ? p.y : 50, baseX: p.role === 'goalie' ? p.baseX : 100, baseY: p.role === 'goalie' ? p.baseY : 50 }));
+const battleAway = awayPositions.map(p => ({ ...p, x: p.role === 'goalie' ? p.x : 100, y: p.role === 'goalie' ? p.y : 50, baseX: p.role === 'goalie' ? p.baseX : 100, baseY: p.role === 'goalie' ? p.baseY : 50 }));
+const battleState = { positions: {
+  home: battleHome, away: battleAway,
+  puck: { x: 100, y: 50, possessionSide: 'home', carrierIndex: null, looseFrames: 20, nextPossessionSide: 'home', nextCarrierIndex: 3, targetX: 100, targetY: 50 },
+} };
+const battleUpdater = liveUpdatePositions({ liveMatch: battleState }, visualWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)));
+battleUpdater();
+assert.ok(battleState.positions.puck.battle, 'opposing skaters did not contest the loose puck');
+assert.ok(battleState.positions.puck.battle.frames > 0, 'puck battle has no duration');
+assert.ok(battleHome.some(p => p.contactFrames > 0) && battleAway.some(p => p.contactFrames > 0),
+  'players did not receive contact feedback');
+for (let i = 0; i < 12; i++) battleUpdater();
+assert.ok(['home', 'away'].includes(battleState.positions.puck.possessionSide),
+  'puck battle did not resolve possession');
+
+// Near the boards the same contest uses the longer board-battle animation.
+const boardHome = battleHome.map(p => ({ ...p, x: p.role === 'goalie' ? p.x : 100, y: p.role === 'goalie' ? p.y : 89, baseX: p.role === 'goalie' ? p.baseX : 100, baseY: p.role === 'goalie' ? p.baseY : 89 }));
+const boardAway = battleAway.map(p => ({ ...p, x: p.role === 'goalie' ? p.x : 100, y: p.role === 'goalie' ? p.y : 89, baseX: p.role === 'goalie' ? p.baseX : 100, baseY: p.role === 'goalie' ? p.baseY : 89 }));
+const boardState = { positions: {
+  home: boardHome, away: boardAway,
+  puck: { x: 100, y: 89, possessionSide: 'home', carrierIndex: null, looseFrames: 20, nextPossessionSide: 'home', nextCarrierIndex: 3, targetX: 100, targetY: 89 },
+} };
+liveUpdatePositions({ liveMatch: boardState }, visualWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)))();
+assert.equal(boardState.positions.puck.battle?.type, 'board', 'board-side puck battle was not recognized');
+assert.equal(boardState.positions.puck.battle?.frames, 12, 'board battle should last longer than an open-ice contest');
+
 
 
 
