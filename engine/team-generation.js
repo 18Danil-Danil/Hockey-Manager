@@ -41,6 +41,7 @@ function genTeam(meta) {
       petrov: [...meta.trophies.petrov],
       regular: [...meta.trophies.regular],
       opening: [...meta.trophies.opening],
+      finals: [...(meta.trophies.finals || [])],
     },
     rivals: [...meta.rivals],
     logo: meta.logo,
