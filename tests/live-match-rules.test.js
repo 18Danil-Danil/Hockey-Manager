@@ -274,7 +274,48 @@ assert.ok(homePositions.every(p => p.x >= 5 && p.x <= 195 && p.y >= 5 && p.y <= 
 assert.ok(awayPositions.every(p => p.x >= 5 && p.x <= 195 && p.y >= 5 && p.y <= 95));
 assert.ok(Math.abs(animationState.positions.puck.x - (homePositions[3].x + 3.2)) < 30,
   'puck did not move toward the home carrier');
+
 assert.ok(animationState.positions.puck.x > 100, 'home possession did not advance toward the attacking half');
+
+// A visual pass transfers the puck between two skaters over several animation frames.
+const passState = {
+  positions: {
+    home: formation.map(p => ({ ...p })),
+    away: awayPositions.map(p => ({ ...p })),
+    puck: { x: 100, y: 50, vx: 0, vy: 0, possessionSide: 'home', carrierIndex: 3, actionFrames: 1, looseFrames: 0 },
+  },
+};
+liveUpdatePositions({ liveMatch: passState }, visualWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)))();
+assert.notEqual(passState.positions.puck.carrierIndex, 3, 'visual pass did not select a new teammate');
+assert.equal(passState.positions.puck.passFrames, 12, 'visual pass did not start its animation');
+const passStartX = passState.positions.puck.x;
+liveUpdatePositions({ liveMatch: passState }, visualWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)))();
+assert.equal(passState.positions.puck.passFrames, 11, 'visual pass animation did not advance');
+assert.notEqual(passState.positions.puck.x, passStartX, 'puck did not travel toward the receiver');
+
+// Turnovers send the loose puck toward an opposing skater, then assign that receiver.
+const turnoverRngValues = [0, 0.5, 0.5, 0.5];
+let turnoverRngIndex = 0;
+const turnoverWindow = { GAME_RNG: { visualRng: () => turnoverRngValues[Math.min(turnoverRngIndex++, turnoverRngValues.length - 1)] } };
+const turnoverState = {
+  positions: {
+    home: formation.map(p => ({ ...p })),
+    away: awayPositions.map(p => ({ ...p })),
+    puck: { x: 100, y: 50, vx: 0, vy: 0, possessionSide: 'home', carrierIndex: 3, actionFrames: 1, looseFrames: 0 },
+  },
+};
+liveUpdatePositions({ liveMatch: turnoverState }, turnoverWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)))();
+assert.equal(turnoverState.positions.puck.possessionSide, 'home', 'turnover changed possession before puck arrival');
+assert.equal(turnoverState.positions.puck.nextPossessionSide, 'away');
+assert.equal(turnoverState.positions.puck.looseFrames, 14, 'turnover did not animate a loose puck');
+for (let i = 0; i < 14; i++) liveUpdatePositions({ liveMatch: turnoverState }, turnoverWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)))();
+assert.equal(turnoverState.positions.puck.possessionSide, 'away', 'opponent did not receive the puck after turnover');
+assert.equal(turnoverState.positions.puck.carrierIndex, 4, 'turnover receiver was not preserved');
+
 
 // Goalies stay on their goal line; skaters react to possession with attack/defence roles.
 assert.ok(Math.abs(homePositions[0].x - 12) < 0.01, 'home goalie must start inside the home crease');
