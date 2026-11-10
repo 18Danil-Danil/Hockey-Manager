@@ -31,6 +31,7 @@ function render() {
   }
 
   const content =
+    G.activeTab === 'overview' ? renderOverview() :
     G.activeTab === 'standings' ? renderStandings() :
     G.activeTab === 'games' ? renderGames() :
     G.activeTab === 'calendar' ? renderCalendar() :
