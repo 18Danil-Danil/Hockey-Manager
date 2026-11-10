@@ -7,6 +7,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const tacticsSource = fs.readFileSync(path.join(__dirname, '..', 'engine/tactics.js'), 'utf8');
+const matchSource = fs.readFileSync(path.join(__dirname, '..', 'engine/match-simulation.js'), 'utf8');
 function extract(source, name, nextName) {
   const start = source.indexOf(`function ${name}(`);
   const end = nextName ? source.indexOf(`function ${nextName}(`, start) : source.length;
@@ -81,5 +82,29 @@ assert.equal(ratings.teamAttackRating(team, incomplete), 50);
 assert.equal(ratings.teamDefenseRating(team, incomplete), 50 * 0.7 + 60 * 0.3);
 assert.ok(Number.isFinite(ratings.teamAttackRating(team, { forwards: [player('bad','F',NaN)] })));
 assert.ok(Number.isFinite(ratings.teamDefenseRating(team, { defense: [player('badD','D',NaN)], goalie: player('badG','G',NaN) })));
+
+
+ // xG must forward the exact lineups used by the match into all four ratings.
+const computeXGSource = extract(matchSource, 'computeXG', 'simGame');
+const received = [];
+const computeXG = new Function(
+  'teamAttackRating', 'teamDefenseRating', 'teamLineMods', 'clamp', 'getLineup',
+  `${computeXGSource}; return computeXG;`
+)(
+  (team, actualLineup) => { received.push(['attack', team, actualLineup]); return 70; },
+  (team, actualLineup) => { received.push(['defense', team, actualLineup]); return 70; },
+  () => ({ atk: 0, def: 0 }),
+  (value, min, max) => Math.max(min, Math.min(max, value)),
+  () => { throw new Error('computeXG unexpectedly rebuilt a supplied lineup'); }
+);
+const homeTeam = { finance: { fanBase: 0.5 } };
+const awayTeam = { finance: { fanBase: 0.5 } };
+const homeLineup = { forwards: [], defense: [], goalie: null, skaters: [] };
+const awayLineup = { forwards: [], defense: [], goalie: null, skaters: [] };
+const xg = computeXG(homeTeam, awayTeam, { atkMod: 0, defMod: 0 }, { atkMod: 0, defMod: 0 }, homeLineup, awayLineup);
+assert.equal(received.length, 4, 'xG did not calculate all four lineup ratings');
+assert.ok(received.some(call => call[1] === homeTeam && call[2] === homeLineup));
+assert.ok(received.some(call => call[1] === awayTeam && call[2] === awayLineup));
+assert.ok(Number.isFinite(xg.xgH) && Number.isFinite(xg.xgA));
 
 console.log('Lineup rating checks passed.');
