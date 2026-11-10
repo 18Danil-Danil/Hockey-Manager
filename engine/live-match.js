@@ -110,12 +110,13 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
 function buildFormation(side, lineup = null) {
   const x = (a) => side === 'home' ? a : 200 - a;
   const slots = [
-    { x: x(35),  y: 50, role: 'goalie' },
-    { x: x(70),  y: 30, role: 'D' },
-    { x: x(70),  y: 70, role: 'D' },
-    { x: x(130), y: 25, role: 'F' },
-    { x: x(140), y: 50, role: 'C' },
-    { x: x(130), y: 75, role: 'F' },
+    // Goalie starts almost on the goal line, inside the crease.
+    { x: x(12), y: 50, role: 'goalie' },
+    { x: x(58), y: 34, role: 'D' },
+    { x: x(58), y: 66, role: 'D' },
+    { x: x(98), y: 24, role: 'F' },
+    { x: x(108), y: 50, role: 'C' },
+    { x: x(98), y: 76, role: 'F' },
   ];
   const defenders = lineup?.defense || (lineup?.skaters || []).filter(p => p.position === 'D');
   const forwards = lineup?.forwards || (lineup?.skaters || []).filter(p => p.position !== 'D');
@@ -815,7 +816,7 @@ function liveUpdatePositions() {
   const visualRng = window.GAME_RNG.visualRng;
   const sides = ['home', 'away'];
 
-  // После броска/голa шайба движется к точке действия, затем начинается новое владение.
+  // Loose puck: players react to the destination; possession resumes after the puck settles.
   if ((puck.looseFrames || 0) > 0) {
     puck.x += ((puck.targetX ?? 100) - puck.x) * 0.18;
     puck.y += ((puck.targetY ?? 50) - puck.y) * 0.18;
@@ -831,7 +832,7 @@ function liveUpdatePositions() {
   } else {
     puck.actionFrames = (puck.actionFrames || 0) - 1;
     if (puck.actionFrames <= 0) {
-      // Визуальная передача или перехват. Этот поток не влияет на игровой RNG.
+      // Visual-only pass/turnover. It never consumes the gameplay RNG stream.
       if (visualRng() < 0.18) puck.possessionSide = puck.possessionSide === 'home' ? 'away' : 'home';
       puck.carrierIndex = 3 + Math.floor(visualRng() * 3);
       puck.actionFrames = 70 + Math.floor(visualRng() * 80);
@@ -843,44 +844,76 @@ function liveUpdatePositions() {
   for (const side of sides) {
     const players = lm.positions[side] || [];
     const direction = directionFor(side);
+    const ownGoalX = side === 'home' ? 10 : 190;
     const hasPuck = side === possessionSide;
     const carrier = hasPuck ? players[puck.carrierIndex] : null;
     let closestSkater = null;
     let closestDistance = Infinity;
+
     for (const player of players) {
       if (player.role === 'goalie') continue;
       const distance = Math.hypot(puck.x - player.x, puck.y - player.y);
-      if (distance < closestDistance) { closestDistance = distance; closestSkater = player; }
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestSkater = player;
+      }
     }
 
     for (const player of players) {
       const isGoalie = player.role === 'goalie';
       const isCarrier = !!carrier && player === carrier;
-      const isForward = player.role === 'F' || player.role === 'C';
+      const isDefender = player.role === 'D';
       let targetX = player.baseX;
       let targetY = player.baseY;
-      if (!isGoalie) {
-        targetX += direction * (hasPuck ? (isForward ? 20 : 10) : -8);
+
+      if (isGoalie) {
+        // Goalie stays in the crease and tracks the puck laterally.
+        const puckInOwnZone = (puck.x - ownGoalX) * direction < 58;
+        targetX = ownGoalX + direction * (puckInOwnZone ? 5 : 2);
+        targetY = clamp(50 + (puck.y - 50) * 0.16, 42, 58);
+      } else if (hasPuck) {
         if (isCarrier) {
-          targetX += direction * 5;
-          targetY += (puck.y - player.baseY) * 0.22;
-        } else if (player === closestSkater && !hasPuck) {
-          targetX += (puck.x - player.x) * 0.12;
-          targetY += (puck.y - player.y) * 0.16;
+          // Puck carrier drives toward the attacking end instead of orbiting a fixed slot.
+          targetX = puck.x + direction * 8;
+          targetY = puck.y;
+        } else if (isDefender) {
+          // Defencemen support the attack from behind the puck and keep two lanes.
+          targetX = puck.x - direction * (player.idx === 1 ? 24 : 18);
+          targetY = puck.y + (player.idx === 1 ? -19 : 19);
         } else {
-          targetY += (puck.y - player.baseY) * (hasPuck ? 0.08 : 0.035);
+          // Forwards spread across the lanes; the centre trails slightly as a passing option.
+          const lane = player.idx === 3 ? -19 : player.idx === 4 ? 0 : 19;
+          targetX = puck.x + direction * (player.idx === 4 ? -11 : 13);
+          targetY = puck.y + lane;
         }
+      } else if (player === closestSkater) {
+        // The nearest forechecker pressures the puck; the rest retain defensive shape.
+        targetX = puck.x;
+        targetY = puck.y;
+      } else if (isDefender) {
+        // One defender protects the slot while the other shades toward the puck.
+        targetX = ownGoalX + direction * 29;
+        targetY = clamp(puck.y + (player.idx === 1 ? -17 : 17), 27, 73);
       } else {
-        // Вратарь остаётся у ворот, но отслеживает положение шайбы по вертикали.
-        targetY += (puck.y - player.y) * 0.08;
+        // Forwards backcheck between the puck and their own goal.
+        const lane = player.idx === 3 ? -17 : player.idx === 4 ? 0 : 17;
+        targetX = puck.x - direction * 18;
+        targetY = clamp(puck.y + lane, 14, 86);
       }
 
-      const jitter = isGoalie ? 0.006 : 0.018;
-      player.vx = (player.vx || 0) * 0.82 + (targetX - player.x) * 0.045
+      if (!isGoalie) {
+        targetX = clamp(targetX, 12, 188);
+        targetY = clamp(targetY, 10, 90);
+      }
+
+      // Small visual variation prevents robotic movement without making players drift.
+      const jitter = isGoalie ? 0.0015 : 0.004;
+      const response = isGoalie ? 0.055 : 0.035;
+      const maxSpeed = isGoalie ? 0.24 : isDefender ? 0.78 : 0.9;
+      player.vx = (player.vx || 0) * 0.78 + (targetX - player.x) * response
         + (visualRng() - 0.5) * jitter;
-      player.vy = (player.vy || 0) * 0.82 + (targetY - player.y) * 0.045
+      player.vy = (player.vy || 0) * 0.78 + (targetY - player.y) * response
         + (visualRng() - 0.5) * jitter;
-      const maxSpeed = isGoalie ? 0.22 : 0.72;
       player.vx = clamp(player.vx, -maxSpeed, maxSpeed);
       player.vy = clamp(player.vy, -maxSpeed, maxSpeed);
       player.x = clamp(player.x + player.vx, 5, 195);
