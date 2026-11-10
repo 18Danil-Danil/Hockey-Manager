@@ -728,6 +728,7 @@ window.VHL_SEASON_RESULTS = [
     },
     regularSeason: {
       source: 'https://www.championat.com/hockey/_highleague/tournament/6704/table/',
+      officialStandings: 'https://vhlru.ru/lenta/67998?PAGEN_1=101',
       officialRegularWinner: 'https://vhlru.ru/lenta/593469/',
       secondarySources: ['https://www.sport-express.net/hockey/L/vhl/2025-2026/', 'https://silasporta.ru/vhl/standings/2025-2026/'],
       sourceType: 'season_archive_cross_checked',
