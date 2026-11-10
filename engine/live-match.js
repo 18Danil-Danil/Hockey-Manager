@@ -939,8 +939,12 @@ function liveUpdatePositions() {
 
   // Loose puck: players react to the destination; possession resumes after the puck settles.
   if ((puck.looseFrames || 0) > 0) {
-    puck.x += ((puck.targetX ?? 100) - puck.x) * 0.18;
-    puck.y += ((puck.targetY ?? 50) - puck.y) * 0.18;
+    const receiver = Number.isInteger(puck.nextCarrierIndex)
+      ? (lm.positions[puck.nextPossessionSide] || [])[puck.nextCarrierIndex] : null;
+    const targetX = receiver ? receiver.x : (puck.targetX ?? 100);
+    const targetY = receiver ? receiver.y : (puck.targetY ?? 50);
+    puck.x += (targetX - puck.x) * 0.18;
+    puck.y += (targetY - puck.y) * 0.18;
     puck.looseFrames--;
     if (puck.looseFrames === 0) {
       puck.possessionSide = puck.nextPossessionSide || puck.possessionSide || 'home';
