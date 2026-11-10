@@ -181,7 +181,7 @@ function renderGames() {
     const game = G.selectedGamePbp; const home = G.league.teams.find(t => t.id === game.homeId); const away = G.league.teams.find(t => t.id === game.awayId);
     let html = `<button class="btn secondary" onclick="G.selectedGamePbp=null; render();">← Назад</button>`;
     html += `<h2>${away.name} ${game.ag} : ${game.hg} ${home.name} ${game.shootout ? '(буллиты)' : game.ot ? '(ОТ)' : ''}</h2><div class="pbp-container">`;
-    for (const ev of game.pbp || []) { if (ev.type === 'period') { html += `<div class="pbp-period">${ev.text}</div>`; continue; } const cls = ev.type === 'goal' ? 'pbp-goal' : ev.type === 'penalty' ? 'pbp-penalty' : ev.type === 'shot' ? 'pbp-shot' : 'pbp-faceoff'; html += `<div class="${cls}">[${ev.time}] ${ev.text}</div>`; }
+    for (const ev of game.pbp || []) { if (ev.type === 'period') { html += `<div class="pbp-period">${ev.text}</div>`; continue; } const cls = ev.type === 'goal' ? 'pbp-goal' : ev.type === 'penalty' ? 'pbp-penalty' : (ev.type === 'shot' || ev.type === 'shootout') ? 'pbp-shot' : 'pbp-faceoff'; html += `<div class="${cls}">[${ev.time}] ${ev.text}</div>`; }
     html += `</div>`; return html;
   }
   if (G.league.results.length === 0) return `<div class="subtitle">Матчей ещё не было.</div>`;
