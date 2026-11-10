@@ -64,6 +64,26 @@ function hydratePlayerNameRegistry(league) {
   scan(league);
   return registry.size;
 }
+function getPlayerNamePartWeight(nationality, kind, value) {
+  const profile = window.PLAYER_NAME_FREQUENCY?.[nationality]?.[kind] || {};
+  const key = normalizePlayerNameKey(value);
+  const common = (profile.common || []).some(item => normalizePlayerNameKey(item) === key);
+  const rare = (profile.rare || []).some(item => normalizePlayerNameKey(item) === key);
+  if (rare) return 1;
+  if (common) return 35;
+  return 10;
+}
+function pickWeightedPlayerNamePart(values, nationality, kind) {
+  if (!values?.length) return '';
+  const weights = values.map(value => getPlayerNamePartWeight(nationality, kind, value));
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  let roll = randInt(1, total);
+  for (let i = 0; i < values.length; i++) {
+    roll -= weights[i];
+    if (roll <= 0) return values[i];
+  }
+  return values[values.length - 1];
+}
 function generatePlayerName(nationality) {
   const registry = getPlayerNameRegistry();
   const pool = window.PLAYER_DATA.NAME_POOLS[nationality] || { first: FIRST, last: LAST };
@@ -84,6 +104,19 @@ function generatePlayerName(nationality) {
     }
     return null;
   };
+  // Сначала выбираем части имени с учётом распространённости.
+  // Редкие исторические имена остаются в пуле, но имеют существенно меньший вес.
+  for (let attempt = 0; attempt < 64; attempt++) {
+    const firstName = pickWeightedPlayerNamePart(pool.first || FIRST, nationality, 'first');
+    const lastName = pickWeightedPlayerNamePart(pool.last || LAST, nationality, 'last');
+    const candidate = (firstName + ' ' + lastName).trim();
+    const key = normalizePlayerNameKey(candidate);
+    if (candidate && !registry.has(key)) {
+      registry.add(key);
+      return candidate;
+    }
+  }
+  // Если популярные сочетания уже заняты, используем полный пул без потери уникальности.
   const uniqueName = takeUnique(pool);
   if (uniqueName) return uniqueName;
   const fallbackName = takeUnique({ first: FIRST, last: LAST });
