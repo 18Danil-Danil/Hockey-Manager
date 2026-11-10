@@ -18,7 +18,7 @@ window.VHL_HISTORICAL_SEASONS = [
   { season: '2022/23', participants: 26, champion: 'Химик', championCity: 'Воскресенск', finalist: 'Сокол', finalistCity: 'Красноярск', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', seasonSilver: 'Сокол', seasonSilverCity: 'Красноярск', seasonBronze: 'Металлург', seasonBronzeCity: 'Новокузнецк', status: 'completed', note: '«Химик» выиграл Кубок Петрова; «Сокол» — серебряный, «Металлург» — бронзовый призёр Всероссийского соревнования.' },
   { season: '2023/24', participants: 29, champion: 'Нефтяник', championCity: 'Альметьевск', finalist: 'АКМ', finalistCity: 'Тульская область', regularWinner: 'Молот', regularWinnerCity: 'Пермь', seasonSilver: 'АКМ', seasonSilverCity: 'Тульская область', seasonBronze: 'Рубин', seasonBronzeCity: 'Тюмень', status: 'completed', note: '«Нефтяник» выиграл Кубок Петрова; АКМ — серебряный, «Рубин» — бронзовый призёр Всероссийского соревнования.' },
   { season: '2024/25', participants: 33, champion: 'Торпедо-Горький', championCity: 'Нижний Новгород', finalist: 'Химик', finalistCity: 'Воскресенск', regularWinner: 'Металлург', regularWinnerCity: 'Новокузнецк', seasonSilver: 'Химик', seasonSilverCity: 'Воскресенск', seasonBronze: 'Динамо СПб', seasonBronzeCity: 'Санкт-Петербург', status: 'completed', note: '«Торпедо-Горький» завоевал Кубок Чемпиона России; «Химик» — серебряный, «Динамо СПб» — бронзовый призёр. «Металлург» выиграл регулярный чемпионат и Кубок Всероссийской хоккейной лиги.' },
-  { season: '2025/26', participants: 32, champion: 'Югра', championCity: 'Ханты-Мансийск', finalist: 'Химик', finalistCity: 'Воскресенск', regularWinner: 'Металлург', regularWinnerCity: 'Новокузнецк', status: 'completed' }
+  { season: '2025/26', participants: 32, champion: 'Югра', championCity: 'Ханты-Мансийск', finalist: 'Химик', finalistCity: 'Воскресенск', regularWinner: 'Металлург', regularWinnerCity: 'Новокузнецк', seasonSilver: 'Химик', seasonSilverCity: 'Воскресенск', seasonBronze: 'Металлург', seasonBronzeCity: 'Новокузнецк', status: 'completed', note: '«Югра» завоевала Кубок Чемпиона России, победив «Химик» в финале 4:1. «Металлург» — бронзовый призёр; он также выиграл регулярный чемпионат.' }
 ];
 
 // Сводные награды по историческим клубам, включая команды, которых нет в текущей базе.
@@ -31,14 +31,14 @@ window.VHL_HISTORICAL_CLUB_HONOURS = {
   'Динамо (Балашиха)': { championships: ['2016/17'], regularTitles: [], finals: [] },
   'Динамо СПб': { championships: ['2017/18'], regularTitles: ['2017/18'], finals: ['2021/22'] },
   'Югра (Ханты-Мансийск)': { championships: ['2020/21', '2025/26'], regularTitles: ['2020/21', '2021/22', '2022/23'], finals: [], seasonBronzes: ['2021/22'] },
-  'Химик (Воскресенск)': { championships: ['2022/23'], regularTitles: [], finals: ['2024/25', '2025/26'], seasonSilvers: ['2024/25'] },
+  'Химик (Воскресенск)': { championships: ['2022/23'], regularTitles: [], finals: ['2024/25', '2025/26'], seasonSilvers: ['2024/25', '2025/26'] },
   'Торпедо-Горький (Нижний Новгород)': { championships: ['2024/25'], regularTitles: [], finals: [] },
   'Ижсталь (Ижевск)': { championships: [], regularTitles: [], finals: ['2014/15', '2015/16'] },
   'Торпедо (Усть-Каменогорск)': { championships: [], regularTitles: ['2016/17'], finals: ['2016/17'] },
   'Динамо (Санкт-Петербург)': { championships: ['2017/18'], regularTitles: ['2017/18'], finals: ['2021/22'], seasonSilvers: ['2019/20', '2021/22'], seasonBronzes: ['2024/25'] },
   'СКА-Нева (Санкт-Петербург)': { championships: [], regularTitles: ['2018/19'], finals: ['2017/18'], seasonBronzes: ['2019/20'] },
   'ТХК (Тверь)': { championships: [], regularTitles: ['2015/16'], finals: [] },
-  'Металлург (Новокузнецк)': { championships: [], regularTitles: ['2024/25', '2025/26'], finals: ['2020/21'], seasonSilvers: ['2020/21'], seasonBronzes: ['2022/23'] },
+  'Металлург (Новокузнецк)': { championships: [], regularTitles: ['2024/25', '2025/26'], finals: ['2020/21'], seasonSilvers: ['2020/21'], seasonBronzes: ['2022/23', '2025/26'] },
   'Молот (Пермь)': { championships: [], regularTitles: ['2023/24'], finals: [] },
   'АКМ (Тульская область)': { championships: [], regularTitles: [], finals: ['2023/24'], seasonSilvers: ['2023/24'] },
   'Сокол (Красноярск)': { championships: [], regularTitles: [], finals: ['2022/23'], seasonSilvers: ['2022/23'] }
