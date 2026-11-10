@@ -232,45 +232,72 @@ function renderCalendar() {
    ============================================================ */
 function renderRoster() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
+  if (!team) return '<div class="subtitle">Состав клуба не найден.</div>';
   const benchSet = new Set(team.bench || []);
-  let skaters = team.roster.filter(p => p.position !== 'G' && !benchSet.has(p.id));
-  let goalies = team.roster.filter(p => p.position === 'G' && !benchSet.has(p.id));
+  const active = team.roster.filter(p => !benchSet.has(p.id));
+  const skaters = active.filter(p => p.position !== 'G');
+  const goalies = active.filter(p => p.position === 'G');
   const benched = team.roster.filter(p => benchSet.has(p.id));
-  const sort = G.rosterSort;
+  const sort = G.rosterSort || 'ovr';
   const sortPlayers = (arr) => arr.slice().sort((a, b) => {
     const sa = ensureStats(a), sb = ensureStats(b);
-    if (sort === 'ovr') return b.ovr - a.ovr; if (sort === 'age') return a.age - b.age;
+    if (sort === 'ovr') return b.ovr - a.ovr;
+    if (sort === 'age') return a.age - b.age;
     if (sort === 'points') return (sb.points || 0) - (sa.points || 0);
     if (sort === 'salary') return b.contract.salary - a.contract.salary;
-    if (sort === 'health') { const ha = (a.injury && a.injury.gamesLeft > 0) ? 100 + a.injury.gamesLeft : a.fatigue; const hb = (b.injury && b.injury.gamesLeft > 0) ? 100 + b.injury.gamesLeft : b.fatigue; return hb - ha; }
+    if (sort === 'health') {
+      const ha = a.injury && a.injury.gamesLeft > 0 ? 100 + a.injury.gamesLeft : a.fatigue;
+      const hb = b.injury && b.injury.gamesLeft > 0 ? 100 + b.injury.gamesLeft : b.fatigue;
+      return hb - ha;
+    }
     return 0;
   });
-  skaters = sortPlayers(skaters); goalies = sortPlayers(goalies);
-  const sortSelect = `<select onchange="G.rosterSort=this.value; render();" style="background:#1a1e2a;color:#e6e8ee;border:1px solid #2a3042;padding:6px 10px;border-radius:4px;margin-bottom:12px"><option value="ovr"${sort === 'ovr' ? ' selected' : ''}>По OVR</option><option value="age"${sort === 'age' ? ' selected' : ''}>По возрасту</option><option value="points"${sort === 'points' ? ' selected' : ''}>По очкам</option><option value="salary"${sort === 'salary' ? ' selected' : ''}>По зарплате</option><option value="health"${sort === 'health' ? ' selected' : ''}>По состоянию</option></select>`;
-  const nameCell = (p) => {
-    let badge = '';
-    if (p.injury && p.injury.gamesLeft > 0) badge = p.playingThroughPain ? `<span style="color:#ef4444;font-size:11px"> 🩹${p.injury.gamesLeft}</span>` : `<span style="color:#ef4444;font-size:11px"> 🚑${p.injury.gamesLeft}</span>`;
-    else if (p.fatigue > 80) badge = `<span> 🥵</span>`; else if (p.fatigue < 20) badge = `<span> ⚡</span>`;
+  const sortedSkaters = sortPlayers(skaters);
+  const sortedGoalies = sortPlayers(goalies);
+  const totalSalary = team.roster.reduce((sum, p) => sum + (p.contract?.salary || 0), 0);
+  const injured = team.roster.filter(p => p.injury && p.injury.gamesLeft > 0);
+  const avgOvr = active.length ? Math.round(active.reduce((sum, p) => sum + p.ovr, 0) / active.length) : 0;
+  const sortOptions = [
+    ['ovr', 'По рейтингу'], ['points', 'По очкам'], ['age', 'По возрасту'],
+    ['salary', 'По зарплате'], ['health', 'По состоянию']
+  ].map(([key, label]) => '<option value="' + key + '"' + (sort === key ? ' selected' : '') + '>' + label + '</option>').join('');
+  const playerCard = (p, goalie) => {
+    const s = ensureStats(p);
+    const cls = p.ovr >= 85 ? 'elite' : p.ovr >= 75 ? 'strong' : 'developing';
+    const position = p.position === 'G' ? 'ВР' : p.position === 'D' ? 'ЗАЩ' : 'НАП';
     const char = CHARACTERS[p.character] || CHARACTERS.calm;
-    return `<a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a>${badge} <span class="char-badge ${char.cls}">${char.label}</span> ${p.nationality !== 'Россия' ? '🌍' : ''}`;
+    const injuredNow = p.injury && p.injury.gamesLeft > 0;
+    const condition = injuredNow
+      ? '<span class="roster-status injured">' + (p.playingThroughPain ? '🩹 Играет с травмой' : '🚑 Травма') + ' · ' + p.injury.gamesLeft + ' игр</span>'
+      : p.fatigue > 80 ? '<span class="roster-status tired">🥵 Усталость</span>'
+      : p.fatigue < 20 ? '<span class="roster-status fresh">⚡ Отличное состояние</span>'
+      : '<span class="roster-status healthy">● В строю</span>';
+    const stats = goalie
+      ? '<div class="roster-player-stats"><div><b>' + s.gp + '</b><small>МАТЧИ</small></div><div><b>' + s.wins + '</b><small>ПОБЕДЫ</small></div><div><b>' + (s.shotsAgainst > 0 ? (s.saves / s.shotsAgainst).toFixed(3).replace(/^0/, '') : '—') + '</b><small>SV%</small></div><div><b>' + (s.gp > 0 ? (s.goalsAgainst / s.gp).toFixed(2) : '—') + '</b><small>КН</small></div></div>'
+      : '<div class="roster-player-stats"><div><b>' + s.gp + '</b><small>МАТЧИ</small></div><div><b>' + s.goals + '</b><small>ГОЛЫ</small></div><div><b>' + s.assists + '</b><small>ПЕРЕДАЧИ</small></div><div class="highlight"><b>' + s.points + '</b><small>ОЧКИ</small></div></div>';
+    const potential = p.pot > p.ovr ? '<span class="roster-potential">▲ Потенциал ' + p.pot + '</span>' : '';
+    const country = p.nationality && p.nationality !== 'Россия' ? '<span class="roster-country">🌍 ' + p.nationality + '</span>' : '';
+    return '<article class="roster-player-card ' + cls + (injuredNow ? ' is-injured' : '') + '">' +
+      '<div class="roster-card-top"><span class="roster-position ' + (goalie ? 'goalie' : p.position === 'D' ? 'defence' : 'forward') + '">' + position + '</span><span class="roster-player-age">' + p.age + ' лет</span></div>' +
+      '<div class="roster-player-identity"><div class="roster-player-name"><a href="#" onclick="event.preventDefault();G.popupPlayerId=' + p.id + ';render();">' + p.name + '</a></div><div class="roster-player-meta"><span class="char-badge ' + char.cls + '">' + char.label + '</span>' + country + '</div></div>' +
+      '<div class="roster-rating-row"><div class="roster-rating"><strong>' + p.ovr + '</strong><small>OVR</small></div><div class="roster-rating-caption"><span>Общий рейтинг</span>' + potential + '</div><div class="roster-salary"><b>' + (p.contract.salary || 0).toFixed(1) + '</b><small>млн ₽ / сезон</small></div></div>' +
+      stats + '<div class="roster-card-bottom">' + condition + '<div class="roster-card-actions"><button class="btn small secondary" onclick="sendToBench(' + p.id + ');render();" title="Отправить на скамейку">🪑</button><button class="btn small danger" onclick="putOnWaivers(' + p.id + ');render();" title="Выставить на драфт отказов (' + (team.waiversUsed || 0) + '/3)">📤</button></div></div></article>';
   };
-  const actionBtns = (p) => `<button class="btn small secondary" onclick="sendToBench(${p.id}); render();">🪑</button><button class="btn small danger" onclick="putOnWaivers(${p.id}); render();" title="Отказы (${team.waiversUsed || 0}/3)">📤</button>`;
-  const skaterRows = skaters.map(p => {
-    ensureStats(p); const group = p.position === 'D' ? 'D' : 'F'; const cls = p.ovr >= 85 ? 'hi' : p.ovr >= 75 ? 'mid' : 'lo';
-    const potTag = p.pot > p.ovr ? `<span class="pot">▲${p.pot - p.ovr}</span>` : ''; const s = p.stats;
-    return `<tr><td><span class="pos ${group}">${p.position}</span></td><td>${nameCell(p)}</td><td>${p.age}</td><td class="ovr ${cls}">${p.ovr}${potTag}</td><td class="stat-cell">${s.gp}</td><td class="stat-cell">${s.goals}</td><td class="stat-cell">${s.assists}</td><td class="stat-cell" style="font-weight:700;color:#ff6b35">${s.points}</td><td>${actionBtns(p)}</td></tr>`;
-  }).join('');
-  const goalieRows = goalies.map(p => {
-    ensureStats(p); const cls = p.ovr >= 85 ? 'hi' : p.ovr >= 75 ? 'mid' : 'lo';
-    const potTag = p.pot > p.ovr ? `<span class="pot">▲${p.pot - p.ovr}</span>` : ''; const s = p.stats;
-    const svPct = s.shotsAgainst > 0 ? (s.saves / s.shotsAgainst).toFixed(3).replace(/^0/, '') : '—';
-    const gaa = s.gp > 0 ? (s.goalsAgainst / s.gp).toFixed(2) : '—';
-    return `<tr><td><span class="pos G">G</span></td><td>${nameCell(p)}</td><td>${p.age}</td><td class="ovr ${cls}">${p.ovr}${potTag}</td><td class="stat-cell">${s.gp}</td><td class="stat-cell">${s.wins}</td><td class="stat-cell" style="font-weight:700">${svPct}</td><td class="stat-cell">${gaa}</td><td>${actionBtns(p)}</td></tr>`;
-  }).join('');
-  const benchHtml = benched.length ? `<div class="bench-section"><div class="bench-title">🪑 На скамейке (${benched.length})</div>${benched.map(p => `<div class="bench-row"><span>${nameCell(p)} <span class="tag">${p.position} · ${p.ovr}</span></span><button class="btn small" onclick="removeFromBench(${p.id}); render();">⬆️ Вернуть</button></div>`).join('')}</div>` : '';
-  return `${sortSelect}<div class="subtitle">Драфт отказов: ${team.waiversUsed || 0}/3 за сезон</div>${benchHtml}<h2>Нападающие и защитники (${skaters.length})</h2><table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>И</th><th>Г</th><th>А</th><th>О</th><th></th></tr></thead><tbody>${skaterRows}</tbody></table><h2>Вратари (${goalies.length})</h2><table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>И</th><th>В</th><th>SV%</th><th>КН</th><th></th></tr></thead><tbody>${goalieRows}</tbody></table>`;
+  const cards = (arr, goalie) => arr.length
+    ? '<div class="roster-card-grid">' + arr.map(p => playerCard(p, goalie)).join('') + '</div>'
+    : '<div class="roster-empty">В этой категории пока нет игроков.</div>';
+  const benchHtml = benched.length
+    ? '<section class="roster-bench"><div class="roster-section-heading"><div><span class="roster-eyebrow">РЕЗЕРВ</span><h3>На скамейке <small>' + benched.length + '</small></h3></div><span>Игроки не участвуют в активном составе</span></div><div class="roster-bench-list">' + benched.map(p => '<div class="roster-bench-row"><div><b>' + p.name + '</b><span>' + p.position + ' · OVR ' + p.ovr + ' · ' + p.age + ' лет</span></div><button class="btn small" onclick="removeFromBench(' + p.id + ');render();">⬆ Вернуть в состав</button></div>').join('') + '</div></section>'
+    : '';
+  return '<section class="roster-management">' +
+    '<div class="roster-hero"><div><span class="roster-eyebrow">СПОРТИВНЫЙ ОТДЕЛ · ' + team.name + '</span><h2>Состав команды</h2><p>Управляй игроками, следи за формой и контролируй зарплатную ведомость.</p></div><div class="roster-sort-control"><label for="roster-sort">Сортировка</label><select id="roster-sort" onchange="G.rosterSort=this.value;render();">' + sortOptions + '</select></div></div>' +
+    '<div class="roster-overview-stats"><div><span>АКТИВНЫЙ СОСТАВ</span><b>' + active.length + '</b><small>игроков</small></div><div><span>СРЕДНИЙ OVR</span><b>' + avgOvr + '</b><small>по активному составу</small></div><div><span>ТРАВМЫ</span><b class="' + (injured.length ? 'negative' : 'positive') + '">' + injured.length + '</b><small>' + (injured.length ? 'в лазарете' : 'все здоровы') + '</small></div><div><span>ЗАРПЛАТНАЯ ВЕДОМОСТЬ</span><b>' + totalSalary.toFixed(1) + '</b><small>млн ₽ за сезон</small></div></div>' +
+    '<div class="roster-section-heading"><div><span class="roster-eyebrow">ПОЛЕВЫЕ ИГРОКИ</span><h3>Нападающие и защитники <small>' + skaters.length + '</small></h3></div><span>Нажми на имя, чтобы открыть карточку игрока</span></div>' + cards(sortedSkaters, false) +
+    '<div class="roster-section-heading roster-goalies-heading"><div><span class="roster-eyebrow">ПОСЛЕДНИЙ РУБЕЖ</span><h3>Вратари <small>' + goalies.length + '</small></h3></div><span>SV% — процент отражённых бросков</span></div>' + cards(sortedGoalies, true) +
+    benchHtml +
+    '<div class="roster-footer-note">Драфт отказов: <b>' + (team.waiversUsed || 0) + '/3</b> использовано за сезон. Перевод на скамейку и выставление на драфт отказов доступны на карточке каждого игрока.</div>' +
+    '</section>';
 }
-
 function renderLines() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   if (!team.lines) initLines(team);
