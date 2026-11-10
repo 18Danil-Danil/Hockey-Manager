@@ -73,6 +73,7 @@ function newGame() {
   G.injuryPrompt = null; G.skipInjuryPrompt = false; G.openingCupModal = null;
   G.liveMatch = null;
   render();
+  saveGame({ immediate: true });
 }
 async function start() {
   if (await loadGame()) { ensureAllLines(); initAISponsors(); render(); return; }
