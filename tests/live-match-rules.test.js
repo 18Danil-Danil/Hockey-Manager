@@ -34,7 +34,7 @@ function makeLiveState() {
       homeId: 'home', awayId: 'away', period: 1, timeLeft: 1000,
       totalSecPlayed: 0, xgCurrent: { home: 2.5, away: 2.5 },
       penalties: { home: [], away: [] },
-      shots: { home: 0, away: 0 },
+      shots: { home: 0, away: 0 }, shotAttempts: { home: 0, away: 0 },
       goalieStats: { home: { shots: 0, goals: 0 }, away: { shots: 0, goals: 0 } },
       homeLineup: { skaters: [homePlayer] }, awayLineup: { skaters: [awayPlayer] },
       isPlayoff: false, events: [],
@@ -64,6 +64,29 @@ assert.equal(state.lm.goalieStats.away.shots, 1, 'away goalie did not face the h
 assert.equal(state.lm.goalieStats.home.shots, 1, 'home goalie did not face the away shot');
 assert.equal(ensureStats(state.homePlayer).shots, 1);
 assert.equal(ensureStats(state.awayPlayer).shots, 1);
+
+// Missed shots and posts are attempts, not shots on goal or goalie saves.
+const missState = makeLiveState();
+const missRandomValues = [0.99, 0.99, 0.01, 0.1];
+let missRandomIndex = 0;
+const missStats = new Map();
+const ensureMissStats = p => {
+  if (!missStats.has(p.id)) missStats.set(p.id, { shots: 0 });
+  return missStats.get(p.id);
+};
+const missAdvance = liveAdvance(
+  { liveMatch: missState.lm }, () => missRandomValues[missRandomIndex++],
+  () => false, () => {}, () => {},
+  players => players[0], arr => arr[0], arr => arr[3],
+  ensureMissStats, ensureMissStats, ev => missState.lm.events.push(ev),
+  () => '19:00', () => 'HOME', () => 'AWAY',
+  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v))
+);
+missAdvance(5);
+assert.equal(missState.lm.shotAttempts.home, 1, 'missed attempt was not recorded');
+assert.equal(missState.lm.shots.home, 0, 'missed shot incorrectly counted on goal');
+assert.equal(missState.lm.goalieStats.away.shots, 0, 'goalie incorrectly credited with a missed shot');
+assert.equal(ensureMissStats(missState.homePlayer).shots, 0, 'skater shot-on-goal stat incorrectly includes a miss');
 
 // LIVE calibration constants must stay aligned with the tested simulation.
 assert.match(source, /const LIVE_XG_MULTIPLIER = 0\.96/);
@@ -137,5 +160,48 @@ assert.equal(lm.ag, 3, 'shootout winner should receive the deciding team goal');
 assert.equal(lm.shootoutAttempts.home, lm.shootoutAttempts.away);
 assert.equal(finished, true, 'shootout did not finish the match');
 assert.ok(lm.pbp.length >= 0);
+
+
+// Formation slots must refer to actual players from the selected match lineup.
+const formationSource = source.slice(
+  source.indexOf('function buildFormation('),
+  source.indexOf('function livePushEvent(', source.indexOf('function buildFormation('))
+);
+const buildFormation = new Function(`${formationSource}; return buildFormation;`)();
+const goalie = { id: 'g1', name: 'Goalie', position: 'G' };
+const defenders = [{ id: 'd1', name: 'D1', position: 'D' }, { id: 'd2', name: 'D2', position: 'D' }];
+const forwards = [
+  { id: 'f1', name: 'F1', position: 'F' },
+  { id: 'f2', name: 'F2', position: 'C' },
+  { id: 'f3', name: 'F3', position: 'F' },
+];
+const formation = buildFormation('home', { goalie, defense: defenders, forwards, skaters: [...defenders, ...forwards] });
+assert.deepEqual(formation.map(p => p.playerId), ['g1', 'd1', 'd2', 'f1', 'f2', 'f3']);
+assert.equal(formation[0].role, 'goalie');
+
+// Possession-based animation must keep players on the rink and move the puck
+// with its carrier, using only the visual random stream.
+const animationStart = source.indexOf('function liveUpdatePositions(');
+const animationEnd = source.indexOf('function liveAnimationLoop(', animationStart);
+assert.ok(animationStart >= 0 && animationEnd > animationStart);
+const animationSource = source.slice(animationStart, animationEnd);
+const liveUpdatePositions = new Function(
+  'G', 'window', 'clamp', `${animationSource}; return liveUpdatePositions;`
+);
+const homePositions = formation.map(p => ({ ...p }));
+const awayPositions = buildFormation('away', { goalie: { id: 'ag', position: 'G' }, defense: defenders, forwards, skaters: [...defenders, ...forwards] });
+const animationState = {
+  positions: {
+    home: homePositions, away: awayPositions,
+    puck: { x: 100, y: 50, vx: 0, vy: 0, possessionSide: 'home', carrierIndex: 3, actionFrames: 40, looseFrames: 0 },
+  },
+};
+const visualWindow = { GAME_RNG: { visualRng: () => 0.5 } };
+liveUpdatePositions({ liveMatch: animationState }, visualWindow, (v, min, max) => Math.max(min, Math.min(max, v)))();
+assert.ok(homePositions.every(p => p.x >= 5 && p.x <= 195 && p.y >= 5 && p.y <= 95));
+assert.ok(awayPositions.every(p => p.x >= 5 && p.x <= 195 && p.y >= 5 && p.y <= 95));
+assert.ok(Math.abs(animationState.positions.puck.x - (homePositions[3].x + 3.2)) < 30,
+  'puck did not move toward the home carrier');
+assert.ok(animationState.positions.puck.x > 100, 'home possession did not advance toward the attacking half');
 
 console.log('LIVE match rules checks passed.');
