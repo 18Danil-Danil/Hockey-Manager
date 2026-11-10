@@ -290,7 +290,10 @@ async function importCareerFile(file) {
       return false;
     }
     if (!await loadGame()) {
-      if (previousSave) await writeStoredSave(typeof previousSave === 'string' ? previousSave : JSON.stringify(previousSave));
+      if (previousSave) {
+        await writeStoredSave(typeof previousSave === 'string' ? previousSave : JSON.stringify(previousSave));
+        if (await loadGame()) { ensureAllLines(); initAISponsors(); render(); }
+      }
       if (typeof showToast === 'function') showToast('Не удалось восстановить карьеру. Прежнее сохранение восстановлено.', 'error', 7000);
       return false;
     }
@@ -302,7 +305,10 @@ async function importCareerFile(file) {
   } catch (error) {
     console.error('Ошибка импорта карьеры:', error);
     if (previousSave) {
-      try { await writeStoredSave(typeof previousSave === 'string' ? previousSave : JSON.stringify(previousSave)); } catch (restoreError) {}
+      try {
+        await writeStoredSave(typeof previousSave === 'string' ? previousSave : JSON.stringify(previousSave));
+        if (await loadGame()) { ensureAllLines(); initAISponsors(); render(); }
+      } catch (restoreError) {}
     }
     if (typeof showToast === 'function') showToast('Не удалось прочитать файл сохранения', 'error');
     return false;
