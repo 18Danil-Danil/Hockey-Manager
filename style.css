@@ -503,3 +503,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .club-directory-card { padding: 14px; }
   .directory-tools #club-directory-count { width: 100%; }
 }
+
+@media (max-width: 760px) {
+  table { display: block; max-width: 100%; overflow-x: auto; white-space: nowrap; }
+  .table-scroll table { display: table; }
+}
