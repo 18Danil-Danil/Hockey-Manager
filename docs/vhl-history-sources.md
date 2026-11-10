@@ -30,14 +30,14 @@
 Для регулярных чемпионатов и плей-офф использованы сезонные архивы и турнирные сетки:
 
 | Сезон | Регулярный чемпионат | Плей-офф |
-| 2015/16 | [Итоговая таблица](https://www.championat.com/hockey/_highleague/tournament/1645/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/1731/table/) |
 |---|---|---|
-| 2014/15 | [Официальный путеводитель ВХЛ, итоговая таблица сезона 2014/15](https://www.vhlru.ru/upload/all11_w.pdf); [архивная таблица](https://www.championat.com/hockey/_highleague/tournament/1092/table/) | [Официальный путеводитель ВХЛ](https://www.vhlru.ru/upload/all11_w.pdf); [сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/1220/table/) |
 | 2025/26 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/6704/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6996/) |
 | 2024/25 | [Турнирная таблица](https://www.sport-express.net/hockey/L/vhl/2024-2025/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6448/) |
 | 2023/24 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/5601/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5852/) |
 | 2022/23 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/5111/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5257/) |
 | 2021/22 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/4691/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/4887/) |
+| 2015/16 | [Итоговая таблица](https://www.championat.com/hockey/_highleague/tournament/1645/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/1731/table/) |
+| 2014/15 | [Официальный путеводитель ВХЛ, итоговая таблица сезона 2014/15](https://www.vhlru.ru/upload/all11_w.pdf); [архивная таблица](https://www.championat.com/hockey/_highleague/tournament/1092/table/) | [Официальный путеводитель ВХЛ](https://www.vhlru.ru/upload/all11_w.pdf); [сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/1220/table/) |
 | 2013/14 | [Официальный ежегодный отчёт ВХЛ, таблица регулярного чемпионата](https://www.vhlru.ru/upload/VHL_4.pdf) | [Официальная сетка плей-офф в ежегодном отчёте](https://www.vhlru.ru/upload/VHL_4.pdf) |
 Дополнительно: [официальное сообщение ВХЛ о чемпионстве «Югры» в сезоне 2025/26](https://vhlru.ru/lenta/603534/).
 
