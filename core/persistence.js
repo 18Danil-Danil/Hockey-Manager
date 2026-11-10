@@ -43,6 +43,9 @@ function loadGame() {
     G.noFireMode = data.noFireMode || false;
     G.career = data.career || { reputation: 50, history: [] };
     (G.career.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
+    for (const list of [G.league.transferLog, G.league.news, G.league.inbox, G.league.retiredPlayers]) {
+      (list || []).forEach(item => { if (item.season !== undefined) item.season = normalizeSeasonLabel(item.season); });
+    }
     G.league.teams.forEach(t => {
       (t.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
       if (t.trophies) for (const key of ['petrov', 'regular', 'opening', 'finals']) {
