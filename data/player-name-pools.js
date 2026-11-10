@@ -948,8 +948,33 @@
       if (pool.last.length > targetCount) pool.last.length = targetCount;
     }
   }
+  for (const [nationality, extra] of Object.entries(expandedAdditions)) {
+    const pool = data.NAME_POOLS[nationality];
+    if (!pool) continue;
+    mergeUnique(pool.first, extra.first);
+    mergeUnique(pool.last, extra.last);
+  }
+
+  // Убираем уже существовавшие повторы (в том числе разные варианты ё/е).
+  const dedupeInPlace = values => {
+    const seen = new Set();
+    let write = 0;
+    for (const value of values || []) {
+      const key = String(value).normalize('NFKC').trim().toLocaleLowerCase('ru').replace(/ё/g, 'е').replace(/\\s+/g, ' ');
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      values[write++] = value;
+    }
+    values.length = write;
+  };
+  for (const pool of Object.values(data.NAME_POOLS)) {
+    dedupeInPlace(pool.first);
+    dedupeInPlace(pool.last);
+  }
+
   mergeUnique(data.FIRST, additions['Россия'].first);
+  mergeUnique(data.FIRST, expandedAdditions['Россия'].first);
   mergeUnique(data.LAST, additions['Россия'].last);
   mergeUnique(data.LAST, additions['Россия'].surnameExpansion);
-  window.PLAYER_NAME_POOL_VERSION = 3;
+  window.PLAYER_NAME_POOL_VERSION = 4;
 })();
