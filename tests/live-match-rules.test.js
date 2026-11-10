@@ -80,7 +80,7 @@ const homeShooter = { id: 'hs', name: 'Home', ovr: 60 };
 const awayShooter = { id: 'as', name: 'Away', ovr: 60 };
 const lm = {
   homeId: 'home', awayId: 'away', hg: 2, ag: 2, ot: true,
-  period: 4, timeLeft: 0, shootout: false, shootoutAttempts: { home: 0, away: 0 },
+  period: 4, timeLeft: 0, shootout: false, pbp: [], shootoutAttempts: { home: 0, away: 0 },
   homeLineup: { skaters: [homeShooter], goalie: { name: 'Home goalie' } },
   awayLineup: { skaters: [awayShooter], goalie: { name: 'Away goalie' } },
   events: [], pbp: [], intervalId: null, isFinished: false,
