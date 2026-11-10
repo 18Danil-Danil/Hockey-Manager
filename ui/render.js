@@ -838,60 +838,76 @@ function renderHistory() {
    ============================================================ */
 function renderModal() {
   if (!G.popupPlayerId) return '';
-  let foundPlayer = null, foundTeam = null;
-  for (const t of G.league.teams) { const p = t.roster.find(x => x.id === G.popupPlayerId); if (p) { foundPlayer = p; foundTeam = t; break; } }
-  if (!foundPlayer) foundPlayer = (G.league.freeAgents || []).find(x => x.id === G.popupPlayerId);
-  if (!foundPlayer) { G.popupPlayerId = null; return ''; }
-  const p = foundPlayer, isG = p.position === 'G', attrs = isG ? GOALIE_ATTRS : SKATER_ATTRS;
-  const s = ensureStats(p); const ps = ensurePlayoffStats(p);
-  const onBench = foundTeam && (foundTeam.bench || []).includes(p.id);
-  const isMyTeam = foundTeam && foundTeam.id === G.playerTeamId;
-  const mentor = isMyTeam ? getMentor(foundTeam, p.id) : null;
-  const char = CHARACTERS[p.character] || CHARACTERS.calm;
-  const healthBadges = [];
-  if (onBench) healthBadges.push(`<span class="status-badge bench">🪑 Скамейка</span>`);
-  if (p.injury && p.injury.gamesLeft > 0) {
-    if (p.playingThroughPain) healthBadges.push(`<span class="status-badge pain">🩹 Боль (${p.injury.gamesLeft})</span>`);
-    else healthBadges.push(`<span class="status-badge injured">🚑 Травма (${p.injury.gamesLeft})</span>`);
-  } else if (p.fatigue > 80) healthBadges.push(`<span class="status-badge tired">😴 ${p.fatigue}/100</span>`);
-  else if (p.fatigue < 20) healthBadges.push(`<span class="status-badge fresh">⚡ ${p.fatigue}/100</span>`);
-  const attrRows = attrs.map(a => `<div class="attr-row"><span>${ATTR_LABELS[a]}</span><span>${p.attrs[a]} <span style="color:#7a8299;font-size:11px">/ ${p.attrPot[a]}</span></span></div>`).join('');
-  const goalHtml = p.seasonGoal ? `<div class="attr-row"><span>🎯 ${p.seasonGoal.description}</span><span style="color:${p.seasonGoal.achieved === true ? '#4ade80' : p.seasonGoal.achieved === false ? '#ef4444' : '#fbbf24'}">${p.seasonGoal.achieved === true ? '✓' : p.seasonGoal.achieved === false ? '✗' : '⏳'}</span></div>` : '';
-  const statsReg = isG ? `<div class="attr-grid"><div class="attr-row"><span>Игры</span><span>${s.gp}</span></div><div class="attr-row"><span>Победы</span><span>${s.wins}</span></div><div class="attr-row"><span>SV%</span><span>${s.shotsAgainst > 0 ? (s.saves / s.shotsAgainst).toFixed(3).replace(/^0/, '') : '—'}</span></div><div class="attr-row"><span>КН</span><span>${s.gp > 0 ? (s.goalsAgainst / s.gp).toFixed(2) : '—'}</span></div></div>` : `<div class="attr-grid"><div class="attr-row"><span>Игры</span><span>${s.gp}</span></div><div class="attr-row"><span>Голы</span><span>${s.goals}</span></div><div class="attr-row"><span>Передачи</span><span>${s.assists}</span></div><div class="attr-row"><span>Очки</span><span>${s.points}</span></div></div>`;
-  const statsPo = isG ? `<div class="attr-grid"><div class="attr-row"><span>Игры</span><span>${ps.gp}</span></div><div class="attr-row"><span>Победы</span><span>${ps.wins}</span></div><div class="attr-row"><span>SV%</span><span>${ps.shotsAgainst > 0 ? (ps.saves / ps.shotsAgainst).toFixed(3).replace(/^0/, '') : '—'}</span></div></div>` : `<div class="attr-grid"><div class="attr-row"><span>Игры</span><span>${ps.gp}</span></div><div class="attr-row"><span>Голы</span><span>${ps.goals}</span></div><div class="attr-row"><span>Очки</span><span>${ps.points}</span></div></div>`;
-  const canExtend = isMyTeam && p.contract.years <= 1 && p.status === 'contract';
-  const canRelease = isMyTeam && p.status === 'contract';
-  const remainingSalary = p.contract.salary * Math.max(0, p.contract.years);
-  const releaseCost = Math.round(remainingSalary * 0.5 * 10) / 10;
-  const ownYouth = isMyTeam && p.age >= YOUTH_RULES.minAge && p.age <= YOUTH_RULES.maxAge ? getOwnYouthTeam(foundTeam) : null;
-  const canSendToYouth = !!ownYouth && p.status === 'contract';
-  const canIndTraining = isMyTeam && (G.league.currentRound - (p.lastIndTraining || -10)) >= 5;
-  const attrButtons = canIndTraining ? attrs.filter(a => p.attrs[a] < p.attrPot[a]).map(a => `<button class="btn small secondary" onclick="handleIndTraining(${p.id}, '${a}')">${ATTR_LABELS[a]}</button>`).join('') : '';
-  // ⚙️ ФИКС #4/#13: кнопка реабилитации для травмированного игрока моей команды
-  const canRehab = isMyTeam && p.injury && p.injury.gamesLeft > 0
-    && (G.league.currentRound - (foundTeam.lastRehabRound || -10)) >= 5;
-  const rehabCost = Math.min(3, p.injury ? p.injury.gamesLeft : 0) * 1;
-  return `<div class="modal-overlay" onclick="if(event.target===this){G.popupPlayerId=null; render();}">
-    <div class="modal">
-      <button class="close-btn" onclick="G.popupPlayerId=null; render();">✕</button>
-      <h1 style="font-size:22px;margin-bottom:4px">${p.name} <span class="char-badge ${char.cls}">${char.label}</span></h1>
-      <div class="subtitle">${p.position} · ${p.age} лет · ${p.nationality} · ${foundTeam ? foundTeam.name : 'Свободный агент'}</div>
-      <div style="margin:12px 0">${healthBadges.join(' ')}</div>
-      ${mentor ? `<div style="font-size:12px;color:#4ade80">🎓 Наставник: ${mentor.name}</div>` : ''}
-      <div class="tag" style="margin:6px 0">${char.desc}</div>
-      <h2>Атрибуты</h2><div class="attr-grid">${attrRows}</div>
-      ${canIndTraining && attrButtons ? `<div style="margin-top:8px;background:#0f1117;padding:8px;border-radius:5px"><div class="tag" style="margin-bottom:6px">💪 Индивидуальная тренировка (0.5 млн ₽, раз в 5 туров)</div>${attrButtons}</div>` : ''}
-      <h2>Форма и мораль</h2><div class="attr-grid"><div class="attr-row"><span>OVR</span><span>${p.ovr} (эфф. ${getEffectiveOvr(p)})</span></div><div class="attr-row"><span>Форма</span><span>${p.form}</span></div><div class="attr-row"><span>Мораль</span><span>${p.morale}</span></div></div>
-      ${goalHtml ? `<h2>Цель</h2>${goalHtml}` : ''}
-      <h2>Сезон (регулярка)</h2>${statsReg}
-      <h2>Сезон (плей-офф)</h2>${statsPo}
-      <h2>Контракт</h2><div class="attr-grid"><div class="attr-row"><span>Зарплата</span><span>${p.contract.salary.toFixed(1)} млн</span></div><div class="attr-row"><span>Лет</span><span>${p.contract.years}</span></div></div>
-      ${canExtend ? `<div style="margin-top:12px"><button class="btn" onclick="handleExtend(${p.id}, 1)">Продлить на 1</button><button class="btn" onclick="handleExtend(${p.id}, 2)">Продлить на 2</button></div>` : ''}
-      ${canRehab ? `<div style="margin-top:12px"><button class="btn" onclick="handleRehab(${p.id}, 3)">🏥 Реабилитация (3 игры, ${rehabCost} млн)</button></div>` : ''}
-      ${canRelease ? `<div style="margin-top:12px"><button class="btn danger" onclick="handleRelease(${p.id})">🗑 Разорвать контракт (${releaseCost} млн)</button></div>` : ''}
-      ${canSendToYouth ? `<div style="margin-top:12px"><button class="btn secondary" onclick="handleSendToYouth(${p.id})">🎓 Перевести в ${ownYouth.team.name} (${ownYouth.league.id})</button></div>` : ''}
-    </div>
-  </div>`;
+  let p = null, team = null;
+  for (const t of G.league.teams) { const found = t.roster.find(x => x.id === G.popupPlayerId); if (found) { p = found; team = t; break; } }
+  if (!p) p = (G.league.freeAgents || []).find(x => x.id === G.popupPlayerId);
+  if (!p) { G.popupPlayerId = null; return ''; }
+  const isG = p.position === 'G', attrs = isG ? GOALIE_ATTRS : SKATER_ATTRS;
+  const s = ensureStats(p), ps = ensurePlayoffStats(p), career = p.careerStats || {};
+  const seasons = (p.seasonHistory || []).slice().sort((a,b) => String(b.season).localeCompare(String(a.season)));
+  const onBench = team && (team.bench || []).includes(p.id), isMyTeam = team && team.id === G.playerTeamId;
+  const mentor = isMyTeam ? getMentor(team,p.id) : null, char = CHARACTERS[p.character] || CHARACTERS.calm;
+  const contract = p.contract || {salary:0,years:0}, injured = p.injury && p.injury.gamesLeft > 0;
+  const badges = [];
+  if (onBench) badges.push('<span class="profile-badge neutral">🪑 На скамейке</span>');
+  if (injured) badges.push('<span class="profile-badge danger">🚑 Травма · '+p.injury.gamesLeft+' игр</span>');
+  else if (p.fatigue > 80) badges.push('<span class="profile-badge warning">🥵 Усталость '+p.fatigue+'/100</span>');
+  else if (p.fatigue < 20) badges.push('<span class="profile-badge success">⚡ Свежий</span>');
+  else badges.push('<span class="profile-badge success">● В строю</span>');
+  if (p.playingThroughPain && injured) badges.push('<span class="profile-badge warning">Играет через боль</span>');
+  const attrRows = attrs.map(a => {
+    const value = Number(p.attrs?.[a] || 0), pot = Number(p.attrPot?.[a] || value);
+    return '<div class="profile-attribute"><div><span>'+ATTR_LABELS[a]+'</span><b>'+value+'<small> / '+pot+'</small></b></div><div class="profile-attribute-track"><i style="width:'+Math.max(0,Math.min(100,value))+'%"></i></div></div>';
+  }).join('');
+  const statTiles = isG
+    ? [['МАТЧИ',s.gp],['ПОБЕДЫ',s.wins],['ПОРАЖЕНИЯ',s.losses||0],['SV%',s.shotsAgainst>0?(s.saves/s.shotsAgainst).toFixed(3).replace(/^0/,''):'—'],['КН',s.gp>0?(s.goalsAgainst/s.gp).toFixed(2):'—'],['СУХИЕ МАТЧИ',s.shutouts]]
+    : [['МАТЧИ',s.gp],['ГОЛЫ',s.goals],['ПЕРЕДАЧИ',s.assists],['ОЧКИ',s.points],['+/-',s.plusMinus||0],['ШТРАФ',s.pim||0]];
+  const playoffTiles = isG
+    ? [['МАТЧИ',ps.gp],['ПОБЕДЫ',ps.wins],['SV%',ps.shotsAgainst>0?(ps.saves/ps.shotsAgainst).toFixed(3).replace(/^0/,''):'—'],['КН',ps.gp>0?(ps.goalsAgainst/ps.gp).toFixed(2):'—']]
+    : [['МАТЧИ',ps.gp],['ГОЛЫ',ps.goals],['ПЕРЕДАЧИ',ps.assists],['ОЧКИ',ps.points]];
+  const tileGrid = items => '<div class="profile-stat-grid">'+items.map(([label,value],i)=>'<div class="profile-stat-tile'+(i===3?' accent':'')+'"><span>'+label+'</span><b>'+(value??0)+'</b></div>').join('')+'</div>';
+  const totals = isG
+    ? [['СЕЗОНОВ',career.seasons||seasons.length],['МАТЧИ',career.gp||0],['ПОБЕДЫ',career.wins||0],['СУХИЕ',career.shutouts||0],['ОТРАЖЁННЫЕ',career.saves||0]]
+    : [['СЕЗОНОВ',career.seasons||seasons.length],['МАТЧИ',career.gp||0],['ГОЛЫ',career.goals||0],['ПЕРЕДАЧИ',career.assists||0],['ОЧКИ',career.points||0]];
+  const awards = [];
+  (G.league.history||[]).forEach(h=>Object.entries(h.awards||{}).forEach(([key,a])=>{
+    if(a && a.name===p.name) { const labels={mvp:'Самый ценный игрок',topScorer:'Лучший снайпер',topAssister:'Лучший ассистент',topPointMan:'Лучший бомбардир',topDefenseman:'Лучший защитник',topGoalie:'Лучший вратарь',rookieOfYear:'Лучший новичок'}; awards.push({season:h.season,label:labels[key]||'Награда лиги'}); }
+  }));
+  const awardHtml = awards.length ? '<div class="profile-award-list">'+awards.map(a=>'<div><span>🏅</span><b>'+a.label+'</b><small>'+a.season+'</small></div>').join('')+'</div>' : '<div class="profile-empty">Пока нет индивидуальных наград в архиве лиги.</div>';
+  const timeline = seasons.length ? '<div class="profile-career-timeline">'+seasons.map((row,i)=>{
+    const po=row.playoffStats||{}, poText=po.gp?(isG?'Плей-офф: '+po.gp+' игр · '+(po.wins||0)+' побед':'Плей-офф: '+po.gp+' игр · '+(po.points||0)+' очков'):'';
+    const regular=isG?'Регулярка: '+(row.gp||0)+' игр · '+(row.wins||0)+' побед · SV '+(row.shotsAgainst>0?(row.saves/row.shotsAgainst).toFixed(3).replace(/^0/,''):'—'):'Регулярка: '+(row.gp||0)+' игр · '+(row.goals||0)+' голов · '+(row.assists||0)+' передач · '+(row.points||0)+' очков';
+    return '<article class="profile-season-row"><div class="profile-season-marker">'+(i===0?'●':'○')+'</div><div class="profile-season-main"><div class="profile-season-heading"><b>'+row.season+'</b><span>'+(row.teamName||'Клуб не указан')+'</span></div><div class="profile-season-details">'+regular+'</div>'+(poText?'<div class="profile-season-playoff">'+poText+'</div>':'')+'</div><div class="profile-season-ovr"><b>'+(row.ovr||'—')+'</b><small>OVR</small></div></article>';
+  }).join('')+'</div>' : '<div class="profile-empty">История сезонов начнёт заполняться после завершения первого сезона в этой карьере.</div>';
+  const transfers=(G.league.transferLog||[]).flatMap(e=>(e.transfers||[]).filter(t=>t.player===p.name).map(t=>({season:e.season,from:t.from,to:t.to})));
+  const transferHtml=transfers.length?'<div class="profile-transfer-list">'+transfers.slice().reverse().map(t=>'<div><span>'+t.season+'</span><b>'+t.from+' → '+t.to+'</b></div>').join('')+'</div>':'<div class="profile-empty">Зафиксированных переходов между клубами пока нет.</div>';
+  const canExtend=isMyTeam&&contract.years<=1&&p.status==='contract', canRelease=isMyTeam&&p.status==='contract';
+  const releaseCost=Math.round(contract.salary*Math.max(0,contract.years)*.5*10)/10;
+  const ownYouth=isMyTeam&&p.age>=YOUTH_RULES.minAge&&p.age<=YOUTH_RULES.maxAge?getOwnYouthTeam(team):null;
+  const canSendToYouth=!!ownYouth&&p.status==='contract';
+  const canIndTraining=isMyTeam&&(G.league.currentRound-(p.lastIndTraining||-10))>=5;
+  const attrButtons=canIndTraining?attrs.filter(a=>p.attrs[a]<p.attrPot[a]).map(a=>'<button class="btn small secondary" onclick="handleIndTraining('+p.id+', \''+a+'\')">'+ATTR_LABELS[a]+'</button>').join(''):'';
+  const canRehab=isMyTeam&&injured&&(G.league.currentRound-(team.lastRehabRound||-10))>=5, rehabCost=Math.min(3,p.injury?p.injury.gamesLeft:0);
+  const goalHtml=p.seasonGoal?'<div class="profile-goal"><span>🎯 '+p.seasonGoal.description+'</span><b>'+(p.seasonGoal.achieved===true?'ВЫПОЛНЕНО ✓':p.seasonGoal.achieved===false?'НЕ ВЫПОЛНЕНО':'В ПРОЦЕССЕ')+'</b></div>':'';
+  return '<div class="modal-overlay profile-overlay" onclick="if(event.target===this){G.popupPlayerId=null;render();}"><div class="modal player-profile-modal"><button class="close-btn" onclick="G.popupPlayerId=null;render();">✕</button>'+
+    '<div class="profile-hero"><div class="profile-hero-main"><span class="profile-eyebrow">ПРОФИЛЬ ХОККЕИСТА</span><div class="profile-name-line"><h1>'+p.name+'</h1><span class="char-badge '+char.cls+'">'+char.label+'</span></div><p>'+(team?team.name:'Свободный агент')+' · '+p.nationality+' · '+p.age+' лет</p><div class="profile-badges">'+badges.join('')+'</div></div><div class="profile-overall"><strong>'+p.ovr+'</strong><span>ОБЩИЙ РЕЙТИНГ</span><small>Потенциал '+p.pot+'</small></div></div>'+
+    '<div class="profile-quick-stats"><div><span>ПОЗИЦИЯ</span><b>'+(isG?'Вратарь':p.position==='D'?'Защитник':'Нападающий')+'</b></div><div><span>ФОРМА</span><b>'+p.form+'/100</b></div><div><span>МОРАЛЬ</span><b>'+p.morale+'/100</b></div><div><span>ЭФФЕКТИВНЫЙ OVR</span><b>'+getEffectiveOvr(p)+'</b></div></div>'+
+    '<div class="profile-columns"><div class="profile-column">'+
+    '<section class="profile-section"><span class="profile-eyebrow">НАВЫКИ</span><h2>Игровые атрибуты</h2><div class="profile-attributes">'+attrRows+'</div></section>'+
+    '<section class="profile-section"><span class="profile-eyebrow">ТЕКУЩИЙ СЕЗОН</span><h2>Регулярный чемпионат</h2>'+tileGrid(statTiles)+'<h2 class="profile-subheading">Плей-офф</h2>'+tileGrid(playoffTiles)+'</section>'+
+    '<section class="profile-section"><span class="profile-eyebrow">КАРЬЕРА</span><h2>Суммарная статистика</h2>'+tileGrid(totals)+'</section>'+
+    '<section class="profile-section"><span class="profile-eyebrow">ПУТЬ ИГРОКА</span><h2>История сезонов</h2>'+timeline+'</section>'+
+    '<section class="profile-section"><span class="profile-eyebrow">ПЕРЕМЕЩЕНИЯ</span><h2>История переходов</h2>'+transferHtml+'</section>'+
+    '<section class="profile-section"><span class="profile-eyebrow">ДОСТИЖЕНИЯ</span><h2>Индивидуальные награды</h2>'+awardHtml+'</section></div>'+
+    '<aside class="profile-side-column"><section class="profile-section profile-contract"><span class="profile-eyebrow">СОГЛАШЕНИЕ</span><h2>Контракт</h2><div class="profile-contract-value"><b>'+Number(contract.salary||0).toFixed(1)+'</b><span>млн ₽ / сезон</span></div><div class="profile-contract-row"><span>Срок</span><b>'+(contract.years||0)+' лет</b></div><div class="profile-contract-row"><span>Статус</span><b>'+(p.status==='contract'?'Действует':p.status==='ufa'?'Свободный агент':p.status)+'</b></div>'+
+    (canExtend?'<div class="profile-action-group"><button class="btn" onclick="handleExtend('+p.id+',1)">Продлить на 1 год</button><button class="btn secondary" onclick="handleExtend('+p.id+',2)">Продлить на 2 года</button></div>':'')+
+    (canRelease?'<div class="profile-action-group"><button class="btn danger" onclick="handleRelease('+p.id+')">Расторгнуть · '+releaseCost.toFixed(1)+' млн ₽</button></div>':'')+'</section>'+
+    (goalHtml?'<section class="profile-section"><span class="profile-eyebrow">ЛИЧНАЯ ЦЕЛЬ</span><h2>Задача на сезон</h2>'+goalHtml+'</section>':'')+
+    (mentor?'<section class="profile-section"><span class="profile-eyebrow">РАЗВИТИЕ</span><h2>Наставник</h2><p class="profile-mentor">🎓 '+mentor.name+'</p></section>':'')+
+    (canIndTraining&&attrButtons?'<section class="profile-section"><span class="profile-eyebrow">ТРЕНИРОВКИ</span><h2>Индивидуальная работа</h2><p class="profile-muted">0,5 млн ₽ · раз в 5 туров</p><div class="profile-action-group profile-training-actions">'+attrButtons+'</div></section>':'')+
+    (canRehab?'<section class="profile-section"><span class="profile-eyebrow">МЕДИЦИНА</span><h2>Реабилитация</h2><p class="profile-muted">Восстановление за '+rehabCost+' млн ₽</p><button class="btn" onclick="handleRehab('+p.id+',3)">🏥 Реабилитация</button></section>':'')+
+    (canSendToYouth?'<section class="profile-section"><span class="profile-eyebrow">АКАДЕМИЯ</span><h2>Молодёжная команда</h2><button class="btn secondary" onclick="handleSendToYouth('+p.id+')">🎓 Перевести в '+ownYouth.team.name+'</button></section>':'')+
+    '</aside></div></div></div>';
 }
 function handleExtend(playerId, years) { const r = extendContract(playerId, years); if (r.success) showToast(`Продлено! ЗП: ${r.salary} млн на ${years} лет`); else if (r.reason === 'contract too long') showToast('Контракт длинный'); else showToast(`Отказ. Запрос: ${r.salary} млн`); render(); }
 function handleRehab(playerId, games) { const r = rehabPlayer(playerId, games); if (r.success) showToast(`Реабилитация: ${r.gamesSkipped} игр. Стоимость: ${r.cost} млн`); else showToast('Ошибка: ' + r.error); render(); }
