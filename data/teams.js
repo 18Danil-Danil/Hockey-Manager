@@ -8,7 +8,7 @@ window.VHL_TEAMS = [
     talent: 66.10, prestige: 53, trend: 'down',
     history: [
       { season: '2025/26', place: 24, pts: 60, playoff: 'missed' },
-      { season: '2024/25', place: 15, pts: 76, playoff: 'round16' },
+      { season: '2024/25', place: 17, pts: 76, playoff: 'missed' },
       { season: '2023/24', place: 4, pts: 82, playoff: 'finalist' },
       { season: '2022/23', place: 11, pts: 60, playoff: 'quarterfinal' },
       { season: '2021/22', place: 17, pts: 53, playoff: 'missed' },
@@ -47,7 +47,7 @@ window.VHL_TEAMS = [
     talent: 74.80, prestige: 32, trend: 'down',
     history: [
       { season: '2025/26', place: 28, pts: 51, playoff: 'missed' },
-      { season: '2024/25', place: 17, pts: 76, playoff: 'missed' },
+      { season: '2024/25', place: 15, pts: 76, playoff: 'round16' },
       { season: '2023/24', place: 11, pts: 70, playoff: 'round16' },
       { season: '2022/23', place: 25, pts: 32, playoff: 'missed' },
       { season: '2021/22', place: 24, pts: 36, playoff: 'missed' },
@@ -312,7 +312,7 @@ window.VHL_TEAMS = [
     talent: 64.90, prestige: 37, trend: 'down',
     history: [
       { season: '2025/26', place: 30, pts: 47, playoff: 'missed' },
-      { season: '2024/25', place: 12, pts: 77, playoff: 'quarterfinal' },
+      { season: '2024/25', place: 13, pts: 77, playoff: 'quarterfinal' },
       { season: '2023/24', place: 15, pts: 64, playoff: 'round16' },
     ],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
@@ -403,7 +403,7 @@ window.VHL_TEAMS = [
     talent: 66.80, prestige: 62, trend: 'down',
     history: [
       { season: '2025/26', place: 22, pts: 62, playoff: 'missed' },
-      { season: '2024/25', place: 16, pts: 76, playoff: 'quarterfinal' },
+      { season: '2024/25', place: 14, pts: 76, playoff: 'quarterfinal' },
       { season: '2023/24', place: 7, pts: 74, playoff: 'quarterfinal' },
       { season: '2022/23', place: 15, pts: 58, playoff: 'round16' },
       { season: '2021/22', place: 2, pts: 83, playoff: 'semifinal' },
@@ -442,7 +442,7 @@ window.VHL_TEAMS = [
     talent: 70.50, prestige: 43, trend: 'down',
     history: [
       { season: '2025/26', place: 25, pts: 58, playoff: 'missed' },
-      { season: '2024/25', place: 20, pts: 72, playoff: 'missed' },
+      { season: '2024/25', place: 20, pts: 72, playoff: 'round16' },
       { season: '2023/24', place: 12, pts: 70, playoff: 'round16' },
       { season: '2022/23', place: 8, pts: 63, playoff: 'round16' },
       { season: '2021/22', place: 22, pts: 41, playoff: 'missed' },
