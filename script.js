@@ -65,7 +65,7 @@ function newGame() {
   G.league = genLeague(); resetAllStats(G.league);
   G.league.freeAgents = generateFreeAgents(30); G.league.staffPool = generateStaffCandidates(12);
   ensureAllLines();
-  G.playerTeamId = null; G.activeTab = 'standings'; G.screen = 'select';
+  G.playerTeamId = null; G.activeTab = 'overview'; G.screen = 'select';
   G.selectedGamePbp = null; G.popupPlayerId = null; G.viewTeamId = null; G.tradeTargetTeamId = null;
   G.standingsSort = { key: 'pts', dir: 'desc' };
   G.pressConference = null; G.playoffInjuryPrompt = null; G.statsMode = 'regular';
@@ -83,7 +83,7 @@ async function start() {
   G.league = genLeague(); resetAllStats(G.league);
   G.league.freeAgents = generateFreeAgents(30); G.league.staffPool = generateStaffCandidates(12);
   ensureAllLines();
-  G.playerTeamId = null; G.activeTab = 'standings'; G.screen = 'select';
+  G.playerTeamId = null; G.activeTab = 'overview'; G.screen = 'select';
   G.selectedGamePbp = null; G.popupPlayerId = null; G.viewTeamId = null; G.tradeTargetTeamId = null;
   G.standingsSort = { key: 'pts', dir: 'desc' };
   G.pressConference = null; G.playoffInjuryPrompt = null; G.statsMode = 'regular';
