@@ -55,7 +55,7 @@ function hydratePlayerNameRegistry(league) {
   const scan = value => {
     if (!value || typeof value !== 'object' || visited.has(value)) return;
     visited.add(value);
-    if (typeof value.name === 'string' && value.position && value.attrs) {
+    if (typeof value.name === 'string' && value.position) {
       const key = normalizePlayerNameKey(value.name);
       if (key) registry.add(key);
     }
