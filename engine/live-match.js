@@ -42,7 +42,7 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
   advanceInjuries(home); advanceInjuries(away);
   const homeLineup = getLineup(home), awayLineup = getLineup(away);
   const hTM = tacticMods(home.tactics, home), aTM = tacticMods(away.tactics, away);
-  const { xgH, xgA } = computeXG(home, away, hTM, aTM);
+  const { xgH, xgA } = computeXG(home, away, hTM, aTM, homeLineup, awayLineup);
 
   const positions = { home: [], away: [], puck: { x: 100, y: 50, vx: 0, vy: 0 } };
   const formHome = buildFormation('home');
