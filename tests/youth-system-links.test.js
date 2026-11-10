@@ -113,6 +113,20 @@ assert.strictEqual(transferResult.youthTeam.id, 'mhl-spartak-max',
 assert.strictEqual(seniorClub.roster.length, 0);
 
 
+const legacyReactor = {
+  id: 'mhl-reactor', organizationId: 'org-toros', organizationName: 'Система Тороса',
+  independent: false, seniorLinks: ['Торос'], roster: Array.from({ length: 20 }, (_, i) => ({
+    id: 1000 + i, age: 17, ovr: 55, position: 'C', attrs: {}, attrPot: {}, pot: 60,
+    contract: {}, stats: {}, youth: {}, status: 'youth',
+  })), record: {}, history: [],
+};
+const legacyKalugaRockets = {
+  id: 'rhl-kaluga-rockets', organizationId: 'org-kaluga', organizationName: 'Система Калуги',
+  independent: false, seniorLinks: ['Калуга'], roster: Array.from({ length: 20 }, (_, i) => ({
+    id: 2000 + i, age: 17, ovr: 50, position: 'C', attrs: {}, attrPot: {}, pot: 55,
+    contract: {}, stats: {}, youth: {}, status: 'youth',
+  })), record: {}, history: [],
+};
 const legacyTeam = {
   id: 'mhl-omsk-hawks',
   roster: Array.from({ length: 20 }, (_, i) => ({
@@ -123,10 +137,17 @@ const legacyTeam = {
 };
 context.G.league.youth = {
   season: 1, graduates: [], transferLog: [], promotionHistory: [],
-  leagues: { MHL: { id: 'MHL', teams: [legacyTeam], schedule: [1], results: [], history: [], currentRound: 0 } },
+  leagues: { MHL: { id: 'MHL', teams: [legacyTeam, legacyReactor, legacyKalugaRockets], schedule: [1], results: [], history: [], currentRound: 0 } },
 };
 api.normalizeYouthLeagues();
 assert.strictEqual(legacyTeam.seniorTeamSlug, 'omskie-krylya',
   'Связь должна мигрировать и в уже существующее сохранение');
+assert.strictEqual(legacyReactor.organizationId, 'org-neftekhimik');
+assert.deepStrictEqual(Array.from(legacyReactor.seniorLinks), ['Нефтехимик (КХЛ)']);
+assert.strictEqual(legacyReactor.seniorTeamSlug, null,
+  'Reactor must no longer retain the incorrect Toros link in old saves');
+assert.strictEqual(legacyKalugaRockets.organizationId, 'org-independent-kaluga-rockets');
+assert.strictEqual(legacyKalugaRockets.independent, true);
+assert.deepStrictEqual(Array.from(legacyKalugaRockets.seniorLinks), []);
 
 console.log('Youth system links: all checks passed.');
