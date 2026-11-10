@@ -379,6 +379,8 @@ function liveEndPeriod() {
   lm.paused = true;
   // ⚙️ ФИКС #14: чистим интервал на перерыве (не жечь CPU)
   if (lm.intervalId) { clearInterval(lm.intervalId); lm.intervalId = null; }
+  // Обновляем блок управления: вместо паузы игрок должен увидеть кнопку продолжения периода.
+  render();
 }
 
 
