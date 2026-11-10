@@ -13,7 +13,7 @@ const context = {
   window,
   G: { league: { youth: { leagues: {} } } },
 };
-vm.runInNewContext(source + '\nthis.__exports = { createYouthTeam, youthTeamBelongsToSeniorClub, getOwnYouthTeam, getOwnYouthTeams, normalizeYouthLeagues };', context);
+vm.runInNewContext(source + '\nthis.__exports = { createYouthTeam, youthTeamBelongsToSeniorClub, getOwnYouthTeam, getOwnYouthTeams, sendSeniorPlayerToYouth, normalizeYouthLeagues };', context);
 const api = context.__exports;
 
 
@@ -82,6 +82,15 @@ assert.deepStrictEqual(
 );
 assert.strictEqual(api.getOwnYouthTeam(spartak).team.id, 'mhl-spartak',
   'The legacy singular helper must remain backwards-compatible');
+
+const transferPlayer = { id: 501, name: 'Тестовый Игрок', age: 18, status: 'contract', youth: {} };
+const seniorClub = { id: 50, name: 'Химик', slug: 'khimik', roster: [transferPlayer], bench: [], lines: null };
+const transferResult = api.sendSeniorPlayerToYouth(seniorClub, transferPlayer.id, 'mhl-spartak-max');
+assert.strictEqual(transferResult.success, true);
+assert.strictEqual(transferResult.youthTeam.id, 'mhl-spartak-max',
+  'The selected second youth team must receive the player');
+assert.strictEqual(seniorClub.roster.length, 0);
+
 
 const legacyTeam = {
   id: 'mhl-omsk-hawks',
