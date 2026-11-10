@@ -944,19 +944,47 @@ function liveUpdatePositions() {
     puck.looseFrames--;
     if (puck.looseFrames === 0) {
       puck.possessionSide = puck.nextPossessionSide || puck.possessionSide || 'home';
-      puck.carrierIndex = 3 + Math.floor(visualRng() * 3);
+      puck.carrierIndex = Number.isInteger(puck.nextCarrierIndex)
+        ? puck.nextCarrierIndex : 3 + Math.floor(visualRng() * 3);
       puck.actionFrames = 70 + Math.floor(visualRng() * 80);
       puck.targetX = null;
       puck.targetY = null;
       puck.nextPossessionSide = null;
+      puck.nextCarrierIndex = null;
     }
   } else {
     puck.actionFrames = (puck.actionFrames || 0) - 1;
     if (puck.actionFrames <= 0) {
-      // Visual-only pass/turnover. It never consumes the gameplay RNG stream.
-      if (visualRng() < 0.18) puck.possessionSide = puck.possessionSide === 'home' ? 'away' : 'home';
-      puck.carrierIndex = 3 + Math.floor(visualRng() * 3);
-      puck.actionFrames = 70 + Math.floor(visualRng() * 80);
+      // Visual-only puck actions use the visual RNG and never affect match results.
+      const currentSide = puck.possessionSide || 'home';
+      const currentCarrierIndex = Number.isInteger(puck.carrierIndex) ? puck.carrierIndex : 3;
+      const currentPlayers = lm.positions[currentSide] || [];
+      const isTurnover = visualRng() < 0.18;
+
+      if (isTurnover) {
+        const nextSide = currentSide === 'home' ? 'away' : 'home';
+        const nextCarrierIndex = 3 + Math.floor(visualRng() * 3);
+        const receiver = (lm.positions[nextSide] || [])[nextCarrierIndex];
+        puck.carrierIndex = null;
+        puck.targetX = receiver ? receiver.x : (nextSide === 'home' ? 100 : 100);
+        puck.targetY = receiver ? receiver.y : 50;
+        puck.looseFrames = 14;
+        puck.nextPossessionSide = nextSide;
+        puck.nextCarrierIndex = nextCarrierIndex;
+        puck.actionFrames = 70 + Math.floor(visualRng() * 80);
+      } else {
+        const candidates = currentPlayers
+          .map((player, index) => ({ player, index }))
+          .filter(item => item.index > 0 && item.index !== currentCarrierIndex);
+        if (candidates.length) {
+          const receiver = candidates[Math.floor(visualRng() * candidates.length)];
+          puck.passFromX = puck.x;
+          puck.passFromY = puck.y;
+          puck.passFrames = 12;
+          puck.carrierIndex = receiver.index;
+        }
+        puck.actionFrames = 70 + Math.floor(visualRng() * 80);
+      }
     }
   }
 
@@ -1046,8 +1074,24 @@ function liveUpdatePositions() {
     const carrier = (lm.positions[possessionSide] || [])[puck.carrierIndex];
     if (carrier) {
       const puckOffset = directionFor(possessionSide) * 3.2;
-      puck.x += (carrier.x + puckOffset - puck.x) * 0.34;
-      puck.y += (carrier.y - puck.y) * 0.34;
+      const targetX = carrier.x + puckOffset;
+      const targetY = carrier.y;
+      if ((puck.passFrames || 0) > 0) {
+        const progress = 1 - puck.passFrames / 12;
+        puck.x = puck.passFromX + (targetX - puck.passFromX) * progress;
+        puck.y = puck.passFromY + (targetY - puck.passFromY) * progress
+          - Math.sin(progress * Math.PI) * 2.2;
+        puck.passFrames--;
+        if (puck.passFrames === 0) {
+          puck.x = targetX;
+          puck.y = targetY;
+          puck.passFromX = null;
+          puck.passFromY = null;
+        }
+      } else {
+        puck.x += (targetX - puck.x) * 0.34;
+        puck.y += (targetY - puck.y) * 0.34;
+      }
     }
   }
 }
