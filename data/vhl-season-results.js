@@ -717,6 +717,15 @@ window.VHL_SEASON_RESULTS = [
   {
     season: '2025/26',
     leagueParticipants: 32,
+    openingMatch: {
+      date: '2025-09-01',
+      winner: 'Металлург',
+      winnerCity: 'Новокузнецк',
+      opponent: 'Торпедо-Горький',
+      score: '2:1 Б',
+      source: 'https://www.vhlru.ru/lenta/543672/',
+      note: 'Матч Открытия сезона; зафиксирован победитель матча, а не присуждение отдельного Кубка Открытия.'
+    },
     regularSeason: {
       source: 'https://www.championat.com/hockey/_highleague/tournament/6704/table/',
       secondarySources: ['https://www.sport-express.net/hockey/L/vhl/2025-2026/', 'https://silasporta.ru/vhl/standings/2025-2026/'],
