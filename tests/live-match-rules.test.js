@@ -92,8 +92,8 @@ const totalShots = volumeState.lm.shots.home + volumeState.lm.shots.away;
 assert.ok(totalShots >= 25 && totalShots <= 55, `unexpected LIVE shot volume: ${totalShots}`);
 assert.ok(volumeState.lm.shots.home >= 10 && volumeState.lm.shots.away >= 10,
   'LIVE shot generation is not balanced between teams');
-assert.match(source, /xgTotal: \\{ home: liveXgH, away: liveXgA \\}/);
-assert.match(source, /lm\\.xgCurrent\\.home = xgH \\* LIVE_XG_MULTIPLIER/);
+assert.match(source, /xgTotal: \{ home: liveXgH, away: liveXgA \}/);
+assert.match(source, /lm\.xgCurrent\.home = xgH \* LIVE_XG_MULTIPLIER/);
 
 // A tied overtime must be resolved by a shootout; the deciding goal is a team
 // result only and is not added to skater/goalie box-score statistics.
