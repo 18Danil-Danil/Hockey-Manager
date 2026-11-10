@@ -117,24 +117,29 @@ const legacyReactor = {
   id: 'mhl-reactor', organizationId: 'org-toros', organizationName: 'Система Тороса',
   independent: false, seniorLinks: ['Торос'], roster: Array.from({ length: 20 }, (_, i) => ({
     id: 1000 + i, age: 17, ovr: 55, position: 'C', attrs: {}, attrPot: {}, pot: 60,
-    contract: {}, stats: {}, youth: {}, status: 'youth',
+    contract: {}, stats: {}, youth: { parentSeniorClubId: 25, parentSeniorClubName: 'Торос' }, status: 'youth',
   })), record: {}, history: [],
 };
 const legacyKalugaRockets = {
   id: 'rhl-kaluga-rockets', organizationId: 'org-kaluga', organizationName: 'Система Калуги',
   independent: false, seniorLinks: ['Калуга'], roster: Array.from({ length: 20 }, (_, i) => ({
     id: 2000 + i, age: 17, ovr: 50, position: 'C', attrs: {}, attrPot: {}, pot: 55,
-    contract: {}, stats: {}, youth: {}, status: 'youth',
+    contract: {}, stats: {}, youth: { parentSeniorClubId: 11, parentSeniorClubName: 'Калуга' }, status: 'youth',
   })), record: {}, history: [],
 };
 const legacyTeam = {
   id: 'mhl-omsk-hawks',
   roster: Array.from({ length: 20 }, (_, i) => ({
     id: i + 1, age: 17, ovr: 55, position: 'C', attrs: {}, attrPot: {}, pot: 60,
-    contract: {}, stats: {}, youth: {}, status: 'youth',
+    contract: {}, stats: {}, youth: { parentSeniorClubId: 99, parentSeniorClubName: 'Авангард' }, status: 'youth',
   })),
   record: {}, history: [],
 };
+context.G.league.teams = [
+  { id: 19, slug: 'omskie-krylya', name: 'Омские Крылья' },
+  { id: 25, slug: 'toros', name: 'Торос' },
+  { id: 11, slug: 'kaluga', name: 'Калуга' },
+];
 context.G.league.youth = {
   season: 1, graduates: [], transferLog: [], promotionHistory: [],
   leagues: { MHL: { id: 'MHL', teams: [legacyTeam, legacyReactor, legacyKalugaRockets], schedule: [1], results: [], history: [], currentRound: 0 } },
@@ -142,6 +147,10 @@ context.G.league.youth = {
 api.normalizeYouthLeagues();
 assert.strictEqual(legacyTeam.seniorTeamSlug, 'omskie-krylya',
   'Связь должна мигрировать и в уже существующее сохранение');
+assert.strictEqual(legacyTeam.roster[0].youth.parentSeniorClubId, 19);
+assert.strictEqual(legacyTeam.roster[0].youth.parentSeniorClubName, 'Омские Крылья');
+assert.strictEqual(legacyReactor.roster[0].youth.parentSeniorClubId, null);
+assert.strictEqual(legacyKalugaRockets.roster[0].youth.parentSeniorClubId, null);
 assert.strictEqual(legacyReactor.organizationId, 'org-neftekhimik');
 assert.deepStrictEqual(Array.from(legacyReactor.seniorLinks), ['Нефтехимик (КХЛ)']);
 assert.strictEqual(legacyReactor.seniorTeamSlug, null,
