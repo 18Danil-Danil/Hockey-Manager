@@ -15,7 +15,7 @@ window.VHL_HISTORICAL_SEASONS = [
   { season: '2019/20', participants: 34, champion: null, championCity: null, finalist: null, finalistCity: null, regularWinner: 'Звезда', regularWinnerCity: 'Москва', seasonWinner: 'Звезда', seasonWinnerCity: 'Москва', seasonSilver: 'Динамо СПб', seasonSilverCity: 'Санкт-Петербург', seasonBronze: 'СКА-Нева', seasonBronzeCity: 'Санкт-Петербург', status: 'season_awarded_playoffs_cancelled', note: 'Кубок Петрова не разыгран: плей-офф остановлен в четвертьфинале. 03.07.2020 ФХР и ВХЛ утвердили итоговые места: «Звезда» — победитель, «Динамо СПб» — серебряный призёр, СКА-Нева — бронзовый призёр Всероссийского соревнования.' },
   { season: '2020/21', participants: 26, champion: 'Югра', championCity: 'Ханты-Мансийск', finalist: 'Металлург', finalistCity: 'Новокузнецк', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', seasonSilver: 'Металлург', seasonSilverCity: 'Новокузнецк', seasonBronze: 'Рубин', seasonBronzeCity: 'Тюмень', status: 'completed', note: 'Югра выиграла Кубок Петрова и стала победителем регулярного чемпионата; Металлург — серебряный, Рубин — бронзовый призёр Всероссийского соревнования.' },
   { season: '2021/22', participants: 27, champion: 'Рубин', championCity: 'Тюмень', finalist: 'Динамо', finalistCity: 'Санкт-Петербург', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', seasonSilver: 'Динамо СПб', seasonSilverCity: 'Санкт-Петербург', seasonBronze: 'Югра', seasonBronzeCity: 'Ханты-Мансийск', status: 'completed', note: '«Рубин» выиграл Кубок Петрова; «Динамо СПб» — серебряный, «Югра» — бронзовый призёр Всероссийского соревнования.' },
-  { season: '2022/23', participants: 26, champion: 'Химик', championCity: 'Воскресенск', finalist: 'Сокол', finalistCity: 'Красноярск', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
+  { season: '2022/23', participants: 26, champion: 'Химик', championCity: 'Воскресенск', finalist: 'Сокол', finalistCity: 'Красноярск', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', seasonSilver: 'Сокол', seasonSilverCity: 'Красноярск', seasonBronze: 'Металлург', seasonBronzeCity: 'Новокузнецк', status: 'completed', note: '«Химик» выиграл Кубок Петрова; «Сокол» — серебряный, «Металлург» — бронзовый призёр Всероссийского соревнования.' },
   { season: '2023/24', participants: 29, champion: 'Нефтяник', championCity: 'Альметьевск', finalist: 'АКМ', finalistCity: 'Тульская область', regularWinner: 'Молот', regularWinnerCity: 'Пермь', status: 'completed' },
   { season: '2024/25', participants: 33, champion: 'Торпедо-Горький', championCity: 'Нижний Новгород', finalist: 'Химик', finalistCity: 'Воскресенск', regularWinner: 'Металлург', regularWinnerCity: 'Новокузнецк', status: 'completed' },
   { season: '2025/26', participants: 32, champion: 'Югра', championCity: 'Ханты-Мансийск', finalist: 'Химик', finalistCity: 'Воскресенск', regularWinner: 'Металлург', regularWinnerCity: 'Новокузнецк', status: 'completed' }
@@ -38,10 +38,10 @@ window.VHL_HISTORICAL_CLUB_HONOURS = {
   'Динамо (Санкт-Петербург)': { championships: ['2017/18'], regularTitles: ['2017/18'], finals: ['2021/22'], seasonSilvers: ['2019/20', '2021/22'] },
   'СКА-Нева (Санкт-Петербург)': { championships: [], regularTitles: ['2018/19'], finals: ['2017/18'], seasonBronzes: ['2019/20'] },
   'ТХК (Тверь)': { championships: [], regularTitles: ['2015/16'], finals: [] },
-  'Металлург (Новокузнецк)': { championships: [], regularTitles: ['2024/25', '2025/26'], finals: ['2020/21'], seasonSilvers: ['2020/21'] },
+  'Металлург (Новокузнецк)': { championships: [], regularTitles: ['2024/25', '2025/26'], finals: ['2020/21'], seasonSilvers: ['2020/21'], seasonBronzes: ['2022/23'] },
   'Молот (Пермь)': { championships: [], regularTitles: ['2023/24'], finals: [] },
   'АКМ (Тульская область)': { championships: [], regularTitles: [], finals: ['2023/24'] },
-  'Сокол (Красноярск)': { championships: [], regularTitles: [], finals: ['2022/23'] }
+  'Сокол (Красноярск)': { championships: [], regularTitles: [], finals: ['2022/23'], seasonSilvers: ['2022/23'] }
 };
 
 
