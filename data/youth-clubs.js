@@ -68,7 +68,7 @@ window.YOUTH_CLUBS = {
     { id: 'mhl-avto', league: 'MHL', name: 'Авто', org: 'org-avtomobilist', senior: ['Автомобилист (КХЛ)', 'Горняк-УГМК'] },
     { id: 'mhl-mammoths', league: 'MHL', name: 'Мамонты Югры', org: 'org-yugra', senior: ['Югра'] },
     { id: 'mhl-dynamo-shinnik', league: 'MHL', name: 'Динамо-Шинник', org: 'org-dynamo-minsk', senior: ['Динамо Минск (КХЛ)'] },
-    { id: 'mhl-omsk-hawks', league: 'MHL', name: 'Омские Ястребы', org: 'org-avangard', senior: ['Авангард (КХЛ)', 'Омские Крылья'] },
+    { id: 'mhl-omsk-hawks', league: 'MHL', name: 'Омские Ястребы', org: 'org-avangard', senior: ['Авангард (КХЛ)', 'Омские Крылья'], seniorTeamSlug: 'omskie-krylya' },
     { id: 'mhl-red-army', league: 'MHL', name: 'Красная Армия', org: 'org-cska', senior: ['ЦСКА (КХЛ)', 'Звезда'] },
     { id: 'mhl-akm-junior', league: 'MHL', name: 'АКМ-Юниор', org: 'org-akm', senior: ['АКМ'] },
     { id: 'mhl-sakhalin-sharks', league: 'MHL', name: 'Сахалинские Акулы', org: 'org-admiral', senior: ['Адмирал (КХЛ)'] },
