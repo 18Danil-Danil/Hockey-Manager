@@ -42,7 +42,7 @@
 | 2020/21 | [Итоговая таблица регулярного чемпионата](https://silasporta.ru/vhl/standings/2020-2021/); [официальный календарь и состав участников](https://www.vhlru.ru/lenta/382967/) | [Сетка и результаты плей-офф](https://www.championat.com/hockey/_highleague/tournament/4307/table/); [официальные призёры](https://www.vhlru.ru/materials/399922/) |
 | 2019/20 | [Итоговая таблица](https://www.championat.com/hockey/_highleague/tournament/3033/table/); [официальная структура сезона](https://www.vhlru.ru/lenta/292325/) | [Сетка и серии](https://www.championat.com/hockey/_highleague/tournament/3305/); [официальное завершение](https://www.vhlru.ru/lenta/380991/); [официальные итоги Всероссийских соревнований](https://www.vhlru.ru/lenta/382135/); [сообщение клуба](https://star.cska-hockey.ru/news/Zvezda_priznana_pobeditelem_sezona_2019_20) |
 | 2025/26 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/6704/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6996/) |
-| 2024/25 | [Турнирная таблица](https://www.sport-express.net/hockey/L/vhl/2024-2025/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6448/) |
+| 2024/25 | [Официальная таблица ВХЛ](https://www.vhlru.ru/standings/league/1306/); [календарь и участники](https://www.vhlru/lenta/505787/) | [Официальный посев плей-офф](https://vhlru.ru/lenta/534996/); [полная сетка](https://www.championat.com/hockey/_highleague/tournament/6448/table/); [официальные медалисты](https://hcda.ru/press_center/news/ofitsialno-itogi-olimpbet-chempionata-rossii-po-khokkeyu-sredi-muzhskikh-komand-vserossiyskoy-khokke/) |
 | 2023/24 | [Итоговая таблица регулярного чемпионата](https://silasporta.ru/vhl/standings/2023-2024/); [таблица Чемпионата](https://www.championat.com/hockey/_highleague/tournament/5601/) | [Сетка плей-офф](https://www.championat.ru/hockey/_highleague/tournament/5852/); [официальные медалисты](https://www.vhl.ru/lenta/504460/) |
 | 2022/23 | [Итоговая таблица](https://silasporta.ru/vhl/standings/2022-2023/); [таблица Чемпионата](https://www.championat.com/hockey/_highleague/tournament/5111/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5257/); [официальные медалисты](https://vhlru.ru/lenta/459755/) |
 | 2021/22 | [Итоговая таблица регулярного чемпионата](https://www.championat.com/hockey/_highleague/tournament/4691/table/); [официальный календарь](https://www.vhlru.ru/upload/iblock/012/%D0%9A%D0%B0%D0%BB%D0%B5%D0%BD%D0%B4%D0%B0%D1%80%D1%8C%20%D0%BC%D0%B0%D1%82%D1%87%D0%B5%D0%B8%CC%86%20%D0%9F%D0%B0%D1%80%D0%B8%D0%BC%D0%B0%D1%82%D1%87%20%D0%92%D0%A5%D0%9B-%D0%9A%D0%A8%D0%9F%202021_2022.pdf) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/4887/); [официальные медалисты](https://www.vhlru.ru/lenta/418962/) |
@@ -104,3 +104,13 @@
 - Победитель регулярного чемпионата — «Молот» (Пермь).
 - Чемпион Кубка Петрова — «Нефтяник»; финалист — АКМ.
 - Медальные места Всероссийского соревнования: «Нефтяник» — золото, АКМ — серебро, «Рубин» — бронза.
+
+
+## Сезон 2024/25: правила интерпретации
+
+- 33 участника, по 64 матча на команду; всего 1056 матчей регулярного чемпионата.
+- Очковая система: 2 за любую победу, 1 за поражение в овертайме/по буллитам, 0 за поражение в основное время.
+- Победитель регулярного чемпионата — «Металлург» (Новокузнецк), обладатель Кубка Всероссийской хоккейной лиги.
+- Чемпион России и обладатель Кубка Чемпиона России — «Торпедо-Горький»; финалист — «Химик».
+- Серебряный призёр — «Химик», бронзовый — «Динамо СПб».
+- При равенстве очков использована официальная итоговая таблица ВХЛ: СКА-Нева — 14-е место, «Буран» — 15-е, «Магнитка» — 16-е, АКМ — 17-е.
