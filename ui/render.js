@@ -912,9 +912,15 @@ function getTeamHistoricalRows(team) {
 }
 
 function getTeamPlayoffLabel(row) {
-  if (row.seasonAward === 'winner') return '🥇 победитель Всероссийского соревнования';
-  if (row.seasonAward === 'silver') return '🥈 серебряный призёр Всероссийского соревнования';
-  if (row.seasonAward === 'bronze') return '🥉 бронзовый призёр Всероссийского соревнования';
+  const seasonAwards = {
+    winner: '🥇 победитель Всероссийского соревнования',
+    silver: '🥈 серебряный призёр Всероссийского соревнования',
+    bronze: '🥉 бронзовый призёр Всероссийского соревнования'
+  };
+  if (seasonAwards[row.seasonAward]) {
+    const stopped = row.playoff === 'quarterfinal_unfinished' ? '; плей-офф остановлен на стадии 1/4 финала' : '';
+    return seasonAwards[row.seasonAward] + stopped;
+  }
   const labels = {
     champion: '🏆 обладатель Кубка Петрова',
     finalist: 'финалист',
