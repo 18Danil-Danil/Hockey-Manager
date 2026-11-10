@@ -13,7 +13,7 @@ window.VHL_HISTORICAL_SEASONS = [
   { season: '2017/18', participants: 27, champion: 'Динамо', championCity: 'Санкт-Петербург', finalist: 'СКА-Нева', finalistCity: 'Санкт-Петербург', regularWinner: 'Динамо', regularWinnerCity: 'Санкт-Петербург', status: 'completed' },
   { season: '2018/19', participants: 29, champion: 'Сарыарка', championCity: 'Караганда', finalist: 'Рубин', finalistCity: 'Тюмень', regularWinner: 'СКА-Нева', regularWinnerCity: 'Санкт-Петербург', status: 'completed' },
   { season: '2019/20', participants: 34, champion: null, championCity: null, finalist: null, finalistCity: null, regularWinner: 'Звезда', regularWinnerCity: 'Москва', seasonWinner: 'Звезда', seasonWinnerCity: 'Москва', seasonSilver: 'Динамо СПб', seasonSilverCity: 'Санкт-Петербург', seasonBronze: 'СКА-Нева', seasonBronzeCity: 'Санкт-Петербург', status: 'season_awarded_playoffs_cancelled', note: 'Кубок Петрова не разыгран: плей-офф остановлен в четвертьфинале. 03.07.2020 ФХР и ВХЛ утвердили итоговые места: «Звезда» — победитель, «Динамо СПб» — серебряный призёр, СКА-Нева — бронзовый призёр Всероссийского соревнования.' },
-  { season: '2020/21', participants: 26, champion: 'Югра', championCity: 'Ханты-Мансийск', finalist: 'Металлург', finalistCity: 'Новокузнецк', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
+  { season: '2020/21', participants: 26, champion: 'Югра', championCity: 'Ханты-Мансийск', finalist: 'Металлург', finalistCity: 'Новокузнецк', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', seasonSilver: 'Металлург', seasonSilverCity: 'Новокузнецк', seasonBronze: 'Рубин', seasonBronzeCity: 'Тюмень', status: 'completed', note: 'Югра выиграла Кубок Петрова и стала победителем регулярного чемпионата; Металлург — серебряный, Рубин — бронзовый призёр Всероссийского соревнования.' },
   { season: '2021/22', participants: 27, champion: 'Рубин', championCity: 'Тюмень', finalist: 'Динамо', finalistCity: 'Санкт-Петербург', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
   { season: '2022/23', participants: 26, champion: 'Химик', championCity: 'Воскресенск', finalist: 'Сокол', finalistCity: 'Красноярск', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
   { season: '2023/24', participants: 29, champion: 'Нефтяник', championCity: 'Альметьевск', finalist: 'АКМ', finalistCity: 'Тульская область', regularWinner: 'Молот', regularWinnerCity: 'Пермь', status: 'completed' },
@@ -24,7 +24,7 @@ window.VHL_HISTORICAL_SEASONS = [
 // Сводные награды по историческим клубам, включая команды, которых нет в текущей базе.
 window.VHL_HISTORICAL_CLUB_HONOURS = {
   'Звезда (Москва)': { championships: [], regularTitles: ['2019/20'], finals: [], seasonWins: ['2019/20'] },
-  'Рубин (Тюмень)': { championships: ['2010/11', '2021/22'], regularTitles: ['2010/11', '2011/12'], finals: ['2011/12', '2013/14', '2018/19'] },
+  'Рубин (Тюмень)': { championships: ['2010/11', '2021/22'], regularTitles: ['2010/11', '2011/12'], finals: ['2011/12', '2013/14', '2018/19'], seasonBronzes: ['2020/21'] },
   'Торос (Нефтекамск)': { championships: ['2011/12', '2012/13', '2014/15'], regularTitles: ['2013/14'], finals: [] },
   'Сарыарка (Караганда)': { championships: ['2013/14', '2018/19'], regularTitles: ['2012/13', '2014/15'], finals: ['2012/13'] },
   'Нефтяник (Альметьевск)': { championships: ['2015/16', '2023/24'], regularTitles: [], finals: ['2010/11'] },
@@ -38,7 +38,7 @@ window.VHL_HISTORICAL_CLUB_HONOURS = {
   'Динамо (Санкт-Петербург)': { championships: ['2017/18'], regularTitles: ['2017/18'], finals: ['2021/22'], seasonSilvers: ['2019/20'] },
   'СКА-Нева (Санкт-Петербург)': { championships: [], regularTitles: ['2018/19'], finals: ['2017/18'], seasonBronzes: ['2019/20'] },
   'ТХК (Тверь)': { championships: [], regularTitles: ['2015/16'], finals: [] },
-  'Металлург (Новокузнецк)': { championships: [], regularTitles: ['2024/25', '2025/26'], finals: ['2020/21'] },
+  'Металлург (Новокузнецк)': { championships: [], regularTitles: ['2024/25', '2025/26'], finals: ['2020/21'], seasonSilvers: ['2020/21'] },
   'Молот (Пермь)': { championships: [], regularTitles: ['2023/24'], finals: [] },
   'АКМ (Тульская область)': { championships: [], regularTitles: [], finals: ['2023/24'] },
   'Сокол (Красноярск)': { championships: [], regularTitles: [], finals: ['2022/23'] }
