@@ -40,7 +40,7 @@ window.VHL_SEASON_RESULTS = [
       { historicalId: 'dynamo-moscow-region', clubName: 'Динамо', regularPlace: 19, games: 56, wins: 13, overtimeWins: 3, shootoutWins: 5, shootoutLosses: 3, overtimeLosses: 2, losses: 30, goalsFor: 150, goalsAgainst: 190, points: 60, playoffStage: 'missed' },
       { historicalId: 'lada-togliatti', clubName: 'Лада', regularPlace: 20, games: 56, wins: 15, overtimeWins: 1, shootoutWins: 2, shootoutLosses: 2, overtimeLosses: 0, losses: 36, goalsFor: 130, goalsAgainst: 184, points: 53, playoffStage: 'missed' }
     ]
-  }
+  },
   {
     season: '2011/12',
     leagueParticipants: 23,
