@@ -887,12 +887,14 @@ function liveUpdatePositions() {
 }
 
 function liveAnimationLoop() {
-  if (!G.liveMatch) { _liveRafId = null; return; }
   const lm = G.liveMatch;
-  if (!lm.paused && !lm.isBreak && !lm.isFinished) {
-    liveUpdatePositions();
-    drawLiveCanvas();
+  // Не держим постоянный animation frame, когда матч остановлен или уже завершён.
+  if (!lm || lm.paused || lm.isBreak || lm.isFinished) {
+    _liveRafId = null;
+    return;
   }
+  liveUpdatePositions();
+  drawLiveCanvas();
   _liveRafId = requestAnimationFrame(liveAnimationLoop);
 }
 function startLiveAnimation() {
