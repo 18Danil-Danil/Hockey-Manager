@@ -162,6 +162,7 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 14, pts: 67, playoff: 'round16' },
       { season: '2022/23', place: 24, pts: 41, playoff: 'missed' },
       { season: '2021/22', place: 18, pts: 50, playoff: 'missed' },
+      { season: '2019/20', place: 1, pts: 89, playoff: 'season_winner' },
     ],
     trophies: { petrov: [], regular: [], opening: [] , finals: [] },
     rivals: [],
