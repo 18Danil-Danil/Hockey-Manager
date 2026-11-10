@@ -27,15 +27,16 @@ const api = new Function(
 const pools = windowStub.PLAYER_DATA.NAME_POOLS;
 assert.equal(Object.keys(pools).length, 20, 'all 20 nationality pools should remain available');
 const russianSurnames = pools['Россия'].last;
-const normalizedSurnameKey = value => value.normalize('NFKC').toLocaleLowerCase('ru').replace(/ё/g, 'е').replace(/\\s+/g, ' ').trim();
+const normalizedSurnameKey = value => value.normalize('NFKC').toLocaleLowerCase('ru').replace(/ё/g, 'е').replace(/\s+/g, ' ').trim();
 assert.equal(russianSurnames.length, 700, 'Russian surname pool should contain exactly 700 entries');
+assert.equal(pools['Россия'].first.length, 196, 'Russian first-name pool should contain 196 unique entries');
 assert.equal(new Set(russianSurnames.map(normalizedSurnameKey)).size, 700,
   'Russian surnames must be unique after ё/е normalization');
 for (const [nationality, pool] of Object.entries(pools)) {
   assert.ok(pool.first.length >= 20, `${nationality}: too few first names`);
   assert.ok(pool.last.length >= 20, `${nationality}: too few surnames`);
-  assert.equal(new Set(pool.first).size, pool.first.length, `${nationality}: duplicate first names`);
-  assert.equal(new Set(pool.last).size, pool.last.length, `${nationality}: duplicate surnames`);
+  assert.equal(new Set(pool.first.map(normalizedSurnameKey)).size, pool.first.length, `${nationality}: duplicate first names after normalization`);
+  assert.equal(new Set(pool.last.map(normalizedSurnameKey)).size, pool.last.length, `${nationality}: duplicate surnames after normalization`);
 }
 const latinEntries = Object.entries(pools).flatMap(([nationality, pool]) =>
   [...pool.first, ...pool.last].filter(name => /[A-Za-z]/.test(name)).map(name => nationality + ': ' + name)
