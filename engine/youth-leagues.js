@@ -291,7 +291,7 @@ function youthTransferPrice(player, leagueId) {
 }
 
 function normalizeClubName(name) {
-  return String(name || '').toLowerCase().replace(/ё/g, 'е').replace(/^(хк|мхк|хк\.)\s*/i, '').replace(/[^a-zа-я0-9]/gi, '');
+  return String(name || '').toLowerCase().replace(/ё/g, 'е').replace(/\s*\((кхл|вхл|мхл|рхл)\)/g, '').replace(/^(хк|мхк|хк\.)\s*/i, '').replace(/[^a-zа-я0-9]/gi, '');
 }
 
 function youthTeamBelongsToSeniorClub(youthTeam, seniorTeam) {
