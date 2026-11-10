@@ -850,6 +850,15 @@ function drawLiveCanvas() {
     ctx.fillText(labelText, x, labelY, labelWidth - 5);
     ctx.restore();
 
+    if ((p.contactFrames || 0) > 0) {
+      ctx.beginPath();
+      ctx.arc(x, y, r + 5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      p.contactFrames--;
+    }
+
     if (isCarrier) {
       ctx.beginPath();
       ctx.arc(x, y, r + 4, 0, Math.PI * 2);
@@ -977,22 +986,42 @@ function liveUpdatePositions() {
     }
   // Loose puck: players react to the destination; possession resumes after the puck settles.
   } else if ((puck.looseFrames || 0) > 0) {
-    const receiver = Number.isInteger(puck.nextCarrierIndex)
-      ? (lm.positions[puck.nextPossessionSide] || [])[puck.nextCarrierIndex] : null;
-    const targetX = receiver ? receiver.x : (puck.targetX ?? 100);
-    const targetY = receiver ? receiver.y : (puck.targetY ?? 50);
-    puck.x += (targetX - puck.x) * 0.18;
-    puck.y += (targetY - puck.y) * 0.18;
-    puck.looseFrames--;
-    if (puck.looseFrames === 0) {
-      puck.possessionSide = puck.nextPossessionSide || puck.possessionSide || 'home';
-      puck.carrierIndex = Number.isInteger(puck.nextCarrierIndex)
-        ? puck.nextCarrierIndex : 3 + Math.floor(visualRng() * 3);
-      puck.actionFrames = 70 + Math.floor(visualRng() * 80);
-      puck.targetX = null;
-      puck.targetY = null;
-      puck.nextPossessionSide = null;
-      puck.nextCarrierIndex = null;
+    if (puck.battle && puck.battle.frames > 0) {
+      // Players tie up sticks and shoulders; the puck stays contested for a few frames.
+      puck.battle.frames--;
+      for (const side of ['home', 'away']) {
+        const player = (lm.positions[side] || [])[puck.battle[side + 'Index']];
+        if (player) {
+          player.contactFrames = 5;
+          player.vx = (player.vx || 0) * 0.35;
+          player.vy = (player.vy || 0) * 0.35;
+        }
+      }
+      if (puck.battle.frames === 0) {
+        const winner = visualRng() < 0.5 ? 'home' : 'away';
+        puck.nextPossessionSide = winner;
+        puck.nextCarrierIndex = puck.battle[winner + 'Index'];
+        puck.battle = null;
+        puck.looseFrames = 1;
+      }
+    } else {
+      const receiver = Number.isInteger(puck.nextCarrierIndex)
+        ? (lm.positions[puck.nextPossessionSide] || [])[puck.nextCarrierIndex] : null;
+      const targetX = receiver ? receiver.x : (puck.targetX ?? 100);
+      const targetY = receiver ? receiver.y : (puck.targetY ?? 50);
+      puck.x += (targetX - puck.x) * 0.18;
+      puck.y += (targetY - puck.y) * 0.18;
+      puck.looseFrames--;
+      if (puck.looseFrames === 0) {
+        puck.possessionSide = puck.nextPossessionSide || puck.possessionSide || 'home';
+        puck.carrierIndex = Number.isInteger(puck.nextCarrierIndex)
+          ? puck.nextCarrierIndex : 3 + Math.floor(visualRng() * 3);
+        puck.actionFrames = 70 + Math.floor(visualRng() * 80);
+        puck.targetX = null;
+        puck.targetY = null;
+        puck.nextPossessionSide = null;
+        puck.nextCarrierIndex = null;
+      }
     }
   } else {
     puck.actionFrames = (puck.actionFrames || 0) - 1;
@@ -1110,6 +1139,36 @@ function liveUpdatePositions() {
       player.vy = clamp(player.vy, -maxSpeed, maxSpeed);
       player.x = clamp(player.x + player.vx, 5, 195);
       player.y = clamp(player.y + player.vy, 5, 95);
+    }
+  }
+
+  // Trigger a brief visual board/loose-puck battle when opponents arrive together.
+  if ((puck.looseFrames || 0) > 0 && !puck.battle && !puck.shotAnimation) {
+    const nearest = {};
+    for (const side of sides) {
+      const players = lm.positions[side] || [];
+      let best = null;
+      for (let index = 1; index < players.length; index++) {
+        const player = players[index];
+        const distance = Math.hypot(player.x - puck.x, player.y - puck.y);
+        if (!best || distance < best.distance) best = { index, distance, player };
+      }
+      nearest[side] = best;
+    }
+    if (nearest.home && nearest.away
+      && nearest.home.distance < 10 && nearest.away.distance < 10
+      && Math.abs(nearest.home.distance - nearest.away.distance) < 4) {
+      const nearBoards = puck.y < 18 || puck.y > 82;
+      puck.battle = {
+        frames: nearBoards ? 12 : 8,
+        homeIndex: nearest.home.index,
+        awayIndex: nearest.away.index,
+        type: nearBoards ? 'board' : 'puck',
+      };
+      puck.targetX = puck.x;
+      puck.targetY = puck.y;
+      nearest.home.player.contactFrames = 6;
+      nearest.away.player.contactFrames = 6;
     }
   }
 
