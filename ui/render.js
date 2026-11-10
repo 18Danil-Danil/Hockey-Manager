@@ -893,8 +893,8 @@ function renderTeamModal() {
       </div>
       <h2>Сила</h2>${talentHtml}
       ${financeHtml}
-      <h2>История выступлений (до 5 сезонов)</h2>
-      <table><thead><tr><th>Сезон</th><th>Место</th><th>Очки</th><th>Плей-офф</th></tr></thead><tbody>${historyRows}</tbody></table>
+      <h2>История выступлений</h2>
+      <table><thead><tr><th>Сезон</th><th>Место</th><th>В-П-ПО</th><th>Очки</th><th>Шайбы</th><th>Плей-офф</th></tr></thead><tbody>${historyRows}</tbody></table>
       <h2>Трофеи</h2>${trophiesHtml}
       <h2>Лучшие игроки (всего)</h2>${topPlayersHtml}
       <h2>Исторические соперники</h2><div>${rivalsHtml}</div>
