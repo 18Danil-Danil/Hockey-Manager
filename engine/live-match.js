@@ -62,6 +62,9 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
     pbp: [],
     penalties: { home: [], away: [] },
     shots: { home: 0, away: 0 },
+    shootout: false,
+    shootoutAttempts: { home: 0, away: 0 },
+    shootoutWinner: null,
     xgTotal: { home: xgH, away: xgA },
     xgCurrent: { home: xgH, away: xgA },
     homeLineup, awayLineup, hTM, aTM,
@@ -178,12 +181,23 @@ function liveAdvance(stepSec) {
     } else {
       const rShot = rng();
       if (rShot < 0.6) {
-        lm.shots.home++;
-        lm.goalieStats.away.shots++;
-        const p = pickWeighted(lm.homeLineup.skaters, shotWeight);
-        const isPlayoff = lm.isPlayoff;
-        (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).shots++;
-        livePushEvent({ type: 'shot', text: `${p.name} (${p.position}) бросает — ${pick(['сейв','сейв','сейв','мимо','штанга'])}.`, time: liveFmtTime(lm.timeLeft), period: lm.period });
+        const side = rng() < 0.5 ? 'home' : 'away';
+        const lineup = side === 'home' ? lm.homeLineup : lm.awayLineup;
+        const defendingSide = side === 'home' ? 'away' : 'home';
+        if (lineup.skaters.length) {
+          const p = pickWeighted(lineup.skaters, shotWeight);
+          lm.shots[side]++;
+          lm.goalieStats[defendingSide].shots++;
+          const isPlayoff = lm.isPlayoff;
+          (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).shots++;
+          const outcome = pick(['сейв','сейв','сейв','мимо','штанга']);
+          const sideName = side === 'home' ? homeTeamNameShort() : awayTeamNameShort();
+          livePushEvent({
+            type: 'shot', side,
+            text: `${p.name} (${p.position}) [${sideName}] бросает — ${outcome}.`,
+            time: liveFmtTime(lm.timeLeft), period: lm.period,
+          });
+        }
       }
     }
   }
@@ -302,10 +316,8 @@ function liveEndPeriod() {
     return;
   }
   if (isLast && tied) {
-    // ⚙️ ФИКС #2: если ОТ уже сыгран и снова ничья — финиш (в реальности буллиты)
     if (lm.period === 4) {
-      lm.isFinished = true;
-      finishLiveMatch();
+      runLiveShootout();
       return;
     }
     lm.period = 4;
@@ -320,6 +332,73 @@ function liveEndPeriod() {
   lm.paused = true;
   // ⚙️ ФИКС #14: чистим интервал на перерыве (не жечь CPU)
   if (lm.intervalId) { clearInterval(lm.intervalId); lm.intervalId = null; }
+}
+
+
+function runLiveShootout() {
+  const lm = G.liveMatch;
+  if (!lm || lm.isFinished || lm.shootout) return;
+  lm.shootout = true;
+  lm.ot = true;
+  lm.period = 5;
+  lm.timeLeft = 0;
+  livePushEvent({ type: 'period', text: 'Буллитная серия', time: 'БС', period: 5 });
+  lm.pbp.push({ period: 5, time: '—', type: 'period', text: 'Буллитная серия' });
+
+  const teams = {
+    home: G.league.teams.find(t => t.id === lm.homeId),
+    away: G.league.teams.find(t => t.id === lm.awayId),
+  };
+  const lineups = { home: lm.homeLineup, away: lm.awayLineup };
+  const attempts = { home: 0, away: 0 };
+  const goals = { home: 0, away: 0 };
+  const attempt = (side) => {
+    const lineup = lineups[side];
+    const shooters = lineup.skaters || [];
+    const goalie = lineups[side === 'home' ? 'away' : 'home'].goalie;
+    if (!shooters.length) return false;
+    const shooter = pickWeighted(shooters, scorerWeight);
+    const chance = clamp(0.32 + ((shooter.ovr || 60) - 60) * 0.003, 0.18, 0.48);
+    const scored = rng() < chance;
+    attempts[side]++;
+    lm.shootoutAttempts[side]++;
+    const teamName = teams[side] ? (teams[side].shortName || teams[side].name) : side;
+    const goalieName = goalie ? goalie.name : 'вратарь';
+    const text = scored
+      ? `Буллит реализован: ${shooter.name} (${teamName}) переигрывает ${goalieName}.`
+      : `Буллит не реализован: ${shooter.name} (${teamName}) — ${goalieName} отражает бросок.`;
+    if (scored) goals[side]++;
+    livePushEvent({ type: 'shootout', side, text, time: `БС ${attempts[side]}`, period: 5 });
+  };
+
+  // Три обязательные попытки каждой команды, затем серии до первого преимущества.
+  for (let i = 0; i < 3; i++) {
+    attempt('home');
+    attempt('away');
+  }
+  let rounds = 0;
+  while (goals.home === goals.away && rounds < 50) {
+    attempt('home');
+    attempt('away');
+    rounds++;
+  }
+  if (goals.home === goals.away) {
+    // Защита от бесконечного цикла при крайне маловероятной длинной серии.
+    const winner = rng() < 0.5 ? 'home' : 'away';
+    goals[winner]++;
+  }
+  const winner = goals.home > goals.away ? 'home' : 'away';
+  lm.shootoutWinner = winner;
+  // Решающий буллит отражается в итоговом счёте матча, но не в личной статистике.
+  if (winner === 'home') lm.hg++; else lm.ag++;
+  livePushEvent({
+    type: 'shootout', side: winner,
+    text: `Победа ${teams[winner] ? (teams[winner].shortName || teams[winner].name) : winner} в буллитной серии ${goals.home}:${goals.away}.`,
+    time: 'БС', period: 5,
+  });
+  lm.isFinished = true;
+  if (lm.intervalId) { clearInterval(lm.intervalId); lm.intervalId = null; }
+  finishLiveMatch();
 }
 
 function liveResumeFromBreak() {
@@ -364,18 +443,22 @@ function finishLiveMatch() {
   const isPlayoff = lm.isPlayoff;
   if (lm.awayLineup.goalie) {
     const s = isPlayoff ? ensurePlayoffStats(lm.awayLineup.goalie) : ensureStats(lm.awayLineup.goalie);
-    s.gp++; s.shotsAgainst += lm.shots.home; s.goalsAgainst += lm.hg; s.saves += Math.max(0, lm.shots.home - lm.hg);
-    if (lm.hg === 0) s.shutouts++;
-    if (lm.hg < lm.ag) s.wins++; else if (lm.hg > lm.ag) { if (lm.ot) s.otl++; else s.losses++; }
+    const goalsAgainst = lm.hg - (lm.shootoutWinner === 'home' ? 1 : 0);
+    s.gp++; s.shotsAgainst += lm.shots.home; s.goalsAgainst += goalsAgainst; s.saves += Math.max(0, lm.shots.home - goalsAgainst);
+    if (goalsAgainst === 0) s.shutouts++;
+    if (lm.shootoutWinner === 'away' || (!lm.shootoutWinner && lm.hg < lm.ag)) s.wins++;
+    else if (lm.shootoutWinner === 'home' || lm.hg > lm.ag) { if (lm.ot) s.otl++; else s.losses++; }
   }
   if (lm.homeLineup.goalie) {
     const s = isPlayoff ? ensurePlayoffStats(lm.homeLineup.goalie) : ensureStats(lm.homeLineup.goalie);
-    s.gp++; s.shotsAgainst += lm.shots.away; s.goalsAgainst += lm.ag; s.saves += Math.max(0, lm.shots.away - lm.ag);
-    if (lm.ag === 0) s.shutouts++;
-    if (lm.ag < lm.hg) s.wins++; else if (lm.ag > lm.hg) { if (lm.ot) s.otl++; else s.losses++; }
+    const goalsAgainst = lm.ag - (lm.shootoutWinner === 'away' ? 1 : 0);
+    s.gp++; s.shotsAgainst += lm.shots.away; s.goalsAgainst += goalsAgainst; s.saves += Math.max(0, lm.shots.away - goalsAgainst);
+    if (goalsAgainst === 0) s.shutouts++;
+    if (lm.shootoutWinner === 'home' || (!lm.shootoutWinner && lm.ag < lm.hg)) s.wins++;
+    else if (lm.shootoutWinner === 'away' || lm.ag > lm.hg) { if (lm.ot) s.otl++; else s.losses++; }
   }
-  if (lm.homeLineup.goalie) updateGoalieStatus(home, lm.homeLineup.goalie, lm.ag, lm.shots.away);
-  if (lm.awayLineup.goalie) updateGoalieStatus(away, lm.awayLineup.goalie, lm.hg, lm.shots.home);
+  if (lm.homeLineup.goalie) updateGoalieStatus(home, lm.homeLineup.goalie, lm.ag - (lm.shootoutWinner === 'away' ? 1 : 0), lm.shots.away);
+  if (lm.awayLineup.goalie) updateGoalieStatus(away, lm.awayLineup.goalie, lm.hg - (lm.shootoutWinner === 'home' ? 1 : 0), lm.shots.home);
   for (const p of lm.homeLineup.skaters) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).gp++;
   for (const p of lm.awayLineup.skaters) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).gp++;
 
@@ -462,9 +545,10 @@ function exitLiveMatchEarly() {
     lm.hg += otH; lm.ag += otA;
     lm.shots.home += otH;
     lm.shots.away += otA;
-    if (lm.hg === lm.ag) {
-      if (rng() < 0.5) lm.hg++; else lm.ag++;
-    }
+  }
+  if (lm.hg === lm.ag) {
+    runLiveShootout();
+    return;
   }
 
   finishLiveMatch();
