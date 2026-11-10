@@ -865,5 +865,6 @@
   }
   mergeUnique(data.FIRST, additions['Россия'].first);
   mergeUnique(data.LAST, additions['Россия'].last);
+  mergeUnique(data.LAST, additions['Россия'].surnameExpansion);
   window.PLAYER_NAME_POOL_VERSION = 3;
 })();
