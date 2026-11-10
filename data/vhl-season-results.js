@@ -86,10 +86,11 @@ window.VHL_SEASON_RESULTS = [
     season: '2012/13',
     leagueParticipants: 27,
     regularSeason: {
-      source: 'https://ru.wikipedia.org/wiki/ВХЛ_в_сезоне_2012/2013',
-      sourceType: 'season_archive_cross_checked',
+      source: 'https://www.vhlru.ru/upload/vhl2013_3.pdf',
+      secondarySources: ['https://ru.wikipedia.org/wiki/ВХЛ_в_сезоне_2012/2013', 'https://www.sports.ru/hockey/tournament/vhl/table/?s=2146&sub=table&table=0'],
+      sourceType: 'official_season_report_cross_checked',
       verified: true,
-      note: 'Полная таблица сезона; 52 матча у каждого клуба. Сверено с таблицей Sports.ru и архивом Силы Спорта.'
+      note: 'Официальный итоговый журнал ВХЛ содержит полную таблицу сезона; 52 матча у каждого клуба. Сверено с независимыми сезонными таблицами.'
     },
     playoffs: {
       source: 'https://www.championat.com/hockey/_highleague/tournament/705/',
