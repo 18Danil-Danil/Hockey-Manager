@@ -14,7 +14,7 @@ function makeSchedule(teams) {
 function genLeague() {
   const teams = VHL_TEAMS.map(meta => genTeam(meta));
   const league = {
-    season: 1, teams, schedule: makeSchedule(teams), currentRound: 0, results: [],
+    season: '2026/27', teams, schedule: makeSchedule(teams), currentRound: 0, results: [],
     playoffs: null, history: [], transferLog: [], freeAgents: [], staffPool: [], waivers: [],
     aiTradeOffers: [], allTimeLeaders: { skaters: {} }, inbox: [], news: [],
     retiredPlayers: [], openingCup: null, retroMatch: null,
