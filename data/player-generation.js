@@ -64,22 +64,31 @@ function hydratePlayerNameRegistry(league) {
   scan(league);
   return registry.size;
 }
-function getPlayerNamePartWeight(nationality, kind, value) {
+function getPlayerNameWeightProfile(nationality, kind, values) {
+  const cache = window.PLAYER_NAME_WEIGHT_CACHE || (window.PLAYER_NAME_WEIGHT_CACHE = {});
+  const cacheKey = nationality + ':' + kind;
+  if (cache[cacheKey]?.values === values) return cache[cacheKey];
   const profile = window.PLAYER_NAME_FREQUENCY?.[nationality]?.[kind] || {};
+  const common = new Set((profile.common || []).map(normalizePlayerNameKey));
+  const rare = new Set((profile.rare || []).map(normalizePlayerNameKey));
+  const weights = (values || []).map(value => rare.has(normalizePlayerNameKey(value)) ? 1 : common.has(normalizePlayerNameKey(value)) ? 35 : 10);
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  cache[cacheKey] = { values, weights, total, common, rare };
+  return cache[cacheKey];
+}
+function getPlayerNamePartWeight(nationality, kind, value) {
+  const profile = getPlayerNameWeightProfile(nationality, kind, []);
   const key = normalizePlayerNameKey(value);
-  const common = (profile.common || []).some(item => normalizePlayerNameKey(item) === key);
-  const rare = (profile.rare || []).some(item => normalizePlayerNameKey(item) === key);
-  if (rare) return 1;
-  if (common) return 35;
+  if (profile.rare.has(key)) return 1;
+  if (profile.common.has(key)) return 35;
   return 10;
 }
 function pickWeightedPlayerNamePart(values, nationality, kind) {
   if (!values?.length) return '';
-  const weights = values.map(value => getPlayerNamePartWeight(nationality, kind, value));
-  const total = weights.reduce((sum, weight) => sum + weight, 0);
-  let roll = randInt(1, total);
+  const profile = getPlayerNameWeightProfile(nationality, kind, values);
+  let roll = randInt(1, profile.total);
   for (let i = 0; i < values.length; i++) {
-    roll -= weights[i];
+    roll -= profile.weights[i];
     if (roll <= 0) return values[i];
   }
   return values[values.length - 1];
@@ -106,7 +115,7 @@ function generatePlayerName(nationality) {
   };
   // Сначала выбираем части имени с учётом распространённости.
   // Редкие исторические имена остаются в пуле, но имеют существенно меньший вес.
-  for (let attempt = 0; attempt < 64; attempt++) {
+  for (let attempt = 0; attempt < 12; attempt++) {
     const firstName = pickWeightedPlayerNamePart(pool.first || FIRST, nationality, 'first');
     const lastName = pickWeightedPlayerNamePart(pool.last || LAST, nationality, 'last');
     const candidate = (firstName + ' ' + lastName).trim();
