@@ -118,6 +118,54 @@ assert.ok(volumeState.lm.shots.home >= 10 && volumeState.lm.shots.away >= 10,
 assert.match(source, /xgTotal: \{ home: liveXgH, away: liveXgA \}/);
 assert.match(source, /lm\.xgCurrent\.home = xgH \* LIVE_XG_MULTIPLIER/);
 
+// A goal must award plus/minus only to the five skaters on the ice on each side.
+const goalSource = source.slice(
+  source.indexOf('function liveGoal('),
+  source.indexOf('function livePenalty(', source.indexOf('function liveGoal('))
+);
+const liveGoal = new Function(
+  'G', 'pickWeighted', 'scorerWeight', 'ensurePlayoffStats', 'ensureStats',
+  'rng', 'addNews', 'liveIsPP', 'livePushEvent', 'liveFmtTime',
+  'finishLiveMatch', 'clearInterval',
+  `${goalSource}; return liveGoal;`
+);
+const homeSkaters = Array.from({ length: 6 }, (_, i) => ({ id: `h${i + 1}`, name: `Home ${i + 1}`, position: 'F', ovr: 60 }));
+const awaySkaters = Array.from({ length: 6 }, (_, i) => ({ id: `a${i + 1}`, name: `Away ${i + 1}`, position: 'F', ovr: 60 }));
+const goalStats = new Map();
+const ensureGoalStats = p => {
+  if (!goalStats.has(p.id)) goalStats.set(p.id, { goals: 0, shots: 0, points: 0, assists: 0, plusMinus: 0 });
+  return goalStats.get(p.id);
+};
+const goalLm = {
+  homeId: 'home', awayId: 'away', hg: 0, ag: 0, period: 1, timeLeft: 900,
+  isPlayoff: false, penalties: { home: [], away: [] }, totalSecPlayed: 100,
+  homeLineup: { skaters: homeSkaters }, awayLineup: { skaters: awaySkaters },
+  goalieStats: { home: { shots: 0, goals: 0 }, away: { shots: 0, goals: 0 } },
+  shots: { home: 0, away: 0 }, shotAttempts: { home: 0, away: 0 },
+  positions: { puck: { x: 100, y: 50 } }, scorers: {}, assisters: {},
+};
+const selectedIds = new Set();
+const chooseUnselected = players => {
+  const selected = players.find(p => !selectedIds.has(p.id)) || players[0];
+  selectedIds.add(selected.id);
+  return selected;
+};
+liveGoal(
+  { liveMatch: goalLm, league: { teams: [{ id: 'home', name: 'Home' }, { id: 'away', name: 'Away' }] } },
+  players => chooseUnselected(players), () => 1,
+  ensureGoalStats, ensureGoalStats, () => 0.01, () => {}, () => false,
+  () => {}, () => '15:00', () => {}, () => {}
+);
+assert.equal(goalLm.hg, 1);
+assert.equal(goalLm.shotAttempts.home, 1, 'goal attempt was not counted');
+assert.equal(goalLm.shots.home, 1, 'goal was not counted as a shot on goal');
+assert.equal(homeSkaters.filter(p => ensureGoalStats(p).plusMinus === 1).length, 5,
+  'plus was not limited to five attacking skaters');
+assert.equal(awaySkaters.filter(p => ensureGoalStats(p).plusMinus === -1).length, 5,
+  'minus was not limited to five defending skaters');
+assert.equal(awaySkaters.filter(p => ensureGoalStats(p).plusMinus === 0).length, 1,
+  'bench player incorrectly received a minus');
+
 // A tied overtime must be resolved by a shootout; the deciding goal is a team
 // result only and is not added to skater/goalie box-score statistics.
 const shootoutSource = source.slice(
