@@ -15,9 +15,11 @@
 const LIVE_PERIOD_SEC = 1200;   // 20 минут = 1200 сек
 const LIVE_TICK_SEC = 5;         // 5 игровых секунд за тик
 const LIVE_TICK_MS = 80;         // 80 мс реального времени на тик при 1x
-const LIVE_PP_BOOST = 2.6;       // xG атакующей в PP × 2.6
-const LIVE_PK_NERF  = 0.55;      // xG обороняющейся в PK × 0.55
-const LIVE_PENALTY_RATE = 0.0065; // вероятность штрафа на тик на команду (~5.6 штрафов/матч)
+const LIVE_XG_MULTIPLIER = 0.96; // LIVE-калибровка к средней результативности обычной симуляции
+const LIVE_PP_BOOST = 1.8;       // умеренное усиление атаки в большинстве
+const LIVE_PK_NERF  = 0.70;      // умеренное снижение атаки команды в меньшинстве
+const LIVE_PENALTY_RATE = 0.00195; // вероятность штрафа на тик для каждой стороны
+const LIVE_SHOT_RATE = 0.055;    // вероятность отдельного броска на тик без гола/штрафа
 
 function isMyGameInRound() {
   if (!G.playerTeamId) return null;
@@ -43,6 +45,8 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
   const homeLineup = getLineup(home), awayLineup = getLineup(away);
   const hTM = tacticMods(home.tactics, home), aTM = tacticMods(away.tactics, away);
   const { xgH, xgA } = computeXG(home, away, hTM, aTM, homeLineup, awayLineup);
+  const liveXgH = xgH * LIVE_XG_MULTIPLIER;
+  const liveXgA = xgA * LIVE_XG_MULTIPLIER;
 
   const positions = { home: [], away: [], puck: { x: 100, y: 50, vx: 0, vy: 0 } };
   const formHome = buildFormation('home');
@@ -65,8 +69,8 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
     shootout: false,
     shootoutAttempts: { home: 0, away: 0 },
     shootoutWinner: null,
-    xgTotal: { home: xgH, away: xgA },
-    xgCurrent: { home: xgH, away: xgA },
+    xgTotal: { home: liveXgH, away: liveXgA },
+    xgCurrent: { home: liveXgH, away: liveXgA },
     homeLineup, awayLineup, hTM, aTM,
     scorers: {},
     assisters: {},
@@ -180,7 +184,7 @@ function liveAdvance(stepSec) {
       livePenalty('away');
     } else {
       const rShot = rng();
-      if (rShot < 0.6) {
+      if (rShot < LIVE_SHOT_RATE) {
         const side = rng() < 0.5 ? 'home' : 'away';
         const lineup = side === 'home' ? lm.homeLineup : lm.awayLineup;
         const defendingSide = side === 'home' ? 'away' : 'home';
@@ -408,8 +412,8 @@ function liveResumeFromBreak() {
   const away = G.league.teams.find(t => t.id === lm.awayId);
   const hTM = tacticMods(home.tactics, home), aTM = tacticMods(away.tactics, away);
   const { xgH, xgA } = computeXG(home, away, hTM, aTM);
-  lm.xgCurrent.home = xgH;
-  lm.xgCurrent.away = xgA;
+  lm.xgCurrent.home = xgH * LIVE_XG_MULTIPLIER;
+  lm.xgCurrent.away = xgA * LIVE_XG_MULTIPLIER;
   lm.hTM = hTM; lm.aTM = aTM;
   lm.period++;
   lm.timeLeft = lm.period === 4 ? 300 : LIVE_PERIOD_SEC;
