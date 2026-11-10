@@ -41,7 +41,8 @@ window.YOUTH_CLUBS = {
     { id: 'org-tambov', name: 'Система ХК Тамбов', independent: false },
     { id: 'org-izhstal', name: 'Система Ижстали', independent: false },
     { id: 'org-kaluga', name: 'Система Калуги', independent: false },
-    { id: 'org-independent-kaluga-rockets', name: 'Калужские Ракеты', independent: true },
+    // Калужские Ракеты — молодёжная команда ХК Калуга (подтверждено пользователем).
+    
     { id: 'org-independent-dynamo-karelia', name: 'Динамо-Карелия', independent: true },
     { id: 'org-independent-ermak', name: 'Ермак Ангарск', independent: true },
     { id: 'org-independent-sokol-nch', name: 'Сокол Новочебоксарск', independent: true },
@@ -119,7 +120,7 @@ window.YOUTH_CLUBS = {
     { id: 'rhl-bryansk', league: 'RHL', name: 'ХК Брянск', org: 'org-independent-bryansk', senior: [] },
     { id: 'rhl-leningradets', league: 'RHL', name: 'ХК Ленинградец', org: 'org-independent-leningradets', senior: [] },
     { id: 'rhl-fakel', league: 'RHL', name: 'Факел Салехард', org: 'org-independent-fakel', senior: [] },
-    { id: 'rhl-kaluga-rockets', league: 'RHL', name: 'Калужские Ракеты', org: 'org-independent-kaluga-rockets', senior: [] },
+    { id: 'rhl-kaluga-rockets', league: 'RHL', name: 'Калужские Ракеты', org: 'org-kaluga', senior: ['Калуга'], seniorTeamSlug: 'kaluga' },
     { id: 'rhl-dynamo-karelia', league: 'RHL', name: 'Динамо Карелия', org: 'org-independent-dynamo-karelia', senior: [] }
   ]
 };
