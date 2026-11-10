@@ -180,7 +180,7 @@ function renderGames() {
   if (G.selectedGamePbp) {
     const game = G.selectedGamePbp; const home = G.league.teams.find(t => t.id === game.homeId); const away = G.league.teams.find(t => t.id === game.awayId);
     let html = `<button class="btn secondary" onclick="G.selectedGamePbp=null; render();">← Назад</button>`;
-    html += `<h2>${away.name} ${game.ag} : ${game.hg} ${home.name} ${game.ot ? '(ОТ)' : ''}</h2><div class="pbp-container">`;
+    html += `<h2>${away.name} ${game.ag} : ${game.hg} ${home.name} ${game.shootout ? '(буллиты)' : game.ot ? '(ОТ)' : ''}</h2><div class="pbp-container">`;
     for (const ev of game.pbp || []) { if (ev.type === 'period') { html += `<div class="pbp-period">${ev.text}</div>`; continue; } const cls = ev.type === 'goal' ? 'pbp-goal' : ev.type === 'penalty' ? 'pbp-penalty' : ev.type === 'shot' ? 'pbp-shot' : 'pbp-faceoff'; html += `<div class="${cls}">[${ev.time}] ${ev.text}</div>`; }
     html += `</div>`; return html;
   }
@@ -722,7 +722,7 @@ function renderSeries(series, roundIdx) {
   const a = G.league.teams.find(t => t.id === series.aId); const b = G.league.teams.find(t => t.id === series.bId);
   const isMe = series.aId === G.playerTeamId || series.bId === G.playerTeamId;
   const aWon = series.winnerId === series.aId, bWon = series.winnerId === series.bId;
-  const gameStr = series.games.map(g => { const aIsHome = g.homeId === series.aId; return `${aIsHome ? g.hg : g.ag}-${aIsHome ? g.ag : g.hg}${g.ot ? 'ОТ' : ''}`; }).join(', ');
+  const gameStr = series.games.map(g => { const aIsHome = g.homeId === series.aId; return `${aIsHome ? g.hg : g.ag}-${aIsHome ? g.ag : g.hg}${g.shootout ? 'Б' : g.ot ? 'ОТ' : ''}`; }).join(', ');
   const currentGame = series.aWins + series.bWins + 1;
   const matchIndicator = !series.winnerId && isMe ? `<div class="match-indicator">Матч ${currentGame} из 7</div>` : '';
   let actions = '';
