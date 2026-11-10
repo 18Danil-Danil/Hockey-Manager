@@ -61,6 +61,7 @@ function bindTeamSelect() {
       G.skipInjuryPrompt = false;
       G.openingCupModal = null;
       G.tradeTargetTeamId = null;
+      G.activeTab = 'overview';
       G.screen = 'game';
       initAISponsors();
       render();
@@ -97,7 +98,7 @@ function renderHeader() {
 function renderTabs() {
   const unread = unreadInboxCount();
   const tabs = [
-    { key: 'standings', label: 'Таблица' }, { key: 'games', label: 'Матчи' }, { key: 'calendar', label: 'Календарь' },
+    { key: 'overview', label: 'Обзор' }, { key: 'standings', label: 'Таблица' }, { key: 'games', label: 'Матчи' }, { key: 'calendar', label: 'Календарь' },
     { key: 'roster', label: 'Состав' }, { key: 'lines', label: 'Звенья' }, { key: 'stats', label: 'Статистика' },
     { key: 'market', label: 'Рынок' }, { key: 'trades', label: 'Обмены' }, { key: 'waivers', label: 'Драфт отказов' },
     { key: 'inbox', label: `📬 Почта${unread ? ` <span class="inbox-badge">${unread}</span>` : ''}` },
@@ -1122,4 +1123,57 @@ function renderOpeningCupModal() {
       <div style="margin-top:20px;text-align:center"><button class="btn" onclick="G.openingCupModal=null; render();">Продолжить</button></div>
     </div>
   </div>`;
+}
+
+
+
+/* ============================================================
+   ГЛАВНЫЙ ЭКРАН КЛУБА — DASHBOARD
+   ============================================================ */
+function renderOverview() {
+  const team = G.league.teams.find(t => t.id === G.playerTeamId);
+  if (!team) return '<div class="subtitle">Клуб не найден.</div>';
+  const sorted = standingsSorted();
+  const rank = sorted.findIndex(t => t.id === team.id) + 1;
+  const played = team.record.w + team.record.l + team.record.otl;
+  const total = G.league.schedule.length;
+  const progress = total ? Math.round(G.league.currentRound / total * 100) : 0;
+  const seasonDone = G.league.currentRound >= total;
+  const fixture = (G.league.schedule[G.league.currentRound] || []).find(([h, a]) => h === team.id || a === team.id);
+  const isHome = fixture ? fixture[0] === team.id : false;
+  const opponent = fixture ? G.league.teams.find(t => t.id === (isHome ? fixture[1] : fixture[0])) : null;
+  const recent = (G.league.results || []).filter(r => r.homeId === team.id || r.awayId === team.id).slice(-5).reverse();
+  const injuries = team.roster.filter(p => p.injury && p.injury.gamesLeft > 0);
+  const leaders = team.roster.slice().sort((a, b) => (ensureStats(b).points || 0) - (ensureStats(a).points || 0)).slice(0, 3);
+  const diff = team.record.gf - team.record.ga;
+  const pct = played ? Math.round(team.record.pts / (played * 2) * 100) : 0;
+  const nextMatch = opponent
+    ? '<div class="dashboard-matchup"><div class="dashboard-match-team"><span class="dashboard-match-label">' + (isHome ? 'ДОМА' : 'В ГОСТЯХ') + '</span><strong>' + logoHeader(team) + (team.shortName || team.name) + '</strong></div><div class="dashboard-vs"><span>VS</span><small>ТУР ' + (G.league.currentRound + 1) + '</small></div><div class="dashboard-match-team opponent"><span class="dashboard-match-label">' + (isHome ? 'СОПЕРНИК' : 'ХОЗЯЕВА') + '</span><strong>' + logoHeader(opponent) + (opponent.shortName || opponent.name) + '</strong></div></div><div class="dashboard-match-actions"><button class="btn" onclick="startMyLiveMatch()">▶ Играть матч</button><button class="btn secondary" onclick="G.activeTab=\'calendar\';render()">Календарь</button></div>'
+    : seasonDone
+      ? '<div class="dashboard-empty-state"><strong>Регулярный чемпионат завершён</strong><span>' + (G.league.playoffs ? 'Плей-офф уже сформирован — время бороться за Кубок Петрова.' : 'Можно подвести итоги сезона и перейти к следующему.') + '</span><button class="btn" onclick="' + (G.league.playoffs ? "G.activeTab='playoffs';render()" : 'endSeason()') + '">' + (G.league.playoffs ? 'Открыть плей-офф' : 'Перейти к новому сезону') + '</button></div>'
+      : '<div class="dashboard-empty-state"><strong>Следующий матч пока не определён</strong><span>Открой календарь, чтобы посмотреть расписание.</span><button class="btn secondary" onclick="G.activeTab=\'calendar\';render()">Открыть календарь</button></div>';
+  const form = recent.length ? recent.map(r => {
+    const home = r.homeId === team.id;
+    const gf = home ? r.hg : r.ag, ga = home ? r.ag : r.hg;
+    const won = gf > ga;
+    return '<span class="dashboard-form-dot ' + (won ? 'win' : gf === ga ? 'draw' : 'loss') + '" title="' + (won ? 'Победа' : gf === ga ? 'Ничья' : 'Поражение') + ' ' + gf + ':' + ga + '">' + (won ? 'В' : gf === ga ? 'Н' : 'П') + '<small>' + gf + ':' + ga + '</small></span>';
+  }).join('') : '<span class="dashboard-muted">Матчей ещё не было</span>';
+  const playerCards = leaders.map((p, i) => {
+    const st = ensureStats(p);
+    return '<div class="dashboard-player"><span class="dashboard-player-rank">0' + (i + 1) + '</span><div><strong>' + p.name + '</strong><small>' + p.position + ' · OVR ' + p.ovr + '</small></div><b>' + (st.points || 0) + '<small>ОЧКОВ</small></b></div>';
+  }).join('');
+  const streak = team.streak && team.streak.count >= 2 ? '<span class="dashboard-streak ' + (team.streak.type === 'w' ? 'hot' : 'cold') + '">' + (team.streak.type === 'w' ? '🔥' : '❄️') + ' Серия: ' + team.streak.count + '</span>' : '';
+  return '<section class="club-dashboard">' +
+    '<div class="dashboard-welcome"><div><span class="dashboard-eyebrow">ЦЕНТР УПРАВЛЕНИЯ КЛУБОМ · ' + G.league.season + '</span><h2>Добро пожаловать в штаб, ' + team.name + '</h2><p>' + team.city + ' · ' + team.region + ' ' + streak + '</p></div><div class="dashboard-rank"><span>МЕСТО В ЛИГЕ</span><strong>#' + rank + '</strong><small>из ' + G.league.teams.length + ' клубов</small></div></div>' +
+    '<div class="dashboard-kpis">' +
+    '<article class="dashboard-kpi"><span>ОЧКИ</span><strong>' + team.record.pts + '</strong><small>' + played + ' матчей сыграно</small></article>' +
+    '<article class="dashboard-kpi"><span>ПОБЕДЫ · ПОРАЖЕНИЯ · ПО</span><strong>' + team.record.w + '–' + team.record.l + '–' + team.record.otl + '</strong><small>' + pct + '% набранных очков</small></article>' +
+    '<article class="dashboard-kpi"><span>ШАЙБЫ</span><strong>' + team.record.gf + ' : ' + team.record.ga + '</strong><small class="' + (diff >= 0 ? 'positive' : 'negative') + '">' + (diff > 0 ? '+' : '') + diff + ' разница</small></article>' +
+    '<article class="dashboard-kpi"><span>БЮДЖЕТ КЛУБА</span><strong class="' + (team.finance.balance >= 0 ? 'positive' : 'negative') + '">' + Math.round(team.finance.balance) + ' млн ₽</strong><small>из ' + team.finance.seasonBudget + ' млн ₽ на сезон</small></article></div>' +
+    '<div class="dashboard-main-grid">' +
+    '<section class="dashboard-panel"><div class="dashboard-panel-heading"><div><span class="dashboard-eyebrow">БЛИЖАЙШЕЕ СОБЫТИЕ</span><h3>' + (opponent ? 'Следующий матч' : 'Календарь сезона') + '</h3></div><button class="dashboard-link" onclick="G.activeTab=\'calendar\';render()">Весь календарь →</button></div>' + nextMatch + '</section>' +
+    '<section class="dashboard-panel"><div class="dashboard-panel-heading"><div><span class="dashboard-eyebrow">СЕЗОН ' + G.league.season + '</span><h3>Путь по чемпионату</h3></div><strong>' + progress + '%</strong></div><div class="dashboard-progress"><span style="width:' + progress + '%"></span></div><div class="dashboard-progress-meta"><span>Турнирная дистанция</span><b>' + G.league.currentRound + ' / ' + total + ' туров</b></div><div class="dashboard-form-heading">Последние результаты <span>последние ' + recent.length + ' матчей</span></div><div class="dashboard-form">' + form + '</div><button class="btn secondary dashboard-wide-btn" onclick="G.activeTab=\'standings\';render()">Открыть турнирную таблицу</button></section>' +
+    '<section class="dashboard-panel"><div class="dashboard-panel-heading"><div><span class="dashboard-eyebrow">КОМАНДА</span><h3>Лидеры состава</h3></div><button class="dashboard-link" onclick="G.activeTab=\'roster\';render()">Весь состав →</button></div><div class="dashboard-player-list">' + (playerCards || '<span class="dashboard-muted">Нет данных по игрокам</span>') + '</div><div class="dashboard-injury-note ' + (injuries.length ? 'has-injuries' : '') + '">' + (injuries.length ? '🚑 В лазарете: ' + injuries.length + ' игроков' : '✓ Нет травмированных игроков') + '</div></section>' +
+    '<section class="dashboard-panel"><div class="dashboard-panel-heading"><div><span class="dashboard-eyebrow">БЫСТРЫЙ ДОСТУП</span><h3>Управление клубом</h3></div></div><div class="dashboard-actions">' +
+    '<button onclick="G.activeTab=\'lines\';render()"><span>▤</span><b>Звенья</b><small>Состав и сочетания</small></button><button onclick="G.activeTab=\'tactics\';render()"><span>⌁</span><b>Тактика</b><small>Стиль игры</small></button><button onclick="G.activeTab=\'market\';render()"><span>＋</span><b>Трансферы</b><small>Усиление команды</small></button><button onclick="G.activeTab=\'finance\';render()"><span>₽</span><b>Финансы</b><small>Доходы и расходы</small></button><button onclick="G.activeTab=\'inbox\';render()"><span>✉</span><b>Почта</b><small>' + unreadInboxCount() + ' непрочитанных</small></button><button onclick="G.activeTab=\'news\';render()"><span>▣</span><b>Новости</b><small>Лента лиги</small></button></div></section></div></section>';
 }
