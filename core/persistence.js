@@ -33,13 +33,6 @@ function loadGame() {
     G.league = data.league;
     G.league.season = normalizeSeasonLabel(G.league.season);
     (G.league.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
-    (G.career?.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
-    G.league.teams.forEach(t => {
-      (t.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
-      if (t.trophies) for (const key of ['petrov', 'regular', 'opening', 'finals']) {
-        t.trophies[key] = (t.trophies[key] || []).map(normalizeSeasonLabel);
-      }
-    });
     G.playerTeamId = data.playerTeamId || null;
     G.activeTab = data.activeTab || 'standings'; G.screen = data.screen || 'select';
     G.standingsSort = data.standingsSort || { key: 'pts', dir: 'desc' };
@@ -49,6 +42,13 @@ function loadGame() {
     G.selectedDifficulty = data.selectedDifficulty || 'normal';
     G.noFireMode = data.noFireMode || false;
     G.career = data.career || { reputation: 50, history: [] };
+    (G.career.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
+    G.league.teams.forEach(t => {
+      (t.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
+      if (t.trophies) for (const key of ['petrov', 'regular', 'opening', 'finals']) {
+        t.trophies[key] = (t.trophies[key] || []).map(normalizeSeasonLabel);
+      }
+    });
     G.careerOffers = data.careerOffers || null;
     G.freeAgentOffers = data.freeAgentOffers || null;
     G.lastRegularChampionId = data.lastRegularChampionId;
