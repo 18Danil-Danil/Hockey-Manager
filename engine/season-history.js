@@ -25,8 +25,8 @@ function updateCareerStats(team) {
     p.careerStats=p.careerStats||{seasons:0,gp:0,goals:0,assists:0,points:0,wins:0,shutouts:0,saves:0,shotsAgainst:0,goalsAgainst:0,playoffGp:0,playoffGoals:0,playoffAssists:0,playoffPoints:0,playoffWins:0};
     const c=p.careerStats;
     c.seasons++;c.gp+=s.gp||0;c.goals+=s.goals||0;c.assists+=s.assists||0;c.points+=s.points||0;
-    c.wins+=s.wins||0;c.shutouts+=s.shutouts||0;c.saves+=s.saves||0;c.shotsAgainst+=s.shotsAgainst||0;c.goalsAgainst+=s.goalsAgainst||0;
-    c.playoffGp+=po.gp||0;c.playoffGoals+=po.goals||0;c.playoffAssists+=po.assists||0;c.playoffPoints+=po.points||0;c.playoffWins+=po.wins||0;
+    c.wins+=s.wins||0;c.shutouts+=s.shutouts||0;c.saves=(c.saves||0)+(s.saves||0);c.shotsAgainst=(c.shotsAgainst||0)+(s.shotsAgainst||0);c.goalsAgainst=(c.goalsAgainst||0)+(s.goalsAgainst||0);
+    c.playoffGp=(c.playoffGp||0)+(po.gp||0);c.playoffGoals=(c.playoffGoals||0)+(po.goals||0);c.playoffAssists=(c.playoffAssists||0)+(po.assists||0);c.playoffPoints=(c.playoffPoints||0)+(po.points||0);c.playoffWins=(c.playoffWins||0)+(po.wins||0);
     if(!p.seasonHistory)p.seasonHistory=[];
     if(p.seasonHistory.some(row=>String(row.season)===String(G.league.season)&&row.teamName===team.name))continue;
     p.seasonHistory.push({
