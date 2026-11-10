@@ -213,14 +213,9 @@ async function loadGame() {
       });
     });
     G.league.freeAgents.forEach(p => { ensureStats(p); if (!p.careerStats) p.careerStats = { seasons: 0, gp: 0, goals: 0, assists: 0, points: 0, wins: 0, shutouts: 0 }; if (!p.character) p.character = 'calm'; });
-    // Сохраняем мигрированное состояние в IndexedDB, если оно было загружено из старого localStorage.
-    if (!await openSaveDatabase().then(db => !!db)) saveGame();
-    else if (typeof raw === 'string' && !localStorageHasCurrentSave()) saveGame();
+    // После загрузки render() поставит актуальное состояние в очередь автосохранения.
     return true;
   } catch (e) { console.error('Ошибка загрузки сохранения:', e); return false; }
-}
-function localStorageHasCurrentSave() {
-  try { return !!localStorage.getItem(SAVE_KEY); } catch (error) { return false; }
 }
 function clearSave() {
   try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem('hockey_save_v1'); } catch (e) {}
