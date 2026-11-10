@@ -160,7 +160,7 @@ function renderRoundResultsModal() {
     const scoreColor = homeWon ? '#4ade80' : '#ef4444';
     return `<div class="game-row ${isMe ? 'player-game' : ''}" style="padding:10px 8px;margin:4px 0">
       <span class="away" style="flex:1;text-align:right">${away.name}</span>
-      <span class="score" style="min-width:76px;text-align:center;font-weight:800;color:${scoreColor}">${res.ag} : ${res.hg}${res.ot ? '<span class="ot-tag">ОТ</span>' : ''}</span>
+      <span class="score" style="min-width:76px;text-align:center;font-weight:800;color:${scoreColor}">${res.ag} : ${res.hg}${res.shootout ? '<span class="ot-tag">Б</span>' : res.ot ? '<span class="ot-tag">ОТ</span>' : ''}</span>
       <span style="flex:1">${home.name}</span>
       ${isMe ? '<span class="tag" style="margin-left:6px">Ваш клуб</span>' : ''}
     </div>`;
@@ -192,7 +192,7 @@ function renderGames() {
     byRound[r].forEach(res => {
       const home = G.league.teams.find(t => t.id === res.homeId); const away = G.league.teams.find(t => t.id === res.awayId);
       const isMe = res.homeId === G.playerTeamId || res.awayId === G.playerTeamId; const globalIdx = G.league.results.indexOf(res);
-      html += `<div class="game-row ${isMe ? 'player-game' : ''}" onclick="G.selectedGamePbp=G.league.results[${globalIdx}]; render();"><span class="away">${away.name}</span><span class="score">${res.ag} : ${res.hg}${res.ot ? '<span class="ot-tag">ОТ</span>' : ''}</span><span>${home.name}</span></div>`;
+      html += `<div class="game-row ${isMe ? 'player-game' : ''}" onclick="G.selectedGamePbp=G.league.results[${globalIdx}]; render();"><span class="away">${away.name}</span><span class="score">${res.ag} : ${res.hg}${res.shootout ? '<span class="ot-tag">Б</span>' : res.ot ? '<span class="ot-tag">ОТ</span>' : ''}</span><span>${home.name}</span></div>`;
     });
   });
   return html;
