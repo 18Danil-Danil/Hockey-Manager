@@ -142,6 +142,20 @@ function normalizeYouthLeagues() {
         team.independent = organization ? organization.independent : true;
         team.seniorLinks = [...(meta.senior || [])];
         team.seniorTeamSlug = meta.seniorTeamSlug || null;
+        const parentSenior = meta.seniorTeamSlug
+          ? (G.league.teams || []).find(item => item.slug === meta.seniorTeamSlug)
+          : null;
+        for (const player of team.roster || []) {
+          if (!player.youth?.parentSeniorClubId) continue;
+          if (parentSenior) {
+            player.youth.parentSeniorClubId = parentSenior.id;
+            player.youth.parentSeniorClubName = parentSenior.name;
+          } else {
+            // Снимаем закрепление за прежним клубом, если прежняя связь была ошибочной/неподтверждённой.
+            player.youth.parentSeniorClubId = null;
+            player.youth.parentSeniorClubName = null;
+          }
+        }
       }
       team.record = team.record || { gp: 0, w: 0, otw: 0, otl: 0, l: 0, gf: 0, ga: 0, pts: 0 };
       team.history = team.history || [];
