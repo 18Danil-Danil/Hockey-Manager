@@ -314,7 +314,36 @@ assert.equal(turnoverState.positions.puck.looseFrames, 14, 'turnover did not ani
 for (let i = 0; i < 14; i++) liveUpdatePositions({ liveMatch: turnoverState }, turnoverWindow,
   (v, min, max) => Math.max(min, Math.min(max, v)))();
 assert.equal(turnoverState.positions.puck.possessionSide, 'away', 'opponent did not receive the puck after turnover');
+
 assert.equal(turnoverState.positions.puck.carrierIndex, 4, 'turnover receiver was not preserved');
+
+// Recorded shots travel toward the goal, trigger a goalie lane response and create a rebound.
+const shotState = {
+  positions: {
+    home: formation.map(p => ({ ...p })),
+    away: awayPositions.map(p => ({ ...p })),
+    puck: {
+      x: 100, y: 35, possessionSide: 'home', carrierIndex: null, looseFrames: 0,
+      shotAnimation: {
+        side: 'home', outcome: 'сейв', defendingSide: 'away',
+        startX: 150, startY: 35, targetX: 188, targetY: 46,
+        frames: 12, totalFrames: 12,
+      },
+    },
+  },
+};
+const shotUpdater = liveUpdatePositions(
+  { liveMatch: shotState }, visualWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v))
+);
+const shotStartX = shotState.positions.puck.x;
+for (let i = 0; i < 12; i++) shotUpdater();
+assert.ok(shotState.positions.puck.x > shotStartX, 'shot did not travel toward the away goal');
+assert.equal(shotState.positions.puck.shotAnimation, null, 'shot animation did not finish');
+assert.equal(shotState.positions.puck.looseFrames, 18, 'saved shot did not create a rebound');
+assert.equal(shotState.positions.puck.nextPossessionSide, 'away', 'saved shot did not award rebound to defending side');
+assert.ok(shotState.positions.away[0].y > 50, 'goalie did not react toward the shot lane');
+
 
 
 // Goalies stay on their goal line; skaters react to possession with attack/defence roles.
