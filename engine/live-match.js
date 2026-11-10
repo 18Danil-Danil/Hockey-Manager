@@ -19,7 +19,7 @@ const LIVE_XG_MULTIPLIER = 0.96; // LIVE-калибровка к средней 
 const LIVE_PP_BOOST = 1.8;       // умеренное усиление атаки в большинстве
 const LIVE_PK_NERF  = 0.70;      // умеренное снижение атаки команды в меньшинстве
 const LIVE_PENALTY_RATE = 0.00195; // вероятность штрафа на тик для каждой стороны
-const LIVE_SHOT_RATE = 0.055;    // вероятность отдельного броска на тик без гола/штрафа
+const LIVE_SHOT_RATE = 0.093;    // вероятность отдельного броска на тик без гола/штрафа
 
 function isMyGameInRound() {
   if (!G.playerTeamId) return null;
@@ -274,6 +274,8 @@ function liveGoal(side) {
 
   if (side === 'home') lm.hg++; else lm.ag++;
   lm.goalieStats[side === 'home' ? 'away' : 'home'].goals++;
+  lm.shotAttempts ||= { home: 0, away: 0 };
+  lm.shotAttempts[side]++;
   lm.shots[side]++;
   lm.goalieStats[side === 'home' ? 'away' : 'home'].shots++;
   lm.lastGoalSide = side;
@@ -581,6 +583,9 @@ function exitLiveMatchEarly() {
   // добавляем броски пропорционально голам, чтобы не сломать SV% совсем уж грубо
   lm.shots.home += addH;
   lm.shots.away += addA;
+  lm.shotAttempts ||= { home: 0, away: 0 };
+  lm.shotAttempts.home += addH;
+  lm.shotAttempts.away += addA;
 
   // Если после регуляки всё ещё ничья — ОТ (или буллиты, если ОТ не помог)
   if (lm.hg === lm.ag && periodNow < 4) {
