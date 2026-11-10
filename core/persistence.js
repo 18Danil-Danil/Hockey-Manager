@@ -224,6 +224,90 @@ async function loadGame() {
     return true;
   } catch (e) { console.error('Ошибка загрузки сохранения:', e); return false; }
 }
+
+/* ============================================================
+   РЕЗЕРВНЫЕ КОПИИ: ЭКСПОРТ / ИМПОРТ КАРЬЕРЫ
+   ============================================================ */
+function exportCareerFile() {
+  if (!G.league) {
+    if (typeof showToast === 'function') showToast('Нет карьеры для экспорта', 'error');
+    return false;
+  }
+  try {
+    const backup = { format: 'hockey-manager-save', version: 1, exportedAt: new Date().toISOString(), data: getSaveSnapshot() };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const season = String(G.league.season || 'career').replace(/[^0-9A-Za-zА-Яа-я_-]/g, '-');
+    const date = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.download = 'hockey-manager-' + season + '-' + date + '.json';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    if (typeof showToast === 'function') showToast('Резервная копия подготовлена', 'success');
+    return true;
+  } catch (error) {
+    console.error('Ошибка экспорта карьеры:', error);
+    if (typeof showToast === 'function') showToast('Не удалось создать резервную копию', 'error');
+    return false;
+  }
+}
+
+function isValidCareerSave(data) {
+  const save = data && data.format === 'hockey-manager-save' ? data.data : data;
+  return !!(save && save.league && Array.isArray(save.league.teams) && save.league.teams.length > 0 && save.league.teams.every(team => team && Array.isArray(team.roster)));
+}
+
+async function importCareerFile(file) {
+  if (!file) return false;
+  if (file.size > 50 * 1024 * 1024) {
+    if (typeof showToast === 'function') showToast('Файл слишком большой (максимум 50 МБ)', 'error');
+    return false;
+  }
+  let previousSave = null;
+  try {
+    const parsed = JSON.parse(await file.text());
+    if (!isValidCareerSave(parsed)) {
+      if (typeof showToast === 'function') showToast('Файл не похож на сохранение Hockey Manager', 'error');
+      return false;
+    }
+    const saveData = parsed.format === 'hockey-manager-save' ? parsed.data : parsed;
+    const serialized = JSON.stringify(saveData);
+    if (_saveTimer) {
+      clearTimeout(_saveTimer);
+      _saveTimer = null;
+      await saveGame({ immediate: true });
+    } else {
+      await _saveQueue;
+    }
+    previousSave = await readStoredSave();
+    if (!await writeStoredSave(serialized)) {
+      if (typeof showToast === 'function') showToast('Не удалось записать импортируемую карьеру', 'error');
+      return false;
+    }
+    if (!await loadGame()) {
+      if (previousSave) await writeStoredSave(typeof previousSave === 'string' ? previousSave : JSON.stringify(previousSave));
+      if (typeof showToast === 'function') showToast('Не удалось восстановить карьеру. Прежнее сохранение восстановлено.', 'error', 7000);
+      return false;
+    }
+    ensureAllLines();
+    initAISponsors();
+    render();
+    if (typeof showToast === 'function') showToast('Карьера успешно восстановлена из файла', 'success');
+    return true;
+  } catch (error) {
+    console.error('Ошибка импорта карьеры:', error);
+    if (previousSave) {
+      try { await writeStoredSave(typeof previousSave === 'string' ? previousSave : JSON.stringify(previousSave)); } catch (restoreError) {}
+    }
+    if (typeof showToast === 'function') showToast('Не удалось прочитать файл сохранения', 'error');
+    return false;
+  }
+}
+
+
 function clearSave() {
   try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem('hockey_save_v1'); } catch (e) {}
 }
