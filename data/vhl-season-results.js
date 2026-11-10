@@ -431,7 +431,7 @@ window.VHL_SEASON_RESULTS = [
       note: 'Все восемь серий 1/8 финала завершены. В четвертьфиналах на момент остановки: «Звезда» — «Хумо» 3:1, «Динамо СПб» — «Нефтяник» 2:2, СКА-Нева — «Барс» 1:3, «Рубин» — «Югра» 2:2. Кубок Петрова не был разыгран: финальная серия не состоялась, финалиста нет. 03.07.2020 Федерация хоккея России признала «Звезду» победителем Всероссийского соревнования сезона 2019/20; это отдельная сезонная награда, не победа в финале Кубка Петрова.'
     },
     teams: [
-      {historicalId:'zvezda-moscow',clubName:'Звезда',regularPlace:1,games:54,wins:31,overtimeWins:6,shootoutWins:6,shootoutLosses:1,overtimeLosses:2,losses:8,goalsFor:163,goalsAgainst:99,points:89,playoffStage:'season_winner',playoffOpponent:'Хумо',seriesScore:'3:1'},
+      {historicalId:'zvezda-moscow',clubName:'Звезда',regularPlace:1,games:54,wins:31,overtimeWins:6,shootoutWins:6,shootoutLosses:1,overtimeLosses:2,losses:8,goalsFor:163,goalsAgainst:99,points:89,playoffStage:'quarterfinal_unfinished',playoffOpponent:'Хумо',seriesScore:'3:1',seasonAward:'winner'},
       {historicalId:'dynamo-spb',clubName:'Динамо СПб',regularPlace:2,games:54,wins:33,overtimeWins:5,shootoutWins:4,shootoutLosses:3,overtimeLosses:1,losses:8,goalsFor:163,goalsAgainst:76,points:88,playoffStage:'quarterfinal_unfinished',playoffOpponent:'Нефтяник',seriesScore:'2:2'},
       {historicalId:'ska-neva',clubName:'СКА-Нева',regularPlace:3,games:54,wins:29,overtimeWins:7,shootoutWins:5,shootoutLosses:1,overtimeLosses:3,losses:9,goalsFor:175,goalsAgainst:123,points:86,playoffStage:'quarterfinal_unfinished',playoffOpponent:'Барс',seriesScore:'1:3'},
       {historicalId:'rubin-tyumen',clubName:'Рубин',regularPlace:4,games:54,wins:28,overtimeWins:7,shootoutWins:5,shootoutLosses:2,overtimeLosses:3,losses:9,goalsFor:141,goalsAgainst:103,points:85,playoffStage:'quarterfinal_unfinished',playoffOpponent:'Югра',seriesScore:'2:2'},
@@ -469,7 +469,8 @@ window.VHL_SEASON_RESULTS = [
   }
 ];
 
-// Допустимые playoffStage: missed, playoff_participant, conference_quarterfinal,
-// conference_semifinal, conference_finalist, championship_semifinal,
-// finalist, champion.
+// Допустимые playoffStage: missed, playoff_participant, round16, quarterfinal_unfinished,
+// conference_quarterfinal, conference_semifinal, conference_finalist,
+// championship_semifinal, finalist, champion.
+// seasonAward фиксирует отдельное решение о победителе Всероссийского соревнования.
 // Исторические идентификаторы здесь не являются утверждением о правопреемстве.
