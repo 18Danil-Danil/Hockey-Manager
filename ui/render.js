@@ -951,9 +951,10 @@ function renderTeamModal() {
   const logoHtml = team.logo
     ? `<img src="${team.logo}" class="team-logo-big" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="team-logo-fallback" style="display:none">${initials}</div>`
     : `<div class="team-logo-fallback">${initials}</div>`;
-  const historyRows = (team.history && team.history.length)
-    ? team.history.map(h => `<tr><td>${h.season}</td><td style="font-weight:700">${h.place}</td><td>${h.w ?? '—'}-${h.l ?? '—'}-${h.otl ?? '—'}</td><td>${h.pts}</td><td>${h.gf ?? '—'}:${h.ga ?? '—'}</td><td>${h.playoff === 'season_winner' ? '🥇 победитель сезона' : h.playoff === 'season_silver' ? '🥈 серебряный призёр сезона' : h.playoff === 'champion' ? '🏆 чемпион' : h.playoff === 'finalist' ? 'финалист' : h.playoff === 'semifinal' ? '1/2' : h.playoff === 'quarterfinal' ? '1/4' : h.playoff === 'round16' ? '1/8' : h.playoff === 'missed' ? 'не вышел' : '—'}</td></tr>`).join('')
-    : `<tr><td colspan="6" style="color:#7a8299">История клуба пополнится после завершения первого сезона в карьере</td></tr>`;
+  const historicalRows = getTeamHistoricalRows(team);
+  const historyRows = historicalRows.length
+    ? historicalRows.map(h => `<tr><td>${h.season}</td><td>${h.clubName || team.name}</td><td style="font-weight:700">${h.place ?? '—'}</td><td>${h.w ?? '—'}-${h.l ?? '—'}-${h.otl ?? '—'}</td><td>${h.pts ?? '—'}</td><td>${h.gf ?? '—'}:${h.ga ?? '—'}</td><td>${getTeamPlayoffLabel(h)}${h.playoffOpponent ? `<div class="subtitle" style="font-size:11px">соперник: ${h.playoffOpponent}${h.seriesScore ? ` (${h.seriesScore})` : ''}</div>` : ''}</td></tr>`).join('')
+    : `<tr><td colspan="7" style="color:#7a8299">История клуба пока отсутствует в архиве ВХЛ</td></tr>`;
   const trophyRow = (label, arr) => arr && arr.length ? `<div class="attr-row"><span>${label}</span><span style="color:#fbbf24">${arr.join(', ')}</span></div>` : `<div class="attr-row"><span>${label}</span><span style="color:#7a8299">—</span></div>`;
   const trophiesHtml = `<div class="attr-grid">${trophyRow('🏆 Главный трофей ВХЛ', team.trophies.petrov)}${trophyRow('🥇 Регулярка', team.trophies.regular)}${trophyRow('🏅 Победитель сезона', team.trophies.seasonWins)}${trophyRow('🥈 Серебряный призёр сезона', team.trophies.seasonSilvers)}${trophyRow('🥉 Бронзовый призёр сезона', team.trophies.seasonBronzes)}${trophyRow('⚡ Матч Открытия', team.trophies.opening)}${trophyRow('🥈 Финалы', team.trophies.finals)}</div>`;
   let topPlayersHtml = `<div class="subtitle" style="font-size:12px">Нет данных</div>`;
@@ -991,7 +992,7 @@ function renderTeamModal() {
       <h2>Сила</h2>${talentHtml}
       ${financeHtml}
       <h2>История выступлений</h2>
-      <table><thead><tr><th>Сезон</th><th>Место</th><th>В-П-ПО</th><th>Очки</th><th>Шайбы</th><th>Плей-офф</th></tr></thead><tbody>${historyRows}</tbody></table>
+      <table><thead><tr><th>Сезон</th><th>Название клуба</th><th>Место</th><th>В-П-ПО</th><th>Очки</th><th>Шайбы</th><th>Плей-офф</th></tr></thead><tbody>${historyRows}</tbody></table>
       <h2>Трофеи</h2>${trophiesHtml}
       <h2>Лучшие игроки (всего)</h2>${topPlayersHtml}
       <h2>Исторические соперники</h2><div>${rivalsHtml}</div>
