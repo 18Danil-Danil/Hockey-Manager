@@ -12,6 +12,7 @@ function makeSchedule(teams) {
   return [...singleRounds, ...doubleRounds];
 }
 function genLeague() {
+  resetPlayerNameRegistry();
   const teams = VHL_TEAMS.map(meta => genTeam(meta));
   const league = {
     season: '2026/27', teams, schedule: makeSchedule(teams), currentRound: 0, results: [],
