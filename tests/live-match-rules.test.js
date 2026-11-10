@@ -150,12 +150,13 @@ const chooseUnselected = players => {
   selectedIds.add(selected.id);
   return selected;
 };
-liveGoal(
+const runGoal = liveGoal(
   { liveMatch: goalLm, league: { teams: [{ id: 'home', name: 'Home' }, { id: 'away', name: 'Away' }] } },
   players => chooseUnselected(players), () => 1,
   ensureGoalStats, ensureGoalStats, () => 0.01, () => {}, () => false,
   () => {}, () => '15:00', () => {}, () => {}
 );
+runGoal('home');
 assert.equal(goalLm.hg, 1);
 assert.equal(goalLm.shotAttempts.home, 1, 'goal attempt was not counted');
 assert.equal(goalLm.shots.home, 1, 'goal was not counted as a shot on goal');
