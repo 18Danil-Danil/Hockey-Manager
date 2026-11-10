@@ -21,7 +21,7 @@ const randInt = min => min;
 const pick = values => values[0];
 const api = new Function(
   'window', 'FIRST', 'LAST', 'randInt', 'pick',
-  generationSource + '; return { normalizePlayerNameKey, resetPlayerNameRegistry, hydratePlayerNameRegistry, generatePlayerName };'
+  generationSource + '; return { normalizePlayerNameKey, resetPlayerNameRegistry, hydratePlayerNameRegistry, generatePlayerName, getPlayerNamePartWeight };'
 )(windowStub, windowStub.PLAYER_DATA.FIRST, windowStub.PLAYER_DATA.LAST, randInt, pick);
 
 const pools = windowStub.PLAYER_DATA.NAME_POOLS;
@@ -42,6 +42,43 @@ const latinEntries = Object.entries(pools).flatMap(([nationality, pool]) =>
   [...pool.first, ...pool.last].filter(name => /[A-Za-z]/.test(name)).map(name => nationality + ': ' + name)
 );
 assert.deepEqual(latinEntries, [], 'name pools must use consistent Cyrillic spelling');
+
+const frequency = windowStub.PLAYER_NAME_FREQUENCY;
+assert.ok(frequency && Object.keys(frequency).length === 20, 'frequency profiles should cover all 20 nationalities');
+for (const [nationality, profile] of Object.entries(frequency)) {
+  for (const kind of ['first', 'last']) {
+    const poolValues = pools[nationality][kind];
+    for (const item of [...(profile[kind]?.common || []), ...(profile[kind]?.rare || [])]) {
+      assert.ok(poolValues.some(value => normalizedSurnameKey(value) === normalizedSurnameKey(item)),
+        `${nationality}: frequency profile contains a name absent from its pool: ${item}`);
+    }
+  }
+}
+assert.ok(api.getPlayerNamePartWeight('Россия', 'first', 'Александр') >
+  api.getPlayerNamePartWeight('Россия', 'first', 'Антип'),
+  'common Russian first names should outweigh rare archaic names');
+assert.ok(api.getPlayerNamePartWeight('Россия', 'last', 'Иванов') >
+  api.getPlayerNamePartWeight('Россия', 'last', 'Ястребов'),
+  'common Russian surnames should outweigh ordinary surnames');
+
+let seed = 20261110;
+const seededRandInt = (min, max = min) => {
+  seed = (seed * 48271) % 2147483647;
+  return min + (seed % (max - min + 1));
+};
+const weightedApi = new Function(
+  'window', 'FIRST', 'LAST', 'randInt', 'pick',
+  generationSource + '; return { resetPlayerNameRegistry, generatePlayerName };'
+)(windowStub, windowStub.PLAYER_DATA.FIRST, windowStub.PLAYER_DATA.LAST, seededRandInt, pick);
+weightedApi.resetPlayerNameRegistry();
+const sample = Array.from({ length: 3000 }, () => weightedApi.generatePlayerName('Россия'));
+const sampleFirstNames = sample.map(name => name.split(' ')[0]);
+const rareRussian = new Set(frequency['Россия'].first.rare.map(normalizedSurnameKey));
+const commonRussian = new Set(frequency['Россия'].first.common.map(normalizedSurnameKey));
+const rareRate = sampleFirstNames.filter(name => rareRussian.has(normalizedSurnameKey(name))).length / sample.length;
+const commonRate = sampleFirstNames.filter(name => commonRussian.has(normalizedSurnameKey(name))).length / sample.length;
+assert.ok(rareRate < 0.04, `rare archaic names should remain uncommon (observed ${rareRate})`);
+assert.ok(commonRate > rareRate * 4, `common names should appear much more often than rare names (common ${commonRate}, rare ${rareRate})`);
 
 api.resetPlayerNameRegistry();
 const russianNames = Array.from({ length: 1900 }, () => api.generatePlayerName('Россия'));
