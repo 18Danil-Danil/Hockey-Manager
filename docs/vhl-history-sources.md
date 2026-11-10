@@ -31,6 +31,7 @@
 
 | Сезон | Регулярный чемпионат | Плей-офф |
 |---|---|---|
+| 2014/15 | [Официальный путеводитель ВХЛ, итоговая таблица сезона 2014/15](https://www.vhlru.ru/upload/all11_w.pdf); [архивная таблица](https://www.championat.com/hockey/_highleague/tournament/1092/table/) | [Официальный путеводитель ВХЛ](https://www.vhlru.ru/upload/all11_w.pdf); [сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/1220/table/) |
 | 2025/26 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/6704/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6996/) |
 | 2024/25 | [Турнирная таблица](https://www.sport-express.net/hockey/L/vhl/2024-2025/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6448/) |
 | 2023/24 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/5601/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5852/) |
