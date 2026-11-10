@@ -107,6 +107,7 @@ window.VHL_TEAMS = [
       { season: '2023/24', place: 8, pts: 74, playoff: 'round16' },
       { season: '2022/23', place: 17, pts: 56, playoff: 'missed' },
       { season: '2021/22', place: 4, pts: 78, playoff: 'finalist' },
+      { season: '2019/20', place: 2, pts: 88, playoff: 'season_silver' },
     ],
     trophies: { petrov: ["2017/18"], regular: ["2017/18"], opening: [] , finals: ["2021/22"] },
     rivals: ['СКА-ВМФ', 'Рубин'],
