@@ -273,6 +273,7 @@ async function importCareerFile(file) {
       if (typeof showToast === 'function') showToast('Файл не похож на сохранение Hockey Manager', 'error');
       return false;
     }
+    if (!confirm('Импорт заменит текущую карьеру. Рекомендуется сначала экспортировать резервную копию. Продолжить?')) return false;
     const saveData = parsed.format === 'hockey-manager-save' ? parsed.data : parsed;
     const serialized = JSON.stringify(saveData);
     if (_saveTimer) {
@@ -283,6 +284,7 @@ async function importCareerFile(file) {
       await _saveQueue;
     }
     previousSave = await readStoredSave();
+    if (!previousSave && G.league) previousSave = JSON.stringify(getSaveSnapshot());
     if (!await writeStoredSave(serialized)) {
       if (typeof showToast === 'function') showToast('Не удалось записать импортируемую карьеру', 'error');
       return false;
