@@ -21,7 +21,7 @@ const liveAdvance = new Function(
   'G', 'rng', 'liveIsPP', 'liveGoal', 'livePenalty', 'pickWeighted', 'pick',
   'shotWeight', 'ensureStats', 'ensurePlayoffStats', 'livePushEvent',
   'liveFmtTime', 'homeTeamNameShort', 'awayTeamNameShort',
-  'LIVE_PENALTY_RATE', 'LIVE_PP_BOOST', 'LIVE_PK_NERF', 'clamp',
+  'LIVE_PENALTY_RATE', 'LIVE_PP_BOOST', 'LIVE_PK_NERF', 'LIVE_SHOT_RATE', 'clamp',
   `${advanceSource}; return liveAdvance;`
 );
 
@@ -42,7 +42,7 @@ function makeLiveState() {
   };
 }
 const state = makeLiveState();
-const randomValues = [0.99, 0.99, 0.1, 0.1, 0.99, 0.99, 0.1, 0.9];
+const randomValues = [0.99, 0.99, 0.01, 0.1, 0.99, 0.99, 0.01, 0.9];
 let randomIndex = 0;
 const rng = () => randomValues[randomIndex++];
 const stats = new Map();
@@ -54,7 +54,7 @@ const advance = liveAdvance(
   { liveMatch: state.lm }, rng, () => false, () => {}, () => {},
   players => players[0], arr => arr[0], () => 1, ensureStats, ensureStats,
   ev => state.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
-  0.0065, 2.6, 0.55, (v, min, max) => Math.max(min, Math.min(max, v))
+  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v))
 );
 advance(5);
 advance(5);
@@ -64,6 +64,14 @@ assert.equal(state.lm.goalieStats.away.shots, 1, 'away goalie did not face the h
 assert.equal(state.lm.goalieStats.home.shots, 1, 'home goalie did not face the away shot');
 assert.equal(ensureStats(state.homePlayer).shots, 1);
 assert.equal(ensureStats(state.awayPlayer).shots, 1);
+
+// LIVE calibration constants must stay aligned with the tested simulation.
+assert.match(source, /const LIVE_XG_MULTIPLIER = 0\.96/);
+assert.match(source, /const LIVE_PP_BOOST = 1\.8/);
+assert.match(source, /const LIVE_PK_NERF\s*= 0\.70/);
+assert.match(source, /const LIVE_PENALTY_RATE = 0\.00195/);
+assert.match(source, /const LIVE_SHOT_RATE = 0\.055/);
+assert.match(source, /if \(rShot < LIVE_SHOT_RATE\)/);
 
 // A tied overtime must be resolved by a shootout; the deciding goal is a team
 // result only and is not added to skater/goalie box-score statistics.
