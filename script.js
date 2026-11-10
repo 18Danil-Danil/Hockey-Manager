@@ -76,7 +76,7 @@ function newGame() {
   saveGame({ immediate: true });
 }
 async function start() {
-  if (await loadGame()) { ensureAllLines(); initAISponsors(); render(); return; }
+  if (await loadGame()) { ensureAllLines(); initAISponsors(); if (G.activeTab === 'standings') G.activeTab = 'overview'; render(); return; }
   setSeed(20241111);
   G.difficulty = DIFFICULTIES.normal;
   G.career = { reputation: 50, history: [], noFireMode: false };
