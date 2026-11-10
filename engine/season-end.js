@@ -14,11 +14,12 @@ function runVHLTransferWindow() {
   G.league.transferLog.push({ season: G.league.season, transfers }); return transfers;
 }
 function snapshotSeason(awards, regularChampion) {
+  const seasonLabel = normalizeSeasonLabel(G.league.season);
   const p = G.league.playoffs; const sorted = standingsSorted(); const leaders = leagueLeaders(G.league);
   const findTeamName = (player) => { const t = G.league.teams.find(x => x.roster.includes(player)); return t ? t.name : '—'; };
   const snapLeaders = (arr) => arr.map(pl => ({ name: pl.name, team: findTeamName(pl), gp: pl.stats.gp, goals: pl.stats.goals || 0, assists: pl.stats.assists || 0, points: pl.stats.points || 0, wins: pl.stats.wins || 0, saves: pl.stats.saves || 0, shotsAgainst: pl.stats.shotsAgainst || 0, goalsAgainst: pl.stats.goalsAgainst || 0, shutouts: pl.stats.shutouts || 0 }));
   G.league.history.push({
-    season: G.league.season, championId: p ? p.championId : null,
+    season: seasonLabel, championId: p ? p.championId : null,
     championName: p && p.championId ? G.league.teams.find(x => x.id === p.championId).name : '—',
     regularChampionId: regularChampion ? regularChampion.id : null,
     regularChampionName: regularChampion ? regularChampion.name : '—',
@@ -35,6 +36,37 @@ function snapshotSeason(awards, regularChampion) {
     })) })) : [],
     awards: awards || null,
   });
+}
+
+function recordTeamSeasonHistory(regularChampion, playoffs) {
+  const season = normalizeSeasonLabel(G.league.season);
+  const sorted = standingsSorted();
+  const finalSeries = playoffs?.rounds?.[3]?.series?.[0] || null;
+  const finalistId = finalSeries && playoffs?.championId
+    ? (finalSeries.aId === playoffs.championId ? finalSeries.bId : finalSeries.aId)
+    : null;
+  for (const team of G.league.teams) {
+    const place = sorted.findIndex(t => t.id === team.id) + 1;
+    const playoff = getPlayoffResult(team, playoffs) || 'missed';
+    if (!Array.isArray(team.history)) team.history = [];
+    if (!team.history.some(row => normalizeSeasonLabel(row.season) === season)) {
+      team.history.unshift({
+        season, place, pts: team.record.pts,
+        w: team.record.w, l: team.record.l, otl: team.record.otl,
+        gf: team.record.gf, ga: team.record.ga, playoff
+      });
+    }
+    team.history.sort((a, b) => String(b.season).localeCompare(String(a.season)));
+    team.trophies = team.trophies || { petrov: [], regular: [], opening: [], finals: [] };
+    for (const key of ['petrov', 'regular', 'opening', 'finals']) {
+      if (!Array.isArray(team.trophies[key])) team.trophies[key] = [];
+    }
+    const addTrophy = (key) => { if (!team.trophies[key].includes(season)) team.trophies[key].push(season); };
+    if (playoffs?.championId === team.id) addTrophy('petrov');
+    if (regularChampion?.id === team.id) addTrophy('regular');
+    if (finalistId === team.id) addTrophy('finals');
+    if (G.league.openingCup?.winnerId === team.id) addTrophy('opening');
+  }
 }
 function allTimeTeamRecords(history) {
   const totals = {};
@@ -84,6 +116,7 @@ function endSeason() {
   });
   checkSeasonSurprises();
   snapshotSeason(awards, regularChampion);
+  recordTeamSeasonHistory(regularChampion, p);
   runVHLTransferWindow();
   for (const t of G.league.teams) {
     const retired = processRetirements(t);
@@ -105,7 +138,7 @@ function endSeason() {
   });
   G.league.staffPool = generateStaffCandidates(12);
   G.league.waivers = []; G.league.aiTradeOffers = [];
-  G.league.season++; G.league.currentRound = 0; G.league.results = []; G.league.playoffs = null;
+  G.league.season = nextSeasonLabel(G.league.season); G.league.currentRound = 0; G.league.results = []; G.league.playoffs = null;
   G.league.tradeDeadlineNotified = false;
   G.league.teams.forEach(t => {
     t.record = { w: 0, l: 0, otl: 0, pts: 0, gf: 0, ga: 0 }; t.sponsors = [];
