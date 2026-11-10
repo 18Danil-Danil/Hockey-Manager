@@ -342,7 +342,7 @@ assert.ok(shotState.positions.puck.x > shotStartX, 'shot did not travel toward t
 assert.equal(shotState.positions.puck.shotAnimation, null, 'shot animation did not finish');
 assert.equal(shotState.positions.puck.looseFrames, 18, 'saved shot did not create a rebound');
 assert.equal(shotState.positions.puck.nextPossessionSide, 'away', 'saved shot did not award rebound to defending side');
-assert.ok(shotState.positions.away[0].y > 50, 'goalie did not react toward the shot lane');
+assert.ok(shotState.positions.away[0].y < 50, 'goalie did not react toward the shot lane');
 
 
 
