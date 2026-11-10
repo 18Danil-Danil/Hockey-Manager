@@ -93,7 +93,7 @@ assert.match(source, /const LIVE_XG_MULTIPLIER = 0\.96/);
 assert.match(source, /const LIVE_PP_BOOST = 1\.8/);
 assert.match(source, /const LIVE_PK_NERF\s*= 0\.70/);
 assert.match(source, /const LIVE_PENALTY_RATE = 0\.00195/);
-assert.match(source, /const LIVE_SHOT_RATE = 0\.055/);
+assert.match(source, /const LIVE_SHOT_RATE = 0\.093/);
 assert.match(source, /if \(rShot < LIVE_SHOT_RATE\)/);
 
 // A full regulation-length sample must produce a hockey-like shot volume.
@@ -106,13 +106,13 @@ const seededRng = () => {
 };
 const volumeAdvance = liveAdvance(
   { liveMatch: volumeState.lm }, seededRng, () => false, () => {}, () => {},
-  players => players[0], arr => arr[0], () => 1, ensureStats, ensureStats,
+  players => players[0], arr => arr[Math.floor(seededRng() * arr.length)], () => 1, ensureStats, ensureStats,
   ev => volumeState.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v))
+  0.00195, 1.8, 0.70, 0.093, (v, min, max) => Math.max(min, Math.min(max, v))
 );
 for (let i = 0; i < 720; i++) volumeAdvance(5);
 const totalShots = volumeState.lm.shots.home + volumeState.lm.shots.away;
-assert.ok(totalShots >= 25 && totalShots <= 55, `unexpected LIVE shot volume: ${totalShots}`);
+assert.ok(totalShots >= 35 && totalShots <= 55, `unexpected LIVE shots-on-goal volume: ${totalShots}`);
 assert.ok(volumeState.lm.shots.home >= 10 && volumeState.lm.shots.away >= 10,
   'LIVE shot generation is not balanced between teams');
 assert.match(source, /xgTotal: \{ home: liveXgH, away: liveXgA \}/);
