@@ -827,11 +827,8 @@ function drawLiveCanvas() {
     const labelWidth = Math.min(Math.max(27, ctx.measureText(labelText).width + 7), Math.max(38, W / 7));
     const labelY = Math.min(H - 5, y + r + labelFont + 2);
     ctx.fillStyle = 'rgba(10,16,27,0.78)';
-    ctx.beginPath();
     const left = x - labelWidth / 2, top = labelY - labelFont / 2 - 2;
-    const radius = 3;
-    ctx.roundRect(left, top, labelWidth, labelFont + 4, radius);
-    ctx.fill();
+    ctx.fillRect(left, top, labelWidth, labelFont + 4);
     ctx.fillStyle = '#FFFFFF';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
