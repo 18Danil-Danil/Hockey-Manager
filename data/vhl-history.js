@@ -12,7 +12,7 @@ window.VHL_HISTORICAL_SEASONS = [
   { season: '2016/17', participants: 26, champion: 'Динамо', championCity: 'Балашиха', finalist: 'Торпедо', finalistCity: 'Усть-Каменогорск', regularWinner: 'Торпедо', regularWinnerCity: 'Усть-Каменогорск', status: 'completed' },
   { season: '2017/18', participants: 27, champion: 'Динамо', championCity: 'Санкт-Петербург', finalist: 'СКА-Нева', finalistCity: 'Санкт-Петербург', regularWinner: 'Динамо', regularWinnerCity: 'Санкт-Петербург', status: 'completed' },
   { season: '2018/19', participants: 29, champion: 'Сарыарка', championCity: 'Караганда', finalist: 'Рубин', finalistCity: 'Тюмень', regularWinner: 'СКА-Нева', regularWinnerCity: 'Санкт-Петербург', status: 'completed' },
-  { season: '2019/20', participants: 34, champion: null, championCity: null, finalist: null, finalistCity: null, regularWinner: null, regularWinnerCity: null, status: 'unfinished_quarterfinal', note: 'Плей-офф остановлен на стадии четвертьфинала из-за пандемии; чемпион и финалист не определены.' },
+  { season: '2019/20', participants: 34, champion: null, championCity: null, finalist: null, finalistCity: null, regularWinner: 'Звезда', regularWinnerCity: 'Москва', seasonWinner: 'Звезда', seasonWinnerCity: 'Москва', status: 'season_awarded_playoffs_cancelled', note: 'Кубок Петрова не разыгран: плей-офф остановлен в четвертьфинале. 03.07.2020 ФХР признала «Звезду» победителем Всероссийского соревнования сезона 2019/20.' },
   { season: '2020/21', participants: 26, champion: 'Югра', championCity: 'Ханты-Мансийск', finalist: 'Металлург', finalistCity: 'Новокузнецк', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
   { season: '2021/22', participants: 27, champion: 'Рубин', championCity: 'Тюмень', finalist: 'Динамо', finalistCity: 'Санкт-Петербург', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
   { season: '2022/23', participants: 26, champion: 'Химик', championCity: 'Воскресенск', finalist: 'Сокол', finalistCity: 'Красноярск', regularWinner: 'Югра', regularWinnerCity: 'Ханты-Мансийск', status: 'completed' },
@@ -23,6 +23,7 @@ window.VHL_HISTORICAL_SEASONS = [
 
 // Сводные награды по историческим клубам, включая команды, которых нет в текущей базе.
 window.VHL_HISTORICAL_CLUB_HONOURS = {
+  'Звезда (Москва)': { championships: [], regularTitles: ['2019/20'], finals: [], seasonWins: ['2019/20'] },
   'Рубин (Тюмень)': { championships: ['2010/11', '2021/22'], regularTitles: ['2010/11', '2011/12'], finals: ['2011/12', '2013/14', '2018/19'] },
   'Торос (Нефтекамск)': { championships: ['2011/12', '2012/13', '2014/15'], regularTitles: ['2013/14'], finals: [] },
   'Сарыарка (Караганда)': { championships: ['2013/14', '2018/19'], regularTitles: ['2012/13', '2014/15'], finals: ['2012/13'] },
@@ -47,6 +48,7 @@ window.VHL_HISTORICAL_CLUB_HONOURS = {
 // Применяем проверенные исторические награды к действующим клубам по устойчивым slug.
 // Названия команд в интерфейсе не меняются; ключи справочника — исторические идентификаторы.
 const VHL_HONOURS_KEY_BY_SLUG = {
+  zvezda: 'Звезда (Москва)',
   akm: 'АКМ (Тульская область)',
   'dinamo-spb': 'Динамо (Санкт-Петербург)',
   izhstal: 'Ижсталь (Ижевск)',
@@ -68,7 +70,8 @@ if (Array.isArray(window.VHL_TEAMS)) {
       ...(team.trophies || {}),
       petrov: [...honours.championships],
       regular: [...honours.regularTitles],
-      finals: [...honours.finals]
+      finals: [...honours.finals],
+      seasonWins: [...(honours.seasonWins || [])]
     };
   });
 }
