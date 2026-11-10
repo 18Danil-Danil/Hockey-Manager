@@ -656,6 +656,12 @@ function drawLiveCanvas() {
     ctx.stroke();
   }
   ctx.beginPath(); ctx.arc(vx(100), vy(50), Math.min(vx(10) - vx(0), vy(20) - vy(0)), 0, Math.PI * 2); ctx.stroke();
+  // Вратарские площади делают геометрию площадки более узнаваемой.
+  const creaseR = Math.min(vx(9) - vx(0), vy(18) - vy(0));
+  ctx.strokeStyle = 'rgba(37,99,235,0.75)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(vx(10), vy(50), creaseR, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(vx(190), vy(50), creaseR, Math.PI / 2, Math.PI * 1.5); ctx.stroke();
 
   ctx.fillStyle = '#ef4444';
   ctx.fillRect(vx(2), vy(42), vx(6) - vx(2), vy(58) - vy(42));
@@ -690,6 +696,12 @@ function drawLiveCanvas() {
       ctx.lineWidth = 1.5;
       ctx.stroke();
     }
+    const label = p.position === 'G' || p.role === 'goalie' ? 'В' : p.position === 'D' || p.role === 'D' ? 'З' : 'Н';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${Math.max(7, Math.round(W / 105))}px -apple-system, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x, y + 0.5);
   };
 
   for (const p of lm.positions.home) drawPlayer(p, 'home');
@@ -697,13 +709,18 @@ function drawLiveCanvas() {
 
   const puckX = vx(lm.positions.puck.x);
   const puckY = vy(lm.positions.puck.y);
+  ctx.save();
+  ctx.shadowColor = '#111827';
+  ctx.shadowBlur = Math.max(3, Math.round(W / 180));
   ctx.beginPath();
   ctx.arc(puckX, puckY, Math.max(3, Math.round(W / 160)), 0, Math.PI * 2);
   ctx.fillStyle = '#0f1117';
   ctx.fill();
+  ctx.shadowBlur = 0;
   ctx.strokeStyle = '#fff';
   ctx.lineWidth = 1;
   ctx.stroke();
+  ctx.restore();
 
   if (lm.goalFlashUntil > Date.now()) {
     const alpha = clamp((lm.goalFlashUntil - Date.now()) / 1200, 0, 1);
