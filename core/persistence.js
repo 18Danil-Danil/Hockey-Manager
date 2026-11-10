@@ -30,7 +30,17 @@ function loadGame() {
   try {
     const raw = localStorage.getItem(SAVE_KEY); if (!raw) return false;
     const data = JSON.parse(raw); if (!data || !data.league) return false;
-    G.league = data.league; G.playerTeamId = data.playerTeamId || null;
+    G.league = data.league;
+    G.league.season = normalizeSeasonLabel(G.league.season);
+    (G.league.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
+    (G.career?.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
+    G.league.teams.forEach(t => {
+      (t.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
+      if (t.trophies) for (const key of ['petrov', 'regular', 'opening', 'finals']) {
+        t.trophies[key] = (t.trophies[key] || []).map(normalizeSeasonLabel);
+      }
+    });
+    G.playerTeamId = data.playerTeamId || null;
     G.activeTab = data.activeTab || 'standings'; G.screen = data.screen || 'select';
     G.standingsSort = data.standingsSort || { key: 'pts', dir: 'desc' };
     _idCounter = data.idCounter || 1;
