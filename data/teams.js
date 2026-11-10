@@ -146,7 +146,7 @@ window.VHL_TEAMS = [
     history: [
       { season: '2025/26', place: 19, pts: 66, playoff: 'missed' },
       { season: '2024/25', place: 12, pts: 77, playoff: 'round16' },
-      { season: '2023/24', place: 3, pts: 83, playoff: 'quarterfinal' },
+      { season: '2023/24', place: 3, pts: 83, playoff: 'round16' },
       { season: '2022/23', place: 10, pts: 62, playoff: 'quarterfinal' },
       { season: '2021/22', place: 14, pts: 57, playoff: 'round16' },
     
@@ -408,7 +408,7 @@ window.VHL_TEAMS = [
       { season: '2022/23', place: 15, pts: 58, playoff: 'round16' },
       { season: '2021/22', place: 2, pts: 83, playoff: 'semifinal' },
     ],
-    trophies: { petrov: [], regular: [], opening: [] , finals: [] },
+    trophies: { petrov: [], regular: ['2018/19'], opening: [], finals: ['2017/18'], seasonWins: [], seasonSilvers: [], seasonBronzes: ['2019/20'] },
     rivals: ['Динамо СПб'],
     logo: 'https://www.vhlru.ru/upload/iblock/a95/СКА-ВМФ.png',
     sponsorFlow: 4, govSupport: 1, hockeyLove: 3, youthFactor: 4,
