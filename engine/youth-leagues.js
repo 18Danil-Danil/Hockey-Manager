@@ -309,14 +309,18 @@ function youthTeamBelongsToSeniorClub(youthTeam, seniorTeam) {
   return !!primarySeniorLink && normalizeClubName(primarySeniorLink) === seniorName;
 }
 
-function getOwnYouthTeam(seniorTeam) {
+function getOwnYouthTeams(seniorTeam) {
   const youth = G.league?.youth;
-  if (!youth || !seniorTeam) return null;
-  for (const league of Object.values(youth.leagues || {})) {
-    const team = (league.teams || []).find(item => youthTeamBelongsToSeniorClub(item, seniorTeam));
-    if (team) return { league, team };
-  }
-  return null;
+  if (!youth || !seniorTeam) return [];
+  return Object.values(youth.leagues || {}).flatMap(league =>
+    (league.teams || [])
+      .filter(item => youthTeamBelongsToSeniorClub(item, seniorTeam))
+      .map(team => ({ league, team }))
+  );
+}
+
+function getOwnYouthTeam(seniorTeam) {
+  return getOwnYouthTeams(seniorTeam)[0] || null;
 }
 
 function acquireYouthPlayer(team, youthTeamId, playerId) {
@@ -347,8 +351,9 @@ function acquireYouthPlayer(team, youthTeamId, playerId) {
   return { success: true, player, price, ownSystem };
 }
 
-function sendSeniorPlayerToYouth(team, playerId) {
-  const own = getOwnYouthTeam(team);
+function sendSeniorPlayerToYouth(team, playerId, youthTeamId = null) {
+  const ownTeams = getOwnYouthTeams(team);
+  const own = youthTeamId ? ownTeams.find(item => item.team.id === youthTeamId) : (ownTeams[0] || null);
   if (!own) return { success: false, error: 'У клуба пока нет собственной команды в молодёжных лигах' };
   const player = team?.roster.find(item => item.id === playerId);
   if (!player) return { success: false, error: 'Игрок не найден в основном составе' };
