@@ -689,6 +689,16 @@ function drawLiveCanvas() {
   const drawPlayer = (p, side) => {
     const x = vx(p.x), y = vy(p.y);
     const r = Math.max(5, Math.round(W / 100));
+    const puckState = lm.positions.puck;
+    const isCarrier = puckState && !(puckState.looseFrames > 0)
+      && puckState.possessionSide === side && puckState.carrierIndex === p.idx;
+    if (isCarrier) {
+      ctx.beginPath();
+      ctx.arc(x, y, r + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     if (p.role === 'goalie') {
