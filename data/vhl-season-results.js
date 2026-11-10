@@ -516,7 +516,7 @@ window.VHL_SEASON_RESULTS = [
 ];
 
 // Допустимые playoffStage: missed, playoff_participant, round16, quarterfinal_unfinished,
-// conference_quarterfinal, conference_semifinal, conference_finalist,
+// championship_quarterfinal, conference_quarterfinal, conference_semifinal, conference_finalist,
 // championship_semifinal, finalist, champion.
 // seasonAward фиксирует отдельное решение о победителе Всероссийского соревнования.
 // Исторические идентификаторы здесь не являются утверждением о правопреемстве.
