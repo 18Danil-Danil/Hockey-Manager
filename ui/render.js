@@ -845,6 +845,96 @@ function extendContract(playerId, years) {
 /* ============================================================
    МОДАЛКА КОМАНДЫ
    ============================================================ */
+function getTeamHistoricalRows(team) {
+  // Здесь перечислены только подтверждённые исторические идентификаторы.
+  // Динамо СПб не объединяется с другими клубами системы «Динамо».
+  // СКА-Нева и СКА-ВМФ — одна команда с переименованием.
+  const historicalIdsBySlug = {
+    akm: ['akm-tula'],
+    bars: ['bars-kazan'],
+    buran: ['buran-voronezh'],
+    gornyak: ['gornyak-uchaly'],
+    dizel: ['dizel-penza'],
+    'dinamo-spb': ['dynamo-spb', 'dynamo-saint-petersburg'],
+    'dinamo-altai': ['dynamo-altai'],
+    zauralye: ['zauralye-kurgan'],
+    zvezda: ['zvezda-moscow'],
+    izhstal: ['izhstal-izhevsk'],
+    kristall: ['kristall-saratov'],
+    magnitka: ['magnitka-magnitogorsk'],
+    metallurg: ['metallurg-novokuznetsk'],
+    molot: ['molot-perm', 'molot-prikamye-perm'],
+    neftyanik: ['neftyanik-almetyevsk'],
+    norilsk: ['norilsk'],
+    olimpiya: ['olimpiya-kirovo-chepetsk'],
+    'omskie-krylya': ['omskie-krylya-omsk'],
+    rubin: ['rubin-tyumen'],
+    'ryazan-vdv': ['ryazan'],
+    'ska-vmf': ['ska-neva', 'ska-vmf'],
+    sokol: ['sokol-krasnoyarsk'],
+    tambov: ['tambov'],
+    toros: ['toros-neftekamsk'],
+    khimik: ['khimik-voskresensk'],
+    'csk-vvs': ['csk-vvs-samara'],
+    chelmet: ['chelmet-chelyabinsk'],
+    yugra: ['yugra-khanty-mansiysk'],
+    'yuzhny-ural': ['yuzhny-ural', 'yuzhny-ural-orsk']
+  };
+  const ids = historicalIdsBySlug[team.slug] || [];
+  const seasons = Array.isArray(window.VHL_SEASON_RESULTS) ? window.VHL_SEASON_RESULTS : [];
+  const archivedRows = [];
+  for (const seasonData of seasons) {
+    for (const row of (seasonData.teams || [])) {
+      if (!ids.includes(row.historicalId)) continue;
+      archivedRows.push({
+        season: seasonData.season,
+        clubName: row.clubName,
+        place: row.regularPlace,
+        w: row.wins + row.overtimeWins + row.shootoutWins,
+        l: row.losses,
+        otl: row.overtimeLosses + row.shootoutLosses,
+        pts: row.points,
+        gf: row.goalsFor,
+        ga: row.goalsAgainst,
+        playoff: row.playoffStage,
+        playoffOpponent: row.playoffOpponent || null,
+        seriesScore: row.seriesScore || null,
+        seasonAward: row.seasonAward || null,
+        source: 'archive'
+      });
+    }
+  }
+  const archivedSeasons = new Set(archivedRows.map(row => row.season));
+  const careerRows = (Array.isArray(team.history) ? team.history : [])
+    .filter(row => !archivedSeasons.has(row.season))
+    .map(row => ({ ...row, clubName: team.name, source: 'career' }));
+  return archivedRows.concat(careerRows).sort((a, b) => String(b.season).localeCompare(String(a.season)));
+}
+
+function getTeamPlayoffLabel(row) {
+  if (row.seasonAward === 'winner') return '🥇 победитель Всероссийского соревнования';
+  if (row.seasonAward === 'silver') return '🥈 серебряный призёр Всероссийского соревнования';
+  if (row.seasonAward === 'bronze') return '🥉 бронзовый призёр Всероссийского соревнования';
+  const labels = {
+    champion: '🏆 обладатель Кубка Петрова',
+    finalist: 'финалист',
+    semifinal: '1/2 финала',
+    championship_semifinal: '1/2 финала',
+    quarterfinal: '1/4 финала',
+    championship_quarterfinal: '1/4 финала',
+    conference_finalist: 'финал конференции',
+    conference_semifinal: '1/2 финала конференции',
+    conference_quarterfinal: '1/4 финала конференции',
+    round16: '1/8 финала',
+    quarterfinal_unfinished: '1/4 финала — сезон остановлен',
+    playoff_participant: 'участник плей-офф',
+    missed: 'не вышел в плей-офф',
+    season_winner: 'победитель сезона',
+    season_silver: 'серебряный призёр сезона'
+  };
+  return labels[row.playoff] || '—';
+}
+
 function renderTeamModal() {
   if (!G.viewTeamId) return '';
   const team = G.league.teams.find(t => t.id === G.viewTeamId);
