@@ -21,17 +21,20 @@ function nextSeasonLabel(value) {
 
 function updateCareerStats(team) {
   for (const p of team.roster) {
-    const s = ensureStats(p);
-    p.careerStats = p.careerStats || { seasons: 0, gp: 0, goals: 0, assists: 0, points: 0, wins: 0, shutouts: 0 };
-    p.careerStats.seasons++; p.careerStats.gp += s.gp;
-    p.careerStats.goals += (s.goals || 0); p.careerStats.assists += (s.assists || 0);
-    p.careerStats.points += (s.points || 0); p.careerStats.wins += (s.wins || 0); p.careerStats.shutouts += (s.shutouts || 0);
-    if (!p.seasonHistory) p.seasonHistory = [];
+    const s=ensureStats(p), po=ensurePlayoffStats(p);
+    p.careerStats=p.careerStats||{seasons:0,gp:0,goals:0,assists:0,points:0,wins:0,shutouts:0,saves:0,shotsAgainst:0,goalsAgainst:0,playoffGp:0,playoffGoals:0,playoffAssists:0,playoffPoints:0,playoffWins:0};
+    const c=p.careerStats;
+    c.seasons++;c.gp+=s.gp||0;c.goals+=s.goals||0;c.assists+=s.assists||0;c.points+=s.points||0;
+    c.wins+=s.wins||0;c.shutouts+=s.shutouts||0;c.saves+=s.saves||0;c.shotsAgainst+=s.shotsAgainst||0;c.goalsAgainst+=s.goalsAgainst||0;
+    c.playoffGp+=po.gp||0;c.playoffGoals+=po.goals||0;c.playoffAssists+=po.assists||0;c.playoffPoints+=po.points||0;c.playoffWins+=po.wins||0;
+    if(!p.seasonHistory)p.seasonHistory=[];
+    if(p.seasonHistory.some(row=>String(row.season)===String(G.league.season)&&row.teamName===team.name))continue;
     p.seasonHistory.push({
-      season: G.league.season, teamName: team.name,
-      gp: s.gp, goals: s.goals || 0, assists: s.assists || 0, points: s.points || 0,
-      wins: s.wins || 0, shutouts: s.shutouts || 0,
-      ovr: p.ovr, salary: p.contract.salary,
+      season:G.league.season,teamName:team.name,teamId:team.id,position:p.position,age:p.age,
+      gp:s.gp||0,goals:s.goals||0,assists:s.assists||0,points:s.points||0,wins:s.wins||0,losses:s.losses||0,otl:s.otl||0,
+      saves:s.saves||0,shotsAgainst:s.shotsAgainst||0,goalsAgainst:s.goalsAgainst||0,shutouts:s.shutouts||0,
+      playoffStats:{gp:po.gp||0,goals:po.goals||0,assists:po.assists||0,points:po.points||0,wins:po.wins||0,saves:po.saves||0,shotsAgainst:po.shotsAgainst||0,goalsAgainst:po.goalsAgainst||0},
+      ovr:p.ovr,pot:p.pot,salary:p.contract?.salary||0,
     });
   }
 }
