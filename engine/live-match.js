@@ -689,40 +689,122 @@ function drawLiveCanvas() {
   ctx.textAlign = 'right';
   if (awayTeam) ctx.fillText(awayTeam.shortName || awayTeam.name, vx(192), vy(12));
 
+  const homeJersey = window.getTeamJersey ? window.getTeamJersey(homeTeam, 'home') : { base:'#A71930', secondary:'#171717', accent:'#FFFFFF', pattern:'stripe' };
+  const awayJersey = window.getTeamJersey ? window.getTeamJersey(awayTeam, 'away') : { base:'#F4F6F8', secondary:'#334155', accent:'#94A3B8', pattern:'stripe' };
+
+  // Рисуем маленькую хоккейную майку сверху: корпус, рукава, ворот и клубный рисунок.
   const drawPlayer = (p, side) => {
     const x = vx(p.x), y = vy(p.y);
     const r = Math.max(5, Math.round(W / 100));
+    const jersey = side === 'home' ? homeJersey : awayJersey;
     const puckState = lm.positions.puck;
     const isCarrier = puckState && !(puckState.looseFrames > 0)
       && puckState.possessionSide === side && puckState.carrierIndex === p.idx;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(r / 7, r / 7);
+
+    const silhouette = () => {
+      ctx.beginPath();
+      ctx.moveTo(-3.5, -6.5);
+      ctx.lineTo(-7.5, -4.2);
+      ctx.lineTo(-10, 1.2);
+      ctx.lineTo(-6.1, 3.1);
+      ctx.lineTo(-4.5, 0.7);
+      ctx.lineTo(-4.2, 7);
+      ctx.lineTo(4.2, 7);
+      ctx.lineTo(4.5, 0.7);
+      ctx.lineTo(6.1, 3.1);
+      ctx.lineTo(10, 1.2);
+      ctx.lineTo(7.5, -4.2);
+      ctx.lineTo(3.5, -6.5);
+      ctx.lineTo(1.8, -4.4);
+      ctx.lineTo(-1.8, -4.4);
+      ctx.closePath();
+    };
+
+    silhouette();
+    ctx.fillStyle = jersey.base;
+    ctx.fill();
+    ctx.save();
+    silhouette();
+    ctx.clip();
+
+    const pattern = jersey.pattern || 'stripe';
+    if (pattern === 'yoke') {
+      ctx.fillStyle = jersey.secondary;
+      ctx.fillRect(-11, -7, 22, 4.4);
+      ctx.fillStyle = jersey.accent;
+      ctx.fillRect(-11, -2.5, 22, 0.9);
+    } else if (pattern === 'shoulders') {
+      ctx.fillStyle = jersey.secondary;
+      ctx.beginPath();
+      ctx.moveTo(-11, -6); ctx.lineTo(-3, -6); ctx.lineTo(-1, -2);
+      ctx.lineTo(-8, 0); ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(11, -6); ctx.lineTo(3, -6); ctx.lineTo(1, -2);
+      ctx.lineTo(8, 0); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = jersey.accent;
+      ctx.fillRect(-11, -1.2, 22, 0.8);
+    } else if (pattern === 'diagonal') {
+      ctx.strokeStyle = jersey.secondary;
+      ctx.lineWidth = 3.2;
+      ctx.beginPath(); ctx.moveTo(-11, 6); ctx.lineTo(10, -6); ctx.stroke();
+      ctx.strokeStyle = jersey.accent;
+      ctx.lineWidth = 0.9;
+      ctx.beginPath(); ctx.moveTo(-9, 7); ctx.lineTo(12, -5); ctx.stroke();
+    } else if (pattern === 'hoops') {
+      ctx.fillStyle = jersey.secondary;
+      ctx.fillRect(-11, -2.8, 22, 1.7);
+      ctx.fillRect(-11, 2.2, 22, 1.7);
+      ctx.fillStyle = jersey.accent;
+      ctx.fillRect(-11, -0.8, 22, 0.6);
+    } else {
+      ctx.fillStyle = jersey.secondary;
+      ctx.fillRect(-11, -1.8, 22, 2.2);
+      ctx.fillStyle = jersey.accent;
+      ctx.fillRect(-11, 0.8, 22, 0.8);
+    }
+
+    // Полосы на рукавах связывают боковые части формы с основным рисунком.
+    ctx.fillStyle = jersey.secondary;
+    ctx.fillRect(-10, 0.1, 4.2, 1.1);
+    ctx.fillRect(5.8, 0.1, 4.2, 1.1);
+    ctx.restore();
+
+    // Ворот и контур остаются видимыми поверх рисунка.
+    ctx.strokeStyle = 'rgba(8,12,20,0.9)';
+    ctx.lineWidth = 1.35;
+    silhouette();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-1.7, -5.3); ctx.lineTo(0, -3.7); ctx.lineTo(1.7, -5.3);
+    ctx.strokeStyle = jersey.accent;
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
+
+    if (p.role === 'goalie') {
+      ctx.strokeStyle = jersey.accent;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(0, 0, 8.6, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    const label = p.position === 'G' || p.role === 'goalie' ? 'В' : p.position === 'D' || p.role === 'D' ? 'З' : 'Н';
+    ctx.fillStyle = side === 'away' ? '#172033' : '#FFFFFF';
+    ctx.font = 'bold 5.5px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, 0, 1.1);
+    ctx.restore();
+
     if (isCarrier) {
       ctx.beginPath();
-      ctx.arc(x, y, r + 3, 0, Math.PI * 2);
+      ctx.arc(x, y, r + 4, 0, Math.PI * 2);
       ctx.strokeStyle = '#fbbf24';
       ctx.lineWidth = 2;
       ctx.stroke();
     }
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    if (p.role === 'goalie') {
-      ctx.fillStyle = side === 'home' ? '#ff6b35' : '#60a5fa';
-      ctx.fill();
-      ctx.strokeStyle = '#0f1117';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    } else {
-      ctx.fillStyle = side === 'home' ? '#ff6b35' : '#60a5fa';
-      ctx.fill();
-      ctx.strokeStyle = '#0f1117';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-    const label = p.position === 'G' || p.role === 'goalie' ? 'В' : p.position === 'D' || p.role === 'D' ? 'З' : 'Н';
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `bold ${Math.max(7, Math.round(W / 105))}px -apple-system, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x, y + 0.5);
   };
 
   for (const p of lm.positions.home) drawPlayer(p, 'home');
