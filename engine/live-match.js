@@ -595,6 +595,9 @@ function exitLiveMatchEarly() {
     lm.hg += otH; lm.ag += otA;
     lm.shots.home += otH;
     lm.shots.away += otA;
+    lm.shotAttempts ||= { home: 0, away: 0 };
+    lm.shotAttempts.home += otH;
+    lm.shotAttempts.away += otA;
   }
   if (lm.hg === lm.ag) {
     runLiveShootout();
