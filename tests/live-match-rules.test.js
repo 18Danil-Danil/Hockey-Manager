@@ -253,4 +253,34 @@ assert.ok(Math.abs(animationState.positions.puck.x - (homePositions[3].x + 3.2))
   'puck did not move toward the home carrier');
 assert.ok(animationState.positions.puck.x > 100, 'home possession did not advance toward the attacking half');
 
+// The canvas animation loop must sleep while paused, between periods or after the final whistle.
+const loopStart = source.indexOf('function liveAnimationLoop(');
+const loopEnd = source.indexOf('function startLiveAnimation(', loopStart);
+assert.ok(loopStart >= 0 && loopEnd > loopStart, 'liveAnimationLoop() was not found');
+const loopSource = source.slice(loopStart, loopEnd);
+const makeAnimationLoop = new Function(
+  'G', 'liveUpdatePositions', 'drawLiveCanvas', 'requestAnimationFrame',
+  `let _liveRafId = null; ${loopSource}; return liveAnimationLoop;`
+);
+let animationUpdates = 0;
+let animationDraws = 0;
+let rafRequests = 0;
+const requestFrame = () => { rafRequests++; return rafRequests; };
+const animationLoop = makeAnimationLoop(
+  { liveMatch: { paused: true, isBreak: false, isFinished: false } },
+  () => animationUpdates++, () => animationDraws++, requestFrame
+);
+animationLoop();
+assert.equal(rafRequests, 0, 'paused match kept requesting animation frames');
+assert.equal(animationUpdates, 0);
+assert.equal(animationDraws, 0);
+const runningLoop = makeAnimationLoop(
+  { liveMatch: { paused: false, isBreak: false, isFinished: false } },
+  () => animationUpdates++, () => animationDraws++, requestFrame
+);
+runningLoop();
+assert.equal(rafRequests, 1, 'running match did not schedule the next animation frame');
+assert.equal(animationUpdates, 1);
+assert.equal(animationDraws, 1);
+
 console.log('LIVE match rules checks passed.');
