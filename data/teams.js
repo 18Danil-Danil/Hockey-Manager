@@ -258,7 +258,7 @@ window.VHL_TEAMS = [
       { season: '2021/22', place: 5, pts: 78, playoff: 'round16' },
     
       { season: '2020/21', place: 6, pts: 69, playoff: 'finalist' },],
-    trophies: { petrov: [], regular: ['2024/25', '2025/26'], opening: ['2024/25', '2025/26'], finals: ['2020/21'], seasonWins: [], seasonSilvers: ['2020/21'], seasonBronzes: ['2022/23', '2025/26'] },
+    trophies: { petrov: [], regular: ['2024/25', '2025/26'], opening: ['2025/26'], finals: ['2020/21'], seasonWins: [], seasonSilvers: ['2020/21'], seasonBronzes: ['2022/23', '2025/26'] },
     rivals: ['Химик', 'Рубин', 'Югра'],
     logo: 'https://www.vhlru.ru/upload/iblock/2f1/Металлург.png',
     sponsorFlow: 4, govSupport: 3, hockeyLove: 5, youthFactor: 1,
@@ -278,7 +278,7 @@ window.VHL_TEAMS = [
       { season: '2021/22', place: 8, pts: 72, playoff: 'round16' },
     
       { season: '2020/21', place: 25, pts: 34, playoff: 'missed' },],
-    trophies: { petrov: [], regular: ['2023/24'], opening: [], finals: [], seasonWins: [], seasonSilvers: [], seasonBronzes: [] },
+    trophies: { petrov: [], regular: ['2023/24'], opening: ['2024/25'], finals: [], seasonWins: [], seasonSilvers: [], seasonBronzes: [] },
     rivals: ['Рубин'],
     logo: 'https://www.vhlru.ru/upload/iblock/27f/Молот.png',
     sponsorFlow: 4, govSupport: 3, hockeyLove: 5, youthFactor: 2,
