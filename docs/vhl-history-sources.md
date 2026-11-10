@@ -32,6 +32,7 @@
 | Сезон | Регулярный чемпионат | Плей-офф |
 |---|---|---|
 | 2016/17 | [Сводная таблица](https://ru.wikipedia.org/wiki/ВХЛ_в_сезоне_2016/2017); [Elite Prospects](https://www.eliteprospects.com/league/vhl/standings/2016-2017) | [Сетка «Чемпионата»](https://www.championat.com/hockey/_highleague/tournament/2150/) |
+| 2017/18 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/2414/table/); [архив сезона](https://ru.wikipedia.org/wiki/ВХЛ_в_сезоне_2017/2018) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/2555/) |
 | 2025/26 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/6704/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6996/) |
 | 2024/25 | [Турнирная таблица](https://www.sport-express.net/hockey/L/vhl/2024-2025/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6448/) |
 | 2023/24 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/5601/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5852/) |
