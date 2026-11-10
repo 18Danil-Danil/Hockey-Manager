@@ -167,6 +167,29 @@ assert.equal(awaySkaters.filter(p => ensureGoalStats(p).plusMinus === -1).length
 assert.equal(awaySkaters.filter(p => ensureGoalStats(p).plusMinus === 0).length, 1,
   'bench player incorrectly received a minus');
 
+// A normal period break must refresh the screen and expose the resume controls.
+const endPeriodStart = source.indexOf('function liveEndPeriod(');
+const endPeriodEnd = source.indexOf('function runLiveShootout(', endPeriodStart);
+assert.ok(endPeriodStart >= 0 && endPeriodEnd > endPeriodStart, 'liveEndPeriod() was not found');
+const endPeriodSource = source.slice(endPeriodStart, endPeriodEnd);
+const makeEndPeriod = new Function(
+  'G', 'livePushEvent', 'clearInterval', 'render', 'runLiveShootout', 'finishLiveMatch',
+  `${endPeriodSource}; return liveEndPeriod;`
+);
+const breakLm = { period: 1, hg: 1, ag: 1, isFinished: false, isBreak: false, paused: false, intervalId: 42 };
+let clearedInterval = false;
+let breakRendered = false;
+const endPeriod = makeEndPeriod(
+  { liveMatch: breakLm }, () => {}, () => { clearedInterval = true; },
+  () => { breakRendered = true; }, () => {}, () => {}
+);
+endPeriod();
+assert.equal(breakLm.isBreak, true);
+assert.equal(breakLm.paused, true);
+assert.equal(breakLm.intervalId, null);
+assert.equal(clearedInterval, true, 'period break did not stop the match interval');
+assert.equal(breakRendered, true, 'period break did not refresh the controls');
+
 // A tied overtime must be resolved by a shootout; the deciding goal is a team
 // result only and is not added to skater/goalie box-score statistics.
 const shootoutSource = source.slice(
