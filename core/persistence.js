@@ -11,6 +11,7 @@ let _saveQueue = Promise.resolve();
 let _saveWaiters = [];
 let _saveNotify = false;
 let _lastSaveError = null;
+let _autoSaveWarningShown = false;
 
 function openSaveDatabase() {
   if (!('indexedDB' in window)) return Promise.resolve(null);
@@ -107,9 +108,13 @@ async function saveGame(options = {}) {
     _saveQueue = task.catch(() => false);
     task.then(success => {
       waiters.forEach(resolve => resolve(success));
+      if (success) _autoSaveWarningShown = false;
       if (notify && typeof showToast === 'function') {
         if (success) showToast('Игра успешно сохранена', 'success');
         else showToast('Не удалось сохранить игру. Хранилище браузера недоступно или переполнено.', 'error', 7000);
+      } else if (!success && !_autoSaveWarningShown && typeof showToast === 'function') {
+        _autoSaveWarningShown = true;
+        showToast('Автосохранение не удалось. Нажмите «Сохранить» или проверьте хранилище браузера.', 'error', 7000);
       }
     });
   };
@@ -119,10 +124,7 @@ async function saveGame(options = {}) {
 }
 
 async function manualSaveGame() {
-  const success = await saveGame({ immediate: true, notify: false });
-  if (success) showToast('Игра успешно сохранена', 'success');
-  else showToast('Не удалось сохранить игру. Попробуйте освободить место в браузере.', 'error', 7000);
-  return success;
+  return await saveGame({ immediate: true, notify: true });
 }
 
 async function loadGame() {
