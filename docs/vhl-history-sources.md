@@ -41,7 +41,7 @@
 | 2018/19 | [Турнирная таблица](https://news.sportbox.ru/Vidy_sporta/Hokkej/VHL/stats/turnir_14881); [архив сезона](https://ru.wikipedia.org/wiki/ВХЛ_в_сезоне_2018/2019) | [Сетка плей-офф](https://www.championat.ru/hockey/_highleague/tournament/2887/table/) |
 | 2020/21 | [Итоговая таблица регулярного чемпионата](https://silasporta.ru/vhl/standings/2020-2021/); [официальный календарь и состав участников](https://www.vhlru.ru/lenta/382967/) | [Сетка и результаты плей-офф](https://www.championat.com/hockey/_highleague/tournament/4307/table/); [официальные призёры](https://www.vhlru.ru/materials/399922/) |
 | 2019/20 | [Итоговая таблица](https://www.championat.com/hockey/_highleague/tournament/3033/table/); [официальная структура сезона](https://www.vhlru.ru/lenta/292325/) | [Сетка и серии](https://www.championat.com/hockey/_highleague/tournament/3305/); [официальное завершение](https://www.vhlru.ru/lenta/380991/); [официальные итоги Всероссийских соревнований](https://www.vhlru.ru/lenta/382135/); [сообщение клуба](https://star.cska-hockey.ru/news/Zvezda_priznana_pobeditelem_sezona_2019_20) |
-| 2025/26 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/6704/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6996/) |
+| 2025/26 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/6704/table/); [Sport-Express](https://www.sport-express.net/hockey/L/vhl/2025-2026/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6996/table/); [официальный финал](https://www.vhlru.ru/lenta/603534/) |
 | 2024/25 | [Официальная таблица ВХЛ](https://www.vhlru.ru/standings/league/1306/); [календарь и участники](https://www.vhlru/lenta/505787/) | [Официальный посев плей-офф](https://vhlru.ru/lenta/534996/); [полная сетка](https://www.championat.com/hockey/_highleague/tournament/6448/table/); [официальные медалисты](https://hcda.ru/press_center/news/ofitsialno-itogi-olimpbet-chempionata-rossii-po-khokkeyu-sredi-muzhskikh-komand-vserossiyskoy-khokke/) |
 | 2023/24 | [Итоговая таблица регулярного чемпионата](https://silasporta.ru/vhl/standings/2023-2024/); [таблица Чемпионата](https://www.championat.com/hockey/_highleague/tournament/5601/) | [Сетка плей-офф](https://www.championat.ru/hockey/_highleague/tournament/5852/); [официальные медалисты](https://www.vhl.ru/lenta/504460/) |
 | 2022/23 | [Итоговая таблица](https://silasporta.ru/vhl/standings/2022-2023/); [таблица Чемпионата](https://www.championat.com/hockey/_highleague/tournament/5111/table/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5257/); [официальные медалисты](https://vhlru.ru/lenta/459755/) |
@@ -114,3 +114,15 @@
 - Чемпион России и обладатель Кубка Чемпиона России — «Торпедо-Горький»; финалист — «Химик».
 - Серебряный призёр — «Химик», бронзовый — «Динамо СПб».
 - При равенстве очков использована официальная итоговая таблица ВХЛ: СКА-Нева — 14-е место, «Буран» — 15-е, «Магнитка» — 16-е, АКМ — 17-е.
+
+
+## Сезон 2025/26: правила интерпретации
+
+- 32 участника, по 62 матча на команду; всего 992 матча регулярного чемпионата.
+- Победитель регулярного чемпионата — «Металлург» (Новокузнецк), 106 очков.
+- Чемпион России и обладатель Кубка Чемпиона России — «Югра»; финалист — «Химик», счёт серии 4:1.
+- «Металлург» (Новокузнецк) получил бронзовые медали; официальный материал ВХЛ о финалистах называет его бронзовым призёром.
+- Регулярная таблица перенесена из архива «Чемпионата». Sport-Express используется только для дополнительной сверки: его отображение содержит несовпадения в нескольких строках (места при равенстве очков, отдельные показатели шайб и распределение исходов).
+- В таблице «Чемпионата» порядок команд при равенстве очков сохраняется как опубликован; без отдельного официального источника не делается вывод о конкретном критерии тай-брейка.
+- Все 32 записи проверены: по 62 игры; 992 матча в сумме; очки соответствуют двухочковой системе.
+- Плей-офф: [полная сетка «Чемпионата»](https://www.championat.com/hockey/_highleague/tournament/6996/table/); официальный итог финала: [ВХЛ — «Югра» чемпион России 2025/26](https://www.vhlru.ru/lenta/603534/).
