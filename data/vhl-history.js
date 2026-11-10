@@ -29,7 +29,6 @@ window.VHL_HISTORICAL_CLUB_HONOURS = {
   'Сарыарка (Караганда)': { championships: ['2013/14', '2018/19'], regularTitles: ['2012/13', '2014/15'], finals: ['2012/13'] },
   'Нефтяник (Альметьевск)': { championships: ['2015/16', '2023/24'], regularTitles: [], finals: ['2010/11'] },
   'Динамо (Балашиха)': { championships: ['2016/17'], regularTitles: [], finals: [] },
-  'Динамо СПб': { championships: ['2017/18'], regularTitles: ['2017/18'], finals: ['2021/22'] },
   'Югра (Ханты-Мансийск)': { championships: ['2020/21', '2025/26'], regularTitles: ['2020/21', '2021/22', '2022/23'], finals: [], seasonBronzes: ['2021/22'] },
   'Химик (Воскресенск)': { championships: ['2022/23'], regularTitles: [], finals: ['2024/25', '2025/26'], seasonSilvers: ['2024/25', '2025/26'] },
   'Торпедо-Горький (Нижний Новгород)': { championships: ['2024/25'], regularTitles: [], finals: [] },
@@ -38,7 +37,7 @@ window.VHL_HISTORICAL_CLUB_HONOURS = {
   'Динамо (Санкт-Петербург)': { championships: ['2017/18'], regularTitles: ['2017/18'], finals: ['2021/22'], seasonSilvers: ['2019/20', '2021/22'], seasonBronzes: ['2024/25'] },
   'СКА-Нева (Санкт-Петербург)': { championships: [], regularTitles: ['2018/19'], finals: ['2017/18'], seasonBronzes: ['2019/20'] },
   'ТХК (Тверь)': { championships: [], regularTitles: ['2015/16'], finals: [] },
-  'Металлург (Новокузнецк)': { championships: [], regularTitles: ['2024/25', '2025/26'], opening: ['2025/26'], finals: ['2020/21'], seasonSilvers: ['2020/21'], seasonBronzes: ['2022/23', '2025/26'] },
+  'Металлург (Новокузнецк)': { championships: [], regularTitles: ['2024/25', '2025/26'], opening: ['2024/25', '2025/26'], finals: ['2020/21'], seasonSilvers: ['2020/21'], seasonBronzes: ['2022/23', '2025/26'] },
   'Молот (Пермь)': { championships: [], regularTitles: ['2023/24'], finals: [] },
   'АКМ (Тульская область)': { championships: [], regularTitles: [], finals: ['2023/24'], seasonSilvers: ['2023/24'] },
   'Сокол (Красноярск)': { championships: [], regularTitles: [], finals: ['2022/23'], seasonSilvers: ['2022/23'] }
