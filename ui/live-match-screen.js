@@ -73,7 +73,7 @@ function renderLiveMatchScreen() {
   ` : '';
 
   const endedHint = lm.isFinished
-    ? `<div class="regular-champion" style="margin-top:8px">Матч завершён: ${home.shortName || home.name} ${lm.hg} : ${lm.ag} ${away.shortName || away.name}${lm.ot ? ' (ОТ)' : ''}</div>`
+    ? `<div class="regular-champion" style="margin-top:8px">Матч завершён: ${home.shortName || home.name} ${lm.hg} : ${lm.ag} ${away.shortName || away.name}${lm.shootout ? ' (буллиты)' : lm.ot ? ' (ОТ)' : ''}</div>`
     : '';
 
   const logoHome = home.logo ? `<img src="${home.logo}" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px">` : '';
@@ -88,7 +88,7 @@ function renderLiveMatchScreen() {
           <span class="live-score-box"><span id="live-score-home">${lm.hg}</span> : <span id="live-score-away">${lm.ag}</span></span>
           <span class="away-name">${logoAway}${away.shortName || away.name}</span>
         </div>
-        <div class="live-period-info" id="live-period-info">${lm.period === 4 ? 'Овертайм' : 'Период ' + lm.period}</div>
+        <div class="live-period-info" id="live-period-info">${lm.period === 5 ? 'Буллитная серия' : lm.period === 4 ? 'Овертайм' : 'Период ' + lm.period}</div>
         <div class="live-clock" id="live-clock">${liveFmtTime(Math.max(0, Math.ceil(lm.timeLeft)))}</div>
       </div>
       <div style="min-width:120px"></div>
