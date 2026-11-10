@@ -276,6 +276,37 @@ assert.ok(Math.abs(animationState.positions.puck.x - (homePositions[3].x + 3.2))
   'puck did not move toward the home carrier');
 assert.ok(animationState.positions.puck.x > 100, 'home possession did not advance toward the attacking half');
 
+// Goalies stay on their goal line; skaters react to possession with attack/defence roles.
+assert.ok(Math.abs(homePositions[0].x - 12) < 0.01, 'home goalie must start inside the home crease');
+assert.ok(Math.abs(awayPositions[0].x - 188) < 0.01, 'away goalie must start inside the away crease');
+const tacticalState = {
+  positions: {
+    home: formation.map(p => ({ ...p })),
+    away: awayPositions.map(p => ({ ...p })),
+    puck: { x: 165, y: 50, vx: 0, vy: 0, possessionSide: 'home', carrierIndex: 3, actionFrames: 500, looseFrames: 0 },
+  },
+};
+const tacticalHome = tacticalState.positions.home;
+const tacticalAway = tacticalState.positions.away;
+const awayChaser = tacticalAway.slice(1).reduce((best, p) =>
+  Math.hypot(p.x - 165, p.y - 50) < Math.hypot(best.x - 165, best.y - 50) ? p : best
+);
+const chaserDistanceBefore = Math.hypot(awayChaser.x - 165, awayChaser.y - 50);
+for (let i = 0; i < 120; i++) {
+  liveUpdatePositions({ liveMatch: tacticalState }, visualWindow,
+    (v, min, max) => Math.max(min, Math.min(max, v)))();
+}
+assert.ok(tacticalHome[0].x >= 8 && tacticalHome[0].x <= 18, 'home goalie drifted away from the crease');
+assert.ok(tacticalAway[0].x >= 182 && tacticalAway[0].x <= 192, 'away goalie drifted away from the crease');
+assert.ok(tacticalHome[0].y >= 42 && tacticalHome[0].y <= 58, 'home goalie left the lateral crease range');
+assert.ok(tacticalAway[0].y >= 42 && tacticalAway[0].y <= 58, 'away goalie left the lateral crease range');
+assert.ok(Math.hypot(awayChaser.x - 165, awayChaser.y - 50) < chaserDistanceBefore,
+  'nearest defending skater did not pressure the puck');
+assert.ok(Math.abs(tacticalHome[3].y - tacticalHome[5].y) > 12,
+  'attacking forwards collapsed into the same lane');
+assert.ok(tacticalHome.slice(1).every(p => p.x >= 12 && p.x <= 188 && p.y >= 10 && p.y <= 90),
+  'skaters left the playable tactical area');
+
 // The canvas animation loop must sleep while paused, between periods or after the final whistle.
 const loopStart = source.indexOf('function liveAnimationLoop(');
 const loopEnd = source.indexOf('function startLiveAnimation(', loopStart);
