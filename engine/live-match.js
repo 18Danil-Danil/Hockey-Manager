@@ -223,12 +223,26 @@ function liveAdvance(stepSec) {
           }
           const puck = lm.positions?.puck;
           if (puck) {
+            const shooterPositions = lm.positions[side] || [];
+            const shooterIndex = shooterPositions.findIndex(position => position.playerId === p.id);
+            const shooterPosition = shooterPositions[shooterIndex >= 0 ? shooterIndex : 3];
+            const defendingGoalie = (lm.positions[defendingSide] || []).find(position => position.role === 'goalie');
+            const attackingGoalX = side === 'home' ? 190 : 10;
+            const shotTargetY = clamp(puck.y + (outcome === 'штанга' ? (puck.y < 50 ? -7 : 7) : 0), 43, 57);
             puck.possessionSide = side;
             puck.carrierIndex = null;
-            puck.targetX = side === 'home' ? 195 : 5;
-            puck.targetY = 50;
-            puck.looseFrames = 26;
-            puck.nextPossessionSide = outcome === 'сейв' ? defendingSide : side;
+            puck.shotAnimation = {
+              side, outcome, defendingSide,
+              startX: shooterPosition ? shooterPosition.x : puck.x,
+              startY: shooterPosition ? shooterPosition.y : puck.y,
+              targetX: outcome === 'сейв' && defendingGoalie ? defendingGoalie.x : attackingGoalX,
+              targetY: shotTargetY,
+              frames: 12, totalFrames: 12,
+            };
+            puck.x = puck.shotAnimation.startX;
+            puck.y = puck.shotAnimation.startY;
+            puck.looseFrames = 0;
+            puck.nextPossessionSide = null;
           }
           const sideName = side === 'home' ? homeTeamNameShort() : awayTeamNameShort();
           livePushEvent({
@@ -316,6 +330,7 @@ function liveGoal(side) {
   lm.positions.puck.targetX = 100;
   lm.positions.puck.targetY = 50;
   lm.positions.puck.looseFrames = 48;
+  lm.positions.puck.shotAnimation = null;
   lm.positions.puck.nextPossessionSide = side === 'home' ? 'away' : 'home';
 
   // ⚙️ ФИКС #2: sudden death в ОТ — гол немедленно завершает матч
@@ -868,6 +883,11 @@ function drawLiveCanvas() {
     const alpha = clamp((lm.goalFlashUntil - Date.now()) / 1200, 0, 1);
     ctx.fillStyle = `rgba(74,222,128,${alpha * 0.35})`;
     ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#14532d';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `900 ${Math.max(22, Math.round(W / 12))}px -apple-system, sans-serif`;
+    ctx.fillText('ГОЛ!', W / 2, H / 2);
   }
 
   ctx.fillStyle = 'rgba(15,17,23,0.4)';
@@ -937,8 +957,26 @@ function liveUpdatePositions() {
   const visualRng = window.GAME_RNG.visualRng;
   const sides = ['home', 'away'];
 
+  // A recorded shot is animated independently of the match RNG and score calculation.
+  if (puck.shotAnimation) {
+    const shot = puck.shotAnimation;
+    const progress = 1 - shot.frames / shot.totalFrames;
+    puck.x = shot.startX + (shot.targetX - shot.startX) * progress;
+    puck.y = shot.startY + (shot.targetY - shot.startY) * progress
+      - Math.sin(progress * Math.PI) * 1.8;
+    shot.frames--;
+    if (shot.frames <= 0) {
+      puck.x = shot.targetX;
+      puck.y = shot.targetY;
+      puck.shotAnimation = null;
+      puck.looseFrames = shot.outcome === 'сейв' ? 18 : 22;
+      puck.targetX = clamp(shot.targetX + (shot.side === 'home' ? -7 : 7), 5, 195);
+      puck.targetY = clamp(shot.targetY + (shot.outcome === 'штанга' ? 8 : 3), 8, 92);
+      puck.nextPossessionSide = shot.outcome === 'сейв' ? shot.defendingSide : shot.side;
+      puck.nextCarrierIndex = 3 + Math.floor(visualRng() * 3);
+    }
   // Loose puck: players react to the destination; possession resumes after the puck settles.
-  if ((puck.looseFrames || 0) > 0) {
+  } else if ((puck.looseFrames || 0) > 0) {
     const receiver = Number.isInteger(puck.nextCarrierIndex)
       ? (lm.positions[puck.nextPossessionSide] || [])[puck.nextCarrierIndex] : null;
     const targetX = receiver ? receiver.x : (puck.targetX ?? 100);
@@ -1020,10 +1058,11 @@ function liveUpdatePositions() {
       let targetY = player.baseY;
 
       if (isGoalie) {
-        // Goalie stays in the crease and tracks the puck laterally.
+        // Goalie stays in the crease; during a shot, reacts more sharply to its lane.
         const puckInOwnZone = (puck.x - ownGoalX) * direction < 58;
         targetX = ownGoalX + direction * (puckInOwnZone ? 5 : 2);
-        targetY = clamp(50 + (puck.y - 50) * 0.16, 42, 58);
+        targetY = clamp(puck.shotAnimation && puck.shotAnimation.defendingSide === side
+          ? puck.shotAnimation.targetY : 50 + (puck.y - 50) * 0.16, 42, 58);
       } else if (hasPuck) {
         if (isCarrier) {
           // Puck carrier drives toward the attacking end instead of orbiting a fixed slot.
