@@ -220,6 +220,8 @@ async function loadGame() {
       });
     });
     G.league.freeAgents.forEach(p => { ensureStats(p); if (!p.careerStats) p.careerStats = { seasons: 0, gp: 0, goals: 0, assists: 0, points: 0, wins: 0, shutouts: 0 }; if (!p.character) p.character = 'calm'; });
+    // Регистрируем имена всех игроков сохранения, не меняя существующие записи.
+    if (typeof hydratePlayerNameRegistry === 'function') hydratePlayerNameRegistry(G.league);
     // После загрузки render() поставит актуальное состояние в очередь автосохранения.
     return true;
   } catch (e) { console.error('Ошибка загрузки сохранения:', e); return false; }
