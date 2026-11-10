@@ -297,7 +297,8 @@ function normalizeClubName(name) {
 function youthTeamBelongsToSeniorClub(youthTeam, seniorTeam) {
   if (!youthTeam || !seniorTeam) return false;
   const seniorName = normalizeClubName(seniorTeam.name);
-  return (youthTeam.seniorLinks || []).some(link => normalizeClubName(link) === seniorName);
+  const primarySeniorLink = (youthTeam.seniorLinks || [])[0];
+  return !!primarySeniorLink && normalizeClubName(primarySeniorLink) === seniorName;
 }
 
 function getOwnYouthTeam(seniorTeam) {
@@ -410,7 +411,7 @@ function advanceYouthPlayer(player, leagueId, season, team, youth) {
   if (player.age > YOUTH_RULES.maxAge) {
     if (player.youth.parentSeniorClubId) {
       const parent = G.league.teams.find(item => item.id === player.youth.parentSeniorClubId);
-      if (parent && !parent.roster.some(item => item.id === player.id) && parent.roster.length < 30) {
+      if (parent && !parent.roster.some(item => item.id === player.id)) {
         player.status = 'contract';
         player.youth.graduated = true;
         player.youth.assignedToYouthTeamId = null;
