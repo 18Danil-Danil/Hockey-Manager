@@ -35,6 +35,8 @@
 | 2024/25 | [Турнирная таблица](https://www.sport-express.net/hockey/L/vhl/2024-2025/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/6448/) |
 | 2023/24 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/5601/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5852/) |
 | 2022/23 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/5111/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/5257/) |
+
+| 2013/14 | [Официальный ежегодный отчёт ВХЛ, таблица регулярного чемпионата](https://www.vhlru.ru/upload/VHL_4.pdf) | [Официальная сетка плей-офф в ежегодном отчёте](https://www.vhlru.ru/upload/VHL_4.pdf) |
 | 2021/22 | [Турнирная таблица](https://www.championat.com/hockey/_highleague/tournament/4691/) | [Сетка плей-офф](https://www.championat.com/hockey/_highleague/tournament/4887/) |
 
 Дополнительно: [официальное сообщение ВХЛ о чемпионстве «Югры» в сезоне 2025/26](https://vhlru.ru/lenta/603534/).
