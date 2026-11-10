@@ -559,6 +559,54 @@ window.VHL_SEASON_RESULTS = [
       { historicalId: 'ermak-angarsk', clubName: 'Ермак', regularPlace: 26, games: 52, wins: 8, overtimeWins: 4, shootoutWins: 2, shootoutLosses: 1, overtimeLosses: 2, losses: 35, goalsFor: 103, goalsAgainst: 163, points: 31, playoffStage: 'missed' },
       { historicalId: 'csk-vvs-samara', clubName: 'ЦСК ВВС', regularPlace: 27, games: 52, wins: 5, overtimeWins: 0, shootoutWins: 0, shootoutLosses: 0, overtimeLosses: 2, losses: 45, goalsFor: 85, goalsAgainst: 216, points: 12, playoffStage: 'missed' }
     ]
+  },
+  {
+    season: '2022/23',
+    leagueParticipants: 26,
+    regularSeason: {
+      source: 'https://silasporta.ru/vhl/standings/2022-2023/',
+      secondarySources: ['https://www.championat.com/hockey/_highleague/tournament/5111/table/'],
+      officialSource: 'https://www.vhlru.ru/lenta/453625/',
+      sourceType: 'archived_standings_official_playoff_structure_cross_checked',
+      verified: true,
+      note: '26 клубов в одной таблице; каждая команда провела 50 матчей, всего 650 матчей. 2 очка за любую победу, 1 за поражение в овертайме или по буллитам, 0 за поражение в основное время.'
+    },
+    playoffs: {
+      source: 'https://www.championat.com/hockey/_highleague/tournament/5257/',
+      officialStructure: 'https://www.vhlru.ru/lenta/453625/',
+      officialResult: 'https://www.vhlru.ru/lenta/459755/',
+      sourceType: 'archived_playoff_bracket_official_champion_confirmation',
+      verified: true,
+      format: 'Первые 16 команд регулярного чемпионата вышли в плей-офф. Четыре раунда, серии до четырёх побед.'
+    },
+    teams: [
+      { historicalId: 'yugra-khanty-mansiysk', clubName: 'Югра', regularPlace: 1, games: 50, wins: 29, overtimeWins: 7, shootoutWins: 0, shootoutLosses: 5, overtimeLosses: 1, losses: 8, goalsFor: 163, goalsAgainst: 99, points: 78, playoffStage: 'round16', playoffOpponent: 'Горняк-УГМК', seriesScore: '2:4' },
+      { historicalId: 'metallurg-novokuznetsk', clubName: 'Металлург Нк', regularPlace: 2, games: 50, wins: 24, overtimeWins: 4, shootoutWins: 6, shootoutLosses: 2, overtimeLosses: 1, losses: 13, goalsFor: 173, goalsAgainst: 123, points: 71, playoffStage: 'championship_semifinal', playoffOpponent: 'Химик', seriesScore: '2:4', seasonAward: 'bronze' },
+      { historicalId: 'sokol-krasnoyarsk', clubName: 'Сокол', regularPlace: 3, games: 50, wins: 23, overtimeWins: 6, shootoutWins: 3, shootoutLosses: 3, overtimeLosses: 3, losses: 12, goalsFor: 165, goalsAgainst: 120, points: 70, playoffStage: 'finalist', playoffOpponent: 'Химик', seriesScore: '0:4', seasonAward: 'silver' },
+      { historicalId: 'dizel-penza', clubName: 'Дизель', regularPlace: 4, games: 50, wins: 20, overtimeWins: 4, shootoutWins: 7, shootoutLosses: 2, overtimeLosses: 4, losses: 13, goalsFor: 136, goalsAgainst: 121, points: 68, playoffStage: 'round16', playoffOpponent: 'Торос', seriesScore: '2:4' },
+      { historicalId: 'rubin-tyumen', clubName: 'Рубин', regularPlace: 5, games: 50, wins: 23, overtimeWins: 4, shootoutWins: 2, shootoutLosses: 5, overtimeLosses: 5, losses: 11, goalsFor: 131, goalsAgainst: 106, points: 68, playoffStage: 'championship_semifinal', playoffOpponent: 'Сокол', seriesScore: '1:4' },
+      { historicalId: 'lada-togliatti', clubName: 'Лада', regularPlace: 6, games: 50, wins: 25, overtimeWins: 3, shootoutWins: 3, shootoutLosses: 1, overtimeLosses: 4, losses: 14, goalsFor: 150, goalsAgainst: 120, points: 67, playoffStage: 'round16', playoffOpponent: 'АКМ', seriesScore: '3:4' },
+      { historicalId: 'neftyanik-almetyevsk', clubName: 'Нефтяник', regularPlace: 7, games: 50, wins: 23, overtimeWins: 4, shootoutWins: 3, shootoutLosses: 3, overtimeLosses: 2, losses: 15, goalsFor: 131, goalsAgainst: 105, points: 65, playoffStage: 'round16', playoffOpponent: 'Зауралье', seriesScore: '2:4' },
+      { historicalId: 'tambov', clubName: 'ХК Тамбов', regularPlace: 8, games: 50, wins: 18, overtimeWins: 2, shootoutWins: 7, shootoutLosses: 5, overtimeLosses: 4, losses: 14, goalsFor: 138, goalsAgainst: 135, points: 63, playoffStage: 'round16', playoffOpponent: 'Химик', seriesScore: '2:4' },
+      { historicalId: 'khimik-voskresensk', clubName: 'Химик', regularPlace: 9, games: 50, wins: 22, overtimeWins: 5, shootoutWins: 2, shootoutLosses: 2, overtimeLosses: 2, losses: 17, goalsFor: 161, goalsAgainst: 118, points: 62, playoffStage: 'champion', playoffOpponent: 'Сокол', seriesScore: '4:0', seasonAward: 'winner' },
+      { historicalId: 'zauralye-kurgan', clubName: 'Зауралье', regularPlace: 10, games: 50, wins: 23, overtimeWins: 1, shootoutWins: 4, shootoutLosses: 3, overtimeLosses: 3, losses: 16, goalsFor: 134, goalsAgainst: 116, points: 62, playoffStage: 'championship_quarterfinal', playoffOpponent: 'Химик', seriesScore: '1:4' },
+      { historicalId: 'akm-tula', clubName: 'АКМ', regularPlace: 11, games: 50, wins: 18, overtimeWins: 7, shootoutWins: 2, shootoutLosses: 1, overtimeLosses: 5, losses: 17, goalsFor: 148, goalsAgainst: 140, points: 60, playoffStage: 'championship_quarterfinal', playoffOpponent: 'Рубин', seriesScore: '3:4' },
+      { historicalId: 'chelmet-chelyabinsk', clubName: 'Челмет', regularPlace: 12, games: 50, wins: 19, overtimeWins: 5, shootoutWins: 2, shootoutLosses: 5, overtimeLosses: 3, losses: 16, goalsFor: 117, goalsAgainst: 120, points: 60, playoffStage: 'round16', playoffOpponent: 'Рубин', seriesScore: '0:4' },
+      { historicalId: 'toros-neftekamsk', clubName: 'Торос', regularPlace: 13, games: 50, wins: 24, overtimeWins: 3, shootoutWins: 0, shootoutLosses: 2, overtimeLosses: 4, losses: 17, goalsFor: 135, goalsAgainst: 129, points: 60, playoffStage: 'championship_quarterfinal', playoffOpponent: 'Сокол', seriesScore: '3:4' },
+      { historicalId: 'molot-prikamye-perm', clubName: 'Молот', regularPlace: 14, games: 50, wins: 21, overtimeWins: 3, shootoutWins: 4, shootoutLosses: 2, overtimeLosses: 1, losses: 19, goalsFor: 128, goalsAgainst: 136, points: 59, playoffStage: 'round16', playoffOpponent: 'Сокол', seriesScore: '3:4' },
+      { historicalId: 'ska-neva', clubName: 'СКА-Нева', regularPlace: 15, games: 50, wins: 20, overtimeWins: 3, shootoutWins: 3, shootoutLosses: 2, overtimeLosses: 4, losses: 18, goalsFor: 154, goalsAgainst: 145, points: 58, playoffStage: 'round16', playoffOpponent: 'Металлург Нк', seriesScore: '2:4' },
+      { historicalId: 'gornyak-uchaly', clubName: 'Горняк-УГМК', regularPlace: 16, games: 50, wins: 21, overtimeWins: 2, shootoutWins: 5, shootoutLosses: 1, overtimeLosses: 1, losses: 20, goalsFor: 138, goalsAgainst: 136, points: 58, playoffStage: 'championship_quarterfinal', playoffOpponent: 'Металлург Нк', seriesScore: '2:4' },
+      { historicalId: 'dynamo-saint-petersburg', clubName: 'Динамо СПб', regularPlace: 17, games: 50, wins: 17, overtimeWins: 4, shootoutWins: 5, shootoutLosses: 2, overtimeLosses: 2, losses: 20, goalsFor: 142, goalsAgainst: 137, points: 56, playoffStage: 'missed' },
+      { historicalId: 'izhstal-izhevsk', clubName: 'Ижсталь', regularPlace: 18, games: 50, wins: 18, overtimeWins: 2, shootoutWins: 4, shootoutLosses: 6, overtimeLosses: 2, losses: 18, goalsFor: 125, goalsAgainst: 149, points: 56, playoffStage: 'missed' },
+      { historicalId: 'ryazan', clubName: 'Рязань-ВДВ', regularPlace: 19, games: 50, wins: 15, overtimeWins: 2, shootoutWins: 4, shootoutLosses: 4, overtimeLosses: 3, losses: 22, goalsFor: 111, goalsAgainst: 130, points: 49, playoffStage: 'missed' },
+      { historicalId: 'rostov-rostov-na-donu', clubName: 'Ростов', regularPlace: 20, games: 50, wins: 13, overtimeWins: 5, shootoutWins: 1, shootoutLosses: 5, overtimeLosses: 4, losses: 22, goalsFor: 118, goalsAgainst: 154, points: 47, playoffStage: 'missed' },
+      { historicalId: 'yuzhny-ural', clubName: 'Южный Урал', regularPlace: 21, games: 50, wins: 14, overtimeWins: 2, shootoutWins: 3, shootoutLosses: 3, overtimeLosses: 5, losses: 23, goalsFor: 120, goalsAgainst: 158, points: 46, playoffStage: 'missed' },
+      { historicalId: 'bars-kazan', clubName: 'Барс', regularPlace: 22, games: 50, wins: 10, overtimeWins: 4, shootoutWins: 2, shootoutLosses: 5, overtimeLosses: 6, losses: 23, goalsFor: 100, goalsAgainst: 140, points: 43, playoffStage: 'missed' },
+      { historicalId: 'omskie-krylya-omsk', clubName: 'Омские Крылья', regularPlace: 23, games: 50, wins: 16, overtimeWins: 1, shootoutWins: 2, shootoutLosses: 2, overtimeLosses: 1, losses: 28, goalsFor: 123, goalsAgainst: 153, points: 41, playoffStage: 'missed' },
+      { historicalId: 'zvezda-moscow', clubName: 'Звезда', regularPlace: 24, games: 50, wins: 15, overtimeWins: 0, shootoutWins: 2, shootoutLosses: 2, overtimeLosses: 5, losses: 26, goalsFor: 104, goalsAgainst: 131, points: 41, playoffStage: 'missed' },
+      { historicalId: 'buran-voronezh', clubName: 'Буран', regularPlace: 25, games: 50, wins: 10, overtimeWins: 2, shootoutWins: 0, shootoutLosses: 2, overtimeLosses: 6, losses: 30, goalsFor: 109, goalsAgainst: 154, points: 32, playoffStage: 'missed' },
+      { historicalId: 'ermak-angarsk', clubName: 'Ермак', regularPlace: 26, games: 50, wins: 7, overtimeWins: 0, shootoutWins: 1, shootoutLosses: 2, overtimeLosses: 4, losses: 36, goalsFor: 92, goalsAgainst: 171, points: 22, playoffStage: 'missed' }
+    ]
   }
 ];
 
