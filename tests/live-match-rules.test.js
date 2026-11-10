@@ -288,11 +288,11 @@ const passState = {
 liveUpdatePositions({ liveMatch: passState }, visualWindow,
   (v, min, max) => Math.max(min, Math.min(max, v)))();
 assert.notEqual(passState.positions.puck.carrierIndex, 3, 'visual pass did not select a new teammate');
-assert.equal(passState.positions.puck.passFrames, 12, 'visual pass did not start its animation');
+assert.equal(passState.positions.puck.passFrames, 11, 'visual pass did not start and advance its animation');
 const passStartX = passState.positions.puck.x;
 liveUpdatePositions({ liveMatch: passState }, visualWindow,
   (v, min, max) => Math.max(min, Math.min(max, v)))();
-assert.equal(passState.positions.puck.passFrames, 11, 'visual pass animation did not advance');
+assert.equal(passState.positions.puck.passFrames, 10, 'visual pass animation did not advance');
 assert.notEqual(passState.positions.puck.x, passStartX, 'puck did not travel toward the receiver');
 
 // Turnovers send the loose puck toward an opposing skater, then assign that receiver.
