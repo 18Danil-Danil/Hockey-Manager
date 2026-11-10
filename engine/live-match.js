@@ -433,7 +433,7 @@ function finishLiveMatch() {
 
   const res = {
     homeId: lm.homeId, awayId: lm.awayId,
-    hg: lm.hg, ag: lm.ag, ot: lm.ot,
+    hg: lm.hg, ag: lm.ag, ot: lm.ot, shootout: !!lm.shootout,
     pbp: lm.pbp.slice(),
     round: G.league.currentRound,
   };
@@ -445,7 +445,7 @@ function finishLiveMatch() {
     const s = isPlayoff ? ensurePlayoffStats(lm.awayLineup.goalie) : ensureStats(lm.awayLineup.goalie);
     const goalsAgainst = lm.hg - (lm.shootoutWinner === 'home' ? 1 : 0);
     s.gp++; s.shotsAgainst += lm.shots.home; s.goalsAgainst += goalsAgainst; s.saves += Math.max(0, lm.shots.home - goalsAgainst);
-    if (goalsAgainst === 0) s.shutouts++;
+    if (!lm.shootout && goalsAgainst === 0) s.shutouts++;
     if (lm.shootoutWinner === 'away' || (!lm.shootoutWinner && lm.hg < lm.ag)) s.wins++;
     else if (lm.shootoutWinner === 'home' || lm.hg > lm.ag) { if (lm.ot) s.otl++; else s.losses++; }
   }
@@ -453,7 +453,7 @@ function finishLiveMatch() {
     const s = isPlayoff ? ensurePlayoffStats(lm.homeLineup.goalie) : ensureStats(lm.homeLineup.goalie);
     const goalsAgainst = lm.ag - (lm.shootoutWinner === 'away' ? 1 : 0);
     s.gp++; s.shotsAgainst += lm.shots.away; s.goalsAgainst += goalsAgainst; s.saves += Math.max(0, lm.shots.away - goalsAgainst);
-    if (goalsAgainst === 0) s.shutouts++;
+    if (!lm.shootout && goalsAgainst === 0) s.shutouts++;
     if (lm.shootoutWinner === 'home' || (!lm.shootoutWinner && lm.ag < lm.hg)) s.wins++;
     else if (lm.shootoutWinner === 'away' || lm.ag > lm.hg) { if (lm.ot) s.otl++; else s.losses++; }
   }
@@ -679,7 +679,7 @@ function updateLiveClock() {
   if (clockEl) clockEl.textContent = liveFmtTime(Math.max(0, Math.ceil(lm.timeLeft)));
   const periodEl = document.getElementById('live-period-info');
   if (periodEl) {
-    let txt = lm.period === 4 ? 'Овертайм' : `Период ${lm.period}`;
+    let txt = lm.period === 5 ? 'Буллитная серия' : lm.period === 4 ? 'Овертайм' : `Период ${lm.period}`;
     if (lm.isBreak) txt += ' — перерыв';
     if (lm.isFinished) txt += ' — матч завершён';
     periodEl.textContent = txt;
