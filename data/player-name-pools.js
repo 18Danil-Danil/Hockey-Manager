@@ -865,5 +865,5 @@
   }
   mergeUnique(data.FIRST, additions['Россия'].first);
   mergeUnique(data.LAST, additions['Россия'].last);
-  window.PLAYER_NAME_POOL_VERSION = 2;
+  window.PLAYER_NAME_POOL_VERSION = 3;
 })();
