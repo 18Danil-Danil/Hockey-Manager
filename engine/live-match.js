@@ -48,9 +48,20 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
   const liveXgH = xgH * LIVE_XG_MULTIPLIER;
   const liveXgA = xgA * LIVE_XG_MULTIPLIER;
 
-  const positions = { home: [], away: [], puck: { x: 100, y: 50, vx: 0, vy: 0 } };
-  const formHome = buildFormation('home');
-  const formAway = buildFormation('away');
+  const visualRng = window.GAME_RNG.visualRng;
+  const initialPossessionSide = visualRng() < 0.5 ? 'home' : 'away';
+  const positions = {
+    home: [], away: [],
+    puck: {
+      x: 100, y: 50, vx: 0, vy: 0,
+      possessionSide: initialPossessionSide,
+      carrierIndex: 3 + Math.floor(visualRng() * 3),
+      actionFrames: 80 + Math.floor(visualRng() * 70),
+      looseFrames: 0,
+    },
+  };
+  const formHome = buildFormation('home', homeLineup);
+  const formAway = buildFormation('away', awayLineup);
   positions.home = formHome;
   positions.away = formAway;
 
@@ -65,7 +76,8 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
     events: [],
     pbp: [],
     penalties: { home: [], away: [] },
-    shots: { home: 0, away: 0 },
+    shots: { home: 0, away: 0 }, // броски в створ, учитываемые в статистике вратарей
+    shotAttempts: { home: 0, away: 0 }, // все попытки, включая мимо и штанги
     shootout: false,
     shootoutAttempts: { home: 0, away: 0 },
     shootoutWinner: null,
@@ -95,7 +107,7 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
   render();
 }
 
-function buildFormation(side) {
+function buildFormation(side, lineup = null) {
   const x = (a) => side === 'home' ? a : 200 - a;
   const slots = [
     { x: x(35),  y: 50, role: 'goalie' },
@@ -105,7 +117,15 @@ function buildFormation(side) {
     { x: x(140), y: 50, role: 'C' },
     { x: x(130), y: 75, role: 'F' },
   ];
-  return slots.map((s, i) => ({ ...s, idx: i, baseX: s.x, baseY: s.y, x: s.x, y: s.y, vx: 0, vy: 0 }));
+  const defenders = lineup?.defense || (lineup?.skaters || []).filter(p => p.position === 'D');
+  const forwards = lineup?.forwards || (lineup?.skaters || []).filter(p => p.position !== 'D');
+  const assigned = [lineup?.goalie || null, defenders[0] || null, defenders[1] || null,
+    forwards[0] || null, forwards[1] || null, forwards[2] || null];
+  return slots.map((slot, i) => ({
+    ...slot, idx: i, playerId: assigned[i]?.id || null,
+    playerName: assigned[i]?.name || '', position: assigned[i]?.position || slot.role,
+    baseX: slot.x, baseY: slot.y, x: slot.x, y: slot.y, vx: 0, vy: 0,
+  }));
 }
 
 function livePushEvent(ev) {
@@ -179,9 +199,9 @@ function liveAdvance(stepSec) {
   else {
     const rPen = rng();
     if (rPen < LIVE_PENALTY_RATE * 2) {
-      livePenalty('home');
+      livePenalty('home', tNow);
     } else if (rPen < LIVE_PENALTY_RATE * 4) {
-      livePenalty('away');
+      livePenalty('away', tNow);
     } else {
       const rShot = rng();
       if (rShot < LIVE_SHOT_RATE) {
@@ -190,11 +210,25 @@ function liveAdvance(stepSec) {
         const defendingSide = side === 'home' ? 'away' : 'home';
         if (lineup.skaters.length) {
           const p = pickWeighted(lineup.skaters, shotWeight);
-          lm.shots[side]++;
-          lm.goalieStats[defendingSide].shots++;
-          const isPlayoff = lm.isPlayoff;
-          (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).shots++;
           const outcome = pick(['сейв','сейв','сейв','мимо','штанга']);
+          lm.shotAttempts ||= { home: 0, away: 0 };
+          lm.shotAttempts[side]++;
+          // Только бросок в створ засчитывается вратарю и личную статистику бросков.
+          if (outcome === 'сейв') {
+            lm.shots[side]++;
+            lm.goalieStats[defendingSide].shots++;
+            const isPlayoff = lm.isPlayoff;
+            (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).shots++;
+          }
+          const puck = lm.positions?.puck;
+          if (puck) {
+            puck.possessionSide = side;
+            puck.carrierIndex = null;
+            puck.targetX = side === 'home' ? 195 : 5;
+            puck.targetY = 50;
+            puck.looseFrames = 26;
+            puck.nextPossessionSide = outcome === 'сейв' ? defendingSide : side;
+          }
           const sideName = side === 'home' ? homeTeamNameShort() : awayTeamNameShort();
           livePushEvent({
             type: 'shot', side,
@@ -259,8 +293,10 @@ function liveGoal(side) {
 
   const onIceScoring = new Set([scorer.id, ...assisters.map(a => a.id)]);
   while (onIceScoring.size < 5 && onIceScoring.size < scoringLineup.skaters.length) onIceScoring.add(pickWeighted(scoringLineup.skaters, x => x.ovr).id);
+  const onIceConceding = new Set();
+  while (onIceConceding.size < 5 && onIceConceding.size < concedingLineup.skaters.length) onIceConceding.add(pickWeighted(concedingLineup.skaters, x => x.ovr).id);
   for (const p of scoringLineup.skaters) if (onIceScoring.has(p.id)) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).plusMinus++;
-  for (const p of concedingLineup.skaters) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).plusMinus--;
+  for (const p of concedingLineup.skaters) if (onIceConceding.has(p.id)) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).plusMinus--;
 
   lm.scorers[scorer.id] = (lm.scorers[scorer.id] || 0) + 1;
   for (const a of assisters) lm.assisters[a.id] = (lm.assisters[a.id] || 0) + 1;
@@ -273,6 +309,11 @@ function liveGoal(side) {
   const goalX = side === 'home' ? 195 : 5;
   lm.positions.puck.x = goalX;
   lm.positions.puck.y = 50;
+  lm.positions.puck.carrierIndex = null;
+  lm.positions.puck.targetX = 100;
+  lm.positions.puck.targetY = 50;
+  lm.positions.puck.looseFrames = 48;
+  lm.positions.puck.nextPossessionSide = side === 'home' ? 'away' : 'home';
 
   // ⚙️ ФИКС #2: sudden death в ОТ — гол немедленно завершает матч
   if (lm.period === 4) {
@@ -283,7 +324,7 @@ function liveGoal(side) {
   }
 }
 
-function livePenalty(side) {
+function livePenalty(side, startedAt = null) {
   const lm = G.liveMatch;
   const lineup = side === 'home' ? lm.homeLineup : lm.awayLineup;
   if (!lineup.skaters.length) return;
@@ -295,7 +336,7 @@ function livePenalty(side) {
   (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).pim += isMajor ? 5 : 2;
   lm.penalties[side].push({
     playerId: p.id, playerName: p.name,
-    endsAt: lm.totalSecPlayed + duration,
+    endsAt: (Number.isFinite(startedAt) ? startedAt : lm.totalSecPlayed) + duration,
     type,
     scoredDuringPP: false,
   });
@@ -731,30 +772,93 @@ function awayTeamNameShort() {
 
 function liveUpdatePositions() {
   const lm = G.liveMatch;
-  if (!lm) return;
+  if (!lm || !lm.positions) return;
   const puck = lm.positions.puck;
-  const drift = (p) => {
-    p.vx += (window.GAME_RNG.visualRng() - 0.5) * 0.3;
-    p.vy += (window.GAME_RNG.visualRng() - 0.5) * 0.3;
-    p.vx += (p.baseX - p.x) * 0.02;
-    p.vy += (p.baseY - p.y) * 0.02;
-    const dx = puck.x - p.x, dy = puck.y - p.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 40 && p.role !== 'goalie') {
-      p.vx += dx * 0.02;
-      p.vy += dy * 0.02;
+  if (!puck) return;
+  const visualRng = window.GAME_RNG.visualRng;
+  const sides = ['home', 'away'];
+
+  // После броска/голa шайба движется к точке действия, затем начинается новое владение.
+  if ((puck.looseFrames || 0) > 0) {
+    puck.x += ((puck.targetX ?? 100) - puck.x) * 0.18;
+    puck.y += ((puck.targetY ?? 50) - puck.y) * 0.18;
+    puck.looseFrames--;
+    if (puck.looseFrames === 0) {
+      puck.possessionSide = puck.nextPossessionSide || puck.possessionSide || 'home';
+      puck.carrierIndex = 3 + Math.floor(visualRng() * 3);
+      puck.actionFrames = 70 + Math.floor(visualRng() * 80);
+      puck.targetX = null;
+      puck.targetY = null;
+      puck.nextPossessionSide = null;
     }
-    p.vx = clamp(p.vx, -1.2, 1.2);
-    p.vy = clamp(p.vy, -1.2, 1.2);
-    p.x += p.vx;
-    p.y += p.vy;
-    p.x = clamp(p.x, 5, 195);
-    p.y = clamp(p.y, 5, 95);
-  };
-  lm.positions.home.forEach(drift);
-  lm.positions.away.forEach(drift);
-  puck.x += (100 - puck.x) * 0.01;
-  puck.y += (50 - puck.y) * 0.01;
+  } else {
+    puck.actionFrames = (puck.actionFrames || 0) - 1;
+    if (puck.actionFrames <= 0) {
+      // Визуальная передача или перехват. Этот поток не влияет на игровой RNG.
+      if (visualRng() < 0.18) puck.possessionSide = puck.possessionSide === 'home' ? 'away' : 'home';
+      puck.carrierIndex = 3 + Math.floor(visualRng() * 3);
+      puck.actionFrames = 70 + Math.floor(visualRng() * 80);
+    }
+  }
+
+  const possessionSide = puck.possessionSide || 'home';
+  const directionFor = side => side === 'home' ? 1 : -1;
+  for (const side of sides) {
+    const players = lm.positions[side] || [];
+    const direction = directionFor(side);
+    const hasPuck = side === possessionSide;
+    const carrier = hasPuck ? players[puck.carrierIndex] : null;
+    let closestSkater = null;
+    let closestDistance = Infinity;
+    for (const player of players) {
+      if (player.role === 'goalie') continue;
+      const distance = Math.hypot(puck.x - player.x, puck.y - player.y);
+      if (distance < closestDistance) { closestDistance = distance; closestSkater = player; }
+    }
+
+    for (const player of players) {
+      const isGoalie = player.role === 'goalie';
+      const isCarrier = !!carrier && player === carrier;
+      const isForward = player.role === 'F' || player.role === 'C';
+      let targetX = player.baseX;
+      let targetY = player.baseY;
+      if (!isGoalie) {
+        targetX += direction * (hasPuck ? (isForward ? 20 : 10) : -8);
+        if (isCarrier) {
+          targetX += direction * 5;
+          targetY += (puck.y - player.baseY) * 0.22;
+        } else if (player === closestSkater && !hasPuck) {
+          targetX += (puck.x - player.x) * 0.12;
+          targetY += (puck.y - player.y) * 0.16;
+        } else {
+          targetY += (puck.y - player.baseY) * (hasPuck ? 0.08 : 0.035);
+        }
+      } else {
+        // Вратарь остаётся у ворот, но отслеживает положение шайбы по вертикали.
+        targetY += (puck.y - player.y) * 0.08;
+      }
+
+      const jitter = isGoalie ? 0.006 : 0.018;
+      player.vx = (player.vx || 0) * 0.82 + (targetX - player.x) * 0.045
+        + (visualRng() - 0.5) * jitter;
+      player.vy = (player.vy || 0) * 0.82 + (targetY - player.y) * 0.045
+        + (visualRng() - 0.5) * jitter;
+      const maxSpeed = isGoalie ? 0.22 : 0.72;
+      player.vx = clamp(player.vx, -maxSpeed, maxSpeed);
+      player.vy = clamp(player.vy, -maxSpeed, maxSpeed);
+      player.x = clamp(player.x + player.vx, 5, 195);
+      player.y = clamp(player.y + player.vy, 5, 95);
+    }
+  }
+
+  if ((puck.looseFrames || 0) <= 0) {
+    const carrier = (lm.positions[possessionSide] || [])[puck.carrierIndex];
+    if (carrier) {
+      const puckOffset = directionFor(possessionSide) * 3.2;
+      puck.x += (carrier.x + puckOffset - puck.x) * 0.34;
+      puck.y += (carrier.y - puck.y) * 0.34;
+    }
+  }
 }
 
 function liveAnimationLoop() {
