@@ -134,6 +134,8 @@ async function loadGame() {
     const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
     if (!data || !data.league) return false;
     G.league = data.league;
+    // Сначала резервируем имена из старого сохранения: ниже может создаваться недостающая молодёжная структура.
+    if (typeof hydratePlayerNameRegistry === 'function') hydratePlayerNameRegistry(G.league);
     G.league.season = normalizeSeasonLabel(G.league.season);
     (G.league.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
     G.playerTeamId = data.playerTeamId || null;
