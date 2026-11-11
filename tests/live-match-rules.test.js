@@ -519,6 +519,55 @@ for (let i = 0; i < 14; i++) liveUpdatePositions({ liveMatch: turnoverState }, t
 assert.equal(turnoverState.positions.puck.possessionSide, 'away', 'opponent did not receive the puck after turnover');
 
 assert.equal(turnoverState.positions.puck.carrierIndex, 4, 'turnover receiver was not preserved');
+assert.equal(turnoverState.positions.puck.counterattack?.side, 'away',
+  'a clean turnover did not start a counterattack for the gaining team');
+assert.ok(turnoverState.positions.puck.counterattack.frames > 0,
+  'counterattack phase has no duration');
+
+// The receiving side accelerates its carrier and spreads its forwards into rush lanes.
+const counterHome = formation.map(p => ({ ...p }));
+const counterAway = awayPositions.map(p => ({ ...p }));
+const counterState = {
+  positions: {
+    home: counterHome,
+    away: counterAway,
+    puck: { x: 100, y: 50, possessionSide: 'away', carrierIndex: 3,
+      actionFrames: 40, looseFrames: 0, counterattack: { side: 'away', frames: 105 } },
+  },
+};
+const counterUpdater = liveUpdatePositions({ liveMatch: counterState }, visualWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)));
+const counterCarrierStartX = counterAway[3].x;
+const counterWingerStartX = counterAway[5].x;
+for (let i = 0; i < 20; i++) counterUpdater();
+assert.ok(counterAway[3].x < counterCarrierStartX,
+  'away counterattack carrier did not accelerate toward the home goal');
+assert.ok(counterAway[5].x < counterWingerStartX,
+  'counterattacking winger did not attack the open lane');
+assert.ok(counterState.positions.puck.counterattack.frames < 105,
+  'counterattack phase timer did not advance');
+
+// The team losing possession immediately begins a recovery run toward the new carrier.
+const recoveryHome = formation.map(p => ({ ...p }));
+const recoveryAway = awayPositions.map(p => ({ ...p }));
+for (const p of recoveryHome.slice(1)) { p.x = 80; p.y = 50; }
+for (const p of recoveryAway.slice(1)) { p.x = 120; p.y = 50; }
+const recoveryState = {
+  positions: {
+    home: recoveryHome,
+    away: recoveryAway,
+    puck: { x: 120, y: 50, possessionSide: 'away', carrierIndex: 3,
+      actionFrames: 40, looseFrames: 0, counterattack: { side: 'away', frames: 105 } },
+  },
+};
+const recoveringDefender = recoveryHome[1];
+const recoveryDistanceBefore = Math.hypot(recoveringDefender.x - 120, recoveringDefender.y - 50);
+const recoveryUpdater = liveUpdatePositions({ liveMatch: recoveryState }, visualWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)));
+for (let i = 0; i < 20; i++) recoveryUpdater();
+assert.ok(Math.hypot(recoveringDefender.x - 120, recoveringDefender.y - 50) < recoveryDistanceBefore,
+  'team that lost possession did not recover toward the counterattack');
+
 
 // Recorded shots travel toward the goal, trigger a goalie lane response and create a rebound.
 const shotState = {
