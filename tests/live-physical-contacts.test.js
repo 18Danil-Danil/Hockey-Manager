@@ -76,10 +76,13 @@ assert.equal(lm.gameplayPossession.side, 'away',
 assert.equal(lm.gameplayPossession.playerId, hitter.id);
 assert.ok(lm.positions.home[1].fallFrames > 0, 'a clean hit should trigger a short fall animation');
 assert.equal(lm.positions.puck.nextPossessionSide, 'away');
-assert.equal(events.length, 1);
-assert.equal(events[0].type, 'body_check');
-assert.equal(events[0].cleanHit, true);
-assert.equal(events[0].dislodged, true);
+const contactEvent = events.find(event => event.type === 'body_check' || event.type === 'board_check');
+assert.ok(contactEvent, 'the physical contact should produce a dedicated event');
+assert.equal(contactEvent.type, 'body_check');
+assert.equal(contactEvent.contactType, 'shoulder');
+assert.equal(contactEvent.cleanHit, true);
+assert.equal(contactEvent.dislodged, true);
+assert.ok(events.some(event => event.type === 'injury'), 'a deterministic severe contact should also create an injury event');
 assert.equal(penalties.length, 1,
   'reckless high-intensity contact should be able to produce a penalty');
 assert.equal(penalties[0][0], 'away');
