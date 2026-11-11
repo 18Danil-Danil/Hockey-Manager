@@ -82,7 +82,7 @@ function getPlayerNamePartWeight(nationality, kind, value) {
   const profile = getPlayerNameWeightProfile(nationality, kind, []);
   const key = normalizePlayerNameKey(value);
   if (profile.rare.has(key)) return 1;
-  if (profile.common.has(key)) return kind === 'first' ? 500 : 35;
+  if (profile.common.has(key)) return kind === 'first' ? 250 : 35;
   return kind === 'first' ? 25 : 10;
 }
 function pickWeightedPlayerNamePart(values, nationality, kind) {
