@@ -105,7 +105,7 @@ const missAdvance = liveAdvance(
   players => players[0], arr => arr[3], () => 1,
   ensureMissStats, ensureMissStats, ev => missState.lm.events.push(ev),
   () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}
+  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}
 );
 missAdvance(5);
 assert.equal(missState.lm.shotAttempts.home, 1, 'missed attempt was not recorded');
