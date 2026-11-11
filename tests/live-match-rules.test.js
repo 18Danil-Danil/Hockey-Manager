@@ -65,6 +65,29 @@ assert.equal(state.lm.goalieStats.home.shots, 1, 'home goalie did not face the a
 assert.equal(ensureStats(state.homePlayer).shots, 1);
 assert.equal(ensureStats(state.awayPlayer).shots, 1);
 
+// A LIVE shot is attributed only to a skater currently occupying an on-ice slot.
+const activeShotState = makeLiveState();
+const activeSkater = { id: 'active', name: 'Active skater', position: 'F' };
+const benchSkater = { id: 'bench', name: 'Bench skater', position: 'F' };
+activeShotState.lm.homeLineup.skaters = [activeSkater, benchSkater];
+activeShotState.lm.awayLineup.skaters = [];
+activeShotState.lm.positions = {
+  home: [{ role: 'goalie', playerId: 'hg' }, { role: 'F', playerId: 'active' }],
+  away: [{ role: 'goalie', playerId: 'ag' }],
+  puck: { x: 100, y: 50, possessionSide: 'home', carrierIndex: 1 },
+};
+let selectedShooters = [];
+const activeShotAdvance = liveAdvance(
+  { liveMatch: activeShotState.lm }, () => 0.99, () => false, () => {}, () => {},
+  players => { selectedShooters = players.slice(); return players[0]; },
+  arr => arr[0], () => 1, ensureStats, ensureStats,
+  () => {}, () => '19:00', () => 'HOME', () => 'AWAY',
+  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}
+);
+activeShotAdvance(5);
+assert.deepEqual(selectedShooters.map(player => player.id), ['active'],
+  'LIVE selected a shooter who was sitting on the bench');
+
 // Missed shots and posts are attempts, not shots on goal or goalie saves.
 const missState = makeLiveState();
 const missRandomValues = [0.99, 0.99, 0.01, 0.1];
