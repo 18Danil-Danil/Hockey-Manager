@@ -139,14 +139,7 @@ select:focus { outline: none; border-color: #ff6b35; }
 .trade-col h4 { font-size: 12px; color: #ff6b35; margin-bottom: 8px; text-transform: uppercase; }
 .trade-check-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; border-bottom: 1px solid #232838; }
 .trade-check-row input[type=checkbox] { accent-color: #ff6b35; cursor: pointer; }
-@media (max-width: 700px) {
-  .live-screen { padding: 8px; }
-  .live-canvas-wrap { padding: 6px; margin: 8px auto; }
-  .live-canvas { max-height: 58vh; }
-  .live-match-stats { padding: 7px 9px; }
-  .live-stats-row { grid-template-columns: minmax(115px,1.4fr) minmax(56px,1fr) minmax(56px,1fr); gap: 6px; font-size: 10px; }
-  .live-stats-row strong { font-size: 11px; }
- .trade-multi { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .trade-multi { grid-template-columns: 1fr; } }
 .bench-section { background: #1a1e2a; border-radius: 6px; padding: 12px 16px; margin-bottom: 12px; }
 .bench-section .bench-title { font-size: 12px; color: #60a5fa; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
 .bench-section .bench-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #232838; font-size: 13px; }
@@ -756,4 +749,14 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .calendar-game-topline { gap: 5px; }
   .calendar-venue { font-size: 8px; padding: 3px 4px; }
   .calendar-game-topline strong { font-size: 12px; }
+}
+
+/* LIVE: compact layout and readable uniforms on narrow screens */
+@media (max-width: 700px) {
+  .live-screen { padding: 8px; }
+  .live-canvas-wrap { padding: 6px; margin: 8px auto; }
+  .live-canvas { max-height: 58vh; }
+  .live-match-stats { padding: 7px 9px; }
+  .live-stats-row { grid-template-columns: minmax(115px,1.4fr) minmax(56px,1fr) minmax(56px,1fr); gap: 6px; font-size: 10px; }
+  .live-stats-row strong { font-size: 11px; }
 }
