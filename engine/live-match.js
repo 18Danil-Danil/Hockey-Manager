@@ -2131,8 +2131,12 @@ function liveUpdatePositions() {
     const opponentSide = side === 'home' ? 'away' : 'home';
     const opponentPlayers = (lm.positions[opponentSide] || [])
       .filter(player => player.onIce !== false && player.role !== 'goalie');
-    const opponentCarrier = puck.possessionSide === opponentSide
-      ? (lm.positions[opponentSide] || [])[puck.carrierIndex] : null;
+    const opponentPossession = lm.gameplayPossession?.side === opponentSide;
+    const opponentCarrier = opponentPossession
+      ? (lm.positions[opponentSide] || []).find(player =>
+          player.playerId === lm.gameplayPossession.playerId && player.onIce !== false)
+        || (lm.positions[opponentSide] || [])[puck.carrierIndex]
+      : null;
     const activeDefenders = players.filter(player => player.role === 'D' && player.onIce !== false);
     const defendersByCarrier = activeDefenders.slice().sort((a, b) =>
       Math.hypot((opponentCarrier?.x ?? puck.x) - a.x, (opponentCarrier?.y ?? puck.y) - a.y)
@@ -2233,8 +2237,9 @@ function liveUpdatePositions() {
         // нападающим и воротами. Это динамическая страховка, а не фиксированные полосы.
         const carrierDistance = Math.hypot(opponentCarrier.x - player.x, opponentCarrier.y - player.y);
         const challengeRange = 62 + tactics.pressure * 0.12;
-        if (player === pressureDefender && carrierDistance < challengeRange) {
-          const containGap = tactics.pressure >= 72 ? 3 : 7 + (50 - tactics.pressure) * 0.055;
+        if (player === pressureDefender) {
+          const containGap = carrierDistance > challengeRange ? 15
+            : tactics.pressure >= 72 ? 3 : 7 + (50 - tactics.pressure) * 0.055;
           targetX = opponentCarrier.x - direction * containGap;
           targetY = opponentCarrier.y + (50 - opponentCarrier.y) * 0.08;
         } else {
