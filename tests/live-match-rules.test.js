@@ -309,6 +309,26 @@ assert.equal(safeShift.positions.home[1].playerId, 'd3', 'defensive pair did not
 assert.equal(safeShift.positions.home[3].playerId, 'f4', 'forward line did not rotate');
 assert.ok(safeShift.playerStamina.home.f1 < 100, 'active skater did not lose stamina');
 assert.ok(safeShift.playerStamina.home.f10 > 100 - 0.01, 'resting skater did not recover stamina');
+assert.ok(safeShift.playerStamina.home.f1 < 70, 'active shift did not meaningfully drain stamina');
+assert.match(source, /const staminaFactor = isGoalie \? 1 : clamp\(\(player\.stamina \?\? 100\) \/ 100, 0\.58, 1\)/,
+  'low stamina is not reflected in player movement speed');
+
+// Fatigue carried into the match lowers the player's initial stamina reserve.
+const tired = { id: 'tired', name: 'Tired', position: 'F', fatigue: 80 };
+const tiredRoster = [tired, ...allForwards.slice(1), ...allDefense];
+const tiredLineup = {
+  forwards: [tired, ...allForwards.slice(1)], defense: allDefense, skaters: tiredRoster,
+};
+const tiredPlan = shiftHelpers.buildLiveShiftPlan({ lines: {} }, tiredLineup);
+const tiredState = makeShiftState({
+  x: 100, y: 50, possessionSide: 'home', carrierIndex: 3, looseFrames: 0,
+});
+tiredState.homeLineup = tiredLineup;
+tiredState.shiftPlans.home = tiredPlan;
+tiredState.playerStamina.home = {};
+tiredState.positions.home[3].playerId = 'tired';
+shiftHelpers.updateLiveShifts(tiredState, 5);
+assert.ok(tiredState.playerStamina.home.tired < 65, 'pre-match fatigue did not reduce initial stamina');
 
 // A high-fatigue skater starts with a lower stamina reserve.
 const tiredLineup = {
