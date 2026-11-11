@@ -200,29 +200,70 @@ function renderGames() {
 
 function renderCalendar() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
-  const schedule = G.league.schedule;
+  if (!team) return '<div class="subtitle">Клуб не найден.</div>';
+  const schedule = G.league.schedule || [];
+  const meta = ensureScheduleCalendar(G.league);
   const myGames = [];
   schedule.forEach((round, idx) => {
-    const game = round.find(([h, a]) => h === team.id || a === team.id); if (!game) return;
+    const game = round.find(([h, a]) => h === team.id || a === team.id);
+    if (!game) return;
     const isHome = game[0] === team.id;
     const opp = G.league.teams.find(t => t.id === (isHome ? game[1] : game[0]));
     const result = G.league.results.find(r => r.round === idx && (r.homeId === team.id || r.awayId === team.id));
-    myGames.push({ round: idx + 1, opp, isHome, result, isCurrent: idx === G.league.currentRound });
-  });
-  const blocks = []; for (let i = 0; i < myGames.length; i += 8) blocks.push(myGames.slice(i, i + 8));
-  const monthNames = ['Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь', 'Январь', 'Февраль', 'Март', 'Апрель'];
-  let html = `<h2>Календарь сезона ${G.league.season}</h2>`;
-  blocks.forEach((block, bIdx) => {
-    html += `<div class="season-card"><div class="head"><span class="season-num">${monthNames[bIdx] || 'Месяц ' + (bIdx + 1)}</span><span class="tag">Туры ${block[0].round}–${block[block.length - 1].round}</span></div>`;
-    block.forEach(g => {
-      const homeAway = g.isHome ? '🏠' : '✈️';
-      const resultStr = g.result ? `${g.isHome ? g.result.hg : g.result.ag} : ${g.isHome ? g.result.ag : g.result.hg}${g.result.ot ? ' ОТ' : ''}` : '';
-      let color = 'color:#7a8299';
-      if (g.result) { const won = g.isHome ? g.result.hg > g.result.ag : g.result.ag > g.result.hg; color = won ? 'color:#4ade80' : 'color:#ef4444'; }
-      const bg = g.isCurrent ? 'background:rgba(255,107,53,0.12)' : '';
-      html += `<div class="game-row" style="${bg}"><span style="flex:0 0 60px;color:#7a8299">Тур ${g.round}</span><span style="flex:0 0 40px">${homeAway}</span><span style="flex:1">${g.opp.name}</span><span class="score" style="${color};flex:0 0 auto">${resultStr || '—'}</span></div>`;
+    myGames.push({
+      round: idx + 1, opp, isHome, result, isCurrent: idx === G.league.currentRound,
+      date: meta[idx]?.date || null,
     });
-    html += `</div>`;
+  });
+
+  // Отмечаем серии из последовательных домашних или выездных матчей.
+  for (let i = 0; i < myGames.length;) {
+    let j = i + 1;
+    while (j < myGames.length && myGames[j].isHome === myGames[i].isHome) j++;
+    const count = j - i;
+    if (count >= 2) {
+      myGames[i].seriesLabel = `${myGames[i].isHome ? 'Домашняя' : 'Выездная'} серия · ${count} матча`;
+    }
+    i = j;
+  }
+
+  const byMonth = new Map();
+  myGames.forEach(game => {
+    const key = game.date ? game.date.slice(0, 7) : 'undated';
+    if (!byMonth.has(key)) byMonth.set(key, []);
+    byMonth.get(key).push(game);
+  });
+  const formatMonth = key => {
+    if (key === 'undated') return 'Расписание';
+    return new Date(key + '-01T00:00:00Z').toLocaleDateString('ru-RU', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  };
+  const formatDate = value => value
+    ? new Date(value + 'T00:00:00Z').toLocaleDateString('ru-RU', { weekday: 'short', day: '2-digit', month: 'short', timeZone: 'UTC' })
+    : 'Дата не назначена';
+
+  let html = `<h2>Календарь сезона ${G.league.season}</h2>
+    <div class="calendar-summary">58 матчей регулярного чемпионата · игровые дни распределены с интервалами 3–4 дня · предусмотрена новогодняя пауза</div>`;
+  byMonth.forEach((games, month) => {
+    html += `<div class="season-card calendar-month"><div class="head"><span class="season-num">${formatMonth(month)}</span><span class="tag">${games.length} матчей</span></div>`;
+    games.forEach(g => {
+      const homeAway = g.isHome ? 'ДОМА' : 'В ГОСТЯХ';
+      const resultStr = g.result ? `${g.isHome ? g.result.hg : g.result.ag} : ${g.isHome ? g.result.ag : g.result.hg}${g.result.shootout ? ' Б' : g.result.ot ? ' ОТ' : ''}` : '';
+      let color = 'color:#7a8299';
+      if (g.result) {
+        const won = g.isHome ? g.result.hg > g.result.ag : g.result.ag > g.result.hg;
+        color = won ? 'color:#4ade80' : g.result.hg === g.result.ag ? 'color:#fbbf24' : 'color:#ef4444';
+      }
+      const bg = g.isCurrent ? 'background:rgba(255,107,53,0.12)' : '';
+      const date = formatDate(g.date);
+      html += `<div class="calendar-game ${g.isCurrent ? 'is-current' : ''}" style="${bg}">
+        <div class="calendar-game-date">${date}<span>День ${g.round}</span></div>
+        <div class="calendar-game-details">
+          <div class="calendar-game-topline"><span class="calendar-venue ${g.isHome ? 'is-home' : 'is-away'}">${homeAway}</span><strong>${g.opp?.name || 'Соперник'}</strong><span class="calendar-game-score" style="${color}">${resultStr || '—'}</span></div>
+          ${g.seriesLabel ? `<div class="calendar-series-label">${g.seriesLabel}</div>` : ''}
+        </div>
+      </div>`;
+    });
+    html += '</div>';
   });
   return html;
 }
