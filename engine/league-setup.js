@@ -100,14 +100,18 @@ function buildVhlSchedulePlan(teams) {
         const slot = slots[pairIndex]; pair.forEach(zone => previousSlots.set(zone.id, slot));
         const lower = pair[0].id < pair[1].id ? pair[0] : pair[1], higher = pair[0].id < pair[1].id ? pair[1] : pair[0];
         const homeZone = reverse ? higher : lower, awayZone = reverse ? lower : higher;
-        const homeClubs = homeZone.clubs, awayClubs = awayZone.clubs, size = Math.max(homeClubs.length, awayClubs.length);
+        // Сопернические пары фиксируются в первой части сезона; во второй меняется только площадка.
+        const sideA = lower.clubs, sideB = higher.clubs, size = Math.max(sideA.length, sideB.length);
         for (let day = 0; day < size; day++) {
           const offset = slot * 2 + dayOffsets[day];
           if (!buckets.has(offset)) buckets.set(offset, { games: [], zoneBlocks: [] });
           const bucket = buckets.get(offset);
-          for (let i = 0; i < homeClubs.length; i++) {
+          for (let i = 0; i < sideA.length; i++) {
             const j = (i + day) % size;
-            if (j < awayClubs.length) bucket.games.push([homeClubs[i].id, awayClubs[j].id]);
+            if (j < sideB.length) {
+              const fixture = reverse ? [sideB[j].id, sideA[i].id] : [sideA[i].id, sideB[j].id];
+              bucket.games.push(fixture);
+            }
           }
           bucket.zoneBlocks.push({
             zoneAId: pair[0].id, zoneBId: pair[1].id, zoneAName: pair[0].name, zoneBName: pair[1].name,
