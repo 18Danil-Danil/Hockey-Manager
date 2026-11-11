@@ -111,7 +111,7 @@ function renderLiveMatchScreen() {
         <span>Все попытки</span><strong id="live-stat-home-attempts">${lm.shotAttempts?.home || 0}</strong><strong id="live-stat-away-attempts">${lm.shotAttempts?.away || 0}</strong>
       </div>
       <div class="live-stats-row">
-        <span>Ожидаемые голы (xG)</span><strong id="live-stat-home-xg">${Number(lm.xgCurrent?.home || 0).toFixed(2)}</strong><strong id="live-stat-away-xg">${Number(lm.xgCurrent?.away || 0).toFixed(2)}</strong>
+        <span>Активные удаления</span><strong id="live-stat-home-penalties">${(lm.penalties?.home || []).filter(p => p.endsAt > lm.totalSecPlayed).length}</strong><strong id="live-stat-away-penalties">${(lm.penalties?.away || []).filter(p => p.endsAt > lm.totalSecPlayed).length}</strong>
       </div>
     </section>
 
