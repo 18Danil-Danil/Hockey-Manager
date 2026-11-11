@@ -118,4 +118,32 @@ assert.ok(api.getLiveContactRating(hitter, 95) > api.getLiveContactRating(carrie
   'physical attributes should influence contact strength');
 assert.match(source, /p\.fallFrames--/,
   'the renderer should advance the short fall animation');
+
+rolls = [0, 0, 0, 0, 0, 0];
+const boardCarrier = {
+  id: 'board-carrier', name: 'Нападающий у борта', ovr: 60,
+  attrs: { physical: 45, skating: 45, defense: 45, iq: 45 },
+};
+const boardLm = {
+  ...lm,
+  physicalContactCooldown: 0,
+  gameplayPossession: { side: 'home', playerId: boardCarrier.id },
+  homeLineup: { skaters: [boardCarrier] },
+  positions: {
+    home: [
+      { role: 'goalie', onIce: true },
+      { role: 'F', playerId: boardCarrier.id, onIce: true, x: 100, y: 12 },
+    ],
+    away: [
+      { role: 'goalie', onIce: true },
+      { role: 'D', playerId: hitter.id, onIce: true, x: 102, y: 12 },
+    ],
+    puck: { x: 100, y: 12, carrierIndex: 1, looseFrames: 0 },
+  },
+  playerStamina: { home: { [boardCarrier.id]: 100 }, away: { hitter: 95 } },
+};
+assert.equal(api.resolveLivePhysicalContact(boardLm, 5), true);
+const boardEvent = events.findLast(event => event.type === 'board_check');
+assert.ok(boardEvent, 'a check near the boards should use its own event type');
+assert.equal(boardEvent.contactType, 'board');
 console.log('LIVE physical-contact checks passed.');
