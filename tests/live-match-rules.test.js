@@ -302,7 +302,8 @@ const forwards = [
   { id: 'f3', name: 'F3', position: 'F' },
 ];
 const formation = buildFormation('home', { goalie, defense: defenders, forwards, skaters: [...defenders, ...forwards] });
-assert.deepEqual(formation.map(p => p.playerId), ['g1', 'd1', 'd2', 'f1', 'f2', 'f3']);
+assert.deepEqual(formation.slice(0, 6).map(p => p.playerId), ['g1', 'd1', 'd2', 'f1', 'f2', 'f3']);
+assert.equal(formation[6].playerId, null, 'the extra formation slot should be empty without a sixth skater');
 
 assert.equal(formation[0].role, 'goalie');
 
