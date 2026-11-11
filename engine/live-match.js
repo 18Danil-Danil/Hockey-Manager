@@ -301,7 +301,7 @@ function updateLiveShifts(lm, stepSec) {
     const puckLoose = (puck.looseFrames || 0) > 0;
     const puckFarFromOwnGoal = side === 'home' ? puck.x > 125 : puck.x < 75;
     const safeChange = puckLoose || (puck.possessionSide !== side && puckFarFromOwnGoal);
-    if (safeChange) applyLiveShift(lm, side);
+    if (safeChange && applyLiveShift(lm, side)) reconcileLiveManpower(lm);
   }
 }
 
