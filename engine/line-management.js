@@ -130,7 +130,44 @@ function setLineSlot(lineKey, slotIdx, playerId) {
 }
 function setLineStyle(lineKey, style) { const team = G.league.teams.find(t => t.id === G.playerTeamId); if (team && team.lines && team.lines[lineKey]) { team.lines[lineKey].style = style; render(); } }
 function setLineRole(lineKey, role) { const team = G.league.teams.find(t => t.id === G.playerTeamId); if (team && team.lines && team.lines[lineKey]) { team.lines[lineKey].role = role; render(); } }
-function resetLinesToOvr() { const team = G.league.teams.find(t => t.id === G.playerTeamId); if (!team) return; team.lines = null; initLines(team); render(); }
+function resetLinesToOvr() {
+  const team = G.league.teams.find(t => t.id === G.playerTeamId);
+  if (!team) return;
+
+  const previousLines = team.lines || null;
+  const lineKeys = ['f1','f2','f3','f4','d1','d2','d3'];
+  const previousSettings = {};
+  if (previousLines) {
+    for (const key of lineKeys) {
+      const line = previousLines[key];
+      if (!line) continue;
+      previousSettings[key] = {
+        players: (line.players || []).slice().sort((a, b) => String(a).localeCompare(String(b))),
+        chemistry: Number.isFinite(line.chemistry) ? line.chemistry : 50,
+        style: line.style || 'balanced',
+        role: line.role || 'energy',
+      };
+    }
+  }
+
+  initLines(team);
+
+  for (const key of lineKeys) {
+    const current = team.lines[key];
+    const previous = previousSettings[key];
+    if (!current || !previous) continue;
+
+    const currentPlayers = current.players.slice().sort((a, b) => String(a).localeCompare(String(b)));
+    const samePlayers = currentPlayers.length === previous.players.length &&
+      currentPlayers.every((id, index) => id === previous.players[index]);
+
+    current.chemistry = samePlayers ? previous.chemistry : 50;
+    current.style = previous.style;
+    current.role = previous.role;
+  }
+
+  render();
+}
 function ensureAllLines() { if (!G.league) return; for (const t of G.league.teams) { if (!t.lines) initLines(t); else syncLines(t); if (!t.bench) t.bench = []; if (!t.streak) t.streak = { type: null, count: 0 }; } }
 function sendToBench(playerId) {
   const team = G.league.teams.find(t => t.id === G.playerTeamId); if (!team) return;
