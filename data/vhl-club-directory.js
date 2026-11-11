@@ -1,7 +1,7 @@
 /* Полный справочник участников ВХЛ по архиву 2010/11–2025/26.
- * По умолчанию каждый historicalId — отдельная историческая сущность.
- * Явные объединения: только Динамо СПб и СКА-Нева/СКА-ВМФ.
- * Не объединять клубы по одному лишь совпадению названия.
+ * historicalIds сохраняют исходные идентификаторы сезонного архива.
+ * Объединения выполняются только при подтверждённой клубной преемственности;
+ * прежние названия и пропуски участия поясняются в aliases/note.
  */
 window.VHL_CLUB_DIRECTORY = [
   {
@@ -111,13 +111,70 @@ window.VHL_CLUB_DIRECTORY = [
     "id": "ariada-volzhsk",
     "name": "Ариада",
     "historicalIds": [
-      "ariada-volzhsk"
+      "ariada-volzhsk",
+      "ariada-akpars"
     ],
     "aliases": [
-      "Ариада"
+      "Ариада",
+      "Ариада-Акпарс"
     ],
     "currentTeamSlug": null,
     "seasons": [
+      {
+        "season": "2010/11",
+        "historicalId": "ariada-akpars",
+        "clubName": "Ариада-Акпарс",
+        "regularPlace": 18,
+        "games": 56,
+        "wins": 18,
+        "overtimeWins": 0,
+        "shootoutWins": 0,
+        "shootoutLosses": 4,
+        "overtimeLosses": 4,
+        "losses": 30,
+        "goalsFor": 138,
+        "goalsAgainst": 193,
+        "points": 62,
+        "playoffStage": "conference_quarterfinal",
+        "playoffOpponent": "Нефтяник",
+        "seriesScore": "0:3"
+      },
+      {
+        "season": "2011/12",
+        "historicalId": "ariada-akpars",
+        "clubName": "Ариада-Акпарс",
+        "regularPlace": 9,
+        "games": 53,
+        "wins": 20,
+        "overtimeWins": 6,
+        "shootoutWins": 1,
+        "shootoutLosses": 7,
+        "overtimeLosses": 3,
+        "losses": 16,
+        "goalsFor": 156,
+        "goalsAgainst": 159,
+        "points": 84,
+        "playoffStage": "conference_quarterfinal",
+        "playoffOpponent": "Нефтяник",
+        "seriesScore": "2:3"
+      },
+      {
+        "season": "2012/13",
+        "historicalId": "ariada-akpars",
+        "clubName": "Ариада-Акпарс",
+        "regularPlace": 12,
+        "games": 52,
+        "wins": 21,
+        "overtimeWins": 1,
+        "shootoutWins": 6,
+        "shootoutLosses": 5,
+        "overtimeLosses": 3,
+        "losses": 16,
+        "goalsFor": 163,
+        "goalsAgainst": 151,
+        "points": 85,
+        "playoffStage": "playoff_participant"
+      },
       {
         "season": "2013/14",
         "historicalId": "ariada-volzhsk",
@@ -188,75 +245,8 @@ window.VHL_CLUB_DIRECTORY = [
         "points": 43,
         "playoffStage": "missed"
       }
-    ]
-  },
-  {
-    "id": "ariada-akpars",
-    "name": "Ариада-Акпарс",
-    "historicalIds": [
-      "ariada-akpars"
     ],
-    "aliases": [
-      "Ариада-Акпарс"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2010/11",
-        "historicalId": "ariada-akpars",
-        "clubName": "Ариада-Акпарс",
-        "regularPlace": 18,
-        "games": 56,
-        "wins": 18,
-        "overtimeWins": 0,
-        "shootoutWins": 0,
-        "shootoutLosses": 4,
-        "overtimeLosses": 4,
-        "losses": 30,
-        "goalsFor": 138,
-        "goalsAgainst": 193,
-        "points": 62,
-        "playoffStage": "conference_quarterfinal",
-        "playoffOpponent": "Нефтяник",
-        "seriesScore": "0:3"
-      },
-      {
-        "season": "2011/12",
-        "historicalId": "ariada-akpars",
-        "clubName": "Ариада-Акпарс",
-        "regularPlace": 9,
-        "games": 53,
-        "wins": 20,
-        "overtimeWins": 6,
-        "shootoutWins": 1,
-        "shootoutLosses": 7,
-        "overtimeLosses": 3,
-        "losses": 16,
-        "goalsFor": 156,
-        "goalsAgainst": 159,
-        "points": 84,
-        "playoffStage": "conference_quarterfinal",
-        "playoffOpponent": "Нефтяник",
-        "seriesScore": "2:3"
-      },
-      {
-        "season": "2012/13",
-        "historicalId": "ariada-akpars",
-        "clubName": "Ариада-Акпарс",
-        "regularPlace": 12,
-        "games": 52,
-        "wins": 21,
-        "overtimeWins": 1,
-        "shootoutWins": 6,
-        "shootoutLosses": 5,
-        "overtimeLosses": 3,
-        "losses": 16,
-        "goalsFor": 163,
-        "goalsAgainst": 151,
-        "points": 85,
-        "playoffStage": "playoff_participant"
-      }
-    ]
+    "note": "Единая история клуба из Волжска: «Ариада-Акпарс» (2010/11–2012/13) → «Ариада» (с 2013/14)."
   },
   {
     "id": "bars-kazan",
@@ -745,36 +735,6 @@ window.VHL_CLUB_DIRECTORY = [
     ]
   },
   {
-    "id": "vmf-karelia",
-    "name": "ВМФ-Карелия",
-    "historicalIds": [
-      "vmf-karelia"
-    ],
-    "aliases": [
-      "ВМФ-Карелия"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2013/14",
-        "historicalId": "vmf-karelia",
-        "clubName": "ВМФ-Карелия",
-        "regularPlace": 25,
-        "games": 50,
-        "wins": 12,
-        "overtimeWins": 2,
-        "shootoutWins": 3,
-        "shootoutLosses": 3,
-        "overtimeLosses": 1,
-        "losses": 29,
-        "goalsFor": 103,
-        "goalsAgainst": 125,
-        "points": 50,
-        "playoffStage": "missed"
-      }
-    ]
-  },
-  {
     "id": "gornyak-uchaly",
     "name": "Горняк-УГМК",
     "historicalIds": [
@@ -1255,16 +1215,54 @@ window.VHL_CLUB_DIRECTORY = [
     ]
   },
   {
-    "id": "dynamo-balashikha",
-    "name": "Динамо",
+    "id": "dynamo-moscow-region",
+    "name": "Динамо МО",
     "historicalIds": [
-      "dynamo-balashikha"
+      "dynamo-moscow-region",
+      "dynamo-balashikha",
+      "dynamo-tver"
     ],
     "aliases": [
-      "Динамо"
+      "Динамо",
+      "Динамо МО",
+      "Динамо Тверь"
     ],
     "currentTeamSlug": null,
     "seasons": [
+      {
+        "season": "2010/11",
+        "historicalId": "dynamo-moscow-region",
+        "clubName": "Динамо",
+        "regularPlace": 19,
+        "games": 56,
+        "wins": 13,
+        "overtimeWins": 3,
+        "shootoutWins": 5,
+        "shootoutLosses": 3,
+        "overtimeLosses": 2,
+        "losses": 30,
+        "goalsFor": 150,
+        "goalsAgainst": 190,
+        "points": 60,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2011/12",
+        "historicalId": "dynamo-moscow-region",
+        "clubName": "Динамо",
+        "regularPlace": 20,
+        "games": 53,
+        "wins": 11,
+        "overtimeWins": 2,
+        "shootoutWins": 7,
+        "shootoutLosses": 0,
+        "overtimeLosses": 2,
+        "losses": 31,
+        "goalsFor": 132,
+        "goalsAgainst": 173,
+        "points": 53,
+        "playoffStage": "missed"
+      },
       {
         "season": "2012/13",
         "historicalId": "dynamo-balashikha",
@@ -1355,53 +1353,23 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffStage": "champion",
         "playoffOpponent": "Торпедо",
         "seriesScore": "4:0"
-      }
-    ]
-  },
-  {
-    "id": "dynamo-moscow-region",
-    "name": "Динамо МО",
-    "historicalIds": [
-      "dynamo-moscow-region"
-    ],
-    "aliases": [
-      "Динамо",
-      "Динамо МО"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2010/11",
-        "historicalId": "dynamo-moscow-region",
-        "clubName": "Динамо",
-        "regularPlace": 19,
-        "games": 56,
-        "wins": 13,
-        "overtimeWins": 3,
-        "shootoutWins": 5,
-        "shootoutLosses": 3,
-        "overtimeLosses": 2,
-        "losses": 30,
-        "goalsFor": 150,
-        "goalsAgainst": 190,
-        "points": 60,
-        "playoffStage": "missed"
       },
       {
-        "season": "2011/12",
-        "historicalId": "dynamo-moscow-region",
-        "clubName": "Динамо",
-        "regularPlace": 20,
-        "games": 53,
-        "wins": 11,
-        "overtimeWins": 2,
-        "shootoutWins": 7,
-        "shootoutLosses": 0,
-        "overtimeLosses": 2,
-        "losses": 31,
-        "goalsFor": 132,
-        "goalsAgainst": 173,
-        "points": 53,
+        "season": "2019/20",
+        "historicalId": "dynamo-tver",
+        "clubName": "Динамо Тверь",
+        "regularPlace": 21,
+        "games": 54,
+        "wins": 13,
+        "overtimeWins": 5,
+        "shootoutWins": 4,
+        "shootoutLosses": 6,
+        "overtimeLosses": 5,
+        "losses": 21,
+        "goalsFor": 120,
+        "goalsAgainst": 135,
+        "points": 55,
+        "seasonCompetitionPlace": 18,
         "playoffStage": "missed"
       },
       {
@@ -1423,7 +1391,8 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffOpponent": "Югра",
         "seriesScore": "1:4"
       }
-    ]
+    ],
+    "note": "Единая история команды системы московского «Динамо»: «Динамо» (2010/11–2016/17; сначала Тверь, затем Балашиха), перерыв в ВХЛ, возвращение как «Динамо Тверь» (2019/20) и «Динамо МО» (2020/21)."
   },
   {
     "id": "dynamo-spb",
@@ -1626,37 +1595,6 @@ window.VHL_CLUB_DIRECTORY = [
         "goalsFor": 160,
         "goalsAgainst": 169,
         "points": 62,
-        "playoffStage": "missed"
-      }
-    ]
-  },
-  {
-    "id": "dynamo-tver",
-    "name": "Динамо Тверь",
-    "historicalIds": [
-      "dynamo-tver"
-    ],
-    "aliases": [
-      "Динамо Тверь"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2019/20",
-        "historicalId": "dynamo-tver",
-        "clubName": "Динамо Тверь",
-        "regularPlace": 21,
-        "games": 54,
-        "wins": 13,
-        "overtimeWins": 5,
-        "shootoutWins": 4,
-        "shootoutLosses": 6,
-        "overtimeLosses": 5,
-        "losses": 21,
-        "goalsFor": 120,
-        "goalsAgainst": 135,
-        "points": 55,
-        "seasonCompetitionPlace": 18,
         "playoffStage": "missed"
       }
     ]
@@ -3307,7 +3245,8 @@ window.VHL_CLUB_DIRECTORY = [
     "id": "lada-togliatti",
     "name": "Лада",
     "historicalIds": [
-      "lada-togliatti"
+      "lada-togliatti",
+      "lada-tolyatti"
     ],
     "aliases": [
       "Лада"
@@ -3368,74 +3307,6 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffStage": "playoff_participant"
       },
       {
-        "season": "2020/21",
-        "historicalId": "lada-togliatti",
-        "clubName": "Лада",
-        "regularPlace": 18,
-        "games": 50,
-        "wins": 17,
-        "overtimeWins": 4,
-        "shootoutWins": 2,
-        "shootoutLosses": 6,
-        "overtimeLosses": 1,
-        "losses": 20,
-        "goalsFor": 134,
-        "goalsAgainst": 136,
-        "points": 53,
-        "playoffStage": "missed"
-      },
-      {
-        "season": "2021/22",
-        "historicalId": "lada-togliatti",
-        "clubName": "Лада",
-        "regularPlace": 7,
-        "games": 52,
-        "wins": 27,
-        "overtimeWins": 4,
-        "shootoutWins": 3,
-        "shootoutLosses": 1,
-        "overtimeLosses": 3,
-        "losses": 14,
-        "goalsFor": 164,
-        "goalsAgainst": 128,
-        "points": 72,
-        "playoffStage": "championship_quarterfinal",
-        "playoffOpponent": "Рубин",
-        "seriesScore": "0:4"
-      },
-      {
-        "season": "2022/23",
-        "historicalId": "lada-togliatti",
-        "clubName": "Лада",
-        "regularPlace": 6,
-        "games": 50,
-        "wins": 25,
-        "overtimeWins": 3,
-        "shootoutWins": 3,
-        "shootoutLosses": 1,
-        "overtimeLosses": 4,
-        "losses": 14,
-        "goalsFor": 150,
-        "goalsAgainst": 120,
-        "points": 67,
-        "playoffStage": "round16",
-        "playoffOpponent": "АКМ",
-        "seriesScore": "3:4"
-      }
-    ]
-  },
-  {
-    "id": "lada-tolyatti",
-    "name": "Лада",
-    "historicalIds": [
-      "lada-tolyatti"
-    ],
-    "aliases": [
-      "Лада"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
         "season": "2013/14",
         "historicalId": "lada-tolyatti",
         "clubName": "Лада",
@@ -3492,8 +3363,64 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffStage": "round16",
         "playoffOpponent": "Нефтяник",
         "seriesScore": "3:4"
+      },
+      {
+        "season": "2020/21",
+        "historicalId": "lada-togliatti",
+        "clubName": "Лада",
+        "regularPlace": 18,
+        "games": 50,
+        "wins": 17,
+        "overtimeWins": 4,
+        "shootoutWins": 2,
+        "shootoutLosses": 6,
+        "overtimeLosses": 1,
+        "losses": 20,
+        "goalsFor": 134,
+        "goalsAgainst": 136,
+        "points": 53,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2021/22",
+        "historicalId": "lada-togliatti",
+        "clubName": "Лада",
+        "regularPlace": 7,
+        "games": 52,
+        "wins": 27,
+        "overtimeWins": 4,
+        "shootoutWins": 3,
+        "shootoutLosses": 1,
+        "overtimeLosses": 3,
+        "losses": 14,
+        "goalsFor": 164,
+        "goalsAgainst": 128,
+        "points": 72,
+        "playoffStage": "championship_quarterfinal",
+        "playoffOpponent": "Рубин",
+        "seriesScore": "0:4"
+      },
+      {
+        "season": "2022/23",
+        "historicalId": "lada-togliatti",
+        "clubName": "Лада",
+        "regularPlace": 6,
+        "games": 50,
+        "wins": 25,
+        "overtimeWins": 3,
+        "shootoutWins": 3,
+        "shootoutLosses": 1,
+        "overtimeLosses": 4,
+        "losses": 14,
+        "goalsFor": 150,
+        "goalsAgainst": 120,
+        "points": 67,
+        "playoffStage": "round16",
+        "playoffOpponent": "АКМ",
+        "seriesScore": "3:4"
       }
-    ]
+    ],
+    "note": "Единая история «Лады». В сезонах 2014/15–2017/18 клуб выступал в КХЛ, поэтому этих сезонов нет в таблице ВХЛ; в ВХЛ команда вернулась в 2018/19. С сезона 2023/24 снова выступает в КХЛ."
   },
   {
     "id": "lokomotiv-yaroslavl",
@@ -3792,55 +3719,6 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffOpponent": "Химик",
         "seriesScore": "2:4",
         "seasonAward": "bronze"
-      }
-    ]
-  },
-  {
-    "id": "mechel-chelyabinsk",
-    "name": "Мечел",
-    "historicalIds": [
-      "mechel-chelyabinsk"
-    ],
-    "aliases": [
-      "Мечел"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2010/11",
-        "historicalId": "mechel-chelyabinsk",
-        "clubName": "Мечел",
-        "regularPlace": 13,
-        "games": 56,
-        "wins": 20,
-        "overtimeWins": 1,
-        "shootoutWins": 4,
-        "shootoutLosses": 7,
-        "overtimeLosses": 4,
-        "losses": 20,
-        "goalsFor": 168,
-        "goalsAgainst": 174,
-        "points": 81,
-        "playoffStage": "missed"
-      },
-      {
-        "season": "2011/12",
-        "historicalId": "mechel-chelyabinsk",
-        "clubName": "Мечел",
-        "regularPlace": 10,
-        "games": 53,
-        "wins": 24,
-        "overtimeWins": 1,
-        "shootoutWins": 2,
-        "shootoutLosses": 1,
-        "overtimeLosses": 1,
-        "losses": 24,
-        "goalsFor": 174,
-        "goalsAgainst": 160,
-        "points": 80,
-        "playoffStage": "conference_semifinal",
-        "playoffOpponent": "Рубин",
-        "seriesScore": "2:3"
       }
     ]
   },
@@ -5156,7 +5034,8 @@ window.VHL_CLUB_DIRECTORY = [
     "id": "ryazan",
     "name": "Рязань-ВДВ",
     "historicalIds": [
-      "ryazan"
+      "ryazan",
+      "hk-ryazan"
     ],
     "aliases": [
       "ХК Рязань",
@@ -5271,6 +5150,79 @@ window.VHL_CLUB_DIRECTORY = [
         "seriesScore": "1:4"
       },
       {
+        "season": "2016/17",
+        "historicalId": "hk-ryazan",
+        "clubName": "ХК Рязань",
+        "regularPlace": 15,
+        "games": 50,
+        "wins": 20,
+        "overtimeWins": 2,
+        "shootoutWins": 2,
+        "shootoutLosses": 5,
+        "overtimeLosses": 2,
+        "losses": 19,
+        "goalsFor": 124,
+        "goalsAgainst": 113,
+        "points": 75,
+        "playoffStage": "playoff_participant",
+        "playoffOpponent": "СКА-Нева",
+        "seriesScore": "0:4"
+      },
+      {
+        "season": "2017/18",
+        "historicalId": "hk-ryazan",
+        "clubName": "ХК Рязань",
+        "regularPlace": 22,
+        "games": 52,
+        "wins": 15,
+        "overtimeWins": 4,
+        "shootoutWins": 4,
+        "shootoutLosses": 1,
+        "overtimeLosses": 1,
+        "losses": 27,
+        "goalsFor": 106,
+        "goalsAgainst": 136,
+        "points": 63,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2018/19",
+        "historicalId": "hk-ryazan",
+        "clubName": "ХК Рязань",
+        "regularPlace": 13,
+        "games": 56,
+        "wins": 23,
+        "overtimeWins": 3,
+        "shootoutWins": 2,
+        "shootoutLosses": 3,
+        "overtimeLosses": 8,
+        "losses": 17,
+        "goalsFor": 131,
+        "goalsAgainst": 133,
+        "points": 67,
+        "playoffStage": "playoff_participant",
+        "playoffOpponent": "Рубин",
+        "seriesScore": "0:3"
+      },
+      {
+        "season": "2019/20",
+        "historicalId": "hk-ryazan",
+        "clubName": "ХК Рязань",
+        "regularPlace": 32,
+        "games": 54,
+        "wins": 12,
+        "overtimeWins": 0,
+        "shootoutWins": 4,
+        "shootoutLosses": 4,
+        "overtimeLosses": 4,
+        "losses": 30,
+        "goalsFor": 74,
+        "goalsAgainst": 137,
+        "points": 40,
+        "seasonCompetitionPlace": 26,
+        "playoffStage": "missed"
+      },
+      {
         "season": "2020/21",
         "historicalId": "ryazan",
         "clubName": "ХК Рязань",
@@ -5378,7 +5330,8 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffOpponent": "Нефтяник",
         "seriesScore": "1:4"
       }
-    ]
+    ],
+    "note": "Единая история рязанского клуба в ВХЛ с сезона 2010/11. До сезона 2022/23 команда выступала как «ХК Рязань», затем сменила название на «Рязань-ВДВ»."
   },
   {
     "id": "saryarka-karaganda",
@@ -5550,15 +5503,110 @@ window.VHL_CLUB_DIRECTORY = [
     "name": "СКА-ВМФ",
     "historicalIds": [
       "ska-neva",
-      "ska-vmf"
+      "ska-vmf",
+      "khk-vmf",
+      "vmf-karelia",
+      "ska-karelia-kondopoga"
     ],
     "aliases": [
       "СКА-Нева",
-      "СКА-ВМФ"
+      "СКА-ВМФ",
+      "ХК ВМФ",
+      "ВМФ-Карелия",
+      "СКА-Карелия"
     ],
     "currentTeamSlug": "ska-vmf",
-    "note": "СКА-Нева переименована в СКА-ВМФ с сезона 2025/26.",
+    "note": "Единая история фарм-команды СКА: ХК ВМФ (до 2013), ВМФ-Карелия (2013/14), СКА-Карелия (2014/15), СКА-Нева (2015/16–2024/25), СКА-ВМФ (с 2025/26).",
     "seasons": [
+      {
+        "season": "2010/11",
+        "historicalId": "khk-vmf",
+        "clubName": "ХК ВМФ",
+        "regularPlace": 11,
+        "games": 56,
+        "wins": 22,
+        "overtimeWins": 2,
+        "shootoutWins": 2,
+        "shootoutLosses": 5,
+        "overtimeLosses": 2,
+        "losses": 23,
+        "goalsFor": 142,
+        "goalsAgainst": 148,
+        "points": 81,
+        "playoffStage": "conference_semifinal",
+        "playoffOpponent": "Дизель",
+        "seriesScore": "0:3"
+      },
+      {
+        "season": "2011/12",
+        "historicalId": "khk-vmf",
+        "clubName": "ХК ВМФ",
+        "regularPlace": 11,
+        "games": 53,
+        "wins": 20,
+        "overtimeWins": 1,
+        "shootoutWins": 5,
+        "shootoutLosses": 4,
+        "overtimeLosses": 2,
+        "losses": 21,
+        "goalsFor": 142,
+        "goalsAgainst": 134,
+        "points": 78,
+        "playoffStage": "conference_quarterfinal",
+        "playoffOpponent": "Локомотив",
+        "seriesScore": "2:3"
+      },
+      {
+        "season": "2012/13",
+        "historicalId": "khk-vmf",
+        "clubName": "ХК ВМФ",
+        "regularPlace": 18,
+        "games": 52,
+        "wins": 18,
+        "overtimeWins": 2,
+        "shootoutWins": 3,
+        "shootoutLosses": 6,
+        "overtimeLosses": 2,
+        "losses": 21,
+        "goalsFor": 142,
+        "goalsAgainst": 154,
+        "points": 72,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2013/14",
+        "historicalId": "vmf-karelia",
+        "clubName": "ВМФ-Карелия",
+        "regularPlace": 25,
+        "games": 50,
+        "wins": 12,
+        "overtimeWins": 2,
+        "shootoutWins": 3,
+        "shootoutLosses": 3,
+        "overtimeLosses": 1,
+        "losses": 29,
+        "goalsFor": 103,
+        "goalsAgainst": 125,
+        "points": 50,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2014/15",
+        "historicalId": "ska-karelia-kondopoga",
+        "clubName": "СКА-Карелия",
+        "regularPlace": 21,
+        "games": 52,
+        "wins": 17,
+        "overtimeWins": 3,
+        "shootoutWins": 2,
+        "shootoutLosses": 4,
+        "overtimeLosses": 2,
+        "losses": 24,
+        "goalsFor": 109,
+        "goalsAgainst": 121,
+        "points": 67,
+        "playoffStage": "missed"
+      },
       {
         "season": "2015/16",
         "historicalId": "ska-neva",
@@ -5764,36 +5812,6 @@ window.VHL_CLUB_DIRECTORY = [
         "goalsFor": 128,
         "goalsAgainst": 153,
         "points": 62,
-        "playoffStage": "missed"
-      }
-    ]
-  },
-  {
-    "id": "ska-karelia-kondopoga",
-    "name": "СКА-Карелия",
-    "historicalIds": [
-      "ska-karelia-kondopoga"
-    ],
-    "aliases": [
-      "СКА-Карелия"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2014/15",
-        "historicalId": "ska-karelia-kondopoga",
-        "clubName": "СКА-Карелия",
-        "regularPlace": 21,
-        "games": 52,
-        "wins": 17,
-        "overtimeWins": 3,
-        "shootoutWins": 2,
-        "shootoutLosses": 4,
-        "overtimeLosses": 2,
-        "losses": 24,
-        "goalsFor": 109,
-        "goalsAgainst": 121,
-        "points": 67,
         "playoffStage": "missed"
       }
     ]
@@ -7129,74 +7147,6 @@ window.VHL_CLUB_DIRECTORY = [
     ]
   },
   {
-    "id": "khk-vmf",
-    "name": "ХК ВМФ",
-    "historicalIds": [
-      "khk-vmf"
-    ],
-    "aliases": [
-      "ХК ВМФ"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2010/11",
-        "historicalId": "khk-vmf",
-        "clubName": "ХК ВМФ",
-        "regularPlace": 11,
-        "games": 56,
-        "wins": 22,
-        "overtimeWins": 2,
-        "shootoutWins": 2,
-        "shootoutLosses": 5,
-        "overtimeLosses": 2,
-        "losses": 23,
-        "goalsFor": 142,
-        "goalsAgainst": 148,
-        "points": 81,
-        "playoffStage": "conference_semifinal",
-        "playoffOpponent": "Дизель",
-        "seriesScore": "0:3"
-      },
-      {
-        "season": "2011/12",
-        "historicalId": "khk-vmf",
-        "clubName": "ХК ВМФ",
-        "regularPlace": 11,
-        "games": 53,
-        "wins": 20,
-        "overtimeWins": 1,
-        "shootoutWins": 5,
-        "shootoutLosses": 4,
-        "overtimeLosses": 2,
-        "losses": 21,
-        "goalsFor": 142,
-        "goalsAgainst": 134,
-        "points": 78,
-        "playoffStage": "conference_quarterfinal",
-        "playoffOpponent": "Локомотив",
-        "seriesScore": "2:3"
-      },
-      {
-        "season": "2012/13",
-        "historicalId": "khk-vmf",
-        "clubName": "ХК ВМФ",
-        "regularPlace": 18,
-        "games": 52,
-        "wins": 18,
-        "overtimeWins": 2,
-        "shootoutWins": 3,
-        "shootoutLosses": 6,
-        "overtimeLosses": 2,
-        "losses": 21,
-        "goalsFor": 142,
-        "goalsAgainst": 154,
-        "points": 72,
-        "playoffStage": "missed"
-      }
-    ]
-  },
-  {
     "id": "hk-lipetsk",
     "name": "ХК Липецк",
     "historicalIds": [
@@ -7313,96 +7263,11 @@ window.VHL_CLUB_DIRECTORY = [
     ]
   },
   {
-    "id": "hk-ryazan",
-    "name": "ХК Рязань",
-    "historicalIds": [
-      "hk-ryazan"
-    ],
-    "aliases": [
-      "ХК Рязань"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2016/17",
-        "historicalId": "hk-ryazan",
-        "clubName": "ХК Рязань",
-        "regularPlace": 15,
-        "games": 50,
-        "wins": 20,
-        "overtimeWins": 2,
-        "shootoutWins": 2,
-        "shootoutLosses": 5,
-        "overtimeLosses": 2,
-        "losses": 19,
-        "goalsFor": 124,
-        "goalsAgainst": 113,
-        "points": 75,
-        "playoffStage": "playoff_participant",
-        "playoffOpponent": "СКА-Нева",
-        "seriesScore": "0:4"
-      },
-      {
-        "season": "2017/18",
-        "historicalId": "hk-ryazan",
-        "clubName": "ХК Рязань",
-        "regularPlace": 22,
-        "games": 52,
-        "wins": 15,
-        "overtimeWins": 4,
-        "shootoutWins": 4,
-        "shootoutLosses": 1,
-        "overtimeLosses": 1,
-        "losses": 27,
-        "goalsFor": 106,
-        "goalsAgainst": 136,
-        "points": 63,
-        "playoffStage": "missed"
-      },
-      {
-        "season": "2018/19",
-        "historicalId": "hk-ryazan",
-        "clubName": "ХК Рязань",
-        "regularPlace": 13,
-        "games": 56,
-        "wins": 23,
-        "overtimeWins": 3,
-        "shootoutWins": 2,
-        "shootoutLosses": 3,
-        "overtimeLosses": 8,
-        "losses": 17,
-        "goalsFor": 131,
-        "goalsAgainst": 133,
-        "points": 67,
-        "playoffStage": "playoff_participant",
-        "playoffOpponent": "Рубин",
-        "seriesScore": "0:3"
-      },
-      {
-        "season": "2019/20",
-        "historicalId": "hk-ryazan",
-        "clubName": "ХК Рязань",
-        "regularPlace": 32,
-        "games": 54,
-        "wins": 12,
-        "overtimeWins": 0,
-        "shootoutWins": 4,
-        "shootoutLosses": 4,
-        "overtimeLosses": 4,
-        "losses": 30,
-        "goalsFor": 74,
-        "goalsAgainst": 137,
-        "points": 40,
-        "seasonCompetitionPlace": 26,
-        "playoffStage": "missed"
-      }
-    ]
-  },
-  {
     "id": "sarov",
     "name": "ХК Саров",
     "historicalIds": [
-      "sarov"
+      "sarov",
+      "hk-sarov"
     ],
     "aliases": [
       "ХК Саров"
@@ -7461,20 +7326,7 @@ window.VHL_CLUB_DIRECTORY = [
         "goalsAgainst": 133,
         "points": 78,
         "playoffStage": "playoff_participant"
-      }
-    ]
-  },
-  {
-    "id": "hk-sarov",
-    "name": "ХК Саров",
-    "historicalIds": [
-      "hk-sarov"
-    ],
-    "aliases": [
-      "ХК Саров"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
+      },
       {
         "season": "2013/14",
         "historicalId": "hk-sarov",
@@ -7581,7 +7433,8 @@ window.VHL_CLUB_DIRECTORY = [
         "points": 42,
         "playoffStage": "missed"
       }
-    ]
+    ],
+    "note": "Объединены две архивные записи одного клуба: сезонная история ХК «Саров» за 2010/11–2018/19 сохранена без разрывов."
   },
   {
     "id": "tambov",
@@ -8000,13 +7853,51 @@ window.VHL_CLUB_DIRECTORY = [
     "id": "chelmet-chelyabinsk",
     "name": "Челмет",
     "historicalIds": [
-      "chelmet-chelyabinsk"
+      "chelmet-chelyabinsk",
+      "mechel-chelyabinsk"
     ],
     "aliases": [
-      "Челмет"
+      "Челмет",
+      "Мечел"
     ],
     "currentTeamSlug": "chelmet",
     "seasons": [
+      {
+        "season": "2010/11",
+        "historicalId": "mechel-chelyabinsk",
+        "clubName": "Мечел",
+        "regularPlace": 13,
+        "games": 56,
+        "wins": 20,
+        "overtimeWins": 1,
+        "shootoutWins": 4,
+        "shootoutLosses": 7,
+        "overtimeLosses": 4,
+        "losses": 20,
+        "goalsFor": 168,
+        "goalsAgainst": 174,
+        "points": 81,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2011/12",
+        "historicalId": "mechel-chelyabinsk",
+        "clubName": "Мечел",
+        "regularPlace": 10,
+        "games": 53,
+        "wins": 24,
+        "overtimeWins": 1,
+        "shootoutWins": 2,
+        "shootoutLosses": 1,
+        "overtimeLosses": 1,
+        "losses": 24,
+        "goalsFor": 174,
+        "goalsAgainst": 160,
+        "points": 80,
+        "playoffStage": "conference_semifinal",
+        "playoffOpponent": "Рубин",
+        "seriesScore": "2:3"
+      },
       {
         "season": "2012/13",
         "historicalId": "chelmet-chelyabinsk",
@@ -8258,7 +8149,8 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffOpponent": "Омские Крылья",
         "seriesScore": "2:4"
       }
-    ]
+    ],
+    "note": "Одна челябинская команда: до сезона 2012/13 выступала под названием «Мечел», с 2012 года — «Челмет»."
   },
   {
     "id": "chelny-naberezhnye-chelny",
@@ -8497,7 +8389,8 @@ window.VHL_CLUB_DIRECTORY = [
     "id": "yuzhny-ural",
     "name": "Южный Урал",
     "historicalIds": [
-      "yuzhny-ural"
+      "yuzhny-ural",
+      "yuzhny-ural-orsk"
     ],
     "aliases": [
       "Южный Урал"
@@ -8559,123 +8452,6 @@ window.VHL_CLUB_DIRECTORY = [
         "points": 94,
         "playoffStage": "playoff_participant"
       },
-      {
-        "season": "2020/21",
-        "historicalId": "yuzhny-ural",
-        "clubName": "Южный Урал",
-        "regularPlace": 22,
-        "games": 50,
-        "wins": 13,
-        "overtimeWins": 1,
-        "shootoutWins": 5,
-        "shootoutLosses": 0,
-        "overtimeLosses": 4,
-        "losses": 27,
-        "goalsFor": 123,
-        "goalsAgainst": 165,
-        "points": 42,
-        "playoffStage": "missed"
-      },
-      {
-        "season": "2021/22",
-        "historicalId": "yuzhny-ural",
-        "clubName": "Южный Урал",
-        "regularPlace": 19,
-        "games": 52,
-        "wins": 18,
-        "overtimeWins": 3,
-        "shootoutWins": 2,
-        "shootoutLosses": 1,
-        "overtimeLosses": 3,
-        "losses": 25,
-        "goalsFor": 128,
-        "goalsAgainst": 140,
-        "points": 50,
-        "playoffStage": "missed"
-      },
-      {
-        "season": "2022/23",
-        "historicalId": "yuzhny-ural",
-        "clubName": "Южный Урал",
-        "regularPlace": 21,
-        "games": 50,
-        "wins": 14,
-        "overtimeWins": 2,
-        "shootoutWins": 3,
-        "shootoutLosses": 3,
-        "overtimeLosses": 5,
-        "losses": 23,
-        "goalsFor": 120,
-        "goalsAgainst": 158,
-        "points": 46,
-        "playoffStage": "missed"
-      },
-      {
-        "season": "2023/24",
-        "historicalId": "yuzhny-ural",
-        "clubName": "Южный Урал",
-        "regularPlace": 10,
-        "games": 56,
-        "wins": 23,
-        "overtimeWins": 6,
-        "shootoutWins": 2,
-        "shootoutLosses": 6,
-        "overtimeLosses": 2,
-        "losses": 17,
-        "goalsFor": 152,
-        "goalsAgainst": 140,
-        "points": 70,
-        "playoffStage": "round16",
-        "playoffOpponent": "СКА-Нева",
-        "seriesScore": "3:4"
-      },
-      {
-        "season": "2024/25",
-        "historicalId": "yuzhny-ural",
-        "clubName": "Южный Урал",
-        "regularPlace": 25,
-        "games": 64,
-        "wins": 15,
-        "overtimeWins": 8,
-        "shootoutWins": 5,
-        "shootoutLosses": 4,
-        "overtimeLosses": 5,
-        "losses": 27,
-        "goalsFor": 135,
-        "goalsAgainst": 154,
-        "points": 65,
-        "playoffStage": "missed"
-      },
-      {
-        "season": "2025/26",
-        "historicalId": "yuzhny-ural",
-        "clubName": "Южный Урал",
-        "regularPlace": 27,
-        "games": 62,
-        "wins": 19,
-        "overtimeWins": 2,
-        "shootoutWins": 1,
-        "shootoutLosses": 5,
-        "overtimeLosses": 5,
-        "losses": 30,
-        "goalsFor": 105,
-        "goalsAgainst": 170,
-        "points": 54,
-        "playoffStage": "missed"
-      }
-    ]
-  },
-  {
-    "id": "yuzhny-ural-orsk",
-    "name": "Южный Урал",
-    "historicalIds": [
-      "yuzhny-ural-orsk"
-    ],
-    "aliases": [
-      "Южный Урал"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
       {
         "season": "2013/14",
         "historicalId": "yuzhny-ural-orsk",
@@ -8801,8 +8577,113 @@ window.VHL_CLUB_DIRECTORY = [
         "points": 47,
         "seasonCompetitionPlace": 23,
         "playoffStage": "missed"
+      },
+      {
+        "season": "2020/21",
+        "historicalId": "yuzhny-ural",
+        "clubName": "Южный Урал",
+        "regularPlace": 22,
+        "games": 50,
+        "wins": 13,
+        "overtimeWins": 1,
+        "shootoutWins": 5,
+        "shootoutLosses": 0,
+        "overtimeLosses": 4,
+        "losses": 27,
+        "goalsFor": 123,
+        "goalsAgainst": 165,
+        "points": 42,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2021/22",
+        "historicalId": "yuzhny-ural",
+        "clubName": "Южный Урал",
+        "regularPlace": 19,
+        "games": 52,
+        "wins": 18,
+        "overtimeWins": 3,
+        "shootoutWins": 2,
+        "shootoutLosses": 1,
+        "overtimeLosses": 3,
+        "losses": 25,
+        "goalsFor": 128,
+        "goalsAgainst": 140,
+        "points": 50,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2022/23",
+        "historicalId": "yuzhny-ural",
+        "clubName": "Южный Урал",
+        "regularPlace": 21,
+        "games": 50,
+        "wins": 14,
+        "overtimeWins": 2,
+        "shootoutWins": 3,
+        "shootoutLosses": 3,
+        "overtimeLosses": 5,
+        "losses": 23,
+        "goalsFor": 120,
+        "goalsAgainst": 158,
+        "points": 46,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2023/24",
+        "historicalId": "yuzhny-ural",
+        "clubName": "Южный Урал",
+        "regularPlace": 10,
+        "games": 56,
+        "wins": 23,
+        "overtimeWins": 6,
+        "shootoutWins": 2,
+        "shootoutLosses": 6,
+        "overtimeLosses": 2,
+        "losses": 17,
+        "goalsFor": 152,
+        "goalsAgainst": 140,
+        "points": 70,
+        "playoffStage": "round16",
+        "playoffOpponent": "СКА-Нева",
+        "seriesScore": "3:4"
+      },
+      {
+        "season": "2024/25",
+        "historicalId": "yuzhny-ural",
+        "clubName": "Южный Урал",
+        "regularPlace": 25,
+        "games": 64,
+        "wins": 15,
+        "overtimeWins": 8,
+        "shootoutWins": 5,
+        "shootoutLosses": 4,
+        "overtimeLosses": 5,
+        "losses": 27,
+        "goalsFor": 135,
+        "goalsAgainst": 154,
+        "points": 65,
+        "playoffStage": "missed"
+      },
+      {
+        "season": "2025/26",
+        "historicalId": "yuzhny-ural",
+        "clubName": "Южный Урал",
+        "regularPlace": 27,
+        "games": 62,
+        "wins": 19,
+        "overtimeWins": 2,
+        "shootoutWins": 1,
+        "shootoutLosses": 5,
+        "overtimeLosses": 5,
+        "losses": 30,
+        "goalsFor": 105,
+        "goalsAgainst": 170,
+        "points": 54,
+        "playoffStage": "missed"
       }
-    ]
+    ],
+    "note": "Объединены две архивные записи одного клуба из Орска; все результаты ВХЛ за 2010/11–2025/26 собраны в одной истории."
   },
   {
     "id": "unison-moscow",
