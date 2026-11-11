@@ -1462,7 +1462,7 @@ function liveUpdatePositions() {
         }
       }
       if (puck.battle.frames === 0) {
-        const winner = visualRng() < 0.5 ? 'home' : 'away';
+        const winner = puck.battle.winner || puck.nextPossessionSide || lm.gameplayPossession?.side || puck.possessionSide || 'home';
         puck.nextPossessionSide = winner;
         puck.nextCarrierIndex = puck.battle[winner + 'Index'];
         puck.battle = null;
@@ -1712,6 +1712,9 @@ function liveUpdatePositions() {
         frames: nearBoards ? 12 : 8,
         homeIndex: nearest.home.index,
         awayIndex: nearest.away.index,
+        // The visual contact may delay the handoff, but cannot override the
+        // gameplay resolver's winner with a fresh visual-RNG coin flip.
+        winner: puck.nextPossessionSide || lm.gameplayPossession?.side || puck.possessionSide || 'home',
         type: nearBoards ? 'board' : 'puck',
       };
       puck.targetX = puck.x;
