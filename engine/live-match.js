@@ -161,19 +161,23 @@ function applyLiveShift(lm, side) {
   const state = lm.shiftState?.[side];
   const positions = lm.positions?.[side];
   if (!plan || !state || !positions || !plan.forwards.length || !plan.defense.length) return false;
-  state.forwardIndex = (state.forwardIndex + 1) % plan.forwards.length;
-  state.defenseIndex = (state.defenseIndex + 1) % plan.defense.length;
+  const nextForwardIndex = (state.forwardIndex + 1) % plan.forwards.length;
+  const nextDefenseIndex = (state.defenseIndex + 1) % plan.defense.length;
   const selected = [
-    ...plan.defense[state.defenseIndex].slice(0, 2),
-    ...plan.forwards[state.forwardIndex].slice(0, 3),
+    ...plan.defense[nextDefenseIndex].slice(0, 2),
+    ...plan.forwards[nextForwardIndex].slice(0, 3),
   ];
   if (selected.length < 5) return false;
+  state.forwardIndex = nextForwardIndex;
+  state.defenseIndex = nextDefenseIndex;
   for (let i = 0; i < 5; i++) {
     const slot = positions[i + 1];
     const player = selected[i];
     if (!slot || !player) continue;
     slot.playerId = player.id;
     slot.playerName = player.name || '';
+    slot.jerseyNumber = player.jerseyNumber ?? null;
+    slot.number = player.number ?? null;
     slot.position = player.position || (i < 2 ? 'D' : 'F');
     slot.role = i < 2 ? 'D' : 'F';
     slot.vx = 0;
@@ -234,7 +238,10 @@ function buildFormation(side, lineup = null) {
     forwards[0] || null, forwards[1] || null, forwards[2] || null];
   return slots.map((slot, i) => ({
     ...slot, idx: i, playerId: assigned[i]?.id || null,
-    playerName: assigned[i]?.name || '', position: assigned[i]?.position || slot.role,
+    playerName: assigned[i]?.name || '',
+    jerseyNumber: assigned[i]?.jerseyNumber ?? null,
+    number: assigned[i]?.number ?? null,
+    position: assigned[i]?.position || slot.role,
     baseX: slot.x, baseY: slot.y, x: slot.x, y: slot.y, vx: 0, vy: 0,
   }));
 }
