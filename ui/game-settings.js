@@ -14,7 +14,7 @@ function applyGameSettings() {
 function updateGameSetting(key, value) {
   G.settings = normalizeGameSettings({ ...G.settings, [key]: value });
   applyGameSettings();
-  if (typeof saveGame === 'function') saveGame();
+  if (typeof saveGame === 'function') saveGame({ immediate: true });
   if (G.screen === 'settings' || G.activeTab === 'settings') render();
 }
 function renderTitleScreen() {
