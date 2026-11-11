@@ -760,3 +760,98 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .live-stats-row { grid-template-columns: minmax(115px,1.4fr) minmax(56px,1fr) minmax(56px,1fr); gap: 6px; font-size: 10px; }
   .live-stats-row strong { font-size: 11px; }
 }
+
+/* ============================================================
+   LINEUP BUILDER — ВИЗУАЛЬНЫЙ РЕДАКТОР ЗВЕНЬЕВ
+   ============================================================ */
+.lineup-screen { display: flex; flex-direction: column; gap: 20px; }
+.lineup-topbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 20px 22px; border: 1px solid #293247; border-radius: 14px; background: radial-gradient(circle at 92% 0%, rgba(255,107,53,.13), transparent 34%), linear-gradient(135deg,#1b2230,#151a25); }
+.lineup-eyebrow { display: block; margin-bottom: 6px; color: #ff986d; font-size: 10px; font-weight: 800; letter-spacing: .13em; }
+.lineup-topbar h2 { margin: 0; color: #f4f6fb; font-size: 23px; }
+.lineup-topbar p { margin: 6px 0 0; color: #9ba7bc; font-size: 12px; line-height: 1.5; }
+.lineup-auto-button { flex: 0 0 auto; min-height: 38px; padding: 0 14px; border-radius: 8px; }
+.lineup-overview { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
+.lineup-overview-card { min-width: 0; padding: 13px 15px; border: 1px solid #283246; border-radius: 11px; background: #171d29; }
+.lineup-overview-card > span { display: block; color: #8390a8; font-size: 9px; font-weight: 800; letter-spacing: .1em; }
+.lineup-overview-card > b { display: block; margin: 5px 0 1px; color: #f1f4fa; font-size: 23px; line-height: 1.2; }
+.lineup-overview-card > b small { color: #78859c; font-size: 13px; font-weight: 600; }
+.lineup-overview-card > i { display: block; color: #7f8ba2; font-size: 10px; font-style: normal; }
+.lineup-overview-card.chemistry-overview > b { color: #ff986d; }
+.lineup-section { display: flex; flex-direction: column; gap: 11px; }
+.lineup-section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 0 2px; }
+.lineup-section-heading > div > span { display: block; margin-bottom: 3px; color: #ff986d; font-size: 9px; font-weight: 800; letter-spacing: .13em; }
+.lineup-section-heading h3 { margin: 0; color: #f1f4fa; font-size: 17px; }
+.lineup-section-heading > p { margin: 0 0 2px; color: #7e8aa1; font-size: 11px; }
+.lineup-lines-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.lineup-defence-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+.lineup-goalies-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.lineup-line-card,.lineup-goalie-card { min-width: 0; padding: 14px; border: 1px solid #2a3549; border-radius: 13px; background: linear-gradient(145deg,#1b2331,#151b27); box-shadow: 0 5px 16px rgba(0,0,0,.13); }
+.lineup-line-card { position: relative; overflow: hidden; }
+.lineup-line-card:before { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg,#ff6b35,rgba(255,107,53,0)); content: ""; }
+.lineup-line-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.lineup-line-heading { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.lineup-line-code { display: grid; width: 36px; height: 36px; flex: 0 0 36px; place-items: center; border: 1px solid rgba(255,107,53,.35); border-radius: 9px; background: rgba(255,107,53,.12); color: #ff986d; font-size: 11px; font-weight: 900; }
+.lineup-line-heading h4 { margin: 0; color: #edf1f8; font-size: 13px; }
+.lineup-line-heading p { margin: 3px 0 0; color: #7f8ba2; font-size: 10px; }
+.lineup-chemistry { display: flex; flex-direction: column; align-items: flex-end; line-height: 1; }
+.lineup-chemistry b { font-size: 18px; }
+.lineup-chemistry span { margin-top: 4px; color: #7f8ba2; font-size: 8px; font-weight: 800; letter-spacing: .12em; }
+.lineup-chemistry.high b { color: #4ade80; }
+.lineup-chemistry.medium b { color: #fbbf24; }
+.lineup-chemistry.low b { color: #fb7185; }
+.lineup-chemistry-track { height: 4px; margin-bottom: 12px; overflow: hidden; border-radius: 99px; background: #30394a; }
+.lineup-chemistry-track span { display: block; height: 100%; border-radius: inherit; transition: width .2s ease; }
+.lineup-chemistry-track span.high { background: #4ade80; }
+.lineup-chemistry-track span.medium { background: #fbbf24; }
+.lineup-chemistry-track span.low { background: #fb7185; }
+.lineup-player-grid { display: grid; gap: 7px; }
+.lineup-player-grid.three-slots { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.lineup-player-grid.two-slots { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.lineup-player-slot { min-width: 0; padding: 8px; border: 1px solid #303b50; border-radius: 9px; background: rgba(10,15,24,.42); }
+.lineup-player-main { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.lineup-player-avatar { display: grid; width: 31px; height: 31px; flex: 0 0 31px; place-items: center; border-radius: 8px; background: linear-gradient(145deg,#35435a,#202b3d); color: #dce5f3; font-size: 10px; font-weight: 900; }
+.lineup-player-info { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; }
+.lineup-player-position { overflow: hidden; color: #ff986d; font-size: 8px; font-weight: 900; letter-spacing: .08em; text-overflow: ellipsis; white-space: nowrap; }
+.lineup-player-info b { overflow: hidden; color: #e8edf6; font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.lineup-player-info small { overflow: hidden; color: #78869d; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.lineup-player-ovr { display: inline-grid; min-width: 27px; height: 25px; flex: 0 0 auto; place-items: center; padding: 0 5px; border: 1px solid rgba(255,152,109,.28); border-radius: 7px; background: rgba(255,107,53,.11); color: #ffad88; font-size: 11px; font-weight: 900; }
+.lineup-player-select,.lineup-line-settings select { width: 100%; min-width: 0; height: 32px; border: 1px solid #354159; border-radius: 7px; outline: none; background: #111824; color: #dce4f1; font-size: 10px; }
+.lineup-player-select { margin-top: 8px; padding: 0 7px; }
+.lineup-player-select:focus,.lineup-line-settings select:focus { border-color: #ff8a5b; box-shadow: 0 0 0 2px rgba(255,107,53,.12); }
+.lineup-line-settings { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin-top: 11px; }
+.lineup-line-settings label { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+.lineup-line-settings label > span { color: #7f8ba2; font-size: 8px; font-weight: 800; letter-spacing: .09em; }
+.lineup-line-settings select { padding: 0 6px; }
+.lineup-line-effects { display: flex; gap: 13px; margin-top: 9px; padding-top: 9px; border-top: 1px solid #2b3548; color: #8b98ad; font-size: 9px; }
+.lineup-line-effects b { margin-left: 3px; font-size: 10px; }
+.lineup-line-effects .positive { color: #4ade80; }
+.lineup-line-effects .negative { color: #fb7185; }
+.lineup-goalie-card { display: flex; flex-direction: column; gap: 11px; }
+.lineup-goalie-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.lineup-goalie-label { color: #aab5c8; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.lineup-goalie-card .lineup-player-main { padding: 4px 0; }
+.lineup-goalie-card .lineup-player-avatar { width: 42px; height: 42px; flex-basis: 42px; border-radius: 11px; font-size: 12px; }
+.lineup-goalie-card .lineup-player-info b { font-size: 13px; }
+.lineup-goalie-card .lineup-player-info small { font-size: 9px; }
+.lineup-goalie-card .lineup-player-select { margin-top: auto; }
+@media (max-width: 1050px) {
+  .lineup-defence-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .lineup-player-grid.three-slots { grid-template-columns: 1fr; }
+  .lineup-player-slot { display: grid; grid-template-columns: minmax(0,1fr) minmax(120px,.9fr); align-items: center; gap: 8px; }
+  .lineup-player-select { margin-top: 0; }
+}
+@media (max-width: 700px) {
+  .lineup-topbar { align-items: flex-start; flex-direction: column; padding: 16px; }
+  .lineup-overview { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .lineup-lines-grid,.lineup-defence-grid,.lineup-goalies-grid { grid-template-columns: 1fr; }
+  .lineup-player-grid.three-slots,.lineup-player-grid.two-slots { grid-template-columns: 1fr; }
+  .lineup-player-slot { grid-template-columns: minmax(0,1fr) minmax(120px,.9fr); }
+  .lineup-section-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
+}
+@media (max-width: 420px) {
+  .lineup-player-slot { grid-template-columns: 1fr; }
+  .lineup-player-select { margin-top: 6px; }
+  .lineup-overview-card { padding: 11px; }
+  .lineup-overview-card > b { font-size: 20px; }
+  .lineup-line-card,.lineup-goalie-card { padding: 11px; }
+}
