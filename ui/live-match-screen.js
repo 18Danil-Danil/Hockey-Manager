@@ -100,6 +100,21 @@ function renderLiveMatchScreen() {
       <canvas id="live-canvas" class="live-canvas"></canvas>
     </div>
 
+    <section class="live-match-stats" aria-label="Статистика матча">
+      <div class="live-stats-row live-stats-heading">
+        <span>Статистика</span><strong>${home.shortName || home.name}</strong><strong>${away.shortName || away.name}</strong>
+      </div>
+      <div class="live-stats-row">
+        <span>Броски в створ</span><strong id="live-stat-home-shots">${lm.shots?.home || 0}</strong><strong id="live-stat-away-shots">${lm.shots?.away || 0}</strong>
+      </div>
+      <div class="live-stats-row">
+        <span>Все попытки</span><strong id="live-stat-home-attempts">${lm.shotAttempts?.home || 0}</strong><strong id="live-stat-away-attempts">${lm.shotAttempts?.away || 0}</strong>
+      </div>
+      <div class="live-stats-row">
+        <span>Ожидаемые голы (xG)</span><strong id="live-stat-home-xg">${Number(lm.xgCurrent?.home || 0).toFixed(2)}</strong><strong id="live-stat-away-xg">${Number(lm.xgCurrent?.away || 0).toFixed(2)}</strong>
+      </div>
+    </section>
+
     <div class="live-controls">
       ${controlBlock}
     </div>
