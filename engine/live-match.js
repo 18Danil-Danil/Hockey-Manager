@@ -1126,7 +1126,12 @@ function liveGoal(side) {
   const isPlayoff = lm.isPlayoff;
   const onIceScorers = liveGetOnIceSkaters(lm, side);
   const onIceConcedingPlayers = liveGetOnIceSkaters(lm, side === 'home' ? 'away' : 'home');
-  const scorer = pickWeighted(onIceScorers, scorerWeight);
+  const breakawayPlayerId = lm.breakawayThreat?.side === side ? lm.breakawayThreat.playerId : null;
+  const scorer = onIceScorers.find(player => player.id === breakawayPlayerId)
+    || (lm.gameplayPossession?.side === side
+      ? onIceScorers.find(player => player.id === lm.gameplayPossession.playerId) : null)
+    || pickWeighted(onIceScorers, scorerWeight);
+  lm.breakawayThreat = null;
 
   const sStat = isPlayoff ? ensurePlayoffStats(scorer) : ensureStats(scorer);
   sStat.goals++; sStat.shots++; sStat.points++;
@@ -1180,7 +1185,7 @@ function liveGoal(side) {
 
   const assistNames = assisters.map(a => a.name).join(', ');
   const sideName = side === 'home' ? G.league.teams.find(t => t.id === lm.homeId).name : G.league.teams.find(t => t.id === lm.awayId).name;
-  const txt = `ГОЛ! ${scorer.name} (${scorer.position})${assisters.length ? ` — ассист: ${assistNames}` : ''} [${sideName}]`;
+  const txt = `ГОЛ! ${scorer.name} (${scorer.position})${breakawayPlayerId === scorer.id ? ' после выхода один на один' : ''}${assisters.length ? ` — ассист: ${assistNames}` : ''} [${sideName}]`;
   livePushEvent({ type: 'goal', side, text: txt, time: liveFmtTime(lm.timeLeft), period: lm.period });
 
   const goalX = side === 'home' ? 195 : 5;
