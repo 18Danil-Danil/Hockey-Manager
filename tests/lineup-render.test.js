@@ -12,7 +12,7 @@ assert(start >= 0 && end > start, 'Не найдена функция renderLine
 const functionSource = source.slice(start, end + 2);
 
 const players = [];
-for (let i = 0; i < 12; i++) players.push({ id: i + 1, name: 'Нападающий ' + (i + 1), position: ['LW', 'C', 'RW'][i % 3], ovr: 90 - i });
+for (let i = 0; i < 12; i++) players.push({ id: i + 1, name: 'Нападающий ' + (i + 1), position: ['LW', 'C', 'RW'][i % 3], ovr: 90 - i * 2 });
 for (let i = 0; i < 6; i++) players.push({ id: 20 + i, name: 'Защитник ' + (i + 1), position: 'D', ovr: 85 - i });
 for (let i = 0; i < 2; i++) players.push({ id: 30 + i, name: 'Вратарь ' + (i + 1), position: 'G', ovr: 88 - i });
 
