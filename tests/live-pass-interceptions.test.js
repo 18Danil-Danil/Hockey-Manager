@@ -59,7 +59,8 @@ assert.equal(opportunity.receiver.id, receiver.id);
 assert.equal(calls, 2, 'pass choice and eligible interception should each use gameplay RNG');
 
 // A defender far from the passing lane must not consume an interception roll.
-lm.positions.away[1].y = 82;
+lm.positions.away[1].x = 169;
+lm.positions.away[1].y = 60;
 rolls = [0, 0];
 calls = 0;
 const cleanPass = api.getLiveShotOpportunity(lm, 'home', [passer, receiver], lm.positions.puck);
