@@ -1266,8 +1266,8 @@ function updateLiveClock() {
     const parts = [];
     if (manpower.home.advantage > 0) parts.push(`${homeTeamNameShort()} — большинство ${manpower.home.skaters} на ${manpower.away.skaters}`);
     if (manpower.away.advantage > 0) parts.push(`${awayTeamNameShort()} — большинство ${manpower.away.skaters} на ${manpower.home.skaters}`);
-    if (lm.goaliePulled?.home) parts.push(`${homeTeamNameShort()} — пустые ворота, 6 полевых`);
-    if (lm.goaliePulled?.away) parts.push(`${awayTeamNameShort()} — пустые ворота, 6 полевых`);
+    if (lm.goaliePulled?.home) parts.push(`${homeTeamNameShort()} — пустые ворота, ${manpower.home.skaters} полевых`);
+    if (lm.goaliePulled?.away) parts.push(`${awayTeamNameShort()} — пустые ворота, ${manpower.away.skaters} полевых`);
     if (hp.length || ap.length || parts.length) {
       const box = [...hp.map(p => `${p.playerName}: ${p.type} мин`), ...ap.map(p => `${p.playerName}: ${p.type} мин`)];
       ppEl.textContent = [parts.join(' · '), box.join(' | ')].filter(Boolean).join(' — ');
