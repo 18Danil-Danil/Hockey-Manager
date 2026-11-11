@@ -395,6 +395,14 @@ const specialLm = {
 assert.equal(manpowerHelpers.getLiveManpowerState(specialLm).home.skaters, 4,
   'a single minor penalty did not create a 5-on-4');
 assert.equal(manpowerHelpers.getLiveManpowerState(specialLm).away.skaters, 5);
+const ppSource = extractFunction('liveIsPP', 'liveTick');
+const liveIsPPCheck = new Function('G', 'getLiveManpowerState',
+  `${ppSource}; return liveIsPP;`
+);
+assert.equal(liveIsPPCheck({ liveMatch: specialLm }, manpowerHelpers.getLiveManpowerState)('away'), true,
+  'away side did not receive the power-play state');
+assert.equal(liveIsPPCheck({ liveMatch: specialLm }, manpowerHelpers.getLiveManpowerState)('home'), false,
+  'penalty-kill side was incorrectly marked as having a power play');
 manpowerHelpers.reconcileLiveManpower(specialLm);
 assert.equal(manpowerHelpers.liveGetOnIceSkaters(specialLm, 'home').length, 4,
   'penalty-kill side did not have four active skaters');
