@@ -221,7 +221,7 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       if (index < boundaries && segment.items.some(item => item.specialRoute)) specialBoundaries.push(index);
     });
     specialBoundaries.forEach(index => { gaps[index] = 3; });
-    const longCandidates = [];
+    const longCandidates = [], longBoundaries = [];
     for (let i = 0; i < boundaries; i++) if (!specialBoundaries.includes(i)) longCandidates.push(i);
     [0.35, 0.75].forEach(fraction => {
       const target = Math.floor(boundaries * fraction);
