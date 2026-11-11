@@ -440,7 +440,8 @@ const animationEnd = source.indexOf('function liveAnimationLoop(', animationStar
 assert.ok(animationStart >= 0 && animationEnd > animationStart);
 const animationSource = source.slice(animationStart, animationEnd);
 const liveUpdatePositions = new Function(
-  'G', 'window', 'clamp', `${animationSource}; return liveUpdatePositions;`
+  'G', 'window', 'clamp', 'getLiveManpowerState',
+  `${animationSource}; return liveUpdatePositions;`
 );
 const homePositions = formation.map(p => ({ ...p }));
 const awayPositions = buildFormation('away', { goalie: { id: 'ag', position: 'G' }, defense: defenders, forwards, skaters: [...defenders, ...forwards] });
@@ -451,7 +452,11 @@ const animationState = {
   },
 };
 const visualWindow = { GAME_RNG: { visualRng: () => 0.5 } };
-liveUpdatePositions({ liveMatch: animationState }, visualWindow, (v, min, max) => Math.max(min, Math.min(max, v)))();
+liveUpdatePositions(
+  { liveMatch: animationState }, visualWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)),
+  () => ({ home: { skaters: 5, advantage: 0 }, away: { skaters: 5, advantage: 0 } })
+)();
 assert.ok(homePositions.every(p => p.x >= 5 && p.x <= 195 && p.y >= 5 && p.y <= 95));
 assert.ok(awayPositions.every(p => p.x >= 5 && p.x <= 195 && p.y >= 5 && p.y <= 95));
 assert.ok(Math.abs(animationState.positions.puck.x - (homePositions[3].x + 3.2)) < 30,
