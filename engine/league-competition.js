@@ -1,7 +1,7 @@
 /* ============================================================
    ЛИДЕРЫ / ТАБЛИЦА / СИМ
    ============================================================ */
-function leagueLeaders(league, mode = 'regular') {
+function leagueLeaders(league, mode = 'regular', limit = 10) {
   const skaters = [], goalies = [];
   for (const t of league.teams) for (const p of t.roster) {
     const s = mode === 'playoff' ? ensurePlayoffStats(p) : ensureStats(p);
@@ -9,12 +9,13 @@ function leagueLeaders(league, mode = 'regular') {
     if (p.position === 'G') goalies.push(p); else skaters.push(p);
   }
   const getStat = (p) => mode === 'playoff' ? ensurePlayoffStats(p) : ensureStats(p);
+  const take = (players) => limit > 0 ? players.slice(0, limit) : players;
   return {
-    byGoals: skaters.slice().sort((a, b) => getStat(b).goals - getStat(a).goals).slice(0, 10),
-    byAssists: skaters.slice().sort((a, b) => getStat(b).assists - getStat(a).assists).slice(0, 10),
-    byPoints: skaters.slice().sort((a, b) => getStat(b).points - getStat(a).points).slice(0, 10),
-    bySvPct: goalies.filter(p => getStat(p).gp >= (mode === 'playoff' ? 3 : 10) && getStat(p).shotsAgainst > 0)
-      .sort((a, b) => (getStat(b).saves / getStat(b).shotsAgainst) - (getStat(a).saves / getStat(a).shotsAgainst)).slice(0, 10),
+    byGoals: take(skaters.slice().sort((a, b) => getStat(b).goals - getStat(a).goals || getStat(b).points - getStat(a).points)),
+    byAssists: take(skaters.slice().sort((a, b) => getStat(b).assists - getStat(a).assists || getStat(b).points - getStat(a).points)),
+    byPoints: take(skaters.slice().sort((a, b) => getStat(b).points - getStat(a).points || getStat(b).goals - getStat(a).goals)),
+    bySvPct: take(goalies.filter(p => getStat(p).gp >= (mode === 'playoff' ? 3 : 10) && getStat(p).shotsAgainst > 0)
+      .sort((a, b) => (getStat(b).saves / getStat(b).shotsAgainst) - (getStat(a).saves / getStat(a).shotsAgainst))),
   };
 }
 function applyResult(res) {
