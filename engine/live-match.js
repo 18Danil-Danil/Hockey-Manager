@@ -848,6 +848,7 @@ function liveAdvance(stepSec) {
               startY: shooterPosition ? shooterPosition.y : puck.y,
               targetX: block ? block.slot.x : outcome === 'сейв' && defendingGoalie ? defendingGoalie.x : attackingGoalX,
               targetY: block ? block.slot.y : shotTargetY,
+              nextCarrierIndex: block ? (lm.positions[defendingSide] || []).findIndex(slot => slot.playerId === block.player.id && slot.onIce !== false) : null,
               frames: 12, totalFrames: 12,
             };
             puck.x = puck.shotAnimation.startX;
@@ -1620,7 +1621,8 @@ function liveUpdatePositions() {
       puck.targetX = clamp(shot.targetX + (shot.side === 'home' ? -7 : 7), 5, 195);
       puck.targetY = clamp(shot.targetY + (shot.outcome === 'штанга' ? 8 : 3), 8, 92);
       puck.nextPossessionSide = shot.outcome === 'сейв' || shot.outcome === 'блокирован' ? shot.defendingSide : shot.side;
-      puck.nextCarrierIndex = 3 + Math.floor(visualRng() * 3);
+      puck.nextCarrierIndex = Number.isInteger(shot.nextCarrierIndex) && shot.nextCarrierIndex > 0
+        ? shot.nextCarrierIndex : 3 + Math.floor(visualRng() * 3);
     }
   // Loose puck: players react to the destination; possession resumes after the puck settles.
   } else if ((puck.looseFrames || 0) > 0) {
