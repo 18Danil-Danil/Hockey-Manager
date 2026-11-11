@@ -1243,7 +1243,9 @@ function liveUpdatePositions() {
       puck.y += (targetY - puck.y) * 0.18;
       puck.looseFrames--;
       if (puck.looseFrames === 0) {
-        puck.possessionSide = puck.nextPossessionSide || puck.possessionSide || 'home';
+        const previousSide = puck.possessionSide || 'home';
+        const receivingSide = puck.nextPossessionSide || previousSide;
+        puck.possessionSide = receivingSide;
         puck.carrierIndex = Number.isInteger(puck.nextCarrierIndex)
           ? puck.nextCarrierIndex : 3 + Math.floor(visualRng() * 3);
         puck.actionFrames = 70 + Math.floor(visualRng() * 80);
@@ -1251,6 +1253,10 @@ function liveUpdatePositions() {
         puck.targetY = null;
         puck.nextPossessionSide = null;
         puck.nextCarrierIndex = null;
+        if (receivingSide !== previousSide) {
+          // A clean regain starts a short visual counterattack phase for the new carrier.
+          puck.counterattack = { side: receivingSide, frames: 105 };
+        }
       }
     }
   } else {
@@ -1315,6 +1321,9 @@ function liveUpdatePositions() {
     const hasPuck = side === possessionSide;
     const carrier = hasPuck ? players[puck.carrierIndex] : null;
     const tactics = tacticalFor(side);
+    const counterattackActive = !!puck.counterattack && puck.counterattack.frames > 0;
+    const isCounterattacking = counterattackActive && puck.counterattack.side === side && hasPuck;
+    const isRecoveringAgainstCounter = counterattackActive && puck.counterattack.side !== side && !hasPuck;
     const opponentZone = side === 'home' ? puck.x > 100 : puck.x < 100;
     const forwardCandidates = players
       .map((player, index) => ({ player, index }))
@@ -1368,6 +1377,21 @@ function liveUpdatePositions() {
         targetX = attackX + direction * umbrella.x;
         targetY = 50 + umbrella.y;
         if (isCarrier) { targetX = puck.x + direction * 6; targetY = puck.y; }
+      } else if (isCounterattacking) {
+        if (isCarrier) {
+          // The new carrier attacks open ice immediately after a clean regain.
+          targetX = puck.x + direction * (13 + tactics.style * 0.025 + tactics.risk * 0.045);
+          targetY = puck.y;
+        } else if (isDefender) {
+          // Defencemen trail the rush as a safe outlet instead of joining the same lane.
+          targetX = puck.x - direction * (player.idx === 1 ? 23 : 17);
+          targetY = puck.y + (player.idx === 1 ? -18 : 18);
+        } else {
+          // Wingers sprint into separate lanes while the centre offers a short support option.
+          const lane = player.idx === 3 ? -23 : player.idx === 4 ? 0 : 23;
+          targetX = puck.x + direction * (player.idx === 4 ? -7 : 25);
+          targetY = puck.y + lane;
+        }
       } else if (hasPuck) {
         if (isCarrier) {
           // Vertical/risk-oriented teams attack space faster; positional teams retain the puck.
@@ -1388,9 +1412,9 @@ function liveUpdatePositions() {
           targetY = puck.y + lane;
         }
       } else if (player === closestSkater) {
-        // Pressure controls whether the first defender attacks the puck or protects the middle.
-        targetX = aggressivePress ? puck.x : puck.x - direction * (8 + (50 - tactics.pressure) * 0.12);
-        targetY = aggressivePress ? puck.y : puck.y + (50 - puck.y) * 0.22;
+        // A team caught during a counterattack sends its nearest skater straight back to the puck.
+        targetX = (aggressivePress || isRecoveringAgainstCounter) ? puck.x : puck.x - direction * (8 + (50 - tactics.pressure) * 0.12);
+        targetY = (aggressivePress || isRecoveringAgainstCounter) ? puck.y : puck.y + (50 - puck.y) * 0.22;
       } else if (!hasPuck && player === secondForechecker && supportPress) {
         // A second forward supports the forecheck instead of abandoning the defensive shape.
         targetX = puck.x - direction * 8;
@@ -1482,6 +1506,12 @@ function liveUpdatePositions() {
         puck.x += (targetX - puck.x) * 0.34;
         puck.y += (targetY - puck.y) * 0.34;
       }
+    }
+  }
+  if (puck.counterattack && (puck.looseFrames || 0) <= 0) {
+    puck.counterattack.frames--;
+    if (puck.counterattack.frames <= 0 || puck.possessionSide !== puck.counterattack.side) {
+      puck.counterattack = null;
     }
   }
 }
