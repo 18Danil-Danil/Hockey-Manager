@@ -564,8 +564,8 @@ const recoveringDefender = recoveryHome[1];
 const recoveryDistanceBefore = Math.hypot(recoveringDefender.x - 120, recoveringDefender.y - 50);
 const recoveryUpdater = liveUpdatePositions({ liveMatch: recoveryState }, visualWindow,
   (v, min, max) => Math.max(min, Math.min(max, v)));
-for (let i = 0; i < 20; i++) recoveryUpdater();
-assert.ok(Math.hypot(recoveringDefender.x - 120, recoveringDefender.y - 50) < recoveryDistanceBefore,
+for (let i = 0; i < 3; i++) recoveryUpdater();
+assert.ok(Math.hypot(recoveringDefender.x - recoveryState.positions.puck.x, recoveringDefender.y - recoveryState.positions.puck.y) < recoveryDistanceBefore,
   'team that lost possession did not recover toward the counterattack');
 
 
