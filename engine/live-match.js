@@ -190,6 +190,90 @@ function applyLiveShift(lm, side) {
   return true;
 }
 
+function getLiveManpowerState(lm) {
+  const activeCount = side => (lm?.penalties?.[side] || [])
+    .filter(penalty => penalty.endsAt > lm.totalSecPlayed).length;
+  const homePenalties = activeCount('home');
+  const awayPenalties = activeCount('away');
+  const homeAdvantage = Math.max(0, homePenalties - awayPenalties);
+  const awayAdvantage = Math.max(0, awayPenalties - homePenalties);
+  return {
+    home: { skaters: 5 - Math.min(2, homeAdvantage), advantage: homeAdvantage },
+    away: { skaters: 5 - Math.min(2, awayAdvantage), advantage: awayAdvantage },
+  };
+}
+
+function liveGetOnIceSkaters(lm, side) {
+  const lineup = lm?.[side + 'Lineup'];
+  const positions = lm?.positions?.[side] || [];
+  const activeIds = new Set(positions.slice(1, 6)
+    .filter(position => position.onIce !== false)
+    .map(position => position.playerId).filter(Boolean));
+  const active = (lineup?.skaters || []).filter(player => activeIds.has(player.id));
+  return active.length ? active : (lineup?.skaters || []);
+}
+
+function reconcileLiveManpower(lm) {
+  if (!lm?.positions || !lm?.penalties) return;
+  const manpower = getLiveManpowerState(lm);
+  for (const side of ['home', 'away']) {
+    const lineup = lm[side + 'Lineup'];
+    const slots = (lm.positions[side] || []).slice(1, 6);
+    if (!lineup || !slots.length) continue;
+    const penalizedIds = new Set((lm.penalties[side] || [])
+      .filter(penalty => penalty.endsAt > lm.totalSecPlayed)
+      .map(penalty => penalty.playerId));
+    const currentIds = new Set(slots.filter(slot => slot.onIce !== false)
+      .map(slot => slot.playerId).filter(Boolean));
+    const roster = lineup.skaters || [];
+    const current = roster.filter(player => currentIds.has(player.id) && !penalizedIds.has(player.id));
+    const candidates = [...current];
+    for (const player of roster) {
+      if (!penalizedIds.has(player.id) && !candidates.some(item => item.id === player.id)) candidates.push(player);
+    }
+    const desired = manpower[side].skaters;
+    const defenseCount = desired >= 4 ? 2 : 1;
+    const forwardsCount = desired - defenseCount;
+    const defenders = candidates.filter(player => player.position === 'D');
+    const forwards = candidates.filter(player => player.position !== 'D');
+    const selected = [...defenders.slice(0, defenseCount), ...forwards.slice(0, forwardsCount)];
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      const player = selected[i];
+      slot.onIce = !!player && i < desired;
+      if (!slot.onIce) {
+        slot.playerId = null;
+        slot.playerName = '';
+        slot.vx = 0;
+        slot.vy = 0;
+        continue;
+      }
+      slot.playerId = player.id;
+      slot.playerName = player.name || '';
+      slot.jerseyNumber = player.jerseyNumber ?? null;
+      slot.number = player.number ?? null;
+      slot.position = player.position || (i < defenseCount ? 'D' : 'F');
+      slot.role = i < defenseCount ? 'D' : 'F';
+      slot.stamina = lm.playerStamina?.[side]?.[player.id] ?? 100;
+      slot.vx = 0;
+      slot.vy = 0;
+    }
+  }
+  const puck = lm.positions.puck;
+  if (puck && Number.isInteger(puck.carrierIndex)) {
+    const side = puck.possessionSide || 'home';
+    const carrier = (lm.positions[side] || [])[puck.carrierIndex];
+    if (carrier && carrier.onIce === false) {
+      puck.carrierIndex = null;
+      puck.looseFrames = Math.max(puck.looseFrames || 0, 4);
+      puck.targetX = puck.x;
+      puck.targetY = puck.y;
+      puck.nextPossessionSide = side;
+      puck.nextCarrierIndex = 3;
+    }
+  }
+}
+
 function updateLiveShifts(lm, stepSec) {
   if (!lm || !lm.shiftPlans || !lm.playerStamina || !lm.positions) return;
   const puck = lm.positions.puck || {};
@@ -199,7 +283,7 @@ function updateLiveShifts(lm, stepSec) {
     const state = lm.shiftState[side];
     const stamina = lm.playerStamina[side];
     if (!lineup || !state || !stamina) continue;
-    const activeIds = new Set(positions.slice(1, 6).map(player => player.playerId).filter(Boolean));
+    const activeIds = new Set(positions.slice(1, 6).filter(player => player.onIce !== false).map(player => player.playerId).filter(Boolean));
     for (const player of lineup.skaters || []) {
       if (!Object.prototype.hasOwnProperty.call(stamina, player.id)) {
         stamina[player.id] = clamp(100 - (player.fatigue || 0) * 0.45, 35, 100);
@@ -270,8 +354,9 @@ function liveGetActivePenalties(side) {
 }
 
 function liveIsPP(side) {
+  const state = getLiveManpowerState(G.liveMatch);
   const opp = side === 'home' ? 'away' : 'home';
-  return liveGetActivePenalties(opp).length > 0;
+  return state[side].skaters > state[opp].skaters;
 }
 
 function liveTick() {
@@ -298,6 +383,7 @@ function liveAdvance(stepSec) {
   for (const side of ['home', 'away']) {
     lm.penalties[side] = lm.penalties[side].filter(p => p.endsAt > tNow);
   }
+  reconcileLiveManpower(lm);
 
   const homePP = liveIsPP('home');
   const awayPP = liveIsPP('away');
@@ -389,7 +475,9 @@ function liveGoal(side) {
   const scoringLineup = side === 'home' ? lm.homeLineup : lm.awayLineup;
   const concedingLineup = side === 'home' ? lm.awayLineup : lm.homeLineup;
   const isPlayoff = lm.isPlayoff;
-  const scorer = pickWeighted(scoringLineup.skaters, scorerWeight);
+  const onIceScorers = liveGetOnIceSkaters(lm, side);
+  const onIceConcedingPlayers = liveGetOnIceSkaters(lm, side === 'home' ? 'away' : 'home');
+  const scorer = pickWeighted(onIceScorers, scorerWeight);
 
   const sStat = isPlayoff ? ensurePlayoffStats(scorer) : ensureStats(scorer);
   sStat.goals++; sStat.shots++; sStat.points++;
@@ -398,7 +486,7 @@ function liveGoal(side) {
   }
 
   const numAssists = rng() < 0.12 ? 0 : rng() < 0.35 ? 1 : 2;
-  const assistPool = scoringLineup.skaters.filter(p => p.id !== scorer.id);
+  const assistPool = onIceScorers.filter(p => p.id !== scorer.id);
   const assisters = [];
   for (let i = 0; i < numAssists && assistPool.length > 0; i++) {
     const a = pickWeighted(assistPool, assistWeight);
@@ -427,12 +515,11 @@ function liveGoal(side) {
       }
     }
     lm.penalties[oppSide] = lm.penalties[oppSide].filter(p => p.endsAt > lm.totalSecPlayed);
+    reconcileLiveManpower(lm);
   }
 
-  const onIceScoring = new Set([scorer.id, ...assisters.map(a => a.id)]);
-  while (onIceScoring.size < 5 && onIceScoring.size < scoringLineup.skaters.length) onIceScoring.add(pickWeighted(scoringLineup.skaters, x => x.ovr).id);
-  const onIceConceding = new Set();
-  while (onIceConceding.size < 5 && onIceConceding.size < concedingLineup.skaters.length) onIceConceding.add(pickWeighted(concedingLineup.skaters, x => x.ovr).id);
+  const onIceScoring = new Set(onIceScorers.map(player => player.id));
+  const onIceConceding = new Set(onIceConcedingPlayers.map(player => player.id));
   for (const p of scoringLineup.skaters) if (onIceScoring.has(p.id)) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).plusMinus++;
   for (const p of concedingLineup.skaters) if (onIceConceding.has(p.id)) (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).plusMinus--;
 
@@ -467,7 +554,14 @@ function livePenalty(side, startedAt = null) {
   const lm = G.liveMatch;
   const lineup = side === 'home' ? lm.homeLineup : lm.awayLineup;
   if (!lineup.skaters.length) return;
-  const p = pick(lineup.skaters);
+  const active = liveGetOnIceSkaters(lm, side).filter(player =>
+    !(lm.penalties[side] || []).some(penalty => penalty.playerId === player.id && penalty.endsAt > lm.totalSecPlayed)
+  );
+  const eligible = active.length ? active : lineup.skaters.filter(player =>
+    !(lm.penalties[side] || []).some(penalty => penalty.playerId === player.id && penalty.endsAt > lm.totalSecPlayed)
+  );
+  if (!eligible.length) return;
+  const p = pick(eligible);
   const isMajor = rng() < 0.12;
   const duration = isMajor ? 300 : 120;
   const type = isMajor ? '5' : '2';
@@ -479,6 +573,7 @@ function livePenalty(side, startedAt = null) {
     type,
     scoredDuringPP: false,
   });
+  reconcileLiveManpower(lm);
   const reason = isMajor ? pick(['удар в голову','драка','атака вратаря']) : pick(['задержка','подножка','грубость','толчок','удар соперника']);
   const sideName = side === 'home' ? G.league.teams.find(t => t.id === lm.homeId).name : G.league.teams.find(t => t.id === lm.awayId).name;
   livePushEvent({
@@ -996,8 +1091,8 @@ function drawLiveCanvas() {
 
   const homeNumbers = new Set();
   const awayNumbers = new Set();
-  for (const p of lm.positions.home) drawPlayer(p, 'home', homeNumbers);
-  for (const p of lm.positions.away) drawPlayer(p, 'away', awayNumbers);
+  for (const p of lm.positions.home) if (p.role === 'goalie' || p.onIce !== false) drawPlayer(p, 'home', homeNumbers);
+  for (const p of lm.positions.away) if (p.role === 'goalie' || p.onIce !== false) drawPlayer(p, 'away', awayNumbers);
 
   const puckX = vx(lm.positions.puck.x);
   const puckY = vy(lm.positions.puck.y);
@@ -1197,7 +1292,7 @@ function liveUpdatePositions() {
     let closestDistance = Infinity;
 
     for (const player of players) {
-      if (player.role === 'goalie') continue;
+      if (player.role === 'goalie' || player.onIce === false) continue;
       const distance = Math.hypot(puck.x - player.x, puck.y - player.y);
       if (distance < closestDistance) {
         closestDistance = distance;
@@ -1206,6 +1301,7 @@ function liveUpdatePositions() {
     }
 
     for (const player of players) {
+      if (player.onIce === false) continue;
       const isGoalie = player.role === 'goalie';
       const isCarrier = !!carrier && player === carrier;
       const isDefender = player.role === 'D';
