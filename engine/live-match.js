@@ -330,7 +330,7 @@ function buildFormation(side, lineup = null) {
   const forwards = lineup?.forwards || (lineup?.skaters || []).filter(p => p.position !== 'D');
   const assigned = [lineup?.goalie || null, defenders[0] || null, defenders[1] || null,
     forwards[0] || null, forwards[1] || null, forwards[2] || null,
-    (lineup?.skaters || []).find(p => p.position !== 'D' && !forwards.slice(0, 3).some(f => f.id === p.id)) || null];
+    (lineup?.skaters || []).find(p => ![...defenders.slice(0, 2), ...forwards.slice(0, 3)].some(existing => existing.id === p.id)) || null];
   return slots.map((slot, i) => ({
     ...slot, idx: i, playerId: assigned[i]?.id || null,
     playerName: assigned[i]?.name || '', onIce: i === 0 || i <= 5 ? true : false,
@@ -425,8 +425,10 @@ function updateLiveGoaliePulls(lm) {
     const deficit = opponentScore - ownScore;
     const threshold = deficit >= 2 ? 150 : deficit === 1 ? 90 : 0;
     const shouldPull = threshold > 0 && lm.timeLeft <= threshold;
+    const goalieSlot = lm.positions?.[side]?.[0];
     if (!lm.goaliePulled[side] && shouldPull) {
       lm.goaliePulled[side] = true;
+      if (goalieSlot) goalieSlot.onIce = false;
       livePushEvent({
         type: 'goalie_pull', side,
         text: 'Вратарь снят — команда играет в шесть полевых',
@@ -434,6 +436,7 @@ function updateLiveGoaliePulls(lm) {
       });
     } else if (lm.goaliePulled[side] && deficit <= 0) {
       lm.goaliePulled[side] = false;
+      if (goalieSlot) goalieSlot.onIce = true;
       livePushEvent({
         type: 'goalie_return', side,
         text: 'Вратарь возвращается в ворота',
@@ -444,6 +447,7 @@ function updateLiveGoaliePulls(lm) {
       const puckInOwnZone = side === 'home' ? puck.x < 58 : puck.x > 142;
       if (puckInOwnZone && puck.possessionSide !== side && (puck.looseFrames || 0) === 0) {
         lm.goaliePulled[side] = false;
+        if (goalieSlot) goalieSlot.onIce = true;
         livePushEvent({
           type: 'goalie_return', side,
           text: 'Вратарь возвращается в ворота — соперник закрепился в зоне',
@@ -480,6 +484,10 @@ function liveAdvance(stepSec) {
   let hMod = 1, aMod = 1;
   if (homePP) { hMod *= LIVE_PP_BOOST; aMod *= LIVE_PK_NERF; }
   if (awayPP) { aMod *= LIVE_PP_BOOST; hMod *= LIVE_PK_NERF; }
+  // An empty net raises the opponent's scoring chance; the six-skater side
+  // already receives its manpower advantage through the PP modifier above.
+  if (lm.goaliePulled?.away) hMod *= 1.35;
+  if (lm.goaliePulled?.home) aMod *= 1.35;
 
   const pH = hXg * hMod * lm.situation.home.attack * lm.situation.away.defense * (stepSec / 3600);
   const pA = aXg * aMod * lm.situation.away.attack * lm.situation.home.defense * (stepSec / 3600);
