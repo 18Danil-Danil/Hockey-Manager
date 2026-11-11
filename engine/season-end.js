@@ -147,7 +147,7 @@ function endSeason() {
     t.finance.lastSponsorWins = 0; t.finance.sponsorOffers = null;
     t.scoutMission = null;
   });
-  resetAllStats(G.league); G.league.schedule = makeSchedule(G.league.teams); G.league.scheduleMeta = makeScheduleMeta(G.league.season, G.league.schedule.length, G.league.teams); G.league.scheduleVersion = 3;
+  resetAllStats(G.league); G.league.schedule = makeSchedule(G.league.teams, G.league.season); G.league.scheduleMeta = makeScheduleMeta(G.league.season, G.league.schedule.length, G.league.teams); G.league.scheduleVersion = 4;
   ensureAllLines();
   G.league.teams.forEach(t => assignSeasonGoals(t));
   initAISponsors();
