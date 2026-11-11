@@ -4,95 +4,72 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const context = { Date, Map, Math, Number, String, Array, Object };
+const context = { console, Date, Map, Set, Math, Number, String, Array, Object };
+context.window = context;
 vm.createContext(context);
-vm.runInContext(fs.readFileSync(path.join(root, 'engine/league-setup.js'), 'utf8'), context);
-
-function legacySchedule(teams) {
-  const arr = teams.slice();
-  const single = [];
-  for (let r = 0; r < teams.length - 1; r++) {
-    const round = [];
-    for (let i = 0; i < Math.floor(teams.length / 2); i++) {
-      const a = arr[i], b = arr[teams.length - 1 - i];
-      round.push(r % 2 === 0 ? [a.id, b.id] : [b.id, a.id]);
-    }
-    single.push(round);
-    arr.splice(1, 0, arr.pop());
-  }
-  return [...single, ...single.map(round => round.map(([home, away]) => [away, home]))];
+for (const file of ['data/teams.js', 'data/vhl-travel-zones.js', 'engine/league-setup.js']) {
+  vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context, { filename: file });
 }
+const teams = context.VHL_TEAMS;
+assert.equal(context.VHL_TRAVEL_ZONES.zones.length, 8);
+assert.equal(context.VHL_TRAVEL_ZONES.zones.reduce((sum, zone) => sum + zone.teams.length, 0), 30);
+assert.equal(new Set(context.VHL_TRAVEL_ZONES.zones.flatMap(zone => zone.teams)).size, 30);
+assert.equal(context.hasCompleteVhlTravelMap(teams), true);
 
-function auditSchedule(teams, schedule) {
-  const teamStats = new Map(teams.map(team => [team.id, { home: 0, away: 0, sequence: [] }]));
-  const pairings = new Map();
-  schedule.forEach((round, roundIndex) => {
-    const participants = new Set();
-    round.forEach(([homeId, awayId]) => {
-      assert.ok(!participants.has(homeId) && !participants.has(awayId), 'a club cannot play twice on one game day');
-      participants.add(homeId);
-      participants.add(awayId);
-      const key = [String(homeId), String(awayId)].sort().join('|');
-      pairings.set(key, (pairings.get(key) || 0) + 1);
-      teamStats.get(homeId).home++;
-      teamStats.get(homeId).sequence.push('H');
-      teamStats.get(awayId).away++;
-      teamStats.get(awayId).sequence.push('A');
-    });
-    if (teams.length % 2 === 0) assert.equal(participants.size, teams.length, 'all clubs play each scheduled game day');
+const schedule = context.makeSchedule(teams);
+assert.equal(schedule.length, 152, 'calendar contains 152 active game dates');
+const meta = context.makeScheduleMeta('2026/27', schedule.length, teams);
+assert.equal(meta.length, schedule.length);
+assert.equal(meta[0].date, '2026-09-02');
+assert.equal(meta.at(-1).date, '2027-03-18');
+
+const teamStats = new Map(teams.map(team => [team.id, { home: 0, away: 0, games: 0 }]));
+const pairings = new Map();
+let totalGames = 0, minGamesPerDate = Infinity, maxGamesPerDate = 0;
+schedule.forEach(round => {
+  const participants = new Set();
+  minGamesPerDate = Math.min(minGamesPerDate, round.length);
+  maxGamesPerDate = Math.max(maxGamesPerDate, round.length);
+  round.forEach(([homeId, awayId]) => {
+    assert.ok(!participants.has(homeId) && !participants.has(awayId), 'club cannot play twice on one date');
+    participants.add(homeId); participants.add(awayId);
+    teamStats.get(homeId).home++; teamStats.get(homeId).games++;
+    teamStats.get(awayId).away++; teamStats.get(awayId).games++;
+    const key = [homeId, awayId].sort((a, b) => a - b).join('|');
+    if (!pairings.has(key)) pairings.set(key, []);
+    pairings.get(key).push([homeId, awayId]); totalGames++;
   });
-
-  let maxVenueStreak = 0;
-  let maxHomeAwayDifference = 0;
-  for (const stat of teamStats.values()) {
-    assert.equal(stat.sequence.length, schedule.length, 'each club plays once per round');
-    maxHomeAwayDifference = Math.max(maxHomeAwayDifference, Math.abs(stat.home - stat.away));
-    let last = '';
-    let streak = 0;
-    for (const side of stat.sequence) {
-      streak = side === last ? streak + 1 : 1;
-      last = side;
-      maxVenueStreak = Math.max(maxVenueStreak, streak);
-    }
-  }
-  assert.equal(pairings.size, teams.length * (teams.length - 1) / 2, 'every opponent pair appears');
-  for (const count of pairings.values()) assert.equal(count, 2, 'each opponent pair meets home and away');
-  assert.ok(maxHomeAwayDifference <= 2, 'home/away balance differs by no more than two games');
-  assert.ok(maxVenueStreak <= 4, 'home or away series never exceed four consecutive games');
-  return { maxVenueStreak, maxHomeAwayDifference };
+});
+assert.equal(totalGames, 870);
+assert.equal(pairings.size, 435);
+for (const games of pairings.values()) {
+  assert.equal(games.length, 2);
+  assert.equal(games[0][0], games[1][1]);
+  assert.equal(games[0][1], games[1][0]);
 }
-
-for (const count of [30, 34, 26]) {
-  const teams = Array.from({ length: count }, (_, index) => ({ id: index + 1 }));
-  const schedule = context.makeSchedule(teams);
-  assert.equal(schedule.length, 2 * (count - 1));
-  const audit = auditSchedule(teams, schedule);
-  const meta = context.makeScheduleMeta('2027/28', schedule.length);
-  assert.equal(meta.length, schedule.length);
-  assert.equal(meta[0].date, '2027-09-05');
-  for (let i = 1; i < meta.length; i++) {
-    const gap = (Date.parse(meta[i].date + 'T00:00:00Z') - Date.parse(meta[i - 1].date + 'T00:00:00Z')) / 86400000;
-    assert.ok(gap >= 3 && gap <= 9, 'rest days are scheduled between game days');
-  }
-  assert.ok(meta.some(item => item.date.startsWith('2028-01-')), 'calendar crosses into the next year');
-  console.log(`${count}-club schedule passed: ${schedule.length} rounds, max venue streak ${audit.maxVenueStreak}, home/away difference ${audit.maxHomeAwayDifference}, final date ${meta.at(-1).date}`);
+for (const stat of teamStats.values()) {
+  assert.equal(stat.games, 58);
+  assert.equal(stat.home, 29);
+  assert.equal(stat.away, 29);
 }
+assert.ok(minGamesPerDate >= 3 && maxGamesPerDate <= 8);
+assert.ok(meta.some(item => item.travelNote && item.travelNote.includes('Норильск — Красноярск')));
+assert.ok(meta.some(item => item.phase === 'local-derby'));
+assert.ok(meta.some(item => item.zoneBlocks?.length));
+console.log('Zone calendar passed: ' + schedule.length + ' dates, ' + totalGames + ' matches, ' + minGamesPerDate + '-' + maxGamesPerDate + ' games/date.');
 
-// Existing careers: preserve played rounds and opponent pairings; only future venues may change.
-const teams = Array.from({ length: 30 }, (_, index) => ({ id: index + 1 }));
-const oldSchedule = legacySchedule(teams);
-const completedRounds = 6;
-const migrated = context.orientScheduleRounds(oldSchedule, teams, completedRounds);
-for (let i = 0; i < completedRounds; i++) assert.equal(JSON.stringify(migrated[i]), JSON.stringify(oldSchedule[i]), 'played fixtures remain untouched');
-for (let i = completedRounds; i < oldSchedule.length; i++) {
-  const before = oldSchedule[i].map(([h, a]) => [String(h), String(a)].sort().join('|')).sort();
-  const after = migrated[i].map(([h, a]) => [String(h), String(a)].sort().join('|')).sort();
-  assert.equal(JSON.stringify(after), JSON.stringify(before), 'future opponents remain unchanged');
-}
-const legacyLeague = { season: '2026/27', teams, schedule: oldSchedule, currentRound: completedRounds };
-const meta = context.ensureScheduleCalendar(legacyLeague);
-assert.equal(legacyLeague.scheduleVersion, 2);
-assert.equal(meta.length, oldSchedule.length);
-assert.equal(legacyLeague.scheduleMeta[0].date, '2026-09-05');
-assert.equal(JSON.stringify(legacyLeague.schedule.slice(0, completedRounds)), JSON.stringify(oldSchedule.slice(0, completedRounds)));
-console.log('Legacy career calendar migration passed.');
+const youth = Array.from({ length: 8 }, (_, index) => ({ id: index + 1, slug: 'youth-' + index }));
+assert.equal(context.makeSchedule(youth).length, 14);
+console.log('Youth schedule fallback passed.');
+
+const oldSchedule = context.orientScheduleRounds(Array.from({ length: 58 }, () => []), teams, 0);
+const unstarted = { season: '2026/27', teams, schedule: oldSchedule, scheduleVersion: 2, currentRound: 0, results: [] };
+context.ensureScheduleCalendar(unstarted);
+assert.equal(unstarted.scheduleVersion, 3);
+assert.equal(unstarted.schedule.length, 152);
+const startedSchedule = oldSchedule.map(round => round.slice());
+const started = { season: '2026/27', teams, schedule: startedSchedule, scheduleVersion: 2, currentRound: 4, results: [{ round: 0 }] };
+context.ensureScheduleCalendar(started);
+assert.equal(started.scheduleVersion, 2);
+assert.equal(started.schedule.length, 58);
+console.log('Save migration compatibility passed.');
