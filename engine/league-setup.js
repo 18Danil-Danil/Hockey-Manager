@@ -52,6 +52,45 @@ function makeZoneRoundRobin(zones) {
   }
   return rounds;
 }
+function getFirstLegHomeZone(pair) {
+  const lower = pair[0].id < pair[1].id ? pair[0] : pair[1];
+  const higher = pair[0].id < pair[1].id ? pair[1] : pair[0];
+  return (higher.id - lower.id) <= 4 ? lower : higher;
+}
+
+function orderZoneRoundsForVenueBalance(zoneRounds, zones) {
+  const permutations = [];
+  function visit(prefix, remaining) {
+    if (!remaining.length) { permutations.push(prefix); return; }
+    remaining.forEach((value, index) => visit(prefix.concat(value), remaining.filter((_, i) => i !== index)));
+  }
+  visit([], zoneRounds.map((_, index) => index));
+  let best = permutations[0], bestMaxRun = Infinity, bestPenalty = Infinity;
+  permutations.forEach(order => {
+    let maxRun = 0, penalty = 0;
+    zones.forEach(zone => {
+      let lastSide = null, runGames = 0;
+      order.forEach(roundIndex => {
+        const pair = zoneRounds[roundIndex].find(item => item[0].id === zone.id || item[1].id === zone.id);
+        const other = pair[0].id === zone.id ? pair[1] : pair[0];
+        const side = getFirstLegHomeZone(pair).id === zone.id ? 'H' : 'A';
+        if (side === lastSide) runGames += other.clubs.length;
+        else {
+          if (runGames) { maxRun = Math.max(maxRun, runGames); penalty += runGames * runGames; }
+          lastSide = side;
+          runGames = other.clubs.length;
+        }
+      });
+      maxRun = Math.max(maxRun, runGames);
+      penalty += runGames * runGames;
+    });
+    if (maxRun < bestMaxRun || (maxRun === bestMaxRun && penalty < bestPenalty)) {
+      bestMaxRun = maxRun; bestPenalty = penalty; best = order;
+    }
+  });
+  return best.map(index => zoneRounds[index]);
+}
+
 function makeClubRoundRobin(clubs) {
   const rotation = clubs.slice(); if (rotation.length % 2) rotation.push(null);
   const rounds = [];
@@ -88,7 +127,7 @@ function assignZonePairSlots(pairs, previousSlots) {
 function buildVhlSchedulePlan(teams) {
   const zones = getVhlTravelZonesForTeams(teams).sort((a, b) => a.id - b.id);
   if (!hasCompleteVhlTravelMap(teams)) throw new Error('Не удалось сопоставить все клубы ВХЛ с логистическими группами');
-  const zoneRounds = makeZoneRoundRobin(zones);
+  const zoneRounds = orderZoneRoundsForVenueBalance(makeZoneRoundRobin(zones), zones);
   const internalRounds = new Map(zones.map(zone => [zone.id, makeClubRoundRobin(zone.clubs)]));
   const schedule = [], roundInfo = [], previousSlots = new Map(), dayOffsets = [0, 2, 3, 5];
   function addRound(games, info) { schedule.push(games); roundInfo.push(info); }
@@ -99,8 +138,8 @@ function buildVhlSchedulePlan(teams) {
       pairs.forEach((pair, pairIndex) => {
         const slot = slots[pairIndex]; pair.forEach(zone => previousSlots.set(zone.id, slot));
         const lower = pair[0].id < pair[1].id ? pair[0] : pair[1], higher = pair[0].id < pair[1].id ? pair[1] : pair[0];
-        // Круговая ориентация пар зон распределяет домашние серии: каждая зона принимает примерно половину остальных зон.
-        const firstLegHomeZone = (higher.id - lower.id) <= 4 ? lower : higher;
+        // Круговая ориентация пар зон распределяет домашние серии примерно поровну.
+        const firstLegHomeZone = getFirstLegHomeZone(pair);
         const firstLegAwayZone = firstLegHomeZone.id === lower.id ? higher : lower;
         const homeZone = reverse ? firstLegAwayZone : firstLegHomeZone;
         const awayZone = reverse ? firstLegHomeZone : firstLegAwayZone;
