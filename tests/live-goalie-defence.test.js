@@ -53,15 +53,16 @@ assert.equal(goalie.stats.reboundCovers, 1);
 const updateStart = source.indexOf('function liveUpdatePositions(');
 const updateEnd = source.indexOf('function liveAnimationLoop(', updateStart);
 assert.ok(updateStart >= 0 && updateEnd > updateStart, 'Could not locate LIVE positioning update');
-const visualUpdate = new Function(
-  'G', 'window', 'getLiveManpowerState', 'clamp',
-  source.slice(updateStart, updateEnd) + '; return liveUpdatePositions;'
-)({
+const liveGlobals = {
   league: { teams: [
     { id: 'home', tactics: {} },
     { id: 'away', tactics: {} },
   ] },
-}, {
+};
+const visualUpdate = new Function(
+  'G', 'window', 'getLiveManpowerState', 'clamp',
+  source.slice(updateStart, updateEnd) + '; return liveUpdatePositions;'
+)(liveGlobals, {
   GAME_RNG: { visualRng: () => 0.5 },
 }, () => ({
   home: { skaters: 5, advantage: 0 },
@@ -92,7 +93,8 @@ const positioningState = {
     puck: { x: 165, y: 80, possessionSide: 'home', carrierIndex: 3, actionFrames: 100, looseFrames: 0 },
   },
 };
-visualUpdate({ liveMatch: positioningState })();
+liveGlobals.liveMatch = positioningState;
+visualUpdate();
 assert.ok(positioningState.positions.away[0].y > 50,
   'goalie did not move laterally toward a puck carried across the zone');
 
