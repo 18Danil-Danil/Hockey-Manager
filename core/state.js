@@ -2,7 +2,9 @@
    ГЛОБАЛЬНОЕ СОСТОЯНИЕ
    ============================================================ */
 const G = {
-  league: null, playerTeamId: null, activeTab: 'overview', screen: 'select',
+  league: null, playerTeamId: null, activeTab: 'overview', screen: 'title',
+  settings: { accent: 'orange', compactNav: false, reducedMotion: false, confirmNewGame: true },
+  navGroupOpen: null,
   selectedGamePbp: null, marketFilter: 'all', rosterSort: 'ovr', marketSort: 'ovr',
   tradeTarget: null, popupPlayerId: null, viewTeamId: null, tradeTargetTeamId: null,
   standingsSort: { key: 'pts', dir: 'desc' },
