@@ -242,7 +242,7 @@ function renderCalendar() {
     : 'Дата не назначена';
 
   let html = `<h2>Календарь сезона ${G.league.season}</h2>
-    <div class="calendar-summary">58 матчей регулярного чемпионата · игровые дни распределены с интервалами 3–4 дня · предусмотрена новогодняя пауза</div>`;
+    <div class="calendar-summary">${myGames.length} матчей регулярного чемпионата · игровые дни распределены с интервалами 3–4 дня · предусмотрена новогодняя пауза</div>`;
   byMonth.forEach((games, month) => {
     html += `<div class="season-card calendar-month"><div class="head"><span class="season-num">${formatMonth(month)}</span><span class="tag">${games.length} матчей</span></div>`;
     games.forEach(g => {
