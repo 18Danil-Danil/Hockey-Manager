@@ -855,3 +855,46 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .lineup-overview-card > b { font-size: 20px; }
   .lineup-line-card,.lineup-goalie-card { padding: 11px; }
 }
+
+
+/* === LINEUP PLAYER CARD POLISH === */
+.lineup-player-slot { padding: 10px; border-color: #35435a; background: linear-gradient(155deg,rgba(24,34,49,.92),rgba(12,18,29,.88)); transition: border-color .16s ease,transform .16s ease,background .16s ease; }
+.lineup-player-slot.is-filled:hover,.lineup-goalie-card.is-filled:hover { border-color: #526783; transform: translateY(-1px); }
+.lineup-player-slot.is-empty { border-style: dashed; opacity: .82; }
+.lineup-player-avatar { width: 36px; height: 36px; flex-basis: 36px; border: 1px solid rgba(148,163,184,.16); background: linear-gradient(145deg,#35435a,#202b3d); }
+.lineup-player-avatar.pos-C { background: linear-gradient(145deg,#256b78,#183d50); }
+.lineup-player-avatar.pos-LW,.lineup-player-avatar.pos-RW { background: linear-gradient(145deg,#8a4b31,#482b2a); }
+.lineup-player-avatar.pos-D { background: linear-gradient(145deg,#435b8b,#263653); }
+.lineup-player-avatar.pos-G { background: linear-gradient(145deg,#8a7130,#493c25); }
+.lineup-player-ovr { min-width: 34px; height: 30px; border-radius: 8px; font-size: 13px; font-weight: 900; }
+.lineup-player-ovr.rating-elite { color: #4ade80; background: rgba(74,222,128,.13); border: 1px solid rgba(74,222,128,.28); }
+.lineup-player-ovr.rating-strong { color: #a3e635; background: rgba(163,230,53,.11); border: 1px solid rgba(163,230,53,.24); }
+.lineup-player-ovr.rating-regular { color: #fbbf24; background: rgba(251,191,36,.11); border: 1px solid rgba(251,191,36,.24); }
+.lineup-player-ovr.rating-depth { color: #94a3b8; background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.2); }
+.lineup-player-ovr.rating-empty { color: #64748b; background: rgba(100,116,139,.08); }
+.lineup-player-rating-track { height: 3px; margin: 8px 0 9px 43px; overflow: hidden; border-radius: 99px; background: #30394a; }
+.lineup-player-rating-track span { display: block; height: 100%; border-radius: inherit; transition: width .2s ease; }
+.lineup-player-rating-track .rating-elite { background: #4ade80; }
+.lineup-player-rating-track .rating-strong { background: #a3e635; }
+.lineup-player-rating-track .rating-regular { background: #fbbf24; }
+.lineup-player-rating-track .rating-depth { background: #64748b; }
+.lineup-player-change { display: flex; flex-direction: column; gap: 4px; }
+.lineup-player-change > span { color: #74839b; font-size: 8px; font-weight: 900; letter-spacing: .1em; }
+.lineup-player-select { width: 100%; min-width: 0; padding: 7px 26px 7px 8px; border: 1px solid #35435a; border-radius: 7px; background: #111927; color: #cbd5e1; font-size: 10px; }
+.lineup-player-select:hover,.lineup-player-select:focus { border-color: #ff8a5b; background: #172235; }
+.lineup-goalie-card { transition: border-color .16s ease,transform .16s ease; }
+.lineup-goalie-card.is-empty { border-style: dashed; opacity: .82; }
+.lineup-goalie-card .lineup-player-rating-track { margin-left: 0; }
+.lineup-goalie-card .lineup-player-change { margin-top: 10px; }
+@media (max-width: 900px) {
+  .lineup-player-grid.three-slots,.lineup-player-grid.two-slots { grid-template-columns: 1fr; }
+  .lineup-player-slot { padding: 10px 12px; }
+}
+@media (max-width: 520px) {
+  .lineup-player-main { gap: 9px; }
+  .lineup-player-avatar { width: 40px; height: 40px; flex-basis: 40px; }
+  .lineup-player-info b { font-size: 12px; }
+  .lineup-player-info small { font-size: 9px; }
+  .lineup-player-ovr { min-width: 38px; height: 34px; font-size: 14px; }
+  .lineup-player-select { min-height: 38px; font-size: 11px; }
+}
