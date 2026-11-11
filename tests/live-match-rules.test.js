@@ -642,4 +642,69 @@ assert.equal(rafRequests, 1, 'running match did not schedule the next animation 
 assert.equal(animationUpdates, 1);
 assert.equal(animationDraws, 1);
 
+
+ // Tactical settings must produce visibly different defensive and attacking behaviour.
+const makeTacticalAnimationState = (homeTactics, puckSide, puckX, carrierIndex = 3) => {
+  const home = formation.map(p => ({ ...p }));
+  const away = awayPositions.map(p => ({ ...p }));
+  return {
+    home, away,
+    lm: {
+      homeId: 'home', awayId: 'away',
+      positions: {
+        home, away,
+        puck: { x: puckX, y: 50, vx: 0, vy: 0, possessionSide: puckSide,
+          carrierIndex, actionFrames: 40, looseFrames: 0 },
+      },
+    },
+    G: { league: { teams: [
+      { id: 'home', tactics: homeTactics },
+      { id: 'away', tactics: { forecheck: 50, pressure: 50, style: 50, physical: 50, risk: 50 } },
+    ] } },
+  };
+};
+const tacticalUpdate = state => liveUpdatePositions(
+  { ...state.G, liveMatch: state.lm }, visualWindow,
+  (v, min, max) => Math.max(min, Math.min(max, v)),
+  () => ({ home: { skaters: 5, advantage: 0 }, away: { skaters: 5, advantage: 0 } })
+);
+
+// Aggressive pressure sends the nearest defender closer to an opponent carrying the puck.
+const passiveDefense = makeTacticalAnimationState(
+  { forecheck: 10, pressure: 10, style: 50, physical: 50, risk: 20 }, 'away', 160
+);
+const aggressiveDefense = makeTacticalAnimationState(
+  { forecheck: 90, pressure: 90, style: 50, physical: 50, risk: 20 }, 'away', 160
+);
+const passiveChaser = passiveDefense.home.slice(1).reduce((best, player) =>
+  Math.hypot(player.x - 160, player.y - 50) < Math.hypot(best.x - 160, best.y - 50) ? player : best
+);
+const aggressiveChaser = aggressiveDefense.home.slice(1).reduce((best, player) =>
+  Math.hypot(player.x - 160, player.y - 50) < Math.hypot(best.x - 160, best.y - 50) ? player : best
+);
+tacticalUpdate(passiveDefense)();
+tacticalUpdate(aggressiveDefense)();
+assert.ok(aggressiveChaser.x > passiveChaser.x,
+  'aggressive pressure did not move the nearest defender farther toward the puck');
+
+// A vertical, high-risk attack drives the puck carrier farther forward than a positional setup.
+const positionalAttack = makeTacticalAnimationState(
+  { forecheck: 50, pressure: 50, style: 0, physical: 50, risk: 0 }, 'home', 100, 4
+);
+const verticalAttack = makeTacticalAnimationState(
+  { forecheck: 50, pressure: 50, style: 100, physical: 50, risk: 100 }, 'home', 100, 4
+);
+const positionalCarrier = positionalAttack.home[4];
+const verticalCarrier = verticalAttack.home[4];
+tacticalUpdate(positionalAttack)();
+tacticalUpdate(verticalAttack)();
+assert.ok(verticalCarrier.x > positionalCarrier.x,
+  'vertical/high-risk attack did not drive the carrier farther toward the attacking zone');
+
+// The tactical movement layer remains safe when older saves lack a tactics object.
+const legacyTacticsState = makeTacticalAnimationState({}, 'home', 100, 4);
+assert.doesNotThrow(() => tacticalUpdate(legacyTacticsState)(),
+  'legacy team without tactical settings broke LIVE movement');
+
+
 console.log('LIVE match rules checks passed.');
