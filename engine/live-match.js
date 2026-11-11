@@ -2158,7 +2158,7 @@ function liveUpdatePositions() {
       if (!unassignedThreats.length) break;
       const selectedIndex = unassignedThreats.reduce((bestIndex, item, index) => {
         const distance = Math.hypot(item.player.x - defender.x, item.player.y - defender.y);
-        const score = distance * 0.58 + item.danger * 0.42;
+        const score = distance * 0.22 + item.danger * 0.78;
         if (score < bestIndex.score) return { index, score };
         return bestIndex;
       }, { index: 0, score: Infinity }).index;
