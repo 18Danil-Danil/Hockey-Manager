@@ -265,21 +265,10 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       cursor.setUTCDate(cursor.getUTCDate() + segment.span);
       if (segmentIndex < boundaries) cursor.setUTCDate(cursor.getUTCDate() + gaps[segmentIndex]);
     });
-    // В календаре не назначаем игры с 31 декабря по 4 января.
-    const newYearPauseStart = result.findIndex(item => item.date === startYear + '-12-31');
-    if (newYearPauseStart >= 0) {
-      for (let i = newYearPauseStart; i < result.length; i++) {
-        const date = new Date(result[i].date + 'T00:00:00Z');
-        date.setUTCDate(date.getUTCDate() - 1);
-        result[i].date = date.toISOString().slice(0, 10);
-      }
-      // Сохраняем окончание регулярного чемпионата 18 марта.
-      const compensateIndex = Math.floor(result.length * 0.85);
-      for (let i = compensateIndex; i < result.length; i++) {
-        const date = new Date(result[i].date + 'T00:00:00Z');
-        date.setUTCDate(date.getUTCDate() + 1);
-        result[i].date = date.toISOString().slice(0, 10);
-      }
+    // Последняя игра перед новогодней паузой — 30 декабря; следующая дата — 5 января.
+    if (newYearBoundary >= 0) {
+      const lastRoundIndex = segments[newYearBoundary].items[segments[newYearBoundary].items.length - 1].index;
+      result[lastRoundIndex].date = startYear + '-12-30';
     }
     return result;
   }
