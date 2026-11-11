@@ -22,6 +22,9 @@ const meta = context.makeScheduleMeta('2026/27', schedule.length, teams);
 assert.equal(meta.length, schedule.length);
 assert.equal(meta[0].date, '2026-09-02');
 assert.equal(meta.at(-1).date, '2027-03-18');
+assert.ok(meta.some(item => item.date === '2026-12-30'));
+assert.ok(meta.some(item => item.date === '2027-01-05'));
+assert.ok(!meta.some(item => item.date >= '2026-12-31' && item.date <= '2027-01-04'), 'no games during the New Year shutdown');
 
 const teamStats = new Map(teams.map(team => [team.id, { home: 0, away: 0, games: 0 }]));
 const pairings = new Map();
