@@ -381,23 +381,28 @@ function renderLines() {
     const labels = { C: 'ЦЕНТР', LW: 'ЛЕВЫЙ КРАЙ', RW: 'ПРАВЫЙ КРАЙ', D: 'ЗАЩИТНИК', G: 'ВРАТАРЬ' };
     return labels[player.position] || (isDef ? 'ЗАЩИТНИК' : 'НАПАДАЮЩИЙ');
   };
+  const ratingTier = player => !player ? 'empty' : player.ovr >= 85 ? 'elite' : player.ovr >= 78 ? 'strong' : player.ovr >= 70 ? 'regular' : 'depth';
+  const ratingWidth = player => Math.max(0, Math.min(100, Number(player?.ovr) || 0));
   const playerSlot = (key, slotIdx, isDef) => {
     const line = team.lines[key];
     const currentId = line.players[slotIdx];
     const current = team.roster.find(p => p.id === currentId);
     const pool = isDef ? defencePool : forwardPool;
     const options = pool.map(p => `<option value="${p.id}" ${p.id === currentId ? 'selected' : ''}>${p.name} · ${p.position} · ${p.ovr}</option>`).join('');
-    return `<div class="lineup-player-slot">
+    return `<div class="lineup-player-slot ${current ? 'is-filled' : 'is-empty'}">
       <div class="lineup-player-main">
-        <div class="lineup-player-avatar">${current ? getInitials(current.name) : '—'}</div>
+        <div class="lineup-player-avatar pos-${current?.position || 'empty'}">${current ? getInitials(current.name) : '—'}</div>
         <div class="lineup-player-info">
           <span class="lineup-player-position">${positionLabel(current,isDef)}</span>
           <b>${current ? current.name : 'Свободное место'}</b>
           <small>${current ? 'В составе звена' : 'Выберите хоккеиста ниже'}</small>
         </div>
-        <span class="lineup-player-ovr">${current ? current.ovr : '—'}</span>
+        <span class="lineup-player-ovr rating-${ratingTier(current)}" title="Общий рейтинг">${current ? current.ovr : '—'}</span>
       </div>
-      <select class="lineup-player-select" aria-label="Игрок ${slotIdx + 1}, ${lineMeta[key].title}" onchange="setLineSlot('${key}', ${slotIdx}, Number(this.value))">${options}</select>
+      <div class="lineup-player-rating-track"><span class="rating-${ratingTier(current)}" style="width:${ratingWidth(current)}%"></span></div>
+      <label class="lineup-player-change"><span>ЗАМЕНИТЬ ИГРОКА</span>
+        <select class="lineup-player-select" aria-label="Игрок ${slotIdx + 1}, ${lineMeta[key].title}" onchange="setLineSlot('${key}', ${slotIdx}, Number(this.value))">${options}</select>
+      </label>
     </div>`;
   };
   const lineCard = (key, size, isDef) => {
@@ -434,13 +439,16 @@ function renderLines() {
   const goalieSlot = (label,selectedId,slotIdx) => {
     const current = team.roster.find(p => p.id === selectedId);
     const options = goaliePool.map(p => `<option value="${p.id}" ${p.id === selectedId ? 'selected' : ''}>${p.name} · ${p.ovr}</option>`).join('');
-    return `<article class="lineup-goalie-card">
-      <div class="lineup-goalie-top"><span class="lineup-goalie-label">${label}</span><span class="lineup-player-ovr">${current ? current.ovr : '—'}</span></div>
+    return `<article class="lineup-goalie-card ${current ? 'is-filled' : 'is-empty'}">
+      <div class="lineup-goalie-top"><span class="lineup-goalie-label">${label}</span><span class="lineup-player-ovr rating-${ratingTier(current)}">${current ? current.ovr : '—'}</span></div>
       <div class="lineup-player-main">
-        <div class="lineup-player-avatar goalie-avatar">${current ? getInitials(current.name) : '—'}</div>
+        <div class="lineup-player-avatar goalie-avatar pos-G">${current ? getInitials(current.name) : '—'}</div>
         <div class="lineup-player-info"><span class="lineup-player-position">ВРАТАРЬ</span><b>${current ? current.name : 'Не выбран'}</b><small>${current ? 'Готов к матчу' : 'Назначьте голкипера'}</small></div>
       </div>
-      <select class="lineup-player-select" aria-label="${label}" onchange="setLineSlot('g', ${slotIdx}, Number(this.value))">${options}</select>
+      <div class="lineup-player-rating-track"><span class="rating-${ratingTier(current)}" style="width:${ratingWidth(current)}%"></span></div>
+      <label class="lineup-player-change"><span>ВЫБРАТЬ ВРАТАРЯ</span>
+        <select class="lineup-player-select" aria-label="${label}" onchange="setLineSlot('g', ${slotIdx}, Number(this.value))">${options}</select>
+      </label>
     </article>`;
   };
 
