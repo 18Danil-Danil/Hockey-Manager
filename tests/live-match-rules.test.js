@@ -21,7 +21,7 @@ const liveAdvance = new Function(
   'G', 'rng', 'liveIsPP', 'liveGoal', 'livePenalty', 'pickWeighted', 'pick',
   'shotWeight', 'ensureStats', 'ensurePlayoffStats', 'livePushEvent',
   'liveFmtTime', 'homeTeamNameShort', 'awayTeamNameShort',
-  'LIVE_PENALTY_RATE', 'LIVE_PP_BOOST', 'LIVE_PK_NERF', 'LIVE_SHOT_RATE', 'clamp',
+  'LIVE_PENALTY_RATE', 'LIVE_PP_BOOST', 'LIVE_PK_NERF', 'LIVE_SHOT_RATE', 'clamp', 'updateLiveShifts',
   `${advanceSource}; return liveAdvance;`
 );
 
@@ -54,7 +54,7 @@ const advance = liveAdvance(
   { liveMatch: state.lm }, rng, () => false, () => {}, () => {},
   players => players[0], arr => arr[0], () => 1, ensureStats, ensureStats,
   ev => state.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v))
+  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}
 );
 advance(5);
 advance(5);
@@ -108,7 +108,7 @@ const volumeAdvance = liveAdvance(
   { liveMatch: volumeState.lm }, seededRng, () => false, () => {}, () => {},
   players => players[0], arr => arr[Math.floor(seededRng() * arr.length)], () => 1, ensureStats, ensureStats,
   ev => volumeState.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.093, (v, min, max) => Math.max(min, Math.min(max, v))
+  0.00195, 1.8, 0.70, 0.093, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}
 );
 for (let i = 0; i < 720; i++) volumeAdvance(5);
 const totalShots = volumeState.lm.shots.home + volumeState.lm.shots.away;
