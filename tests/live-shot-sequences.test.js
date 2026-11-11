@@ -41,7 +41,7 @@ const lm = {
     ],
     away: [
       { role: 'goalie', playerId: 'ag', onIce: true, x: 188, y: 50 },
-      { role: 'D', playerId: 'defender', onIce: true, x: 180, y: 50 },
+      { role: 'D', playerId: 'defender', onIce: true, x: 175, y: 50 },
     ],
     puck: { x: 160, y: 50 },
   },
