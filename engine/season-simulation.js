@@ -52,6 +52,29 @@ function simRound(forceNoPrompt = false) {
   }
   render();
 }
+function advanceToMyNextMatch() {
+  const teamId = G.playerTeamId;
+  if (!teamId || G.liveMatch) return;
+  while (G.league.currentRound < G.league.schedule.length) {
+    const round = G.league.schedule[G.league.currentRound] || [];
+    const fixture = round.find(([homeId, awayId]) => homeId === teamId || awayId === teamId);
+    if (fixture) {
+      const injured = checkInjuredStarters();
+      if (injured.length) {
+        G.injuryPrompt = { injured: injured.map(player => player.id), choices: {} };
+        render();
+        return;
+      }
+      startMyLiveMatch();
+      return;
+    }
+    const previousRound = G.league.currentRound;
+    simRound(true);
+    if (G.league.currentRound <= previousRound || G.playerTeamId !== teamId) return;
+  }
+  showToast('В регулярном чемпионате больше нет матчей для твоей команды', 'info');
+}
+
 function simSeason() {
   if (G.injuryPrompt) return;
   G.lastRoundResults = null;
@@ -78,7 +101,7 @@ function simSeason() {
     if (G.league.currentRound % scaledInterval(3) === 0 && rng() < 0.3) generateRandomEvent();
     if (G.league.currentRound % scaledInterval(3) === 0) generateBoardMessage();
     checkTradeDeadlineNews();
-    if (G.playerTeamId) {
+    if (G.playerTeamId && activeTeamIds.has(G.playerTeamId)) {
       if (G.career.noFireMode) { if (maybeForcedFreeAgent()) { G.activeTab = 'career'; render(); return; } }
       else { if (maybeFirePlayer()) { G.activeTab = 'career'; render(); return; } }
     }
