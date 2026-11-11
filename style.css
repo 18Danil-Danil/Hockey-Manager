@@ -718,3 +718,28 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .stat-list-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--ui-line);border-top:0;border-radius:0 0 9px 9px;background:rgba(16,25,40,.72);color:var(--ui-muted);font-size:10px}
 .stat-list-footer .btn{margin:0;white-space:nowrap}
 @media(max-width:600px){.stat-list-footer{align-items:flex-start;flex-direction:column}.stat-list-footer .btn{width:100%}}
+
+
+/* === РЕАЛИСТИЧНЫЙ КАЛЕНДАРЬ СЕЗОНА === */
+.calendar-summary { color: #9aa3b8; font-size: 12px; margin: -4px 0 14px; }
+.calendar-month { margin-bottom: 14px; }
+.calendar-game { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #232838; }
+.calendar-game:last-child { border-bottom: 0; }
+.calendar-game-date { flex: 0 0 94px; color: #c0c7d8; font-size: 11px; text-transform: capitalize; }
+.calendar-game-date span { display: block; color: #69738a; font-size: 10px; margin-top: 3px; }
+.calendar-game-details { flex: 1; min-width: 0; }
+.calendar-game-topline { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.calendar-game-topline strong { flex: 1; min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
+.calendar-venue { flex: 0 0 auto; font-size: 9px; font-weight: 800; letter-spacing: .04em; padding: 3px 6px; border-radius: 4px; }
+.calendar-venue.is-home { color: #86efac; background: rgba(74,222,128,.12); }
+.calendar-venue.is-away { color: #93c5fd; background: rgba(96,165,250,.12); }
+.calendar-game-score { flex: 0 0 auto; font-weight: 800; font-size: 13px; }
+.calendar-series-label { margin-top: 5px; color: #8b95aa; font-size: 10px; }
+.calendar-game.is-current { border-radius: 6px; outline: 1px solid rgba(255,107,53,.25); }
+@media (max-width: 480px) {
+  .calendar-game { gap: 7px; padding: 9px 7px; }
+  .calendar-game-date { flex-basis: 76px; font-size: 10px; }
+  .calendar-game-topline { gap: 5px; }
+  .calendar-venue { font-size: 8px; padding: 3px 4px; }
+  .calendar-game-topline strong { font-size: 12px; }
+}
