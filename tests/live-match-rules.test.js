@@ -180,7 +180,7 @@ const runGoal = liveGoal(
   players => chooseUnselected(players), () => 1,
   ensureGoalStats, ensureGoalStats, () => 0.01, () => {}, () => false,
   () => {}, () => '15:00', () => {}, () => {},
-  (lm, side) => (lm[side + 'Lineup']?.skaters || [])
+  (lm, side) => (lm[side + 'Lineup']?.skaters || []).slice(0, 5)
 );
 runGoal('home');
 assert.equal(goalLm.hg, 1);
