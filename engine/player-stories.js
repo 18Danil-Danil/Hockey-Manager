@@ -27,7 +27,7 @@ function generatePlayerStories() {
     if (player.position === 'G' && careerWins >= 50 && (career.wins || 0) < 50) mark('goalie_50_wins',4,'milestone',player.name+' одержал 50 побед за карьеру','Голкипер достиг отметки в 50 побед в регулярных чемпионатах.');
   }
   candidates.sort((a,b)=>b.priority-a.priority);
-  for (const item of candidates.slice(0,2)) {
+  for (const item of candidates.slice(0,3)) {
     item.flags.flags.push(item.key); addNews(item.type,item.text,item.priority>=4?3:2);
     if (item.team.id === G.playerTeamId) addInboxMessage('coach','Тренерский штаб',item.text,item.body,[]);
   }
