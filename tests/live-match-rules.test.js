@@ -249,7 +249,75 @@ const forwards = [
 ];
 const formation = buildFormation('home', { goalie, defense: defenders, forwards, skaters: [...defenders, ...forwards] });
 assert.deepEqual(formation.map(p => p.playerId), ['g1', 'd1', 'd2', 'f1', 'f2', 'f3']);
+
 assert.equal(formation[0].role, 'goalie');
+
+// LIVE shift plans follow the configured forward lines and defensive pairs.
+const shiftSource = source.slice(
+  source.indexOf('function buildLiveShiftPlan('),
+  source.indexOf('function buildFormation(')
+);
+const shiftHelpers = new Function('clamp', `${shiftSource}; return { buildLiveShiftPlan, applyLiveShift, updateLiveShifts };`)(
+  (v, min, max) => Math.max(min, Math.min(max, v))
+);
+const allForwards = Array.from({ length: 12 }, (_, i) => ({ id: `f${i + 1}`, name: `F${i + 1}`, position: 'F', fatigue: 0 }));
+const allDefense = Array.from({ length: 6 }, (_, i) => ({ id: `d${i + 1}`, name: `D${i + 1}`, position: 'D', fatigue: 0 }));
+const allSkaters = [...allForwards, ...allDefense];
+const shiftTeam = { lines: {
+  f1: { players: ['f1', 'f2', 'f3'] }, f2: { players: ['f4', 'f5', 'f6'] },
+  f3: { players: ['f7', 'f8', 'f9'] }, f4: { players: ['f10', 'f11', 'f12'] },
+  d1: { players: ['d1', 'd2'] }, d2: { players: ['d3', 'd4'] }, d3: { players: ['d5', 'd6'] },
+} };
+const shiftLineup = { forwards: allForwards, defense: allDefense, skaters: allSkaters };
+const shiftPlan = shiftHelpers.buildLiveShiftPlan(shiftTeam, shiftLineup);
+assert.equal(shiftPlan.forwards.length, 4, 'not all four forward lines were included');
+assert.equal(shiftPlan.defense.length, 3, 'not all three defensive pairs were included');
+assert.equal(shiftPlan.forwards[0][0].id, 'f1');
+assert.equal(shiftPlan.forwards[3][2].id, 'f12');
+
+// A line change waits for a safe moment, then replaces all five skaters together.
+const shiftFormationHome = buildFormation('home', {
+  goalie, defense: allDefense, forwards: allForwards, skaters: allSkaters,
+});
+const shiftFormationAway = buildFormation('away', {
+  goalie: { id: 'ag', name: 'Away goalie', position: 'G' },
+  defense: allDefense, forwards: allForwards, skaters: allSkaters,
+});
+const makeShiftState = puck => ({
+  homeLineup: shiftLineup, awayLineup: shiftLineup,
+  positions: { home: shiftFormationHome.map(p => ({ ...p })), away: shiftFormationAway.map(p => ({ ...p })), puck },
+  shiftPlans: { home: shiftPlan, away: shiftPlan },
+  shiftState: {
+    home: { forwardIndex: 0, defenseIndex: 0, elapsed: 0, pending: false, changes: 0 },
+    away: { forwardIndex: 0, defenseIndex: 0, elapsed: 0, pending: false, changes: 0 },
+  },
+  playerStamina: {
+    home: Object.fromEntries(allSkaters.map(p => [p.id, 100])),
+    away: Object.fromEntries(allSkaters.map(p => [p.id, 100])),
+  },
+});
+const safeShift = makeShiftState({
+  x: 100, y: 50, possessionSide: 'home', carrierIndex: 3, looseFrames: 0,
+});
+for (let i = 0; i < 9; i++) shiftHelpers.updateLiveShifts(safeShift, 5);
+assert.equal(safeShift.shiftState.home.pending, true, '45-second shift did not become due');
+assert.equal(safeShift.shiftState.home.changes, 0, 'line changed while the team still controlled the puck');
+safeShift.positions.puck.looseFrames = 2;
+shiftHelpers.updateLiveShifts(safeShift, 5);
+assert.equal(safeShift.shiftState.home.changes, 1, 'line did not change at the safe loose-puck moment');
+assert.equal(safeShift.positions.home[1].playerId, 'd3', 'defensive pair did not rotate');
+assert.equal(safeShift.positions.home[3].playerId, 'f4', 'forward line did not rotate');
+assert.ok(safeShift.playerStamina.home.f1 < 100, 'active skater did not lose stamina');
+assert.ok(safeShift.playerStamina.home.f10 > 100 - 0.01, 'resting skater did not recover stamina');
+
+// A high-fatigue skater starts with a lower stamina reserve.
+const tiredLineup = {
+  forwards: [{ id: 'tired', name: 'Tired', position: 'F', fatigue: 80 }, ...allForwards.slice(1)],
+  defense: allDefense, skaters: [{ id: 'tired', name: 'Tired', position: 'F', fatigue: 80 }, ...allForwards.slice(1), ...allDefense],
+};
+const tiredPlan = shiftHelpers.buildLiveShiftPlan({ lines: {} }, tiredLineup);
+assert.ok(100 - 80 * 0.45 < 100, 'pre-match fatigue was not factored into stamina initialization');
+
 
 // Possession-based animation must keep players on the rink and move the puck
 // with its carrier, using only the visual random stream.
