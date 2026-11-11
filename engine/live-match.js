@@ -184,6 +184,26 @@ function applyLiveShift(lm, side) {
     slot.vy = 0;
     slot.stamina = lm.playerStamina?.[side]?.[player.id] ?? 100;
   }
+  const extraSlot = positions[6];
+  if (extraSlot) {
+    const pulled = !!lm.goaliePulled?.[side];
+    const penalized = new Set((lm.penalties?.[side] || [])
+      .filter(penalty => penalty.endsAt > lm.totalSecPlayed).map(penalty => penalty.playerId));
+    const extra = pulled
+      ? (lm[side + 'Lineup']?.skaters || []).find(player =>
+          !selected.some(active => active.id === player.id) && !penalized.has(player.id))
+      : null;
+    extraSlot.onIce = !!extra;
+    extraSlot.playerId = extra?.id || null;
+    extraSlot.playerName = extra?.name || '';
+    extraSlot.jerseyNumber = extra?.jerseyNumber ?? null;
+    extraSlot.number = extra?.number ?? null;
+    extraSlot.position = extra?.position || 'F';
+    extraSlot.role = 'F';
+    extraSlot.stamina = extra ? (lm.playerStamina?.[side]?.[extra.id] ?? 100) : 100;
+    extraSlot.vx = 0;
+    extraSlot.vy = 0;
+  }
   state.elapsed = 0;
   state.pending = false;
   state.changes = (state.changes || 0) + 1;
