@@ -331,13 +331,37 @@ function renderLines() {
    ============================================================ */
 function renderStats() {
   const mode = G.statsMode || 'regular';
-  const leaders = leagueLeaders(G.league, mode);
+  const leaders = leagueLeaders(G.league, mode, 0);
   const findTeam = (p) => G.league.teams.find(t => t.roster.includes(p));
   const getStat = (p) => mode === 'playoff' ? ensurePlayoffStats(p) : ensureStats(p);
   const toggle = `<div class="stat-toggle"><button class="${mode === 'regular' ? 'active' : ''}" onclick="G.statsMode='regular'; render();">Регулярка</button><button class="${mode === 'playoff' ? 'active' : ''}" onclick="G.statsMode='playoff'; render();">Плей-офф</button></div>`;
-  const skaterTable = (title, players) => `<h2>${title}</h2><table><thead><tr><th>#</th><th>Игрок</th><th>Команда</th><th>И</th><th>Г</th><th>А</th><th>О</th></tr></thead><tbody>${players.map((p, i) => { const t = findTeam(p); const st = getStat(p); const isMine = t && t.id === G.playerTeamId; return `<tr style="${isMine ? 'background:rgba(255,107,53,0.12)' : ''}"><td style="color:#7a8299">${i + 1}</td><td><a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a></td><td style="${isMine ? 'color:#ff6b35;font-weight:700' : ''}">${t ? t.name : '—'}${isMine ? ' · Ваш клуб' : ''}</td><td class="stat-cell">${st.gp}</td><td class="stat-cell">${st.goals}</td><td class="stat-cell">${st.assists}</td><td class="stat-cell" style="font-weight:700;color:#ff6b35">${st.points}</td></tr>`; }).join('')}</tbody></table>`;
-  const goalieTable = `<h2>🧤 Вратари</h2><table><thead><tr><th>#</th><th>Игрок</th><th>Команда</th><th>И</th><th>В</th><th>SV%</th><th>КН</th><th>Сух</th></tr></thead><tbody>${leaders.bySvPct.map((p, i) => { const t = findTeam(p); const st = getStat(p); const sv = st.shotsAgainst > 0 ? (st.saves / st.shotsAgainst).toFixed(3).replace(/^0/, '') : '—'; const gaa = st.gp > 0 ? (st.goalsAgainst / st.gp).toFixed(2) : '—'; const isMine = t && t.id === G.playerTeamId; return `<tr style="${isMine ? 'background:rgba(255,107,53,0.12)' : ''}"><td style="color:#7a8299">${i + 1}</td><td><a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a></td><td style="${isMine ? 'color:#ff6b35;font-weight:700' : ''}">${t ? t.name : '—'}${isMine ? ' · Ваш клуб' : ''}</td><td class="stat-cell">${st.gp}</td><td class="stat-cell">${st.wins}</td><td class="stat-cell" style="font-weight:700">${sv}</td><td class="stat-cell">${gaa}</td><td class="stat-cell">${st.shutouts}</td></tr>`; }).join('')}</tbody></table>`;
-  return `${toggle}<div class="subtitle">Строки вашего клуба выделены оранжевым.</div>${skaterTable('🎯 Снайперы', leaders.byGoals)}${skaterTable('🎁 Ассистенты', leaders.byAssists)}${skaterTable('⭐ Бомбардиры', leaders.byPoints)}${goalieTable}`;
+  const expandedKey = (key) => mode + '-' + key;
+  const skaterTable = (key, title, players) => {
+    const expanded = !!(G.statsExpanded && G.statsExpanded[expandedKey(key)]);
+    const visible = expanded ? players : players.slice(0, 10);
+    const rows = visible.map((p, i) => {
+      const t = findTeam(p), st = getStat(p), isMine = t && t.id === G.playerTeamId;
+      return `<tr style="${isMine ? 'background:rgba(255,107,53,0.12)' : ''}"><td style="color:#7a8299">${i + 1}</td><td><a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a></td><td style="${isMine ? 'color:#ff6b35;font-weight:700' : ''}">${t ? t.name : '—'}${isMine ? ' · Ваш клуб' : ''}</td><td class="stat-cell">${st.gp}</td><td class="stat-cell">${st.goals}</td><td class="stat-cell">${st.assists}</td><td class="stat-cell" style="font-weight:700;color:#ff6b35">${st.points}</td></tr>`;
+    }).join('');
+    const more = players.length > 10
+      ? `<div class="stat-list-footer"><span>Показано ${visible.length} из ${players.length}</span><button class="btn small secondary" onclick="G.statsExpanded=G.statsExpanded||{};G.statsExpanded['${expandedKey(key)}']=${expanded ? 'false' : 'true'};render();">${expanded ? 'Свернуть список' : 'Показать весь список'}</button></div>`
+      : `<div class="stat-list-footer"><span>Всего игроков: ${players.length}</span></div>`;
+    return `<section class="stat-leader-section"><h2>${title}</h2><div class="stat-table-scroll"><table class="stat-leader-table"><thead><tr><th>#</th><th>Игрок</th><th>Команда</th><th>И</th><th>Г</th><th>А</th><th>О</th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="subtitle">Пока нет данных.</td></tr>'}</tbody></table></div>${more}</section>`;
+  };
+  const expandedGoalies = !!(G.statsExpanded && G.statsExpanded[expandedKey('goalies')]);
+  const goaliePlayers = leaders.bySvPct;
+  const visibleGoalies = expandedGoalies ? goaliePlayers : goaliePlayers.slice(0, 10);
+  const goalieRows = visibleGoalies.map((p, i) => {
+    const t = findTeam(p), st = getStat(p), sv = st.shotsAgainst > 0 ? (st.saves / st.shotsAgainst).toFixed(3).replace(/^0/, '') : '—';
+    const gaa = st.gp > 0 ? (st.goalsAgainst / st.gp).toFixed(2) : '—';
+    const isMine = t && t.id === G.playerTeamId;
+    return `<tr style="${isMine ? 'background:rgba(255,107,53,0.12)' : ''}"><td style="color:#7a8299">${i + 1}</td><td><a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a></td><td style="${isMine ? 'color:#ff6b35;font-weight:700' : ''}">${t ? t.name : '—'}${isMine ? ' · Ваш клуб' : ''}</td><td class="stat-cell">${st.gp}</td><td class="stat-cell">${st.wins}</td><td class="stat-cell" style="font-weight:700">${sv}</td><td class="stat-cell">${gaa}</td><td class="stat-cell">${st.shutouts}</td></tr>`;
+  }).join('');
+  const goalieMore = goaliePlayers.length > 10
+    ? `<div class="stat-list-footer"><span>Показано ${visibleGoalies.length} из ${goaliePlayers.length}</span><button class="btn small secondary" onclick="G.statsExpanded=G.statsExpanded||{};G.statsExpanded['${expandedKey('goalies')}']=${expandedGoalies ? 'false' : 'true'};render();">${expandedGoalies ? 'Свернуть список' : 'Показать весь список'}</button></div>`
+    : `<div class="stat-list-footer"><span>Всего в рейтинге: ${goaliePlayers.length}</span></div>`;
+  const goalieTable = `<section class="stat-leader-section"><h2>🧤 Вратари <small class="stat-qualification">минимум ${mode === 'playoff' ? 3 : 10} матчей</small></h2><div class="stat-table-scroll"><table class="stat-leader-table"><thead><tr><th>#</th><th>Игрок</th><th>Команда</th><th>И</th><th>В</th><th>SV%</th><th>КН</th><th>Сух</th></tr></thead><tbody>${goalieRows || '<tr><td colspan="8" class="subtitle">Пока нет квалифицированных вратарей.</td></tr>'}</tbody></table></div>${goalieMore}</section>`;
+  return `${toggle}<div class="subtitle">Строки вашего клуба выделены оранжевым. В каждом рейтинге можно раскрыть полный список игроков.</div>${skaterTable('goals', '🎯 Снайперы', leaders.byGoals)}${skaterTable('assists', '🎁 Ассистенты', leaders.byAssists)}${skaterTable('points', '⭐ Бомбардиры', leaders.byPoints)}${goalieTable}`;
 }
 
 function renderFinance() {
