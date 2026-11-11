@@ -61,4 +61,8 @@ assert(html.includes('Первое звено') && html.includes('Четвёрт
 assert(html.includes('Первая пара') && html.includes('Третья пара'));
 assert(html.includes('ХИМИЯ') && html.includes('СТИЛЬ ИГРЫ') && html.includes('РОЛЬ ЗВЕНА'));
 assert(html.includes('setLineSlot') && html.includes('setLineRole') && html.includes('setLineStyle'));
+assert((html.match(/lineup-player-rating-track/g) || []).length === 20, 'У каждого игрового места должна быть шкала рейтинга');
+assert(html.includes('rating-elite') && html.includes('rating-strong') && html.includes('rating-regular'), 'Рейтинг должен получать визуальный уровень');
+assert((html.match(/lineup-player-change/g) || []).length === 20, 'У каждого места должен быть подписанный контрол замены');
+assert(html.includes('pos-C') && html.includes('pos-D') && html.includes('pos-G'), 'Аватары должны различаться по позиции');
 console.log('Lineup render test passed: 7 lines/pairs, 2 goalies, 20 player selectors');
