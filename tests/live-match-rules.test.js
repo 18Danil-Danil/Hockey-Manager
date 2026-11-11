@@ -383,7 +383,9 @@ const turnoverWindow = { GAME_RNG: { visualRng: () => turnoverRngValues[Math.min
 const turnoverState = {
   positions: {
     home: formation.map(p => ({ ...p })),
-    away: awayPositions.map(p => ({ ...p })),
+    // Keep the opponent initially distant so this assertion isolates the turnover flight,
+    // not the separate contested-puck animation.
+    away: awayPositions.map(p => ({ ...p, x: p.role === 'goalie' ? p.x : 180, y: p.role === 'goalie' ? p.y : 20 })),
     puck: { x: 100, y: 50, vx: 0, vy: 0, possessionSide: 'home', carrierIndex: 3, actionFrames: 1, looseFrames: 0 },
   },
 };
