@@ -103,6 +103,8 @@ assert.ok(positioningState.positions.away[0].y > 50,
 assert.match(source, /const shotLaneY = shotOnGoalie \? puck\.shotAnimation\.targetY : 50 \+ \(puck\.y - 50\) \* 0\.34/);
 assert.match(source, /targetY = clamp\(shotLaneY, 34, 66\)/);
 assert.match(source, /const response = isGoalie \? 0\.105 : 0\.035/);
-assert.match(source, /Дальний защитник закрывает внутренний коридор/);
-assert.match(source, /const coverLane = player\.idx === 1 \? 43 : 57/);
+assert.match(source, /const opponentPossession = lm\.gameplayPossession\?\.side === opponentSide/);
+assert.match(source, /const pressureDefender = defendersByCarrier\[0\] \|\| null/);
+assert.match(source, /const markedThreats = opponentPlayers/);
+assert.match(source, /const goalSideX = threat\.x - direction \* 9/);
 console.log('LIVE goalie and defensive-positioning checks passed.');
