@@ -128,7 +128,12 @@ function buildVhlSchedulePlan(teams) {
   const zones = getVhlTravelZonesForTeams(teams).sort((a, b) => a.id - b.id);
   if (!hasCompleteVhlTravelMap(teams)) throw new Error('Не удалось сопоставить все клубы ВХЛ с логистическими группами');
   const zoneRounds = orderZoneRoundsForVenueBalance(makeZoneRoundRobin(zones), zones);
-  const internalRounds = new Map(zones.map(zone => [zone.id, makeClubRoundRobin(zone.clubs)]));
+  const internalRounds = new Map(zones.map(zone => {
+    const rounds = makeClubRoundRobin(zone.clubs);
+    // В трёхклубных зонах ставим центральное дерби так, чтобы не оставлять без матча одни и те же команды в середине выездного цикла.
+    if (zone.clubs.length === 3) return [zone.id, [rounds[2], rounds[0], rounds[1]]];
+    return [zone.id, rounds];
+  }));
   const schedule = [], roundInfo = [], previousSlots = new Map(), dayOffsets = [0, 2, 4, 6];
   function addRound(games, info) { schedule.push(games); roundInfo.push(info); }
   function addLeg(reverse, legNumber) {
