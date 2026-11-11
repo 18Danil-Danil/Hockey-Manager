@@ -133,7 +133,7 @@ async function loadGame() {
     const raw = await readStoredSave();
     if (!raw) return false;
     const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
-    if (!data || !data.league) return false;
+    if (!isValidCareerSave(data)) return false;
     G.league = data.league;
     // Сначала резервируем имена из старого сохранения: ниже может создаваться недостающая молодёжная структура.
     if (typeof hydratePlayerNameRegistry === 'function') hydratePlayerNameRegistry(G.league);
@@ -264,9 +264,73 @@ function exportCareerFile() {
   }
 }
 
+const MAX_SAVE_VALIDATION_NODES = 500000;
+const MAX_SAVE_VALIDATION_DEPTH = 40;
+const MAX_SAVE_STRING_LENGTH = 10000;
+const SAFE_SAVE_LOGO_HOSTS = new Set(['www.vhlru.ru', 'vhlru.ru', 'files.eliteprospects.com']);
+
+function isSafeCareerSaveId(value) {
+  if (value === null || value === undefined) return true;
+  if (typeof value === 'number') return Number.isSafeInteger(value) && value >= 0;
+  return typeof value === 'string' && value.length <= 80 && /^[A-Za-z0-9_-]*$/.test(value);
+}
+
+function isSafeCareerLogoUrl(value) {
+  if (value === '') return true;
+  if (typeof value !== 'string' || value.length > 2048) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' &&
+      !url.username && !url.password &&
+      SAFE_SAVE_LOGO_HOSTS.has(url.hostname.toLowerCase());
+  } catch (error) {
+    return false;
+  }
+}
+
+function isSafeCareerSaveValue(value, depth = 0, budget = { count: 0 }) {
+  budget.count += 1;
+  if (budget.count > MAX_SAVE_VALIDATION_NODES || depth > MAX_SAVE_VALIDATION_DEPTH) return false;
+
+  if (value === null || typeof value === 'boolean') return true;
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (typeof value === 'string') {
+    // Save strings are rendered in HTML, attributes and inline event handlers.
+    // Reject markup delimiters, entity introducers, quotes, escapes and control characters.
+    return value.length <= MAX_SAVE_STRING_LENGTH &&
+      !/[<>&"'`\\\u0000-\u001F\u007F\u2028\u2029]/.test(value);
+  }
+  if (Array.isArray(value)) {
+    if (value.length > 50000) return false;
+    return value.every(item => isSafeCareerSaveValue(item, depth + 1, budget));
+  }
+  if (typeof value !== 'object') return false;
+
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) return false;
+  const keys = Object.keys(value);
+  if (keys.length > 50000) return false;
+  for (const key of keys) {
+    if (!key || key.length > 120 ||
+        /[<>&"'`\\\u0000-\u001F\u007F\u2028\u2029]/.test(key) ||
+        key === '__proto__' || key === 'prototype' || key === 'constructor') return false;
+    if ((key === 'id' || /Id$/.test(key)) && !isSafeCareerSaveId(value[key])) return false;
+    if (key.toLowerCase() === 'logo' && !isSafeCareerLogoUrl(value[key])) return false;
+    if (!isSafeCareerSaveValue(value[key], depth + 1, budget)) return false;
+  }
+  return true;
+}
+
 function isValidCareerSave(data) {
   const save = data && data.format === 'hockey-manager-save' ? data.data : data;
-  return !!(save && save.league && Array.isArray(save.league.teams) && save.league.teams.length > 0 && save.league.teams.every(team => team && Array.isArray(team.roster)));
+  if (!save || typeof save !== 'object' || !save.league ||
+      !Array.isArray(save.league.teams) ||
+      save.league.teams.length === 0 || save.league.teams.length > 100 ||
+      !save.league.teams.every(team =>
+        team && typeof team === 'object' &&
+        Array.isArray(team.roster) && team.roster.length <= 100)) return false;
+  if (save.league.freeAgents !== undefined && !Array.isArray(save.league.freeAgents)) return false;
+  return isSafeCareerSaveValue(save);
 }
 
 async function importCareerFile(file) {
