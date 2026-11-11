@@ -49,6 +49,53 @@ assert.equal(covered.frozen, true, 'a goalie with strong rebound control should 
 assert.equal(covered.carrierIndex, 0);
 assert.equal(goalie.stats.reboundCovers, 1);
 
+// Run the actual positioning update with a puck moved across the attacking zone.
+const updateStart = source.indexOf('function liveUpdatePositions(');
+const updateEnd = source.indexOf('function liveAnimationLoop(', updateStart);
+assert.ok(updateStart >= 0 && updateEnd > updateStart, 'Could not locate LIVE positioning update');
+const visualUpdate = new Function(
+  'G', 'window', 'getLiveManpowerState', 'clamp',
+  source.slice(updateStart, updateEnd) + '; return liveUpdatePositions;'
+)({
+  league: { teams: [
+    { id: 'home', tactics: {} },
+    { id: 'away', tactics: {} },
+  ] },
+}, {
+  GAME_RNG: { visualRng: () => 0.5 },
+}, () => ({
+  home: { skaters: 5, advantage: 0 },
+  away: { skaters: 5, advantage: 0 },
+}), clamp);
+const makeSlot = (role, idx, x, y) => ({
+  role, idx, x, y, baseX: x, baseY: y, vx: 0, vy: 0, onIce: true,
+  playerId: role === 'goalie' ? 'goalie-' + idx : 'skater-' + idx,
+});
+const positioningState = {
+  positions: {
+    home: [
+      makeSlot('goalie', 0, 12, 50),
+      makeSlot('D', 1, 120, 40),
+      makeSlot('D', 2, 120, 60),
+      makeSlot('F', 3, 150, 35),
+      makeSlot('C', 4, 150, 50),
+      makeSlot('F', 5, 150, 65),
+    ],
+    away: [
+      makeSlot('goalie', 0, 188, 50),
+      makeSlot('D', 1, 160, 40),
+      makeSlot('D', 2, 160, 60),
+      makeSlot('F', 3, 175, 35),
+      makeSlot('C', 4, 175, 50),
+      makeSlot('F', 5, 175, 65),
+    ],
+    puck: { x: 165, y: 80, possessionSide: 'home', carrierIndex: 3, actionFrames: 100, looseFrames: 0 },
+  },
+};
+visualUpdate({ liveMatch: positioningState })();
+assert.ok(positioningState.positions.away[0].y > 50,
+  'goalie did not move laterally toward a puck carried across the zone');
+
 // The rendered goalie tracks the shot lane and cross-ice puck movement;
 // defensive partners protect the slot instead of both chasing the carrier.
 assert.match(source, /const shotLaneY = shotOnGoalie \? puck\.shotAnimation\.targetY : 50 \+ \(puck\.y - 50\) \* 0\.34/);
