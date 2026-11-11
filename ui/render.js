@@ -350,30 +350,124 @@ function renderRoster() {
 }
 function renderLines() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
+  if (!team) return '<div class="empty-state">Команда не найдена.</div>';
   if (!team.lines) initLines(team);
   syncLines(team);
+
   const benchSet = new Set(team.bench || []);
-  const poolFor = (isDef) => team.roster.filter(p => !benchSet.has(p.id) && (isDef ? p.position === 'D' : (p.position !== 'D' && p.position !== 'G'))).sort((a,b) => b.ovr - a.ovr);
-  const block = (key, size, isDef) => {
-    const line = team.lines[key]; const mods = lineMods(line);
-    const chemColor = line.chemistry >= 70 ? '#4ade80' : line.chemistry >= 40 ? '#fbbf24' : '#ef4444';
-    const pool = poolFor(isDef); const slots = [];
-    for (let i = 0; i < size; i++) {
-      const curId = line.players[i];
-      const opts = pool.map(p => `<option value="${p.id}" ${p.id === curId ? 'selected' : ''}>${p.name} (${p.ovr})</option>`).join('');
-      slots.push(`<select onchange="setLineSlot('${key}', ${i}, Number(this.value))" style="background:#0f1117;color:#e6e8ee;border:1px solid #2a3042;padding:4px 8px;border-radius:3px;font-size:12px;min-width:170px">${opts}</select>`);
-    }
+  const activeRoster = team.roster.filter(p => !benchSet.has(p.id));
+  const poolFor = (isDef) => activeRoster
+    .filter(p => isDef ? p.position === 'D' : (p.position !== 'D' && p.position !== 'G'))
+    .sort((a,b) => b.ovr - a.ovr);
+  const forwardPool = poolFor(false);
+  const defencePool = poolFor(true);
+  const goaliePool = activeRoster.filter(p => p.position === 'G').sort((a,b) => b.ovr - a.ovr);
+  const lineKeys = ['f1','f2','f3','f4','d1','d2','d3'];
+  const averageChemistry = Math.round(lineKeys.reduce((sum,key) => sum + (team.lines[key]?.chemistry || 0),0) / lineKeys.length);
+  const forwardAssigned = team.lines.f1.players.length + team.lines.f2.players.length + team.lines.f3.players.length + team.lines.f4.players.length;
+  const defenceAssigned = team.lines.d1.players.length + team.lines.d2.players.length + team.lines.d3.players.length;
+
+  const lineMeta = {
+    f1: { title: 'Первое звено', short: 'F1', hint: 'Главная атакующая тройка' },
+    f2: { title: 'Второе звено', short: 'F2', hint: 'Вторая волна атаки' },
+    f3: { title: 'Третье звено', short: 'F3', hint: 'Баланс и давление' },
+    f4: { title: 'Четвёртое звено', short: 'F4', hint: 'Энергия и развитие' },
+    d1: { title: 'Первая пара', short: 'D1', hint: 'Ведущая пара защитников' },
+    d2: { title: 'Вторая пара', short: 'D2', hint: 'Поддержка и надёжность' },
+    d3: { title: 'Третья пара', short: 'D3', hint: 'Ротация защитников' },
+  };
+  const positionLabel = (player, isDef) => {
+    if (!player) return isDef ? 'ЗАЩИТНИК' : 'НАПАДАЮЩИЙ';
+    const labels = { C: 'ЦЕНТР', LW: 'ЛЕВЫЙ КРАЙ', RW: 'ПРАВЫЙ КРАЙ', D: 'ЗАЩИТНИК', G: 'ВРАТАРЬ' };
+    return labels[player.position] || (isDef ? 'ЗАЩИТНИК' : 'НАПАДАЮЩИЙ');
+  };
+  const playerSlot = (key, slotIdx, isDef) => {
+    const line = team.lines[key];
+    const currentId = line.players[slotIdx];
+    const current = team.roster.find(p => p.id === currentId);
+    const pool = isDef ? defencePool : forwardPool;
+    const options = pool.map(p => `<option value="${p.id}" ${p.id === currentId ? 'selected' : ''}>${p.name} · ${p.position} · ${p.ovr}</option>`).join('');
+    return `<div class="lineup-player-slot">
+      <div class="lineup-player-main">
+        <div class="lineup-player-avatar">${current ? getInitials(current.name) : '—'}</div>
+        <div class="lineup-player-info">
+          <span class="lineup-player-position">${positionLabel(current,isDef)}</span>
+          <b>${current ? current.name : 'Свободное место'}</b>
+          <small>${current ? 'В составе звена' : 'Выберите хоккеиста ниже'}</small>
+        </div>
+        <span class="lineup-player-ovr">${current ? current.ovr : '—'}</span>
+      </div>
+      <select class="lineup-player-select" aria-label="Игрок ${slotIdx + 1}, ${lineMeta[key].title}" onchange="setLineSlot('${key}', ${slotIdx}, Number(this.value))">${options}</select>
+    </div>`;
+  };
+  const lineCard = (key, size, isDef) => {
+    const line = team.lines[key];
+    const meta = lineMeta[key];
+    const mods = lineMods(line);
+    const chemistry = Math.max(0,Math.min(100,Math.round(line.chemistry || 0)));
+    const chemClass = chemistry >= 70 ? 'high' : chemistry >= 40 ? 'medium' : 'low';
     const styleOpts = Object.entries(LINE_STYLES).map(([k,v]) => `<option value="${k}" ${line.style === k ? 'selected' : ''}>${v.label}</option>`).join('');
     const roleOpts = Object.entries(LINE_ROLES).map(([k,v]) => `<option value="${k}" ${line.role === k ? 'selected' : ''}>${v.label}</option>`).join('');
-    return `<div class="line-card"><div class="line-title"><b>${key.toUpperCase()}</b><span class="line-chem" style="color:${chemColor}">Химия ${Math.round(line.chemistry)}/100</span></div><div class="line-slots">${slots.join('')}</div><div class="line-footer"><span class="lbl">Роль:</span><select onchange="setLineRole('${key}', this.value)" style="background:#0f1117;color:#e6e8ee;border:1px solid #2a3042;padding:3px 8px;border-radius:3px;font-size:11px">${roleOpts}</select><span class="lbl">Стиль:</span><select onchange="setLineStyle('${key}', this.value)" style="background:#0f1117;color:#e6e8ee;border:1px solid #2a3042;padding:3px 8px;border-radius:3px;font-size:11px">${styleOpts}</select><span class="mods">Атака: ${mods.atk >= 0 ? '+' : ''}${Math.round(mods.atk*100)}% · Защита: ${mods.def >= 0 ? '+' : ''}${Math.round(mods.def*100)}%</span></div></div>`;
+    const slots = Array.from({length:size},(_,i) => playerSlot(key,i,isDef)).join('');
+    return `<article class="lineup-line-card ${isDef ? 'defence-line' : 'forward-line'}">
+      <header class="lineup-line-header">
+        <div class="lineup-line-heading">
+          <span class="lineup-line-code">${meta.short}</span>
+          <div><h4>${meta.title}</h4><p>${meta.hint}</p></div>
+        </div>
+        <div class="lineup-chemistry ${chemClass}">
+          <b>${chemistry}</b><span>ХИМИЯ</span>
+        </div>
+      </header>
+      <div class="lineup-chemistry-track"><span class="${chemClass}" style="width:${chemistry}%"></span></div>
+      <div class="lineup-player-grid ${size === 3 ? 'three-slots' : 'two-slots'}">${slots}</div>
+      <div class="lineup-line-settings">
+        <label><span>РОЛЬ ЗВЕНА</span><select onchange="setLineRole('${key}', this.value)">${roleOpts}</select></label>
+        <label><span>СТИЛЬ ИГРЫ</span><select onchange="setLineStyle('${key}', this.value)">${styleOpts}</select></label>
+      </div>
+      <div class="lineup-line-effects">
+        <span>Атака <b class="${mods.atk >= 0 ? 'positive' : 'negative'}">${mods.atk >= 0 ? '+' : ''}${Math.round(mods.atk*100)}%</b></span>
+        <span>Защита <b class="${mods.def >= 0 ? 'positive' : 'negative'}">${mods.def >= 0 ? '+' : ''}${Math.round(mods.def*100)}%</b></span>
+      </div>
+    </article>`;
   };
-  const gkOpts = (selId) => team.roster.filter(p => p.position === 'G' && !benchSet.has(p.id)).sort((a,b) => b.ovr - a.ovr).map(p => `<option value="${p.id}" ${p.id === selId ? 'selected' : ''}>${p.name} (${p.ovr})</option>`).join('');
-  let html = `<h2>Звенья и пары</h2><div style="margin-bottom:12px"><button class="btn small" onclick="resetLinesToOvr()">🔄 Автосостав</button></div><h2>Форварды</h2>`;
-  for (const key of ['f1','f2','f3','f4']) html += block(key, 3, false);
-  html += `<h2>Защитники</h2>`;
-  for (const key of ['d1','d2','d3']) html += block(key, 2, true);
-  html += `<h2>Вратари</h2><div class="line-card"><div class="line-slots"><div><span class="lbl">Стартовый:</span><br><select onchange="setLineSlot('g', 0, Number(this.value))" style="background:#0f1117;color:#e6e8ee;border:1px solid #2a3042;padding:4px 8px;border-radius:3px;font-size:12px;margin-top:4px">${gkOpts(team.lines.g1)}</select></div><div><span class="lbl">Запасной:</span><br><select onchange="setLineSlot('g', 1, Number(this.value))" style="background:#0f1117;color:#e6e8ee;border:1px solid #2a3042;padding:4px 8px;border-radius:3px;font-size:12px;margin-top:4px">${gkOpts(team.lines.g2)}</select></div></div></div>`;
-  return html;
+  const goalieSlot = (label,selectedId,slotIdx) => {
+    const current = team.roster.find(p => p.id === selectedId);
+    const options = goaliePool.map(p => `<option value="${p.id}" ${p.id === selectedId ? 'selected' : ''}>${p.name} · ${p.ovr}</option>`).join('');
+    return `<article class="lineup-goalie-card">
+      <div class="lineup-goalie-top"><span class="lineup-goalie-label">${label}</span><span class="lineup-player-ovr">${current ? current.ovr : '—'}</span></div>
+      <div class="lineup-player-main">
+        <div class="lineup-player-avatar goalie-avatar">${current ? getInitials(current.name) : '—'}</div>
+        <div class="lineup-player-info"><span class="lineup-player-position">ВРАТАРЬ</span><b>${current ? current.name : 'Не выбран'}</b><small>${current ? 'Готов к матчу' : 'Назначьте голкипера'}</small></div>
+      </div>
+      <select class="lineup-player-select" aria-label="${label}" onchange="setLineSlot('g', ${slotIdx}, Number(this.value))">${options}</select>
+    </article>`;
+  };
+
+  return `<section class="lineup-screen">
+    <div class="lineup-topbar">
+      <div><span class="lineup-eyebrow">ТРЕНЕРСКИЙ ШТАБ · ${team.name}</span><h2>Состав звеньев</h2><p>Соберите сочетания, настройте роли и найдите баланс между атакой и обороной.</p></div>
+      <button class="btn small lineup-auto-button" onclick="resetLinesToOvr()">↻ Автосостав по рейтингу</button>
+    </div>
+    <div class="lineup-overview">
+      <div class="lineup-overview-card"><span>НАПАДАЮЩИЕ</span><b>${forwardAssigned}<small> / 12</small></b><i>${forwardPool.length} в распоряжении</i></div>
+      <div class="lineup-overview-card"><span>ЗАЩИТНИКИ</span><b>${defenceAssigned}<small> / 6</small></b><i>${defencePool.length} в распоряжении</i></div>
+      <div class="lineup-overview-card"><span>ВРАТАРИ</span><b>${[team.lines.g1,team.lines.g2].filter(Boolean).length}<small> / 2</small></b><i>${goaliePool.length} в распоряжении</i></div>
+      <div class="lineup-overview-card chemistry-overview"><span>СРЕДНЯЯ ХИМИЯ</span><b>${averageChemistry}<small> / 100</small></b><i>По семи сочетаниям</i></div>
+    </div>
+    <section class="lineup-section">
+      <div class="lineup-section-heading"><div><span>АТАКА</span><h3>Нападающие</h3></div><p>Четыре тройки · 12 игровых мест</p></div>
+      <div class="lineup-lines-grid">${['f1','f2','f3','f4'].map(key => lineCard(key,3,false)).join('')}</div>
+    </section>
+    <section class="lineup-section">
+      <div class="lineup-section-heading"><div><span>ОБОРОНА</span><h3>Защитники</h3></div><p>Три пары · 6 игровых мест</p></div>
+      <div class="lineup-defence-grid">${['d1','d2','d3'].map(key => lineCard(key,2,true)).join('')}</div>
+    </section>
+    <section class="lineup-section">
+      <div class="lineup-section-heading"><div><span>ПОСЛЕДНИЙ РУБЕЖ</span><h3>Вратари</h3></div><p>Стартовый голкипер и сменщик</p></div>
+      <div class="lineup-goalies-grid">${goalieSlot('Стартовый вратарь',team.lines.g1,0)}${goalieSlot('Запасной вратарь',team.lines.g2,1)}</div>
+    </section>
+  </section>`;
 }
 
 /* ============================================================
