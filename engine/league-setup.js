@@ -146,7 +146,7 @@ function buildVhlSchedulePlan(teams) {
         // Сопернические пары фиксируются в первой части сезона; во второй меняется только площадка.
         const sideA = lower.clubs, sideB = higher.clubs, size = Math.max(sideA.length, sideB.length);
         for (let day = 0; day < size; day++) {
-          const offset = slot * 2 + dayOffsets[day];
+          const offset = slot + dayOffsets[day];
           if (!buckets.has(offset)) buckets.set(offset, { games: [], zoneBlocks: [] });
           const bucket = buckets.get(offset);
           for (let i = 0; i < sideA.length; i++) {
@@ -214,7 +214,7 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       if (!segment || segment.id !== item.segmentId) { segment = { id: item.segmentId, items: [], span: 0 }; segments.push(segment); }
       segment.items.push({ ...item, index }); segment.span = Math.max(segment.span, item.segmentOffset || 0);
     });
-    const boundaries = Math.max(0, segments.length - 1), gaps = Array(boundaries).fill(1), baseStarts = [];
+    const boundaries = Math.max(0, segments.length - 1), gaps = Array(boundaries).fill(2), baseStarts = [];
     let cursor = new Date(startDate);
     segments.forEach((segment, index) => {
       baseStarts[index] = new Date(cursor); cursor.setUTCDate(cursor.getUTCDate() + segment.span);
@@ -224,18 +224,18 @@ function makeScheduleMeta(season, roundCount, teams = null) {
     segments.forEach((segment, index) => {
       if (index < boundaries && segment.items.some(item => item.specialRoute)) specialBoundaries.push(index);
     });
-    specialBoundaries.forEach(index => { gaps[index] = 2; });
+    specialBoundaries.forEach(index => { gaps[index] = 3; });
     const longCandidates = [];
-    for (let i = 0; i < boundaries; i++) {
-      if (!specialBoundaries.includes(i)) longCandidates.push(i);
-    }
-    [0.42, 0.82].forEach((fraction, longIndex) => {
+    for (let i = 0; i < boundaries; i++) if (!specialBoundaries.includes(i)) longCandidates.push(i);
+    [0.35, 0.75].forEach(fraction => {
       const target = Math.floor(boundaries * fraction);
       const candidate = longCandidates.slice().sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
-      if (candidate != null) {
-        gaps[candidate] = longIndex === 0 ? 7 : 6;
-        longCandidates.splice(longCandidates.indexOf(candidate), 1);
-      }
+      if (candidate != null) { gaps[candidate] = 8; longCandidates.splice(longCandidates.indexOf(candidate), 1); }
+    });
+    [0.18, 0.52, 0.9].forEach(fraction => {
+      const target = Math.floor(boundaries * fraction);
+      const candidate = longCandidates.slice().sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
+      if (candidate != null) { gaps[candidate] = 3; longCandidates.splice(longCandidates.indexOf(candidate), 1); }
     });
     // Новогодняя пауза подбирается после остальных логистических буферов,
     // чтобы ближайшая дата перед ней приходилась примерно на 30 декабря.
