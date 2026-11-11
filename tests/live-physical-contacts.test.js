@@ -26,6 +26,7 @@ const G = { league: { teams: [
 const api = new Function(
   'clamp', 'rng', 'G', 'ensureStats', 'ensurePlayoffStats',
   'livePushEvent', 'liveFmtTime', 'livePenalty', 'LIVE_TICK_SEC',
+  'reconcileLiveManpower',
   `${helpersSource}; return { getLiveContactRating, resolveLivePhysicalContact };`
 )(
   clamp, rng, G,
@@ -34,7 +35,8 @@ const api = new Function(
   event => events.push(event),
   () => '12:30',
   (...args) => penalties.push(args),
-  5
+  5,
+  () => {}
 );
 
 const carrier = {
