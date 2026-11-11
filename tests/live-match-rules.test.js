@@ -178,7 +178,7 @@ const goalSource = source.slice(
 const liveGoal = new Function(
   'G', 'pickWeighted', 'scorerWeight', 'ensurePlayoffStats', 'ensureStats',
   'rng', 'addNews', 'liveIsPP', 'livePushEvent', 'liveFmtTime',
-  'finishLiveMatch', 'clearInterval', 'liveGetOnIceSkaters',
+  'finishLiveMatch', 'clearInterval', 'liveGetOnIceSkaters', 'resolveLiveFaceoff',
   `${goalSource}; return liveGoal;`
 );
 const homeSkaters = Array.from({ length: 6 }, (_, i) => ({ id: `h${i + 1}`, name: `Home ${i + 1}`, position: 'F', ovr: 60 }));
@@ -207,7 +207,8 @@ const runGoal = liveGoal(
   players => chooseUnselected(players), () => 1,
   ensureGoalStats, ensureGoalStats, () => 0.01, () => {}, () => false,
   () => {}, () => '15:00', () => {}, () => {},
-  (lm, side) => (lm[side + 'Lineup']?.skaters || []).slice(0, 5)
+  (lm, side) => (lm[side + 'Lineup']?.skaters || []).slice(0, 5),
+  () => {}
 );
 runGoal('home');
 assert.equal(goalLm.hg, 1);
