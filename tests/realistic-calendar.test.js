@@ -56,9 +56,44 @@ for (const stat of teamStats.values()) {
   assert.equal(stat.away, 29);
 }
 assert.ok(minGamesPerDate >= 3 && maxGamesPerDate <= 8);
+
+let maxTeamRest = 0, maxVenueStreak = 0;
+for (const team of teams) {
+  const appearances = [];
+  schedule.forEach((round, roundIndex) => {
+    const game = round.find(([homeId, awayId]) => homeId === team.id || awayId === team.id);
+    if (game) appearances.push({ date: meta[roundIndex].date, side: game[0] === team.id ? 'H' : 'A' });
+  });
+  let lastSide = '', streak = 0;
+  appearances.forEach((game, index) => {
+    streak = game.side === lastSide ? streak + 1 : 1;
+    lastSide = game.side;
+    maxVenueStreak = Math.max(maxVenueStreak, streak);
+    if (index) maxTeamRest = Math.max(maxTeamRest, (Date.parse(game.date) - Date.parse(appearances[index - 1].date)) / 86400000);
+  });
+}
+assert.ok(maxTeamRest <= 13, 'team rest interval does not exceed 13 days');
+assert.ok(maxVenueStreak <= 11, 'home or away run remains a bounded series');
 assert.ok(meta.some(item => item.travelNote && item.travelNote.includes('Норильск — Красноярск')));
 assert.ok(meta.some(item => item.phase === 'local-derby'));
+assert.equal(meta.filter(item => item.travelNote).length, 2, 'both Norilsk-Krasnoyarsk travel legs receive a buffer');
 assert.ok(meta.some(item => item.zoneBlocks?.length));
+
+const teamById = new Map(teams.map(team => [team.id, team]));
+const travelZones = context.VHL_TRAVEL_ZONE_BY_SLUG;
+schedule.forEach((round, roundIndex) => {
+  round.forEach(([homeId, awayId]) => {
+    const homeZone = travelZones[teamById.get(homeId).slug];
+    const awayZone = travelZones[teamById.get(awayId).slug];
+    const block = (meta[roundIndex].zoneBlocks || []).find(item =>
+      (item.zoneAId === homeZone.id || item.zoneBId === homeZone.id) &&
+      (item.zoneAId === awayZone.id || item.zoneBId === awayZone.id));
+    if (block) {
+      assert.equal(homeZone.id, block.homeZoneId, 'fixture host belongs to the designated home zone');
+      assert.equal(awayZone.id, block.awayZoneId, 'fixture visitor belongs to the designated away zone');
+    }
+  });
+});
 console.log('Zone calendar passed: ' + schedule.length + ' dates, ' + totalGames + ' matches, ' + minGamesPerDate + '-' + maxGamesPerDate + ' games/date.');
 
 const youth = Array.from({ length: 8 }, (_, index) => ({ id: index + 1, slug: 'youth-' + index }));
@@ -76,3 +111,15 @@ context.ensureScheduleCalendar(started);
 assert.equal(started.scheduleVersion, 2);
 assert.equal(started.schedule.length, 58);
 console.log('Save migration compatibility passed.');
+
+const simSource = fs.readFileSync(path.join(root, 'engine/season-simulation.js'), 'utf8');
+const helperStart = simSource.indexOf('function advanceToMyNextMatch()');
+const helperEnd = simSource.indexOf('\\n}\\n', helperStart) + 2;
+assert.ok(helperStart >= 0 && helperEnd > helperStart, 'next-match helper exists');
+let simulatedDates = 0, startedMatch = false;
+const fakeGameState = { playerTeamId: 7, liveMatch: null, league: { currentRound: 0, schedule: [[], [], [[7, 8]]] } };
+const advanceHelper = new Function('G', 'simRound', 'checkInjuredStarters', 'render', 'startMyLiveMatch', 'showToast', simSource.slice(helperStart, helperEnd) + '\\nreturn advanceToMyNextMatch;');
+advanceHelper(fakeGameState, () => { fakeGameState.league.currentRound++; simulatedDates++; }, () => [], () => {}, () => { startedMatch = true; }, () => {})();
+assert.equal(simulatedDates, 2, 'intervening league dates are simulated before the club fixture');
+assert.equal(startedMatch, true, 'the club fixture starts after the intervening dates');
+console.log('Next-match date advance passed.');
