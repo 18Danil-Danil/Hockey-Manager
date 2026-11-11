@@ -71,7 +71,7 @@ function getPlayerNameWeightProfile(nationality, kind, values) {
   const profile = window.PLAYER_NAME_FREQUENCY?.[nationality]?.[kind] || {};
   const common = new Set((profile.common || []).map(normalizePlayerNameKey));
   const rare = new Set((profile.rare || []).map(normalizePlayerNameKey));
-  const weights = (values || []).map(value => rare.has(normalizePlayerNameKey(value)) ? 1 : common.has(normalizePlayerNameKey(value)) ? 35 : 10);
+  const weights = (values || []).map(value => rare.has(normalizePlayerNameKey(value)) ? 1 : common.has(normalizePlayerNameKey(value)) ? 500 : 25);
   const total = weights.reduce((sum, weight) => sum + weight, 0);
   cache[cacheKey] = { values, weights, total, common, rare };
   return cache[cacheKey];
@@ -80,8 +80,8 @@ function getPlayerNamePartWeight(nationality, kind, value) {
   const profile = getPlayerNameWeightProfile(nationality, kind, []);
   const key = normalizePlayerNameKey(value);
   if (profile.rare.has(key)) return 1;
-  if (profile.common.has(key)) return 35;
-  return 10;
+  if (profile.common.has(key)) return 500;
+  return 25;
 }
 function pickWeightedPlayerNamePart(values, nationality, kind) {
   if (!values?.length) return '';
