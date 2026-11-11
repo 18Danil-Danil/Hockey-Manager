@@ -699,3 +699,14 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .profile-award-list>div small,.profile-transfer-list>div span{color:var(--ui-muted);font-size:9px}
 @media(max-width:720px){.profile-columns{grid-template-columns:1fr;padding:12px}.profile-hero{padding:22px 18px}.profile-overall{flex-basis:88px}.profile-overall strong{font-size:43px}.profile-quick-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-attributes{gap:10px}.profile-section{padding:14px}}
 @media(max-width:420px){.profile-name-line h1{font-size:21px}.profile-overall{flex-basis:72px;padding:5px}.profile-overall strong{font-size:36px}.profile-overall span{font-size:7px}.profile-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-attributes{grid-template-columns:1fr}.profile-quick-stats>div{padding:10px}}
+
+
+/* LEAGUE STAT LEADERBOARDS — FULL LIST EXPANSION */
+.stat-leader-section{margin:18px 0 24px;min-width:0}
+.stat-leader-section h2{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.stat-qualification{color:var(--ui-muted);font-size:10px;font-weight:500}
+.stat-table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.stat-leader-table{width:100%;min-width:560px}
+.stat-list-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--ui-line);border-top:0;border-radius:0 0 9px 9px;background:rgba(16,25,40,.72);color:var(--ui-muted);font-size:10px}
+.stat-list-footer .btn{margin:0;white-space:nowrap}
+@media(max-width:600px){.stat-list-footer{align-items:flex-start;flex-direction:column}.stat-list-footer .btn{width:100%}}
