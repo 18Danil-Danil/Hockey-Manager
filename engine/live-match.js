@@ -216,6 +216,9 @@ function liveGetOnIceSkaters(lm, side) {
 function reconcileLiveManpower(lm) {
   if (!lm?.positions || !lm?.penalties) return;
   const manpower = getLiveManpowerState(lm);
+  const puck = lm.positions.puck;
+  const previousCarrierId = puck && Number.isInteger(puck.carrierIndex)
+    ? (lm.positions[puck.possessionSide || 'home'] || [])[puck.carrierIndex]?.playerId : null;
   for (const side of ['home', 'away']) {
     const lineup = lm[side + 'Lineup'];
     const slots = (lm.positions[side] || []).slice(1, 6);
@@ -259,17 +262,19 @@ function reconcileLiveManpower(lm) {
       slot.vy = 0;
     }
   }
-  const puck = lm.positions.puck;
   if (puck && Number.isInteger(puck.carrierIndex)) {
     const side = puck.possessionSide || 'home';
     const carrier = (lm.positions[side] || [])[puck.carrierIndex];
-    if (carrier && carrier.onIce === false) {
+    if (carrier && (carrier.onIce === false || (previousCarrierId && carrier.playerId !== previousCarrierId))) {
+      const nextCarrier = (lm.positions[side] || []).findIndex((player, index) =>
+        index > 0 && player.onIce !== false && player.playerId
+      );
       puck.carrierIndex = null;
       puck.looseFrames = Math.max(puck.looseFrames || 0, 4);
       puck.targetX = puck.x;
       puck.targetY = puck.y;
       puck.nextPossessionSide = side;
-      puck.nextCarrierIndex = 3;
+      puck.nextCarrierIndex = nextCarrier > 0 ? nextCarrier : 3;
     }
   }
 }
