@@ -14,7 +14,8 @@ const context={G,addNews:(type,text,importance)=>news.push({type,text,importance
 vm.runInNewContext(source+'\nthis.runStories=generatePlayerStories;',context); context.runStories();
 assert(news.some(n=>n.text.includes('Иван Молодой')&&n.text.includes('прорыв')),'young breakout');
 assert(news.some(n=>n.text.includes('Пётр Ветеран')&&n.text.includes('100')),'career milestone');
-assert(news.some(n=>n.text.includes('Сергей Вратарь')&&n.text.includes('93.8%')),'goalie story');
+assert(news.some(n=>n.text.includes('Сергей Вратарь')&&n.type==='player_story'),'goalie story');
+assert(inbox.some(message=>message[2].includes('Сергей Вратарь')&&message[3].includes('93.8%')),'goalie story details');
 assert(inbox.length>=2,'managed-team stories should reach inbox');
 const count=news.length; context.runStories(); assert.strictEqual(news.length,count,'no duplicate stories during season');
 G.league.season='2027/28'; young.stats.points=22; context.runStories(); assert(news.length>count,'seasonal stories reset next season');
