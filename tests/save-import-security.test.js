@@ -27,7 +27,9 @@ function makeSave() {
           id: 1,
           name: 'АКМ',
           logo: 'https://www.vhlru.ru/upload/iblock/480/АКМ.png',
-          roster: [{ id: 101, name: 'Александр Иванов', position: 'C' }],
+          finance: { expenses: {}, income: {} },
+          staff: {},
+          roster: [{ id: 101, name: 'Александр Иванов', position: 'C', contract: {} }],
         }],
         freeAgents: [],
         news: [{ id: 1, text: 'Обычная новость сезона' }],
@@ -110,6 +112,22 @@ for (let i = 0; i < 45; i++) {
 }
 assert.equal(api.isValidCareerSave(deepPayload), false,
   'excessively nested save objects must be rejected');
+
+
+const missingFinancePayload = makeSave();
+delete missingFinancePayload.data.league.teams[0].finance;
+assert.equal(api.isValidCareerSave(missingFinancePayload), false,
+  'team finance data required by loadGame must be present');
+
+const missingContractPayload = makeSave();
+delete missingContractPayload.data.league.teams[0].roster[0].contract;
+assert.equal(api.isValidCareerSave(missingContractPayload), false,
+  'player contract data required by loadGame must be present');
+
+const malformedFreeAgentsPayload = makeSave();
+malformedFreeAgentsPayload.data.league.freeAgents = 'not-an-array';
+assert.equal(api.isValidCareerSave(malformedFreeAgentsPayload), false,
+  'free-agent collection required by loadGame must be an array');
 
 const malformedPayload = makeSave();
 malformedPayload.data.league.teams[0].roster = 'not-an-array';
