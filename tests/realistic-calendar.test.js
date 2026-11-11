@@ -114,11 +114,11 @@ console.log('Save migration compatibility passed.');
 
 const simSource = fs.readFileSync(path.join(root, 'engine/season-simulation.js'), 'utf8');
 const helperStart = simSource.indexOf('function advanceToMyNextMatch()');
-const helperEnd = simSource.indexOf('\\n}\\n', helperStart) + 2;
+const helperEnd = simSource.indexOf('\n}\n', helperStart) + 2;
 assert.ok(helperStart >= 0 && helperEnd > helperStart, 'next-match helper exists');
 let simulatedDates = 0, startedMatch = false;
 const fakeGameState = { playerTeamId: 7, liveMatch: null, league: { currentRound: 0, schedule: [[], [], [[7, 8]]] } };
-const advanceHelper = new Function('G', 'simRound', 'checkInjuredStarters', 'render', 'startMyLiveMatch', 'showToast', simSource.slice(helperStart, helperEnd) + '\\nreturn advanceToMyNextMatch;');
+const advanceHelper = new Function('G', 'simRound', 'checkInjuredStarters', 'render', 'startMyLiveMatch', 'showToast', simSource.slice(helperStart, helperEnd) + '\nreturn advanceToMyNextMatch;');
 advanceHelper(fakeGameState, () => { fakeGameState.league.currentRound++; simulatedDates++; }, () => [], () => {}, () => { startedMatch = true; }, () => {})();
 assert.equal(simulatedDates, 2, 'intervening league dates are simulated before the club fixture');
 assert.equal(startedMatch, true, 'the club fixture starts after the intervening dates');
