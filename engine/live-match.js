@@ -1008,6 +1008,7 @@ function liveAdvance(stepSec) {
           if (opportunity.slotPass && opportunity.passer) {
             const passerStats = lm.isPlayoff ? ensurePlayoffStats(opportunity.passer) : ensureStats(opportunity.passer);
             passerStats.slotPasses = (Number(passerStats.slotPasses) || 0) + 1;
+            lm.lastSlotPass = { side, passerId: opportunity.passer.id, receiverId: p.id, expiresAt: lm.totalSecPlayed + 10 };
             lm.gameplayPossession = { side, playerId: p.id };
             livePushEvent({
               type: 'slot_pass', side,
@@ -1035,7 +1036,8 @@ function liveAdvance(stepSec) {
           const shooterPositions = lm.positions?.[side] || [];
           const shooterIndex = shooterPositions.findIndex(position => position.playerId === p.id);
           const shooterPosition = shooterPositions[shooterIndex >= 0 ? shooterIndex : 3];
-          const shotTargetY = clamp((puck?.y ?? 50) + (outcome === 'штанга' ? ((puck?.y ?? 50) < 50 ? -7 : 7) : 0), 43, 57);
+          const shotOriginY = shooterPosition?.y ?? puck?.y ?? 50;
+          const shotTargetY = clamp(shotOriginY + (outcome === 'штанга' ? (shotOriginY < 50 ? -7 : 7) : 0), 43, 57);
           const block = outcome === 'сейв'
             ? resolveLiveShotBlock(lm, side, shooterPosition, shotTargetY) : null;
           if (block) outcome = 'блокирован';
@@ -1139,16 +1141,29 @@ function liveGoal(side) {
     addNews('milestone', `${scorer.name} набрал ${sStat.points}-е очко в сезоне`, 3);
   }
 
-  const numAssists = rng() < 0.12 ? 0 : rng() < 0.35 ? 1 : 2;
   const assistPool = onIceScorers.filter(p => p.id !== scorer.id);
+  const slotPassAssist = lm.lastSlotPass?.side === side
+    && lm.lastSlotPass.receiverId === scorer.id
+    && lm.totalSecPlayed <= lm.lastSlotPass.expiresAt
+    ? assistPool.find(player => player.id === lm.lastSlotPass.passerId) : null;
+  const numAssists = slotPassAssist
+    ? Math.max(1, rng() < 0.35 ? 1 : 2)
+    : rng() < 0.12 ? 0 : rng() < 0.35 ? 1 : 2;
   const assisters = [];
-  for (let i = 0; i < numAssists && assistPool.length > 0; i++) {
+  if (slotPassAssist) {
+    assisters.push(slotPassAssist);
+    const aStat = isPlayoff ? ensurePlayoffStats(slotPassAssist) : ensureStats(slotPassAssist);
+    aStat.assists++; aStat.points++;
+    assistPool.splice(assistPool.indexOf(slotPassAssist), 1);
+  }
+  for (let i = assisters.length; i < numAssists && assistPool.length > 0; i++) {
     const a = pickWeighted(assistPool, assistWeight);
     assisters.push(a);
     const aStat = isPlayoff ? ensurePlayoffStats(a) : ensureStats(a);
     aStat.assists++; aStat.points++;
     assistPool.splice(assistPool.indexOf(a), 1);
   }
+  if (slotPassAssist) lm.lastSlotPass = null;
 
   if (side === 'home') lm.hg++; else lm.ag++;
   const defendingSide = side === 'home' ? 'away' : 'home';
