@@ -31,6 +31,7 @@ function simRound(forceNoPrompt = false) {
     G.league.results.push(res);
     roundResults.push({ homeId: res.homeId, awayId: res.awayId, hg: res.hg, ag: res.ag, ot: !!res.ot });
   });
+  generateLeagueMatchNews(roundResults);
   simYouthRoundBoth(true, G.league.currentRound + 1);
   G.lastRoundNumber = roundNumber;
   G.lastRoundResults = roundResults;
@@ -90,7 +91,15 @@ function simSeason() {
   const scaledInterval = base => Math.max(1, Math.round(base * scheduleScale));
   while (G.league.currentRound < G.league.schedule.length) {
     const round = G.league.schedule[G.league.currentRound];
-    round.forEach(([h, a]) => { const res = simGame(h, a, false); res.round = G.league.currentRound; applyResult(res); G.league.results.push(res); });
+    const roundResults = [];
+    round.forEach(([h, a]) => {
+      const res = simGame(h, a, false);
+      res.round = G.league.currentRound;
+      applyResult(res);
+      G.league.results.push(res);
+      roundResults.push({ homeId: res.homeId, awayId: res.awayId, hg: res.hg, ag: res.ag, ot: !!res.ot });
+    });
+    generateLeagueMatchNews(roundResults);
     simYouthRoundBoth(true, G.league.currentRound + 1);
     G.league.currentRound++;
     const activeTeamIds = new Set(round.flatMap(([homeId, awayId]) => [homeId, awayId]));
