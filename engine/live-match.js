@@ -2128,6 +2128,23 @@ function liveUpdatePositions() {
     const secondForechecker = forwardCandidates[1]?.player || null;
     const supportPress = tactics.pressure >= 78 || (tactics.forecheck >= 82 && opponentZone);
     const aggressivePress = tactics.pressure >= 62 || (tactics.forecheck >= 65 && opponentZone);
+    const opponentSide = side === 'home' ? 'away' : 'home';
+    const opponentPlayers = (lm.positions[opponentSide] || [])
+      .filter(player => player.onIce !== false && player.role !== 'goalie');
+    const opponentCarrier = puck.possessionSide === opponentSide
+      ? (lm.positions[opponentSide] || [])[puck.carrierIndex] : null;
+    const activeDefenders = players.filter(player => player.role === 'D' && player.onIce !== false);
+    const defendersByCarrier = activeDefenders.slice().sort((a, b) =>
+      Math.hypot((opponentCarrier?.x ?? puck.x) - a.x, (opponentCarrier?.y ?? puck.y) - a.y)
+      - Math.hypot((opponentCarrier?.x ?? puck.x) - b.x, (opponentCarrier?.y ?? puck.y) - b.y));
+    const pressureDefender = defendersByCarrier[0] || null;
+    const markedThreats = opponentPlayers
+      .filter(player => player !== opponentCarrier && player.role !== 'D')
+      .map(player => ({
+        player,
+        danger: Math.abs(player.x - ownGoalX) * 0.72 + Math.abs(player.y - 50) * 0.34,
+      }))
+      .sort((a, b) => a.danger - b.danger);
     let closestSkater = null;
     let closestDistance = Infinity;
 
@@ -2210,17 +2227,38 @@ function liveUpdatePositions() {
           targetX = puck.x + direction * (player.idx === 4 ? -centerTrail : forwardPush);
           targetY = puck.y + lane;
         }
+      } else if (!hasPuck && isDefender && opponentCarrier
+        && (side === 'home' ? puck.x < 155 : puck.x > 45)) {
+        // Один защитник встречает носителя шайбы, второй остаётся между опасным
+        // нападающим и воротами. Это динамическая страховка, а не фиксированные полосы.
+        const carrierDistance = Math.hypot(opponentCarrier.x - player.x, opponentCarrier.y - player.y);
+        const challengeRange = 62 + tactics.pressure * 0.12;
+        if (player === pressureDefender && carrierDistance < challengeRange) {
+          const containGap = tactics.pressure >= 72 ? 3 : 7 + (50 - tactics.pressure) * 0.055;
+          targetX = opponentCarrier.x - direction * containGap;
+          targetY = opponentCarrier.y + (50 - opponentCarrier.y) * 0.08;
+        } else {
+          const threat = markedThreats.find(item => !defendersByCarrier
+            .slice(0, 1).some(defender => defender === player))?.player || null;
+          const coverX = ownGoalX + direction * (24 + tactics.pressure * 0.018);
+          if (threat) {
+            const goalSideX = threat.x - direction * 9;
+            targetX = clamp(goalSideX, ownGoalX + direction * 12, ownGoalX + direction * 48);
+            targetY = clamp(threat.y + (50 - threat.y) * 0.16, 30, 70);
+          } else {
+            targetX = coverX;
+            targetY = clamp(50 + (opponentCarrier.y - 50) * 0.28, 34, 66);
+          }
+        }
       } else if (player === closestSkater) {
-        // Ближайший полевой игрок атакует шайбу; второй защитник остаётся страховать пятак.
+        // Ближайший полевой игрок атакует шайбу; защитники сохраняют отдельную страховку.
         targetX = (aggressivePress || isRecoveringAgainstCounter) ? puck.x : puck.x - direction * (8 + (50 - tactics.pressure) * 0.12);
         targetY = (aggressivePress || isRecoveringAgainstCounter) ? puck.y : puck.y + (50 - puck.y) * 0.22;
       } else if (!hasPuck && isDefender
         && (side === 'home' ? puck.x < 115 : puck.x > 85)) {
-        // Дальний защитник закрывает внутренний коридор и готовится принять поперечную передачу.
         const slotDepth = 23 + tactics.pressure * 0.025;
         targetX = ownGoalX + direction * slotDepth;
-        const coverLane = player.idx === 1 ? 43 : 57;
-        targetY = clamp(coverLane + (puck.y - 50) * 0.12, 35, 65);
+        targetY = clamp(50 + (puck.y - 50) * 0.22, 35, 65);
       } else if (!hasPuck && player === secondForechecker && supportPress) {
         // A second forward supports the forecheck instead of abandoning the defensive shape.
         targetX = puck.x - direction * 8;
