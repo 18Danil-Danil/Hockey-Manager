@@ -77,8 +77,10 @@ activeShotState.lm.positions = {
   puck: { x: 100, y: 50, possessionSide: 'home', carrierIndex: 1 },
 };
 let selectedShooters = [];
+const activeShotRandom = [0.99, 0.99, 0.01, 0.1];
+let activeShotRandomIndex = 0;
 const activeShotAdvance = liveAdvance(
-  { liveMatch: activeShotState.lm }, () => 0.99, () => false, () => {}, () => {},
+  { liveMatch: activeShotState.lm }, () => activeShotRandom[activeShotRandomIndex++], () => false, () => {}, () => {},
   players => { selectedShooters = players.slice(); return players[0]; },
   arr => arr[0], () => 1, ensureStats, ensureStats,
   () => {}, () => '19:00', () => 'HOME', () => 'AWAY',
