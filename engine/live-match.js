@@ -1292,12 +1292,38 @@ function liveUpdatePositions() {
   const possessionSide = puck.possessionSide || 'home';
   const manpower = getLiveManpowerState(lm);
   const directionFor = side => side === 'home' ? 1 : -1;
+  const tacticalFor = side => {
+    const teamId = side === 'home' ? lm.homeId : lm.awayId;
+    const team = (G.league?.teams || []).find(item => item.id === teamId);
+    const values = team?.tactics || {};
+    const read = key => {
+      const value = Number(values[key]);
+      return clamp(Number.isFinite(value) ? value : 50, 0, 100);
+    };
+    return {
+      forecheck: read('forecheck'),
+      pressure: read('pressure'),
+      style: read('style'),
+      physical: read('physical'),
+      risk: read('risk'),
+    };
+  };
   for (const side of sides) {
     const players = lm.positions[side] || [];
     const direction = directionFor(side);
     const ownGoalX = side === 'home' ? 10 : 190;
     const hasPuck = side === possessionSide;
     const carrier = hasPuck ? players[puck.carrierIndex] : null;
+    const tactics = tacticalFor(side);
+    const opponentZone = side === 'home' ? puck.x > 100 : puck.x < 100;
+    const forwardCandidates = players
+      .map((player, index) => ({ player, index }))
+      .filter(item => item.index > 0 && item.player.onIce !== false && item.player.role !== 'D' && item.player.role !== 'goalie')
+      .sort((a, b) => Math.hypot(puck.x - a.player.x, puck.y - a.player.y)
+        - Math.hypot(puck.x - b.player.x, puck.y - b.player.y));
+    const secondForechecker = forwardCandidates[1]?.player || null;
+    const supportPress = tactics.pressure >= 78 || (tactics.forecheck >= 82 && opponentZone);
+    const aggressivePress = tactics.pressure >= 62 || (tactics.forecheck >= 65 && opponentZone);
     let closestSkater = null;
     let closestDistance = Infinity;
 
@@ -1344,31 +1370,41 @@ function liveUpdatePositions() {
         if (isCarrier) { targetX = puck.x + direction * 6; targetY = puck.y; }
       } else if (hasPuck) {
         if (isCarrier) {
-          // Puck carrier drives toward the attacking end instead of orbiting a fixed slot.
-          targetX = puck.x + direction * 8;
+          // Vertical/risk-oriented teams attack space faster; positional teams retain the puck.
+          const forwardDrive = 6 + tactics.style * 0.07 + tactics.risk * 0.035;
+          targetX = puck.x + direction * forwardDrive;
           targetY = puck.y;
         } else if (isDefender) {
-          // Defencemen support the attack from behind the puck and keep two lanes.
-          targetX = puck.x - direction * (player.idx === 1 ? 24 : 18);
+          // Defencemen support from behind; aggressive systems move the blue line higher.
+          const supportDepth = 24 - tactics.style * 0.055 - tactics.risk * 0.035;
+          targetX = puck.x - direction * supportDepth;
           targetY = puck.y + (player.idx === 1 ? -19 : 19);
         } else {
-          // Forwards spread across the lanes; the centre trails slightly as a passing option.
+          // Positional attack preserves width; vertical/risk-oriented attack sends wings deeper.
           const lane = player.idx === 3 ? -19 : player.idx === 4 ? 0 : 19;
-          targetX = puck.x + direction * (player.idx === 4 ? -11 : 13);
+          const forwardPush = 7 + tactics.style * 0.13 + tactics.risk * 0.055;
+          const centerTrail = 13 - tactics.risk * 0.075;
+          targetX = puck.x + direction * (player.idx === 4 ? -centerTrail : forwardPush);
           targetY = puck.y + lane;
         }
       } else if (player === closestSkater) {
-        // The nearest forechecker pressures the puck; the rest retain defensive shape.
-        targetX = puck.x;
-        targetY = puck.y;
+        // Pressure controls whether the first defender attacks the puck or protects the middle.
+        targetX = aggressivePress ? puck.x : puck.x - direction * (8 + (50 - tactics.pressure) * 0.12);
+        targetY = aggressivePress ? puck.y : puck.y + (50 - puck.y) * 0.22;
+      } else if (!hasPuck && player === secondForechecker && supportPress) {
+        // A second forward supports the forecheck instead of abandoning the defensive shape.
+        targetX = puck.x - direction * 8;
+        targetY = puck.y + (puck.y < 50 ? 10 : -10);
       } else if (isDefender) {
-        // One defender protects the slot while the other shades toward the puck.
-        targetX = ownGoalX + direction * 29;
+        // A compact trap protects the slot; higher pressure shades the second defender outward.
+        const shade = 29 + tactics.pressure * 0.055;
+        targetX = ownGoalX + direction * shade;
         targetY = clamp(puck.y + (player.idx === 1 ? -17 : 17), 27, 73);
       } else {
-        // Forwards backcheck between the puck and their own goal.
+        // Forwards backcheck; higher forecheck keeps them closer to the puck for a quick regain.
         const lane = player.idx === 3 ? -17 : player.idx === 4 ? 0 : 17;
-        targetX = puck.x - direction * 18;
+        const backcheckDepth = 20 - tactics.forecheck * 0.055;
+        targetX = puck.x - direction * backcheckDepth;
         targetY = clamp(puck.y + lane, 14, 86);
       }
 
@@ -1381,7 +1417,8 @@ function liveUpdatePositions() {
       const jitter = isGoalie ? 0.0015 : 0.004;
       const response = isGoalie ? 0.055 : 0.035;
       const staminaFactor = isGoalie ? 1 : clamp((player.stamina ?? 100) / 100, 0.58, 1);
-      const maxSpeed = (isGoalie ? 0.24 : isDefender ? 0.78 : 0.9) * staminaFactor;
+      const physicalFactor = isGoalie ? 1 : 0.96 + tactics.physical * 0.0008;
+      const maxSpeed = (isGoalie ? 0.24 : isDefender ? 0.78 : 0.9) * staminaFactor * physicalFactor;
       player.vx = (player.vx || 0) * 0.78 + (targetX - player.x) * response
         + (visualRng() - 0.5) * jitter;
       player.vy = (player.vy || 0) * 0.78 + (targetY - player.y) * response
