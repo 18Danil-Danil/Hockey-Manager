@@ -69,7 +69,7 @@ function makeLiveState() {
   };
 }
 const state = makeLiveState();
-const randomValues = [0.99, 0.99, 0.01, 0.1, 0.99, 0.99, 0.01, 0.9];
+const randomValues = [0.99, 0.01, 0.1, 0.99, 0.99, 0.01, 0.9, 0.99];
 let randomIndex = 0;
 const rng = () => randomValues[randomIndex++];
 const stats = new Map();
@@ -104,7 +104,7 @@ activeShotState.lm.positions = {
   puck: { x: 100, y: 50, possessionSide: 'home', carrierIndex: 1 },
 };
 let selectedShooters = [];
-const activeShotRandom = [0.99, 0.99, 0.01, 0.1];
+const activeShotRandom = [0.99, 0.01, 0.1, 0.99];
 let activeShotRandomIndex = 0;
 const activeShotAdvance = liveAdvance(
   { liveMatch: activeShotState.lm }, () => activeShotRandom[activeShotRandomIndex++], () => false, () => {}, () => {},
@@ -119,7 +119,7 @@ assert.deepEqual(selectedShooters.map(player => player.id), ['active'],
 
 // Missed shots and posts are attempts, not shots on goal or goalie saves.
 const missState = makeLiveState();
-const missRandomValues = [0.99, 0.99, 0.01, 0.1];
+const missRandomValues = [0.99, 0.01, 0.1, 0.99];
 let missRandomIndex = 0;
 const missStats = new Map();
 const ensureMissStats = p => {
@@ -151,13 +151,19 @@ assert.match(source, /if \(rShot < LIVE_SHOT_RATE\)/);
 // A full regulation-length sample must produce a hockey-like shot volume.
 const volumeState = makeLiveState();
 volumeState.lm.timeLeft = 100000;
+const recordVolumeGoal = side => {
+  const defendingSide = side === 'home' ? 'away' : 'home';
+  volumeState.lm.shots[side]++;
+  volumeState.lm.goalieStats[defendingSide].shots++;
+  volumeState.lm.goalieStats[defendingSide].goals++;
+};
 let seed = 123456789;
 const seededRng = () => {
   seed = (1664525 * seed + 1013904223) >>> 0;
   return seed / 4294967296;
 };
 const volumeAdvance = liveAdvance(
-  { liveMatch: volumeState.lm }, seededRng, () => false, () => {}, () => {},
+  { liveMatch: volumeState.lm }, seededRng, () => false, recordVolumeGoal, () => {},
   players => players[0], arr => arr[Math.floor(seededRng() * arr.length)], () => 1, ensureStats, ensureStats,
   ev => volumeState.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
   0.00195, 1.8, 0.70, 0.093, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}, getLiveSituationModifiers, () => null
