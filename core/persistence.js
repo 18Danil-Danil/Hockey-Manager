@@ -137,6 +137,8 @@ async function loadGame() {
     // Сначала резервируем имена из старого сохранения: ниже может создаваться недостающая молодёжная структура.
     if (typeof hydratePlayerNameRegistry === 'function') hydratePlayerNameRegistry(G.league);
     G.league.season = normalizeSeasonLabel(G.league.season);
+    if (!Array.isArray(G.league.schedule) || !G.league.schedule.length) G.league.schedule = makeSchedule(G.league.teams);
+    ensureScheduleCalendar(G.league);
     (G.league.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
     G.playerTeamId = data.playerTeamId || null;
     G.activeTab = data.activeTab || 'standings'; G.screen = data.screen || 'select';
