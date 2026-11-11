@@ -887,7 +887,7 @@ function resolveLiveShotRebound(lm, attackingSide, shooter, outcome, shotTargetY
   let winnerSide, winner, frozen = false;
   if (rng() < smotherChance || (!attacker && !defender)) {
     winnerSide = defendingSide;
-    winner = defender;
+    winner = null;
     frozen = true;
   } else if (!attacker) {
     winnerSide = defendingSide; winner = defender;
@@ -898,11 +898,11 @@ function resolveLiveShotRebound(lm, attackingSide, shooter, outcome, shotTargetY
     winnerSide = rng() < attackerChance ? attackingSide : defendingSide;
     winner = winnerSide === attackingSide ? attacker : defender;
   }
-  const winnerIndex = winner
+  const winnerIndex = frozen ? 0 : winner
     ? (lm.positions[winnerSide] || []).findIndex(slot => slot.playerId === winner.player.id && slot.onIce !== false)
     : -1;
   const loserSide = winnerSide === attackingSide ? defendingSide : attackingSide;
-  const loser = winnerSide === attackingSide ? defender : attacker;
+  const loser = frozen ? null : winnerSide === attackingSide ? defender : attacker;
   const statsFor = (player, key) => {
     if (!player) return;
     const stats = lm.isPlayoff ? ensurePlayoffStats(player) : ensureStats(player);
@@ -911,8 +911,8 @@ function resolveLiveShotRebound(lm, attackingSide, shooter, outcome, shotTargetY
   if (winner && !frozen) statsFor(winner.player, 'reboundRecoveries');
   if (loser && !frozen) statsFor(loser.player, 'reboundBattlesLost');
   if (winner && !frozen) statsFor(winner.player, 'reboundBattlesWon');
-  if (winner && frozen) statsFor(winner.player, 'reboundCovers');
-  lm.gameplayPossession = { side: winnerSide, playerId: winner?.player.id || null };
+  if (frozen && goaliePlayer) statsFor(goaliePlayer, 'reboundCovers');
+  lm.gameplayPossession = { side: winnerSide, playerId: frozen ? null : winner?.player.id || null };
   lm.reboundStats ||= { home: 0, away: 0, contested: 0, covered: 0 };
   if (frozen) lm.reboundStats.covered++;
   else {
