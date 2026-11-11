@@ -856,11 +856,23 @@ function getLiveShotOpportunity(lm, side, activeSkaters, puck) {
   return { shooter, type: 'standard', passer: null, slotPass: false };
 }
 
+function getLiveGoalieControl(goaliePlayer) {
+  const attrs = goaliePlayer?.attrs || {};
+  return clamp(Number(attrs.reboundControl) || Number(attrs.reflexes)
+    || Number(goaliePlayer?.ovr) || 50, 1, 99);
+}
+
 function resolveLiveShotRebound(lm, attackingSide, shooter, outcome, shotTargetY) {
   const defendingSide = attackingSide === 'home' ? 'away' : 'home';
   const goalX = attackingSide === 'home' ? 190 : 10;
-  const targetX = attackingSide === 'home' ? 182 : 18;
-  const targetY = clamp(shotTargetY + (outcome === 'штанга' ? (shotTargetY < 50 ? 9 : -9) : (shotTargetY < 50 ? 5 : -5)), 12, 88);
+  const goalie = (lm.positions?.[defendingSide] || []).find(slot => slot.role === 'goalie' && slot.onIce !== false);
+  const goaliePlayer = goalie && (lm[defendingSide + 'Lineup']?.goalie || null);
+  const control = getLiveGoalieControl(goaliePlayer);
+  // Хорошо контролируемый отскок уходит за пределы пятака, к борту;
+  // слабый контроль чаще оставляет шайбу в опасной зоне перед воротами.
+  const cornerOffset = 7 + control * 0.15;
+  const targetX = attackingSide === 'home' ? goalX - (7 + control * 0.12) : goalX + (7 + control * 0.12);
+  const targetY = clamp(shotTargetY + (shotTargetY < 50 ? cornerOffset : -cornerOffset), 9, 91);
   const candidates = {};
   for (const side of [attackingSide, defendingSide]) {
     const slots = lm.positions?.[side] || [];
@@ -879,11 +891,7 @@ function resolveLiveShotRebound(lm, attackingSide, shooter, outcome, shotTargetY
   }
   const attacker = candidates[attackingSide][0] || null;
   const defender = candidates[defendingSide][0] || null;
-  const goalie = (lm.positions?.[defendingSide] || []).find(slot => slot.role === 'goalie' && slot.onIce !== false);
-  const goaliePlayer = goalie && (lm[defendingSide + 'Lineup']?.goalie || null);
-  const control = clamp(Number(goaliePlayer?.attrs?.reboundControl)
-    || Number(goaliePlayer?.attrs?.reflexes) || Number(goaliePlayer?.ovr) || 50, 1, 99);
-  const smotherChance = outcome === 'сейв' ? clamp(0.18 + control * 0.003, 0.18, 0.48) : 0;
+  const smotherChance = outcome === 'сейв' ? clamp(0.16 + control * 0.0038, 0.16, 0.54) : 0;
   let winnerSide, winner, frozen = false;
   if (rng() < smotherChance || (!attacker && !defender)) {
     winnerSide = defendingSide;
@@ -2061,11 +2069,15 @@ function liveUpdatePositions() {
       let targetY = player.baseY;
 
       if (isGoalie) {
-        // Goalie stays in the crease; during a shot, reacts more sharply to its lane.
+        // Вратарь сохраняет глубину вратарской, но читает поперечное движение шайбы.
+        // Во время броска смещается именно в линию броска, не выходя за пределы створа.
         const puckInOwnZone = (puck.x - ownGoalX) * direction < 58;
-        targetX = ownGoalX + direction * (puckInOwnZone ? 5 : 2);
-        targetY = clamp(puck.shotAnimation && puck.shotAnimation.defendingSide === side
-          ? puck.shotAnimation.targetY : 50 + (puck.y - 50) * 0.16, 42, 58);
+        const shotOnGoalie = puck.shotAnimation && puck.shotAnimation.defendingSide === side;
+        const shotLaneY = shotOnGoalie ? puck.shotAnimation.targetY : 50 + (puck.y - 50) * 0.34;
+        const distanceToGoal = Math.abs(puck.x - ownGoalX);
+        const depth = puckInOwnZone ? clamp(3.5 + (58 - distanceToGoal) * 0.045, 3.5, 6.2) : 2.5;
+        targetX = ownGoalX + direction * depth;
+        targetY = clamp(shotLaneY, 34, 66);
       } else if (manpower[side].skaters < 5) {
         // Penalty kill: compact box protects the slot and passing lanes.
         const boxX = side === 'home' ? 43 : 157;
@@ -2119,9 +2131,16 @@ function liveUpdatePositions() {
           targetY = puck.y + lane;
         }
       } else if (player === closestSkater) {
-        // A team caught during a counterattack sends its nearest skater straight back to the puck.
+        // Ближайший полевой игрок атакует шайбу; второй защитник остаётся страховать пятак.
         targetX = (aggressivePress || isRecoveringAgainstCounter) ? puck.x : puck.x - direction * (8 + (50 - tactics.pressure) * 0.12);
         targetY = (aggressivePress || isRecoveringAgainstCounter) ? puck.y : puck.y + (50 - puck.y) * 0.22;
+      } else if (!hasPuck && isDefender
+        && (side === 'home' ? puck.x < 115 : puck.x > 85)) {
+        // Дальний защитник закрывает внутренний коридор и готовится принять поперечную передачу.
+        const slotDepth = 23 + tactics.pressure * 0.025;
+        targetX = ownGoalX + direction * slotDepth;
+        const coverLane = player.idx === 1 ? 43 : 57;
+        targetY = clamp(coverLane + (puck.y - 50) * 0.12, 35, 65);
       } else if (!hasPuck && player === secondForechecker && supportPress) {
         // A second forward supports the forecheck instead of abandoning the defensive shape.
         targetX = puck.x - direction * 8;
@@ -2145,11 +2164,11 @@ function liveUpdatePositions() {
       }
 
       // Small visual variation prevents robotic movement without making players drift.
-      const jitter = isGoalie ? 0.0015 : 0.004;
-      const response = isGoalie ? 0.055 : 0.035;
+      const jitter = isGoalie ? 0.001 : 0.004;
+      const response = isGoalie ? 0.105 : 0.035;
       const staminaFactor = isGoalie ? 1 : clamp((player.stamina ?? 100) / 100, 0.58, 1);
       const physicalFactor = isGoalie ? 1 : 0.96 + tactics.physical * 0.0008;
-      const maxSpeed = (isGoalie ? 0.24 : isDefender ? 0.78 : 0.9) * staminaFactor * physicalFactor;
+      const maxSpeed = (isGoalie ? 0.42 : isDefender ? 0.78 : 0.9) * staminaFactor * physicalFactor;
       player.vx = (player.vx || 0) * 0.78 + (targetX - player.x) * response
         + (visualRng() - 0.5) * jitter;
       player.vy = (player.vy || 0) * 0.78 + (targetY - player.y) * response
