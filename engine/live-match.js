@@ -262,10 +262,12 @@ function reconcileLiveManpower(lm) {
     const currentIds = new Set(slots.filter(slot => slot.onIce !== false)
       .map(slot => slot.playerId).filter(Boolean));
     const roster = lineup.skaters || [];
-    const current = roster.filter(player => currentIds.has(player.id) && !penalizedIds.has(player.id));
+    const isAvailable = player => !penalizedIds.has(player.id)
+      && (!player.injury || player.injury.gamesLeft <= 0 || player.playingThroughPain);
+    const current = roster.filter(player => currentIds.has(player.id) && isAvailable(player));
     const candidates = [...current];
     for (const player of roster) {
-      if (!penalizedIds.has(player.id) && !candidates.some(item => item.id === player.id)) candidates.push(player);
+      if (isAvailable(player) && !candidates.some(item => item.id === player.id)) candidates.push(player);
     }
     const desired = manpower[side].skaters;
     const defenseCount = desired >= 4 ? 2 : 1;
@@ -629,6 +631,47 @@ function getLiveContactRating(player, stamina = 100) {
   return base * (0.70 + clamp(Number(stamina) || 0, 0, 100) * 0.003);
 }
 
+function applyLiveContactInjury(lm, teamSide, player, hitForce, stamina) {
+  if (!lm || !player || (player.injury && player.injury.gamesLeft > 0)) return null;
+  const teamId = teamSide === 'home' ? lm.homeId : lm.awayId;
+  const team = G.league?.teams?.find(item => item.id === teamId);
+  if (!team) return null;
+  const fatigue = clamp(Number(player.fatigue) || 0, 0, 100);
+  const medicalMod = 1 - (Number(team.infrastructure?.medical) || 0) * 0.05
+    - (Number(team.staff?.doctor?.level) || 0) * 0.03;
+  const fatigueRisk = fatigue > 70 ? 0.004 : fatigue > 50 ? 0.002 : 0;
+  const staminaRisk = clamp((65 - (Number(stamina) || 100)) / 65, 0, 1) * 0.003;
+  const injuryChance = clamp((0.003 + hitForce * 0.009 + fatigueRisk + staminaRisk)
+    * Math.max(0.2, medicalMod), 0.001, 0.018);
+  if (rng() >= injuryChance) return null;
+
+  const severity = rng() < 0.12 ? 'major' : 'minor';
+  const rawGames = severity === 'major'
+    ? 8 + Math.floor(rng() * 11)
+    : 1 + Math.floor(rng() * 4);
+  const gamesLeft = Math.max(1, Math.round(rawGames * Math.max(0.4, medicalMod)));
+  player.injury = { gamesLeft, severity, source: 'live_contact' };
+  player.playingThroughPain = false;
+  player.injuryPolicy = null;
+
+  const severityText = severity === 'major' ? 'серьёзную травму' : 'лёгкое повреждение';
+  livePushEvent({
+    type: 'injury', side: teamSide,
+    text: `${player.name} получает ${severityText} после силового контакта и покидает лёд`,
+    playerId: player.id, injuryGames: gamesLeft, injurySeverity: severity,
+    time: liveFmtTime(lm.timeLeft), period: lm.period,
+  });
+  if (typeof addNews === 'function' && (player.ovr >= 78 || team.id === G.playerTeamId)) {
+    addNews('injury', `${player.name} (${team.name}) получил ${severityText} — пропустит ${gamesLeft} игр`, 2);
+  }
+  if (team.id === G.playerTeamId && typeof addInboxMessage === 'function') {
+    addInboxMessage('coach', 'Медицинский штаб', `${player.name} получил травму`,
+      `После силового контакта диагностировано повреждение: ${severity === 'major' ? 'серьёзное' : 'лёгкое'}. Игрок пропустит ориентировочно ${gamesLeft} игр.`, []);
+  }
+  reconcileLiveManpower(lm);
+  return player.injury;
+}
+
 function resolveLivePhysicalContact(lm, stepSec = LIVE_TICK_SEC) {
   if (!lm || lm.isFinished || lm.isBreak || lm.shootout || lm.positions?.puck?.shotAnimation) return false;
   lm.physicalContactCooldown = Math.max(0, (Number(lm.physicalContactCooldown) || 0) - stepSec);
@@ -679,6 +722,9 @@ function resolveLivePhysicalContact(lm, stepSec = LIVE_TICK_SEC) {
   if (cleanHit) carrierSlot.fallFrames = 10;
 
   const dislodged = cleanHit && rng() < clamp(0.24 + hitAdvantage / 260, 0.10, 0.48);
+  const injury = cleanHit
+    ? applyLiveContactInjury(lm, possession.side, carrier, clamp((hitRating - resistance + 45) / 150, 0, 1), carrierStamina)
+    : null;
   if (dislodged) {
     possession.side = defendingSide;
     possession.playerId = challenger.player.id;
@@ -702,9 +748,9 @@ function resolveLivePhysicalContact(lm, stepSec = LIVE_TICK_SEC) {
   livePushEvent({
     type: 'body_check', side: defendingSide,
     text: cleanHit
-      ? `${hitterName} проводит силовой приём против ${carrierName}${dislodged ? ' — шайба потеряна' : ''}`
+      ? `${hitterName} проводит силовой приём против ${carrierName}${dislodged ? ' — шайба потеряна' : ''}${injury ? ' — травма' : ''}`
       : `${carrierName} выдерживает силовой приём ${hitterName}`,
-    hitterId: challenger.player.id, targetId: carrier.id, cleanHit, dislodged,
+    hitterId: challenger.player.id, targetId: carrier.id, cleanHit, dislodged, injury: !!injury,
     time: liveFmtTime(lm.timeLeft), period: lm.period,
   });
 
