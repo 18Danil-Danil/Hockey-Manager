@@ -1503,11 +1503,13 @@ function liveUpdatePositions() {
       const isTurnover = visualRng() < 0.18;
 
       if (isTurnover) {
-        const nextSide = currentSide === 'home' ? 'away' : 'home';
+        // A visual bobble is recovered by the same team; only the gameplay
+        // puck-battle resolver is allowed to award possession to the opponent.
+        const nextSide = currentSide;
         const nextCarrierIndex = 3 + Math.floor(visualRng() * 3);
         const receiver = (lm.positions[nextSide] || [])[nextCarrierIndex];
         puck.carrierIndex = null;
-        puck.targetX = receiver ? receiver.x : (nextSide === 'home' ? 100 : 100);
+        puck.targetX = receiver ? receiver.x : 100;
         puck.targetY = receiver ? receiver.y : 50;
         puck.looseFrames = 14;
         puck.nextPossessionSide = nextSide;
