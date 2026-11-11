@@ -264,6 +264,10 @@ function reconcileLiveManpower(lm) {
     const defenders = candidates.filter(player => player.position === 'D');
     const forwards = candidates.filter(player => player.position !== 'D');
     const selected = [...defenders.slice(0, defenseCount), ...forwards.slice(0, forwardsCount)];
+    for (const player of candidates) {
+      if (selected.length >= desired) break;
+      if (!selected.some(item => item.id === player.id)) selected.push(player);
+    }
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i];
       const player = selected[i];
@@ -280,7 +284,7 @@ function reconcileLiveManpower(lm) {
       slot.jerseyNumber = player.jerseyNumber ?? null;
       slot.number = player.number ?? null;
       slot.position = player.position || (i < defenseCount ? 'D' : 'F');
-      slot.role = i < defenseCount ? 'D' : 'F';
+      slot.role = player.position === 'D' ? 'D' : 'F';
       slot.stamina = lm.playerStamina?.[side]?.[player.id] ?? 100;
       slot.vx = 0;
       slot.vy = 0;
