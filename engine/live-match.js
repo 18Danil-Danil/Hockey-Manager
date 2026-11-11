@@ -1610,22 +1610,36 @@ function closeLiveMatchModal() {
 let _liveCanvasEl = null;
 let _liveRafId = null;
 
+function getLiveCanvasResolution(containerWidth, devicePixelRatio) {
+  const cssWidth = Math.max(320, Math.floor((Number(containerWidth) || 0) - 24));
+  const scale = clamp(Number(devicePixelRatio) || 1, 1, 2.5);
+  const cssHeight = Math.round(cssWidth * 0.5);
+  return {
+    cssWidth,
+    cssHeight,
+    width: Math.round(cssWidth * scale),
+    height: Math.round(cssHeight * scale),
+    scale,
+  };
+}
+
 function drawLiveCanvas() {
   const lm = G.liveMatch;
   if (!lm) return;
-  let canvas = document.getElementById('live-canvas');
+  const canvas = document.getElementById('live-canvas');
   if (!canvas) return;
   const wrap = canvas.parentElement;
-  if (wrap && wrap.clientWidth > 0) {
-    const targetW = wrap.clientWidth - 24;
-    const targetH = Math.round(targetW * 0.5);
-    if (canvas.width !== targetW || canvas.height !== targetH) {
-      canvas.width = targetW;
-      canvas.height = targetH;
-    }
+  const resolution = getLiveCanvasResolution(wrap?.clientWidth || canvas.clientWidth || 0, window.devicePixelRatio);
+  if (canvas.width !== resolution.width || canvas.height !== resolution.height) {
+    canvas.width = resolution.width;
+    canvas.height = resolution.height;
   }
   const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+  if (!ctx) return;
+  // Координаты остаются в CSS-пикселях, а backing store получает до 2.5×
+  // больше точек — тонкие линии льда, номера и фамилии не размываются.
+  ctx.setTransform(resolution.scale, 0, 0, resolution.scale, 0, 0);
+  const W = resolution.cssWidth, H = resolution.cssHeight;
   if (!W || !H) return;
 
   ctx.fillStyle = '#0f1117';
@@ -1634,8 +1648,18 @@ function drawLiveCanvas() {
   const vx = (x) => (x / 200) * W;
   const vy = (y) => (y / 100) * H;
 
-  ctx.fillStyle = '#e8eef8';
+  const iceGradient = ctx.createLinearGradient(0, vy(3), 0, vy(97));
+  iceGradient.addColorStop(0, '#f5f8fd');
+  iceGradient.addColorStop(0.5, '#e8eef8');
+  iceGradient.addColorStop(1, '#f5f8fd');
+  ctx.fillStyle = iceGradient;
   ctx.fillRect(vx(3), vy(3), vx(197) - vx(3), vy(97) - vy(3));
+  // Лёгкие продольные полосы льда дают глубину, не мешая читать позиции.
+  ctx.strokeStyle = 'rgba(115,139,170,0.10)';
+  ctx.lineWidth = 1;
+  for (let y = 8; y <= 92; y += 4) {
+    ctx.beginPath(); ctx.moveTo(vx(4), vy(y)); ctx.lineTo(vx(196), vy(y)); ctx.stroke();
+  }
 
   ctx.strokeStyle = '#b8c4d8';
   ctx.lineWidth = 1;
@@ -1649,11 +1673,25 @@ function drawLiveCanvas() {
     { x: 130, y: 30 }, { x: 130, y: 70 }, { x: 170, y: 30 }, { x: 170, y: 70 },
   ];
   for (const c of faceCircles) {
+    const radius = Math.min(vx(8) - vx(0), vy(16) - vy(0));
     ctx.beginPath();
-    ctx.arc(vx(c.x), vy(c.y), Math.min(vx(8) - vx(0), vy(16) - vy(0)), 0, Math.PI * 2);
+    ctx.arc(vx(c.x), vy(c.y), radius, 0, Math.PI * 2);
     ctx.stroke();
+    ctx.fillStyle = '#d92f3d';
+    ctx.beginPath(); ctx.arc(vx(c.x), vy(c.y), Math.max(2, radius * 0.12), 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 2;
+    for (const sign of [-1, 1]) {
+      ctx.beginPath();
+      ctx.moveTo(vx(c.x + sign * 10), vy(c.y - 2));
+      ctx.lineTo(vx(c.x + sign * 10), vy(c.y + 2));
+      ctx.stroke();
+    }
   }
+  ctx.strokeStyle = '#ef4444';
   ctx.beginPath(); ctx.arc(vx(100), vy(50), Math.min(vx(10) - vx(0), vy(20) - vy(0)), 0, Math.PI * 2); ctx.stroke();
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath(); ctx.arc(vx(100), vy(50), Math.max(2, W / 500), 0, Math.PI * 2); ctx.fill();
   // Вратарские площади делают геометрию площадки более узнаваемой.
   const creaseR = Math.min(vx(9) - vx(0), vy(18) - vy(0));
   ctx.strokeStyle = 'rgba(37,99,235,0.75)';
@@ -1682,7 +1720,7 @@ function drawLiveCanvas() {
   // Хоккейная майка с клубным рисунком, номером на спине и фамилией игрока.
   const drawPlayer = (p, side, usedNumbers) => {
     const x = vx(p.x), y = vy(p.y);
-    const r = Math.max(5, Math.round(W / 100));
+    const r = Math.max(6, Math.round(W / 86));
     const jersey = side === 'home' ? homeJersey : awayJersey;
     const puckState = lm.positions.puck;
     const isCarrier = puckState && !(puckState.looseFrames > 0)
@@ -1770,10 +1808,19 @@ function drawLiveCanvas() {
       ctx.fillRect(-11, 0.8, 22, 0.8);
     }
 
-    // Полосы на рукавах и контрастный ворот.
+    // Манжеты, боковые панели и нижняя полоса добавляют читаемую
+    // детализацию формы даже при уменьшении площадки на мобильном экране.
+    ctx.fillStyle = 'rgba(0,0,0,0.13)';
+    ctx.fillRect(-8.8, -0.2, 1.7, 6.6);
+    ctx.fillRect(7.1, -0.2, 1.7, 6.6);
     ctx.fillStyle = jersey.secondary;
     ctx.fillRect(-10, 0.1, 4.2, 1.1);
     ctx.fillRect(5.8, 0.1, 4.2, 1.1);
+    ctx.fillRect(-5.2, 5.4, 10.4, 1.05);
+    ctx.fillStyle = jersey.accent;
+    ctx.fillRect(-10, 1.45, 4.2, 0.55);
+    ctx.fillRect(5.8, 1.45, 4.2, 0.55);
+    ctx.fillRect(-4.5, -5.9, 9, 0.65);
     ctx.restore();
 
     ctx.strokeStyle = 'rgba(8,12,20,0.9)';
@@ -1789,16 +1836,22 @@ function drawLiveCanvas() {
     if (p.role === 'goalie') {
       ctx.strokeStyle = jersey.accent;
       ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(0, 0, 8.6, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, 9.2, 0, Math.PI * 2); ctx.stroke();
     }
 
     // Номер расположен по центру спины. На выездной форме используется тёмная окантовка.
-    const numberColor = side === 'away' ? '#172033' : '#FFFFFF';
-    ctx.font = '900 7.2px -apple-system, sans-serif';
+    const baseHex = String(jersey.base || '#334155').replace('#', '');
+    const baseRgb = baseHex.length === 6
+      ? [0, 2, 4].map(index => parseInt(baseHex.slice(index, index + 2), 16))
+      : [51, 65, 85];
+    const jerseyLuminance = baseRgb[0] * 0.299 + baseRgb[1] * 0.587 + baseRgb[2] * 0.114;
+    const useDarkNumber = jerseyLuminance > 158;
+    const numberColor = useDarkNumber ? '#172033' : '#FFFFFF';
+    ctx.font = '900 8.2px -apple-system, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.lineWidth = 1.4;
-    ctx.strokeStyle = side === 'away' ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.75)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = useDarkNumber ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.82)';
     ctx.strokeText(String(jerseyNumber), 0, 1.2);
     ctx.fillStyle = numberColor;
     ctx.fillText(String(jerseyNumber), 0, 1.2);
