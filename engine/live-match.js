@@ -942,8 +942,10 @@ function resolveLiveShotRebound(lm, attackingSide, shooter, outcome, shotTargetY
   return {
     side: winnerSide,
     carrierIndex: frozen ? 0 : winnerIndex > 0 ? winnerIndex : null,
-    targetX: winner?.slot.x ?? targetX,
-    targetY: winner?.slot.y ?? targetY,
+    // Сначала шайба визуально уходит в выбранный угол, затем её подбирает
+    // уже определённый игровой логикой победитель борьбы.
+    targetX,
+    targetY,
     frozen,
   };
 }
@@ -1913,6 +1915,7 @@ function liveUpdatePositions() {
         : clamp(shot.targetX + (shot.side === 'home' ? -7 : 7), 5, 195);
       puck.targetY = Number.isFinite(shot.reboundY) ? shot.reboundY
         : clamp(shot.targetY + (shot.outcome === 'штанга' ? 8 : 3), 8, 92);
+      puck.reboundFrames = shot.outcome === 'сейв' || shot.outcome === 'штанга' ? 7 : 0;
       puck.nextPossessionSide = shot.nextPossessionSide
         || (shot.outcome === 'сейв' || shot.outcome === 'блокирован' ? shot.defendingSide : shot.side);
       puck.nextCarrierIndex = shot.reboundFrozen ? 0
@@ -1949,10 +1952,12 @@ function liveUpdatePositions() {
     } else {
       const receiver = Number.isInteger(puck.nextCarrierIndex)
         ? (lm.positions[puck.nextPossessionSide] || [])[puck.nextCarrierIndex] : null;
-      const targetX = receiver ? receiver.x : (puck.targetX ?? 100);
-      const targetY = receiver ? receiver.y : (puck.targetY ?? 50);
+      const showingReboundDeflection = (puck.reboundFrames || 0) > 0;
+      const targetX = !showingReboundDeflection && receiver ? receiver.x : (puck.targetX ?? 100);
+      const targetY = !showingReboundDeflection && receiver ? receiver.y : (puck.targetY ?? 50);
       puck.x += (targetX - puck.x) * 0.18;
       puck.y += (targetY - puck.y) * 0.18;
+      if (showingReboundDeflection) puck.reboundFrames--;
       puck.looseFrames--;
       if (puck.looseFrames === 0) {
         const previousSide = puck.possessionSide || 'home';
