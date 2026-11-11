@@ -41,7 +41,7 @@ assert.match(engine, /jerseyLuminance > 158/,
 for (const id of [
   'live-stat-home-shots', 'live-stat-away-shots',
   'live-stat-home-attempts', 'live-stat-away-attempts',
-  'live-stat-home-xg', 'live-stat-away-xg',
+  'live-stat-home-penalties', 'live-stat-away-penalties',
 ]) {
   assert.ok(screen.includes(id), `missing live statistic element: ${id}`);
   assert.ok(engine.includes(`updateStat('${id}'`), `missing live update for statistic: ${id}`);
