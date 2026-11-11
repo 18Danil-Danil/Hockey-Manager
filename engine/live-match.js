@@ -933,7 +933,7 @@ function resolveLiveShotRebound(lm, attackingSide, shooter, outcome, shotTargetY
   });
   return {
     side: winnerSide,
-    carrierIndex: winnerIndex > 0 ? winnerIndex : null,
+    carrierIndex: frozen ? 0 : winnerIndex > 0 ? winnerIndex : null,
     targetX: winner?.slot.x ?? targetX,
     targetY: winner?.slot.y ?? targetY,
     frozen,
