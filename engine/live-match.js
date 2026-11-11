@@ -504,7 +504,7 @@ function getLiveDuelRating(player, role, stamina = 100) {
 }
 
 function resolveLivePuckBattle(lm) {
-  if (!lm || lm.isFinished || lm.isBreak) return false;
+  if (!lm || lm.isFinished || lm.isBreak || lm.positions?.puck?.shotAnimation) return false;
   const possession = lm.gameplayPossession || (lm.gameplayPossession = {
     side: 'home', playerId: null,
   });
@@ -611,7 +611,7 @@ function getLiveContactRating(player, stamina = 100) {
 }
 
 function resolveLivePhysicalContact(lm, stepSec = LIVE_TICK_SEC) {
-  if (!lm || lm.isFinished || lm.isBreak || lm.shootout) return false;
+  if (!lm || lm.isFinished || lm.isBreak || lm.shootout || lm.positions?.puck?.shotAnimation) return false;
   lm.physicalContactCooldown = Math.max(0, (Number(lm.physicalContactCooldown) || 0) - stepSec);
   if (lm.physicalContactCooldown > 0) return false;
 
