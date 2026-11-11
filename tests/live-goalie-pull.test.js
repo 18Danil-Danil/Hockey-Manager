@@ -55,6 +55,15 @@ assert.equal(lm.positions.home.slice(1).filter(p => p.onIce !== false).length, 6
 assert.equal(new Set(lm.positions.home.slice(1).filter(p => p.onIce !== false).map(p => p.playerId)).size, 6,
   'same player occupies multiple on-ice slots');
 
+const shortHanded = {
+  ...lm,
+  hg: 1, ag: 2, totalSecPlayed: 3511,
+  penalties: { home: [{ playerId: 'd1', endsAt: 3600 }], away: [] },
+  goaliePulled: { home: true, away: false },
+};
+assert.equal(getLiveManpowerState(shortHanded).home.skaters, 5,
+  'goalie pull plus one penalty should result in five skaters, not six');
+
 lm.hg = 2;
 lm.ag = 2;
 updateLiveGoaliePulls(lm);
