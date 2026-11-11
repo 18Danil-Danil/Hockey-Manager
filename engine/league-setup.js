@@ -1,4 +1,27 @@
 /* SCHEDULE */
+// Отдельный детерминированный генератор для календаря: не расходует игровой RNG,
+// поэтому расписание не зависит от количества случайных событий и симуляций.
+function createScheduleRandom(season, teams) {
+  const key = String(season || '2026/27') + '|' + teams.map(team => String(team.id) + ':' + String(team.slug || '')).sort().join('|');
+  let seed = 2166136261;
+  for (let i = 0; i < key.length; i++) seed = Math.imul(seed ^ key.charCodeAt(i), 16777619) >>> 0;
+  if (!seed) seed = 1;
+  return function scheduleRandom() {
+    seed = (seed + 0x6D2B79F5) >>> 0;
+    let value = seed;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function shuffleScheduleItems(items, random) {
+  const result = items.slice();
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 function orientScheduleRounds(pairings, teams, completedRounds = 0) {
   const state = new Map(teams.map(team => [team.id, { lastSide: null, streak: 0, home: 0, away: 0 }]));
   const record = (homeId, awayId) => {
@@ -58,15 +81,14 @@ function getFirstLegHomeZone(pair) {
   return (higher.id - lower.id) <= 4 ? lower : higher;
 }
 
-function orderZoneRoundsForVenueBalance(zoneRounds, zones) {
+function orderZoneRoundsForVenueBalance(zoneRounds, zones, random = Math.random) {
   const permutations = [];
   function visit(prefix, remaining) {
     if (!remaining.length) { permutations.push(prefix); return; }
     remaining.forEach((value, index) => visit(prefix.concat(value), remaining.filter((_, i) => i !== index)));
   }
   visit([], zoneRounds.map((_, index) => index));
-  let best = permutations[0], bestMaxRun = Infinity, bestPenalty = Infinity;
-  permutations.forEach(order => {
+  const scored = permutations.map(order => {
     let maxRun = 0, penalty = 0;
     zones.forEach(zone => {
       let lastSide = null, runGames = 0;
@@ -84,11 +106,16 @@ function orderZoneRoundsForVenueBalance(zoneRounds, zones) {
       maxRun = Math.max(maxRun, runGames);
       penalty += runGames * runGames;
     });
-    if (maxRun < bestMaxRun || (maxRun === bestMaxRun && penalty < bestPenalty)) {
-      bestMaxRun = maxRun; bestPenalty = penalty; best = order;
-    }
+    return { order, maxRun, penalty };
   });
-  return best.map(index => zoneRounds[index]);
+  const bestMaxRun = Math.min(...scored.map(item => item.maxRun));
+  const bestPenalty = Math.min(...scored.filter(item => item.maxRun === bestMaxRun).map(item => item.penalty));
+  // Выбираем один из близких к оптимальному вариантов: качество серий сохраняется,
+  // но порядок выездных поездок меняется между сезонами.
+  const tolerance = Math.max(2, Math.ceil(bestPenalty * 0.08));
+  const candidates = scored.filter(item => item.maxRun === bestMaxRun && item.penalty <= bestPenalty + tolerance);
+  const selected = candidates[Math.floor(random() * candidates.length)] || scored.find(item => item.maxRun === bestMaxRun && item.penalty === bestPenalty);
+  return selected.order.map(index => zoneRounds[index]);
 }
 
 function makeClubRoundRobin(clubs) {
@@ -124,10 +151,12 @@ function assignZonePairSlots(pairs, previousSlots) {
   });
   return best;
 }
-function buildVhlSchedulePlan(teams) {
-  const zones = getVhlTravelZonesForTeams(teams).sort((a, b) => a.id - b.id);
+function buildVhlSchedulePlan(teams, season = '2026/27') {
   if (!hasCompleteVhlTravelMap(teams)) throw new Error('Не удалось сопоставить все клубы ВХЛ с логистическими группами');
-  const zoneRounds = orderZoneRoundsForVenueBalance(makeZoneRoundRobin(zones), zones);
+  const random = createScheduleRandom(season, teams);
+  const zones = getVhlTravelZonesForTeams(teams).sort((a, b) => a.id - b.id)
+    .map(zone => ({ ...zone, clubs: shuffleScheduleItems(zone.clubs, random) }));
+  const zoneRounds = orderZoneRoundsForVenueBalance(makeZoneRoundRobin(zones), zones, random);
   const internalRounds = new Map(zones.map(zone => [zone.id, makeClubRoundRobin(zone.clubs)]));
   const schedule = [], roundInfo = [], previousSlots = new Map(), dayOffsets = [0, 2, 4, 6];
   function addRound(games, info) { schedule.push(games); roundInfo.push(info); }
@@ -194,8 +223,8 @@ function buildVhlSchedulePlan(teams) {
   addLeg(false, 1); addLeg(true, 2);
   return { schedule, roundInfo };
 }
-function makeSchedule(teams) {
-  if (hasCompleteVhlTravelMap(teams)) return buildVhlSchedulePlan(teams).schedule;
+function makeSchedule(teams, season = '2026/27') {
+  if (hasCompleteVhlTravelMap(teams)) return buildVhlSchedulePlan(teams, season).schedule;
   const arr = teams.slice(), n = arr.length, singleRounds = [];
   for (let r = 0; r < n - 1; r++) {
     const round = [];
@@ -208,7 +237,7 @@ function makeScheduleMeta(season, roundCount, teams = null) {
   const match = String(season || '').match(/(\d{4})/), startYear = match ? Number(match[1]) : 2026;
   const startDate = new Date(Date.UTC(startYear, 8, 2)), zoneTeams = teams || window.VHL_TEAMS || [];
   if (roundCount === 152 && hasCompleteVhlTravelMap(zoneTeams)) {
-    const info = buildVhlSchedulePlan(zoneTeams).roundInfo, segments = [];
+    const info = buildVhlSchedulePlan(zoneTeams, season).roundInfo, segments = [];
     info.forEach((item, index) => {
       let segment = segments[segments.length - 1];
       if (!segment || segment.id !== item.segmentId) { segment = { id: item.segmentId, items: [], span: 0 }; segments.push(segment); }
@@ -304,10 +333,10 @@ function ensureScheduleCalendar(league) {
   if (league.scheduleVersion !== 3) {
     const hasStarted = (league.currentRound || 0) > 0 || (league.results || []).length > 0;
     if (!hasStarted && hasCompleteVhlTravelMap(league.teams)) {
-      league.schedule = makeSchedule(league.teams); league.scheduleVersion = 3;
+      league.schedule = makeSchedule(league.teams, league.season); league.scheduleVersion = 4;
       league.scheduleMeta = makeScheduleMeta(league.season, league.schedule.length, league.teams);
     } else {
-      league.scheduleVersion = 2;
+      league.scheduleVersion = 4;
       if (!Array.isArray(league.scheduleMeta) || league.scheduleMeta.length !== league.schedule.length)
         league.scheduleMeta = makeScheduleMeta(league.season, league.schedule.length, league.teams);
     }
@@ -318,9 +347,9 @@ function ensureScheduleCalendar(league) {
 }
 function genLeague() {
   resetPlayerNameRegistry();
-  const teams = VHL_TEAMS.map(meta => genTeam(meta)), season = '2026/27', schedule = makeSchedule(teams);
+  const teams = VHL_TEAMS.map(meta => genTeam(meta)), season = '2026/27', schedule = makeSchedule(teams, season);
   const league = {
-    season, teams, schedule, scheduleMeta: makeScheduleMeta(season, schedule.length, teams), scheduleVersion: 3,
+    season, teams, schedule, scheduleMeta: makeScheduleMeta(season, schedule.length, teams), scheduleVersion: 4,
     currentRound: 0, results: [], playoffs: null, history: [], transferLog: [], freeAgents: [], staffPool: [], waivers: [],
     aiTradeOffers: [], allTimeLeaders: { skaters: {} }, inbox: [], news: [], retiredPlayers: [],
     openingCup: null, retroMatch: null, tradeDeadlineNotified: false, youth: initYouthLeagues(),
