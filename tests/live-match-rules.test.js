@@ -245,9 +245,10 @@ assert.equal(breakRendered, true, 'period break did not refresh the controls');
 
 // A tied overtime must be resolved by a shootout; the deciding goal is a team
 // result only and is not added to skater/goalie box-score statistics.
+const shootoutStart = source.indexOf('function runLiveShootout()');
 const shootoutSource = source.slice(
-  source.indexOf('function runLiveShootout()'),
-  source.indexOf('function liveResumeFromBreak()', source.indexOf('function runLiveShootout()'))
+  shootoutStart,
+  source.indexOf('function finishLiveMatch()', shootoutStart)
 );
 const runLiveShootout = new Function(
   'G', 'rng', 'clamp', 'pickWeighted', 'scorerWeight', 'livePushEvent',
