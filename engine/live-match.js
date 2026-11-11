@@ -1001,6 +1001,7 @@ function liveAdvance(stepSec) {
         const activeSkaters = lineup.skaters.filter(player => activeIds.has(player.id));
         const shooters = activeSkaters.length ? activeSkaters : lineup.skaters;
         if (shooters.length) {
+          const puck = lm.positions?.puck;
           const puckForShot = puck || { x: side === 'home' ? 150 : 50, y: 50 };
           const opportunity = getLiveShotOpportunity(lm, side, activeSkaters.length ? activeSkaters : shooters, puckForShot);
           const p = opportunity.shooter || pickWeighted(shooters, shotWeight);
@@ -1031,7 +1032,6 @@ function liveAdvance(stepSec) {
               : ['сейв','сейв','сейв','мимо','штанга']);
           lm.shotAttempts ||= { home: 0, away: 0 };
           lm.shotAttempts[side]++;
-          const puck = lm.positions?.puck;
           const shooterPositions = lm.positions[side] || [];
           const shooterIndex = shooterPositions.findIndex(position => position.playerId === p.id);
           const shooterPosition = shooterPositions[shooterIndex >= 0 ? shooterIndex : 3];
