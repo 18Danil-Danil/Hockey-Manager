@@ -1180,10 +1180,9 @@ function liveAdvance(stepSec) {
   const pA = aXg * aMod * lm.situation.away.attack * lm.situation.home.defense
     * (awayBreakaway ? 1.32 : 1) * (stepSec / 3600);
 
-  const rGoal = rng();
-  if (rGoal < pH) { liveGoal('home'); if (lm.isFinished) return; }
-  else if (rGoal < pH + pA) { liveGoal('away'); if (lm.isFinished) return; }
-  else {
+  {
+    // Гол может появиться только как исход конкретного броска ниже.
+    // xG задаёт вероятность гола на бросок, а не отдельное событие вне эпизода.
     const rPen = rng();
     if (rPen < LIVE_PENALTY_RATE * 2) {
       livePenalty('home', tNow);
@@ -1250,7 +1249,11 @@ function liveAdvance(stepSec) {
               shooterId: p.id, time: liveFmtTime(lm.timeLeft), period: lm.period,
             });
           }
-          let outcome = pick(opportunity.type === 'breakaway'
+          const shotGoalChance = clamp(
+            (side === 'home' ? pH : pA) / (LIVE_SHOT_RATE * 0.5),
+            0.005, 0.24
+          );
+          const outcome = rng() < shotGoalChance ? 'гол' : pick(opportunity.type === 'breakaway'
             ? ['сейв','сейв','сейв','сейв','мимо','штанга']
             : opportunity.type === 'slot'
               ? ['сейв','сейв','сейв','сейв','мимо','штанга']
@@ -1329,6 +1332,10 @@ function liveAdvance(stepSec) {
             shooterId: p.id, shotType: opportunity.type,
             time: liveFmtTime(lm.timeLeft), period: lm.period,
           });
+          if (outcome === 'гол') {
+            lm.gameplayPossession = { side, playerId: p.id };
+            liveGoal(side, { shooterId: p.id, shotAttemptAlreadyCounted: true });
+          }
           }
         }
       }
@@ -1345,7 +1352,7 @@ function liveAdvance(stepSec) {
   }
 }
 
-function liveGoal(side) {
+function liveGoal(side, options = {}) {
   const lm = G.liveMatch;
   if (!lm) return;
   const scoringLineup = side === 'home' ? lm.homeLineup : lm.awayLineup;
@@ -1354,7 +1361,8 @@ function liveGoal(side) {
   const onIceScorers = liveGetOnIceSkaters(lm, side);
   const onIceConcedingPlayers = liveGetOnIceSkaters(lm, side === 'home' ? 'away' : 'home');
   const breakawayPlayerId = lm.breakawayThreat?.side === side ? lm.breakawayThreat.playerId : null;
-  const scorer = onIceScorers.find(player => player.id === breakawayPlayerId)
+  const scorer = onIceScorers.find(player => player.id === options.shooterId)
+    || onIceScorers.find(player => player.id === breakawayPlayerId)
     || (lm.gameplayPossession?.side === side
       ? onIceScorers.find(player => player.id === lm.gameplayPossession.playerId) : null)
     || pickWeighted(onIceScorers, scorerWeight);
@@ -1395,7 +1403,7 @@ function liveGoal(side) {
   const defendingGoalieOnIce = lm.positions?.[defendingSide]?.[0]?.onIce !== false;
   if (defendingGoalieOnIce) lm.goalieStats[defendingSide].goals++;
   lm.shotAttempts ||= { home: 0, away: 0 };
-  lm.shotAttempts[side]++;
+  if (!options.shotAttemptAlreadyCounted) lm.shotAttempts[side]++;
   lm.shots[side]++;
   if (defendingGoalieOnIce) lm.goalieStats[defendingSide].shots++;
   lm.gameplayPossession = { side: side === 'home' ? 'away' : 'home', playerId: null };
