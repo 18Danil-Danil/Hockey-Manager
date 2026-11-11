@@ -227,7 +227,7 @@ function renderCalendar() {
     } else if (roundMeta.phase === 'local-derby' && (roundMeta.zoneIds || []).includes(travelZone?.id)) {
       seriesLabel = 'Внутризональный матч';
     }
-    if (roundMeta.travelNote && (roundMeta.zoneIds || []).includes(travelZone?.id)) {
+    if (roundMeta.travelNote && (roundMeta.zoneIds || []).includes(travelZone?.id) && ['norilsk', 'sokol'].includes(team.slug)) {
       seriesLabel += (seriesLabel ? ' · ' : '') + roundMeta.travelNote;
     }
     myGames.push({
@@ -1276,7 +1276,7 @@ function renderOverview() {
   const diff = team.record.gf - team.record.ga;
   const pct = played ? Math.round(team.record.pts / (played * 2) * 100) : 0;
   const nextMatch = opponent
-    ? '<div class="dashboard-matchup"><div class="dashboard-match-team"><span class="dashboard-match-label">' + (isHome ? 'ДОМА' : 'В ГОСТЯХ') + '</span><strong>' + logoHeader(team) + (team.shortName || team.name) + '</strong></div><div class="dashboard-vs"><span>VS</span><small>ДЕНЬ ' + (G.league.currentRound + 1) + ' · ' + nextDateLabel + '</small></div><div class="dashboard-match-team opponent"><span class="dashboard-match-label">' + (isHome ? 'СОПЕРНИК' : 'ХОЗЯЕВА') + '</span><strong>' + logoHeader(opponent) + (opponent.shortName || opponent.name) + '</strong></div></div><div class="dashboard-match-actions"><button class="btn" onclick="startMyLiveMatch()">▶ Играть матч</button><button class="btn secondary" onclick="G.activeTab=\'calendar\';render()">Календарь</button></div>'
+    ? '<div class="dashboard-matchup"><div class="dashboard-match-team"><span class="dashboard-match-label">' + (isHome ? 'ДОМА' : 'В ГОСТЯХ') + '</span><strong>' + logoHeader(team) + (team.shortName || team.name) + '</strong></div><div class="dashboard-vs"><span>VS</span><small>ДЕНЬ ' + (nextGameIndex + 1) + ' · ' + nextDateLabel + '</small></div><div class="dashboard-match-team opponent"><span class="dashboard-match-label">' + (isHome ? 'СОПЕРНИК' : 'ХОЗЯЕВА') + '</span><strong>' + logoHeader(opponent) + (opponent.shortName || opponent.name) + '</strong></div></div><div class="dashboard-match-actions"><button class="btn" onclick="startMyLiveMatch()">▶ Играть матч</button><button class="btn secondary" onclick="G.activeTab=\'calendar\';render()">Календарь</button></div>'
     : seasonDone
       ? '<div class="dashboard-empty-state"><strong>Регулярный чемпионат завершён</strong><span>' + (G.league.playoffs ? 'Плей-офф уже сформирован — время бороться за Кубок Петрова.' : 'Можно подвести итоги сезона и перейти к следующему.') + '</span><button class="btn" onclick="' + (G.league.playoffs ? "G.activeTab='playoffs';render()" : 'endSeason()') + '">' + (G.league.playoffs ? 'Открыть плей-офф' : 'Перейти к новому сезону') + '</button></div>'
       : '<div class="dashboard-empty-state"><strong>Следующий матч пока не определён</strong><span>Открой календарь, чтобы посмотреть расписание.</span><button class="btn secondary" onclick="G.activeTab=\'calendar\';render()">Открыть календарь</button></div>';
