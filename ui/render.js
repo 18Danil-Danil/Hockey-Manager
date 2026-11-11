@@ -79,7 +79,7 @@ function renderSaveTools() {
 function renderHeader() {
   if (!G.playerTeamId) {
     const rep = G.career?.reputation ?? 50;
-    return `<div class="topbar"><div><h1>💼 Свободный агент</h1><div class="subtitle">Репутация: <b>${Math.round(rep)}/100</b>${G.career?.lastTeamName ? ` · Последний клуб: ${G.career.lastTeamName}` : ''}</div></div><div>${renderSaveTools()} <button class="btn danger" onclick="if(confirm('Начать заново?')) newGame()">🔄 Новая игра</button></div></div>`;
+    return `<div class="topbar"><div><h1>💼 Свободный агент</h1><div class="subtitle">Репутация: <b>${Math.round(rep)}/100</b>${G.career?.lastTeamName ? ` · Последний клуб: ${G.career.lastTeamName}` : ''}</div></div><div><button class="btn secondary" onclick="G.activeTab='settings';render()">⚙ Настройки</button> ${renderSaveTools()} <button class="btn danger" onclick="if(!G.settings?.confirmNewGame||confirm('Начать заново?')) newGame()">🔄 Новая игра</button></div></div>`;
   }
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   const playerSal = team.roster.reduce((s, p) => s + p.contract.salary, 0);
@@ -93,22 +93,23 @@ function renderHeader() {
   const diffLabel = G.difficulty?.label || '🟡 Средний';
   const streakTxt = team.streak && team.streak.count >= 2 ? ` · ${team.streak.type === 'w' ? '🔥' : '❄️'} ${team.streak.count}` : '';
   const noFireTxt = G.career?.noFireMode ? ' · 🚫' : '';
-  return `<div class="topbar"><div><h1 style="display:flex;align-items:center">${logoHeader(team)}${team.name}</h1><div class="subtitle">Сезон ${G.league.season} · ${diffLabel}${noFireTxt} · ${r.w}-${r.l}-${r.otl} · ${r.pts} очк. · #${myRank} · ЗП: ${Math.round(playerSal + staffSal)}/${team.finance.salaryCap} · Баланс: <b style="color:${bal >= 0 ? '#4ade80' : '#ef4444'}">${Math.round(bal)} млн ₽</b> · Реп: ${Math.round(rep)}/100${injured ? ` · 🚑 ${injured}` : ''}${offers ? ` · 💼 ${offers}` : ''}${unread ? ` · ✉ ${unread}` : ''}${streakTxt}</div></div><div>${renderSaveTools()} <button class="btn secondary" onclick="if(confirm('Сбросить и начать заново?')) newGame()">🔄 Новая игра</button></div></div>`;
+  return `<div class="topbar"><div><h1 style="display:flex;align-items:center">${logoHeader(team)}${team.name}</h1><div class="subtitle">Сезон ${G.league.season} · ${diffLabel}${noFireTxt} · ${r.w}-${r.l}-${r.otl} · ${r.pts} очк. · #${myRank} · ЗП: ${Math.round(playerSal + staffSal)}/${team.finance.salaryCap} · Баланс: <b style="color:${bal >= 0 ? '#4ade80' : '#ef4444'}">${Math.round(bal)} млн ₽</b> · Реп: ${Math.round(rep)}/100${injured ? ` · 🚑 ${injured}` : ''}${offers ? ` · 💼 ${offers}` : ''}${unread ? ` · ✉ ${unread}` : ''}${streakTxt}</div></div><div><button class="btn secondary" onclick="G.activeTab='settings';render()">⚙ Настройки</button> ${renderSaveTools()} <button class="btn secondary" onclick="G.screen='title';render()">⌂ Старт</button> <button class="btn secondary" onclick="if(!G.settings?.confirmNewGame||confirm('Сбросить и начать заново?')) newGame()">🔄 Новая игра</button></div></div>`;
 }
 function renderTabs() {
   const unread = unreadInboxCount();
-  const tabs = [
-    { key: 'overview', label: 'Обзор' }, { key: 'standings', label: 'Таблица' }, { key: 'games', label: 'Матчи' }, { key: 'calendar', label: 'Календарь' },
-    { key: 'roster', label: 'Состав' }, { key: 'lines', label: 'Звенья' }, { key: 'stats', label: 'Статистика' },
-    { key: 'market', label: 'Рынок' }, { key: 'trades', label: 'Обмены' }, { key: 'waivers', label: 'Драфт отказов' },
-    { key: 'inbox', label: `📬 Почта${unread ? ` <span class="inbox-badge">${unread}</span>` : ''}` },
-    { key: 'news', label: '📰 Новости' },
-    { key: 'tactics', label: 'Тактика' }, { key: 'training', label: 'Тренировки' }, { key: 'staff', label: 'Штаб' },
-    { key: 'infrastructure', label: 'Инфраструктура' }, { key: 'academy', label: 'Академия' }, { key: 'youth', label: 'Молодёжные лиги' },
-    { key: 'finance', label: 'Финансы' }, { key: 'career', label: '💼 Карьера' },
-    { key: 'playoffs', label: 'Плей-офф' }, { key: 'history', label: 'История' },
+  const groups = [
+    {key:'club',label:'Клуб',items:[['overview','Обзор'],['roster','Состав'],['lines','Звенья'],['tactics','Тактика'],['training','Тренировки'],['staff','Штаб'],['infrastructure','Инфраструктура']]},
+    {key:'league',label:'Лига',items:[['standings','Таблица'],['games','Матчи'],['calendar','Календарь'],['stats','Статистика'],['news','Новости']]},
+    {key:'transfers',label:'Трансферы',items:[['market','Рынок'],['trades','Обмены'],['waivers','Драфт отказов']]},
+    {key:'development',label:'Развитие',items:[['academy','Академия'],['youth','Молодёжные лиги']]},
+    {key:'management',label:'Управление',items:[['finance','Финансы'],['career','Карьера'],['playoffs','Плей-офф'],['history','История'],['inbox',`📬 Почта${unread?' · '+unread:''}`]]}
   ];
-  return `<div id="tabs">${tabs.map(t => `<button class="tab ${G.activeTab === t.key ? 'active' : ''}" data-tab="${t.key}">${t.label}</button>`).join('')}</div>`;
+  const activeGroup=groups.find(g=>g.items.some(([key])=>key===G.activeTab))?.key||'club';
+  const openGroup=G.navGroupOpen||activeGroup;
+  return `<nav id="tabs" class="navigation">${groups.map(g=>`<section class="nav-group ${openGroup===g.key?'is-open':''}">
+    <button class="nav-group-trigger" type="button" data-nav-group="${g.key}" aria-expanded="${openGroup===g.key}"><span>${g.label}</span><small>${g.items.length}</small><b>${openGroup===g.key?'−':'+'}</b></button>
+    <div class="nav-group-items">${g.items.map(([key,label])=>`<button class="tab ${G.activeTab===key?'active':''}" data-tab="${key}" data-nav-group="${g.key}">${label}</button>`).join('')}</div>
+  </section>`).join('')}</nav>`;
 }
 
 /* ============================================================
