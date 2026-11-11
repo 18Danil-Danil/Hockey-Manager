@@ -12,7 +12,7 @@ vm.runInNewContext(seasonSource, { window });
 
 const clubs = window.VHL_CLUB_DIRECTORY;
 const seasons = window.VHL_SEASON_RESULTS;
-assert.strictEqual(clubs.length, 61, 'Справочник должен содержать 61 объединённую карточку');
+assert.strictEqual(clubs.length, 56, 'Справочник должен содержать 56 объединённых карточек');
 
 const historicalIds = clubs.flatMap(club => club.historicalIds);
 assert.strictEqual(historicalIds.length, 74, 'Все 74 исходных historicalId должны сохраниться');
@@ -27,6 +27,10 @@ const expectedGroups = {
   sarov: ['sarov', 'hk-sarov'],
   'chelmet-chelyabinsk': ['chelmet-chelyabinsk', 'mechel-chelyabinsk'],
   'yuzhny-ural': ['yuzhny-ural', 'yuzhny-ural-orsk'],
+  'zvezda-moscow': ['zvezda-chekhov', 'zvezda-moscow'],
+  'molot-prikamye-perm': ['molot-perm', 'molot-prikamye-perm'],
+  'torpedo-ust-kamenogorsk': ['kazzinc-torpedo', 'kazcink-torpedo-ust-kamenogorsk', 'torpedo-ust-kamenogorsk'],
+  'lokomotiv-vhl-yaroslavl': ['lokomotiv-yaroslavl', 'lokomotiv-vhl-yaroslavl'],
 };
 for (const [id, expected] of Object.entries(expectedGroups)) {
   const club = clubs.find(item => item.id === id);
@@ -57,5 +61,18 @@ assert(ska.note.includes('ВМФ-Карелия'));
 assert(ska.note.includes('СКА-Карелия'));
 assert(ska.note.includes('СКА-Нева'));
 assert(ska.note.includes('СКА-ВМФ'));
+
+const zvezda = clubs.find(item => item.id === 'zvezda-moscow');
+assert(zvezda.historicalIds.includes('zvezda-chekhov'));
+assert(zvezda.note.includes('Чехове'));
+const molot = clubs.find(item => item.id === 'molot-prikamye-perm');
+assert(molot.note.includes('Молот-Прикамье'));
+assert(molot.note.includes('2021/22'));
+const torpedo = clubs.find(item => item.id === 'torpedo-ust-kamenogorsk');
+assert(torpedo.note.includes('Казцинк-Торпедо'));
+assert(torpedo.note.includes('2015/16'));
+const lokomotiv = clubs.find(item => item.id === 'lokomotiv-vhl-yaroslavl');
+assert(lokomotiv.seasons.length === 2);
+assert(lokomotiv.note.includes('2012/13'));
 
 console.log('VHL club directory tests passed:', clubs.length, 'cards,', directoryRows, 'season rows,', historicalIds.length, 'historical IDs');
