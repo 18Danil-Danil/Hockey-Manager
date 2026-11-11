@@ -10,7 +10,7 @@ const end = source.indexOf('function liveAdvance(', start);
 assert.ok(start >= 0 && end > start, 'Could not locate LIVE physical-contact helpers');
 
 const helpersSource = source.slice(start, end);
-let randomValues = [0, 0, 0, 0];
+let randomValues = [0, 0, 0, 0, 0, 0, 0];
 let randomCalls = 0;
 const rng = () => {
   randomCalls++;
