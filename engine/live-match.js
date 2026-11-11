@@ -2080,7 +2080,7 @@ function liveUpdatePositions() {
         const shotOnGoalie = puck.shotAnimation && puck.shotAnimation.defendingSide === side;
         const shotLaneY = shotOnGoalie ? puck.shotAnimation.targetY : 50 + (puck.y - 50) * 0.34;
         const distanceToGoal = Math.abs(puck.x - ownGoalX);
-        const depth = puckInOwnZone ? clamp(3.5 + (58 - distanceToGoal) * 0.045, 3.5, 6.2) : 2.5;
+        const depth = puckInOwnZone ? clamp(3.5 + (58 - distanceToGoal) * 0.045, 3.5, 6.2) : 2;
         targetX = ownGoalX + direction * depth;
         targetY = clamp(shotLaneY, 34, 66);
       } else if (manpower[side].skaters < 5) {
