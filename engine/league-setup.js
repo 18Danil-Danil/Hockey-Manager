@@ -28,7 +28,7 @@ function makeSchedule(teams) {
       if (entry.lastSide === side) score += entry.streak >= 3 ? -100 : 12 - entry.streak * 2;
       else if (entry.streak >= 3) score += 10;
       const balance = entry.home - entry.away;
-      score += side === 'home' ? -balance * 2 : balance * 2;
+      score += side === 'home' ? -balance * 3 : balance * 3;
       return score;
     };
     const aHomeScore = sideScore(a, 'home') + sideScore(b, 'away');
