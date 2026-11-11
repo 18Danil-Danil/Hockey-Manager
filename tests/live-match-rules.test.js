@@ -518,7 +518,7 @@ liveUpdatePositions({ liveMatch: passState }, visualWindow,
 assert.equal(passState.positions.puck.passFrames, 10, 'visual pass animation did not advance');
 assert.notEqual(passState.positions.puck.x, passStartX, 'puck did not travel toward the receiver');
 
-// Turnovers send the loose puck toward an opposing skater, then assign that receiver.
+// A visual bobble remains with the same team; actual takeaways are resolved by gameplay duels.
 const turnoverRngValues = [0, 0.5, 0.5, 0.5];
 let turnoverRngIndex = 0;
 const turnoverWindow = { GAME_RNG: { visualRng: () => turnoverRngValues[Math.min(turnoverRngIndex++, turnoverRngValues.length - 1)] } };
@@ -534,17 +534,15 @@ const turnoverState = {
 liveUpdatePositions({ liveMatch: turnoverState }, turnoverWindow,
   (v, min, max) => Math.max(min, Math.min(max, v)))();
 assert.equal(turnoverState.positions.puck.possessionSide, 'home', 'turnover changed possession before puck arrival');
-assert.equal(turnoverState.positions.puck.nextPossessionSide, 'away');
+assert.equal(turnoverState.positions.puck.nextPossessionSide, 'home');
 assert.equal(turnoverState.positions.puck.looseFrames, 14, 'turnover did not animate a loose puck');
 for (let i = 0; i < 14; i++) liveUpdatePositions({ liveMatch: turnoverState }, turnoverWindow,
   (v, min, max) => Math.max(min, Math.min(max, v)))();
-assert.equal(turnoverState.positions.puck.possessionSide, 'away', 'opponent did not receive the puck after turnover');
+assert.equal(turnoverState.positions.puck.possessionSide, 'home', 'visual bobble incorrectly changed gameplay possession');
 
-assert.equal(turnoverState.positions.puck.carrierIndex, 4, 'turnover receiver was not preserved');
-assert.equal(turnoverState.positions.puck.counterattack?.side, 'away',
-  'a clean turnover did not start a counterattack for the gaining team');
-assert.ok(turnoverState.positions.puck.counterattack.frames > 0,
-  'counterattack phase has no duration');
+assert.equal(turnoverState.positions.puck.carrierIndex, 4, 'same-team bobble receiver was not preserved');
+assert.equal(turnoverState.positions.puck.counterattack, undefined,
+  'visual-only bobble incorrectly started a counterattack');
 
 // The receiving side accelerates its carrier and spreads its forwards into rush lanes.
 const counterHome = formation.map(p => ({ ...p }));
