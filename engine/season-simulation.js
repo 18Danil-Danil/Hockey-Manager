@@ -4,7 +4,9 @@
    ============================================================ */
 function simRound(forceNoPrompt = false) {
   if (G.injuryPrompt) return;
-  if (!forceNoPrompt && !G.skipInjuryPrompt) {
+  const round = G.league.schedule[G.league.currentRound] || [];
+  const playerHasGameToday = !!G.playerTeamId && round.some(([homeId, awayId]) => homeId === G.playerTeamId || awayId === G.playerTeamId);
+  if (!forceNoPrompt && !G.skipInjuryPrompt && playerHasGameToday) {
     const injured = checkInjuredStarters();
     if (injured.length > 0) {
       G.injuryPrompt = { injured: injured.map(p => p.id), choices: {} };
@@ -12,7 +14,7 @@ function simRound(forceNoPrompt = false) {
       return;
     }
   }
-  if (forceNoPrompt && G.skipInjuryPrompt) {
+  if (forceNoPrompt && G.skipInjuryPrompt && playerHasGameToday) {
     const team = G.league.teams.find(t => t.id === G.playerTeamId);
     if (team) for (const p of team.roster) if (p.injury && p.injury.gamesLeft > 0 && !p.injuryPolicy) p.injuryPolicy = 'period';
   }
@@ -20,7 +22,6 @@ function simRound(forceNoPrompt = false) {
   const roundNumber = G.league.currentRound + 1;
   const scheduleScale = G.league.schedule.length / 58;
   const scaledInterval = base => Math.max(1, Math.round(base * scheduleScale));
-  const round = G.league.schedule[G.league.currentRound];
   const roundResults = [];
   G.lastRoundResults = null;
   round.forEach(([h, a]) => {
