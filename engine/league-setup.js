@@ -55,7 +55,7 @@ function makeSchedule(teams) {
 }
 
 function makeScheduleMeta(season, roundCount) {
-  const match = String(season || '').match(/(\\d{4})/);
+  const match = String(season || '').match(/(\d{4})/);
   const startYear = match ? Number(match[1]) : 2026;
   const date = new Date(Date.UTC(startYear, 8, 5));
   const intervals = [3, 3, 3, 3, 4];
