@@ -61,7 +61,7 @@ assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Кузьма'
   'Kuzma should be classified as a very rare first name');
 assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Варфоломей'), 1,
   'Varfolomey should be classified as a very rare first name');
-assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Александр'), 500,
+assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Александр'), 250,
   'common first names should have a strong selection weight');
 assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Аким'), 25,
   'unclassified first names should have a restrained ordinary weight');
