@@ -22,9 +22,9 @@ const meta = context.makeScheduleMeta('2026/27', schedule.length, teams);
 assert.equal(meta.length, schedule.length);
 assert.equal(meta[0].date, '2026-09-02');
 assert.equal(meta.at(-1).date, '2027-03-18');
-assert.ok(meta.some(item => item.date === '2026-12-30'));
-assert.ok(meta.some(item => item.date === '2027-01-05'));
-assert.ok(!meta.some(item => item.date >= '2026-12-31' && item.date <= '2027-01-04'), 'no games during the New Year shutdown');
+assert.ok(meta.some(item => item.date === '2026-12-29'));
+assert.ok(meta.some(item => item.date === '2027-01-06'));
+assert.ok(!meta.some(item => item.date >= '2026-12-30' && item.date <= '2027-01-05'), 'reserve days and New Year shutdown remain free of scheduled matches');
 
 const teamStats = new Map(teams.map(team => [team.id, { home: 0, away: 0, games: 0 }]));
 const pairings = new Map();
@@ -72,8 +72,8 @@ for (const team of teams) {
     if (index) maxTeamRest = Math.max(maxTeamRest, (Date.parse(game.date) - Date.parse(appearances[index - 1].date)) / 86400000);
   });
 }
-assert.ok(maxTeamRest <= 13, 'team rest interval does not exceed 13 days');
-assert.ok(maxVenueStreak <= 11, 'home or away run remains a bounded series');
+assert.ok(maxTeamRest <= 14, 'team rest interval does not exceed 14 days');
+assert.ok(maxVenueStreak <= 10, 'home or away run remains a bounded series');
 assert.ok(meta.some(item => item.travelNote && item.travelNote.includes('Норильск — Красноярск')));
 assert.ok(meta.some(item => item.phase === 'local-derby'));
 assert.equal(meta.filter(item => item.travelNote).length, 2, 'both Norilsk-Krasnoyarsk travel legs receive a buffer');
