@@ -83,16 +83,16 @@ const teams = Array.from({ length: 30 }, (_, index) => ({ id: index + 1 }));
 const oldSchedule = legacySchedule(teams);
 const completedRounds = 6;
 const migrated = context.orientScheduleRounds(oldSchedule, teams, completedRounds);
-for (let i = 0; i < completedRounds; i++) assert.deepEqual(migrated[i], oldSchedule[i], 'played fixtures remain untouched');
+for (let i = 0; i < completedRounds; i++) assert.equal(JSON.stringify(migrated[i]), JSON.stringify(oldSchedule[i]), 'played fixtures remain untouched');
 for (let i = completedRounds; i < oldSchedule.length; i++) {
   const before = oldSchedule[i].map(([h, a]) => [String(h), String(a)].sort().join('|')).sort();
   const after = migrated[i].map(([h, a]) => [String(h), String(a)].sort().join('|')).sort();
-  assert.deepEqual(after, before, 'future opponents remain unchanged');
+  assert.equal(JSON.stringify(after), JSON.stringify(before), 'future opponents remain unchanged');
 }
 const legacyLeague = { season: '2026/27', teams, schedule: oldSchedule, currentRound: completedRounds };
 const meta = context.ensureScheduleCalendar(legacyLeague);
 assert.equal(legacyLeague.scheduleVersion, 2);
 assert.equal(meta.length, oldSchedule.length);
 assert.equal(legacyLeague.scheduleMeta[0].date, '2026-09-05');
-assert.deepEqual(legacyLeague.schedule.slice(0, completedRounds), oldSchedule.slice(0, completedRounds));
+assert.equal(JSON.stringify(legacyLeague.schedule.slice(0, completedRounds)), JSON.stringify(oldSchedule.slice(0, completedRounds)));
 console.log('Legacy career calendar migration passed.');
