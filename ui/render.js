@@ -834,7 +834,7 @@ function renderNews() {
   const list = (G.league.news || []).slice().reverse();
   let html = `<h2>📰 Хроника (${list.length})</h2>`;
   if (!list.length) return html + `<div class="subtitle">Новостей нет.</div>`;
-  const icons = { injury: '🚑', signing: '✍️', trade: '🔄', milestone: '⭐', streak: '🔥', retirement: '👋', academy: '🎓', event: '📰', release: '📤', career: '💼', firing: '🚫', opening_cup: '⚡', trade_deadline: '🚫', season_upset: '🎉', season_flop: '📉', upset: '🎉', disappointment: '📉' };
+  const icons = { injury: '🚑', signing: '✍️', trade: '🔄', milestone: '⭐', streak: '🔥', retirement: '👋', academy: '🎓', event: '📰', release: '📤', career: '💼', firing: '🚫', opening_cup: '⚡', trade_deadline: '🚫', season_upset: '🎉', season_flop: '📉', upset: '🎉', disappointment: '📉', shutout: '🥅', high_scoring: '🔥', blowout: '💥', overtime: '⏱️' };
   html += `<div class="news-list">${list.map(n => `<div class="news-item imp-${n.importance || 1}"><div class="news-round">С${n.season} Т${n.round + 1}</div><div class="news-icon">${icons[n.type] || '📌'}</div><div class="news-text">${n.text}</div></div>`).join('')}</div>`;
   return html;
 }
