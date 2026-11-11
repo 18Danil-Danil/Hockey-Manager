@@ -168,7 +168,7 @@ function renderRoundResultsModal() {
   return `<div class="modal-overlay" onclick="if(event.target===this) closeRoundResults();">
     <div class="modal" style="max-width:620px;max-height:85vh;overflow-y:auto">
       <button class="close-btn" onclick="closeRoundResults()">✕</button>
-      <h1 style="font-size:22px;margin-bottom:6px">🏒 Итоги тура ${G.lastRoundNumber || ''}</h1>
+      <h1 style="font-size:22px;margin-bottom:6px">🏒 Итоги игрового дня ${G.lastRoundNumber || ''}</h1>
       <div class="subtitle" style="margin-bottom:14px">Все результаты игрового дня · матч вашего клуба выделен</div>
       ${rows}
       <div style="margin-top:16px;text-align:center"><button class="btn" onclick="closeRoundResults()">Продолжить</button></div>
@@ -188,7 +188,7 @@ function renderGames() {
   const byRound = {}; G.league.results.forEach(r => (byRound[r.round] = byRound[r.round] || []).push(r));
   const rounds = Object.keys(byRound).map(Number).sort((a, b) => b - a); let html = '';
   rounds.forEach(r => {
-    html += `<h2>Тур ${r + 1}</h2>`;
+    html += `<h2>Игровой день ${r + 1}</h2>`;
     byRound[r].forEach(res => {
       const home = G.league.teams.find(t => t.id === res.homeId); const away = G.league.teams.find(t => t.id === res.awayId);
       const isMe = res.homeId === G.playerTeamId || res.awayId === G.playerTeamId; const globalIdx = G.league.results.indexOf(res);
@@ -1249,6 +1249,11 @@ function renderOverview() {
   const progress = total ? Math.round(G.league.currentRound / total * 100) : 0;
   const seasonDone = G.league.currentRound >= total;
   const fixture = (G.league.schedule[G.league.currentRound] || []).find(([h, a]) => h === team.id || a === team.id);
+  const scheduleMeta = ensureScheduleCalendar(G.league);
+  const nextDate = scheduleMeta[G.league.currentRound]?.date || null;
+  const nextDateLabel = nextDate
+    ? new Date(nextDate + 'T00:00:00Z').toLocaleDateString('ru-RU', { weekday: 'short', day: '2-digit', month: 'long', timeZone: 'UTC' })
+    : 'Дата не назначена';
   const isHome = fixture ? fixture[0] === team.id : false;
   const opponent = fixture ? G.league.teams.find(t => t.id === (isHome ? fixture[1] : fixture[0])) : null;
   const recent = (G.league.results || []).filter(r => r.homeId === team.id || r.awayId === team.id).slice(-5).reverse();
@@ -1257,7 +1262,7 @@ function renderOverview() {
   const diff = team.record.gf - team.record.ga;
   const pct = played ? Math.round(team.record.pts / (played * 2) * 100) : 0;
   const nextMatch = opponent
-    ? '<div class="dashboard-matchup"><div class="dashboard-match-team"><span class="dashboard-match-label">' + (isHome ? 'ДОМА' : 'В ГОСТЯХ') + '</span><strong>' + logoHeader(team) + (team.shortName || team.name) + '</strong></div><div class="dashboard-vs"><span>VS</span><small>ТУР ' + (G.league.currentRound + 1) + '</small></div><div class="dashboard-match-team opponent"><span class="dashboard-match-label">' + (isHome ? 'СОПЕРНИК' : 'ХОЗЯЕВА') + '</span><strong>' + logoHeader(opponent) + (opponent.shortName || opponent.name) + '</strong></div></div><div class="dashboard-match-actions"><button class="btn" onclick="startMyLiveMatch()">▶ Играть матч</button><button class="btn secondary" onclick="G.activeTab=\'calendar\';render()">Календарь</button></div>'
+    ? '<div class="dashboard-matchup"><div class="dashboard-match-team"><span class="dashboard-match-label">' + (isHome ? 'ДОМА' : 'В ГОСТЯХ') + '</span><strong>' + logoHeader(team) + (team.shortName || team.name) + '</strong></div><div class="dashboard-vs"><span>VS</span><small>ДЕНЬ ' + (G.league.currentRound + 1) + ' · ' + nextDateLabel + '</small></div><div class="dashboard-match-team opponent"><span class="dashboard-match-label">' + (isHome ? 'СОПЕРНИК' : 'ХОЗЯЕВА') + '</span><strong>' + logoHeader(opponent) + (opponent.shortName || opponent.name) + '</strong></div></div><div class="dashboard-match-actions"><button class="btn" onclick="startMyLiveMatch()">▶ Играть матч</button><button class="btn secondary" onclick="G.activeTab=\'calendar\';render()">Календарь</button></div>'
     : seasonDone
       ? '<div class="dashboard-empty-state"><strong>Регулярный чемпионат завершён</strong><span>' + (G.league.playoffs ? 'Плей-офф уже сформирован — время бороться за Кубок Петрова.' : 'Можно подвести итоги сезона и перейти к следующему.') + '</span><button class="btn" onclick="' + (G.league.playoffs ? "G.activeTab='playoffs';render()" : 'endSeason()') + '">' + (G.league.playoffs ? 'Открыть плей-офф' : 'Перейти к новому сезону') + '</button></div>'
       : '<div class="dashboard-empty-state"><strong>Следующий матч пока не определён</strong><span>Открой календарь, чтобы посмотреть расписание.</span><button class="btn secondary" onclick="G.activeTab=\'calendar\';render()">Открыть календарь</button></div>';
