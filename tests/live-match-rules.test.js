@@ -682,8 +682,7 @@ const passiveChaser = passiveDefense.home.slice(1).reduce((best, player) =>
 const aggressiveChaser = aggressiveDefense.home.slice(1).reduce((best, player) =>
   Math.hypot(player.x - 160, player.y - 50) < Math.hypot(best.x - 160, best.y - 50) ? player : best
 );
-tacticalUpdate(passiveDefense)();
-tacticalUpdate(aggressiveDefense)();
+for (let i = 0; i < 25; i++) { tacticalUpdate(passiveDefense)(); tacticalUpdate(aggressiveDefense)(); }
 assert.ok(aggressiveChaser.x > passiveChaser.x,
   'aggressive pressure did not move the nearest defender farther toward the puck');
 
@@ -696,8 +695,7 @@ const verticalAttack = makeTacticalAnimationState(
 );
 const positionalCarrier = positionalAttack.home[4];
 const verticalCarrier = verticalAttack.home[4];
-tacticalUpdate(positionalAttack)();
-tacticalUpdate(verticalAttack)();
+for (let i = 0; i < 25; i++) { tacticalUpdate(positionalAttack)(); tacticalUpdate(verticalAttack)(); }
 assert.ok(verticalCarrier.x > positionalCarrier.x,
   'vertical/high-risk attack did not drive the carrier farther toward the attacking zone');
 
