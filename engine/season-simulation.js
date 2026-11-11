@@ -32,6 +32,7 @@ function simRound(forceNoPrompt = false) {
     roundResults.push({ homeId: res.homeId, awayId: res.awayId, hg: res.hg, ag: res.ag, ot: !!res.ot });
   });
   generateLeagueMatchNews(roundResults);
+  generatePlayerStories();
   simYouthRoundBoth(true, G.league.currentRound + 1);
   G.lastRoundNumber = roundNumber;
   G.lastRoundResults = roundResults;
@@ -100,6 +101,7 @@ function simSeason() {
       roundResults.push({ homeId: res.homeId, awayId: res.awayId, hg: res.hg, ag: res.ag, ot: !!res.ot });
     });
     generateLeagueMatchNews(roundResults);
+    generatePlayerStories();
     simYouthRoundBoth(true, G.league.currentRound + 1);
     G.league.currentRound++;
     const activeTeamIds = new Set(round.flatMap(([homeId, awayId]) => [homeId, awayId]));
