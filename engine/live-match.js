@@ -1976,8 +1976,10 @@ function updateLiveClock() {
   updateStat('live-stat-away-shots', lm.shots?.away || 0);
   updateStat('live-stat-home-attempts', lm.shotAttempts?.home || 0);
   updateStat('live-stat-away-attempts', lm.shotAttempts?.away || 0);
-  updateStat('live-stat-home-xg', Number(lm.xgCurrent?.home || 0).toFixed(2));
-  updateStat('live-stat-away-xg', Number(lm.xgCurrent?.away || 0).toFixed(2));
+  const activePenaltyCount = side => (lm.penalties?.[side] || [])
+    .filter(penalty => penalty.endsAt > lm.totalSecPlayed).length;
+  updateStat('live-stat-home-penalties', activePenaltyCount('home'));
+  updateStat('live-stat-away-penalties', activePenaltyCount('away'));
 
   const ppEl = document.getElementById('live-pp-banner');
   if (ppEl) {
