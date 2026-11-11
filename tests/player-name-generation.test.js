@@ -65,6 +65,10 @@ assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Алекса�
   'common first names should have a strong selection weight');
 assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Аким'), 25,
   'unclassified first names should have a restrained ordinary weight');
+assert.equal(api.getPlayerNamePartWeight('Россия', 'last', 'Иванов'), 35,
+  'surname weighting should retain its previous common-name balance');
+assert.equal(api.getPlayerNamePartWeight('Россия', 'last', 'Ястребов'), 10,
+  'ordinary surnames should retain their previous selection weight');
 assert.ok(api.getPlayerNamePartWeight('Россия', 'last', 'Иванов') >
   api.getPlayerNamePartWeight('Россия', 'last', 'Ястребов'),
   'common Russian surnames should outweigh ordinary surnames');
