@@ -1161,6 +1161,11 @@ function liveGoal(side) {
   lm.gameplayPossession = { side: side === 'home' ? 'away' : 'home', playerId: null };
   lm.lastGoalSide = side;
   lm.goalFlashUntil = Date.now() + 1200;
+  const scoringPositions = lm.positions?.[side] || [];
+  for (const slot of scoringPositions) {
+    if (slot.role === 'goalie' || slot.onIce === false) continue;
+    slot.celebrationFrames = slot.playerId === scorer.id ? 34 : 20;
+  }
 
   if (liveIsPP(side)) {
     const oppSide = side === 'home' ? 'away' : 'home';
@@ -1848,6 +1853,11 @@ function liveUpdatePositions() {
   if (!lm || !lm.positions) return;
   const puck = lm.positions.puck;
   if (!puck) return;
+  for (const side of ['home', 'away']) {
+    for (const slot of lm.positions[side] || []) {
+      if ((slot.celebrationFrames || 0) > 0) slot.celebrationFrames--;
+    }
+  }
   const visualRng = window.GAME_RNG.visualRng;
   const sides = ['home', 'away'];
 
