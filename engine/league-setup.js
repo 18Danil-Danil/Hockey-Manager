@@ -226,7 +226,7 @@ function makeScheduleMeta(season, roundCount, teams = null) {
     [0.35, 0.75].forEach(fraction => {
       const target = Math.floor(boundaries * fraction);
       const candidate = longCandidates.slice().sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
-      if (candidate != null) { gaps[candidate] = 8; longBoundaries.push(candidate); longCandidates.splice(longCandidates.indexOf(candidate), 1); }
+      if (candidate != null) { gaps[candidate] = longBoundaries.length === 0 ? 8 : 7; longBoundaries.push(candidate); longCandidates.splice(longCandidates.indexOf(candidate), 1); }
     });
     const shortBoundaries = [];
     [0.18, 0.52, 0.9].forEach(fraction => {
@@ -252,7 +252,7 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       const distance = Math.abs(provisionalEnds[i].getTime() - newYearTarget.getTime());
       if (distance < closest) { closest = distance; newYearBoundary = i; }
     }
-    if (newYearBoundary >= 0) gaps[newYearBoundary] = 6;
+    if (newYearBoundary >= 0) gaps[newYearBoundary] = 7;
     const result = Array(roundCount); cursor = new Date(startDate);
     segments.forEach((segment, segmentIndex) => {
       segment.items.forEach(({ index, ...item }) => {
