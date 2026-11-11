@@ -806,6 +806,127 @@ function resolveLiveShotBlock(lm, attackingSide, shooterPosition, shotTargetY) {
   return rng() < blockChance ? { ...blocker, side: defendingSide } : null;
 }
 
+function getLiveShotOpportunity(lm, side, activeSkaters, puck) {
+  const direction = side === 'home' ? 1 : -1;
+  const attackingZone = side === 'home' ? puck.x >= 145 : puck.x <= 55;
+  const positions = lm.positions?.[side] || [];
+  const defendingSide = side === 'home' ? 'away' : 'home';
+  const defenders = (lm.positions?.[defendingSide] || [])
+    .filter(slot => slot.onIce !== false && slot.playerId && slot.role !== 'goalie');
+  const carrierId = lm.gameplayPossession?.side === side ? lm.gameplayPossession.playerId : null;
+  const carrier = activeSkaters.find(player => player.id === carrierId);
+  const carrierSlot = carrier ? positions.find(slot => slot.playerId === carrier.id && slot.onIce !== false) : null;
+  if (carrier && carrierSlot && attackingZone) {
+    const closestDefender = defenders.reduce((best, slot) =>
+      Math.min(best, Math.hypot(slot.x - carrierSlot.x, slot.y - carrierSlot.y)), Infinity);
+    if (closestDefender >= 19) {
+      return { shooter: carrier, type: 'breakaway', passer: null, slotPass: false };
+    }
+    const slotTargets = activeSkaters.filter(player => player.id !== carrier.id).map(player => {
+      const slot = positions.find(item => item.playerId === player.id && item.onIce !== false);
+      if (!slot) return null;
+      const goalDistance = side === 'home' ? 190 - slot.x : slot.x - 10;
+      return { player, slot, goalDistance };
+    }).filter(item => item && item.goalDistance >= 0 && item.goalDistance <= 34
+      && item.slot.y >= 38 && item.slot.y <= 62)
+      .sort((a, b) => a.goalDistance - b.goalDistance);
+    if (slotTargets.length) {
+      const passer = carrier;
+      const passing = clamp(Number(passer.attrs?.passing) || Number(passer.ovr) || 50, 1, 99);
+      const passChance = clamp(0.10 + passing * 0.0015, 0.10, 0.25);
+      if (rng() < passChance) {
+        return { shooter: slotTargets[0].player, type: 'slot', passer, slotPass: true };
+      }
+    }
+  }
+  const shooter = activeSkaters.length ? pickWeighted(activeSkaters, shotWeight) : null;
+  return { shooter, type: 'standard', passer: null, slotPass: false };
+}
+
+function resolveLiveShotRebound(lm, attackingSide, shooter, outcome, shotTargetY) {
+  const defendingSide = attackingSide === 'home' ? 'away' : 'home';
+  const goalX = attackingSide === 'home' ? 190 : 10;
+  const targetX = attackingSide === 'home' ? 182 : 18;
+  const targetY = clamp(shotTargetY + (outcome === 'штанга' ? (shotTargetY < 50 ? 9 : -9) : (shotTargetY < 50 ? 5 : -5)), 12, 88);
+  const candidates = {};
+  for (const side of [attackingSide, defendingSide]) {
+    const slots = lm.positions?.[side] || [];
+    candidates[side] = slots.slice(1).filter(slot => slot.onIce !== false && slot.playerId && slot.role !== 'goalie')
+      .map(slot => {
+        const player = (lm[side + 'Lineup']?.skaters || []).find(item => item.id === slot.playerId);
+        if (!player) return null;
+        const distance = Math.hypot(slot.x - targetX, slot.y - targetY);
+        const attrs = player.attrs || {};
+        const skill = (Number(attrs.physical) || Number(player.ovr) || 50) * 0.32
+          + (Number(attrs.skating) || Number(player.ovr) || 50) * 0.28
+          + (Number(attrs.iq) || Number(player.ovr) || 50) * 0.24
+          + (Number(attrs.defense) || Number(player.ovr) || 50) * 0.16;
+        return { player, slot, distance, rating: skill - distance * 1.25 };
+      }).filter(Boolean).sort((a, b) => b.rating - a.rating);
+  }
+  const attacker = candidates[attackingSide][0] || null;
+  const defender = candidates[defendingSide][0] || null;
+  const goalie = (lm.positions?.[defendingSide] || []).find(slot => slot.role === 'goalie' && slot.onIce !== false);
+  const goaliePlayer = goalie && (lm[defendingSide + 'Lineup']?.goalie || null);
+  const control = clamp(Number(goaliePlayer?.attrs?.reboundControl)
+    || Number(goaliePlayer?.attrs?.reflexes) || Number(goaliePlayer?.ovr) || 50, 1, 99);
+  const smotherChance = outcome === 'сейв' ? clamp(0.18 + control * 0.003, 0.18, 0.48) : 0;
+  let winnerSide, winner, frozen = false;
+  if (rng() < smotherChance || (!attacker && !defender)) {
+    winnerSide = defendingSide;
+    winner = defender;
+    frozen = true;
+  } else if (!attacker) {
+    winnerSide = defendingSide; winner = defender;
+  } else if (!defender) {
+    winnerSide = attackingSide; winner = attacker;
+  } else {
+    const attackerChance = clamp(0.5 + (attacker.rating - defender.rating) / 100, 0.22, 0.78);
+    winnerSide = rng() < attackerChance ? attackingSide : defendingSide;
+    winner = winnerSide === attackingSide ? attacker : defender;
+  }
+  const winnerIndex = winner
+    ? (lm.positions[winnerSide] || []).findIndex(slot => slot.playerId === winner.player.id && slot.onIce !== false)
+    : -1;
+  const loserSide = winnerSide === attackingSide ? defendingSide : attackingSide;
+  const loser = winnerSide === attackingSide ? defender : attacker;
+  const statsFor = (player, key) => {
+    if (!player) return;
+    const stats = lm.isPlayoff ? ensurePlayoffStats(player) : ensureStats(player);
+    stats[key] = (Number(stats[key]) || 0) + 1;
+  };
+  if (winner && !frozen) statsFor(winner.player, 'reboundRecoveries');
+  if (loser && !frozen) statsFor(loser.player, 'reboundBattlesLost');
+  if (winner && !frozen) statsFor(winner.player, 'reboundBattlesWon');
+  if (winner && frozen) statsFor(winner.player, 'reboundCovers');
+  lm.gameplayPossession = { side: winnerSide, playerId: winner?.player.id || null };
+  lm.reboundStats ||= { home: 0, away: 0, contested: 0, covered: 0 };
+  if (frozen) lm.reboundStats.covered++;
+  else {
+    lm.reboundStats[winnerSide]++;
+    if (attacker && defender) lm.reboundStats.contested++;
+  }
+  livePushEvent({
+    type: frozen ? 'goalie_cover' : 'rebound',
+    side: winnerSide,
+    text: frozen
+      ? `${goaliePlayer?.name || 'Вратарь'} фиксирует шайбу после броска ${shooter.name}`
+      : winner
+        ? `${winner.player.name} подбирает отскочившую шайбу после броска ${shooter.name}`
+        : 'Шайба отскакивает от ворот',
+    shooterId: shooter.id, winnerId: winner?.player.id || null,
+    contested: !!(attacker && defender), frozen,
+    time: liveFmtTime(lm.timeLeft), period: lm.period,
+  });
+  return {
+    side: winnerSide,
+    carrierIndex: winnerIndex > 0 ? winnerIndex : null,
+    targetX: winner?.slot.x ?? targetX,
+    targetY: winner?.slot.y ?? targetY,
+    frozen,
+  };
+}
+
 function liveAdvance(stepSec) {
   const lm = G.liveMatch;
   if (!lm || lm.isFinished) return;
@@ -860,8 +981,34 @@ function liveAdvance(stepSec) {
         const activeSkaters = lineup.skaters.filter(player => activeIds.has(player.id));
         const shooters = activeSkaters.length ? activeSkaters : lineup.skaters;
         if (shooters.length) {
-          const p = pickWeighted(shooters, shotWeight);
-          let outcome = pick(['сейв','сейв','сейв','мимо','штанга']);
+          const puckForShot = puck || { x: side === 'home' ? 150 : 50, y: 50 };
+          const opportunity = getLiveShotOpportunity(lm, side, activeSkaters.length ? activeSkaters : shooters, puckForShot);
+          const p = opportunity.shooter || pickWeighted(shooters, shotWeight);
+          if (opportunity.slotPass && opportunity.passer) {
+            const passerStats = lm.isPlayoff ? ensurePlayoffStats(opportunity.passer) : ensureStats(opportunity.passer);
+            passerStats.slotPasses = (Number(passerStats.slotPasses) || 0) + 1;
+            lm.gameplayPossession = { side, playerId: p.id };
+            livePushEvent({
+              type: 'slot_pass', side,
+              text: `${opportunity.passer.name} отдаёт передачу на пятак — ${p.name} готовится бросать`,
+              passerId: opportunity.passer.id, receiverId: p.id,
+              time: liveFmtTime(lm.timeLeft), period: lm.period,
+            });
+          }
+          if (opportunity.type === 'breakaway') {
+            const breakawayStats = lm.isPlayoff ? ensurePlayoffStats(p) : ensureStats(p);
+            breakawayStats.breakawayAttempts = (Number(breakawayStats.breakawayAttempts) || 0) + 1;
+            livePushEvent({
+              type: 'breakaway', side,
+              text: `${p.name} выходит один на один с вратарём!`,
+              shooterId: p.id, time: liveFmtTime(lm.timeLeft), period: lm.period,
+            });
+          }
+          let outcome = pick(opportunity.type === 'breakaway'
+            ? ['сейв','сейв','сейв','сейв','мимо','штанга']
+            : opportunity.type === 'slot'
+              ? ['сейв','сейв','сейв','сейв','мимо','штанга']
+              : ['сейв','сейв','сейв','мимо','штанга']);
           lm.shotAttempts ||= { home: 0, away: 0 };
           lm.shotAttempts[side]++;
           const puck = lm.positions?.puck;
@@ -895,6 +1042,17 @@ function liveAdvance(stepSec) {
           if (puck) {
             const defendingGoalie = (lm.positions[defendingSide] || []).find(position => position.role === 'goalie');
             const attackingGoalX = side === 'home' ? 190 : 10;
+            const rebound = !block && (outcome === 'сейв' || outcome === 'штанга')
+              ? resolveLiveShotRebound(lm, side, p, outcome, shotTargetY) : null;
+            if (!block && outcome === 'мимо') {
+              const nearestDefender = (lm.positions[defendingSide] || []).slice(1)
+                .filter(slot => slot.onIce !== false && slot.playerId && slot.role !== 'goalie')
+                .sort((a, b) => Math.hypot(a.x - (side === 'home' ? 180 : 20), a.y - shotTargetY)
+                  - Math.hypot(b.x - (side === 'home' ? 180 : 20), b.y - shotTargetY))[0];
+              const defender = nearestDefender && (lm[defendingSide + 'Lineup']?.skaters || [])
+                .find(player => player.id === nearestDefender.playerId);
+              lm.gameplayPossession = { side: defendingSide, playerId: defender?.id || null };
+            }
             puck.possessionSide = side;
             puck.carrierIndex = null;
             puck.shotAnimation = {
@@ -903,7 +1061,9 @@ function liveAdvance(stepSec) {
               startY: shooterPosition ? shooterPosition.y : puck.y,
               targetX: block ? block.slot.x : outcome === 'сейв' && defendingGoalie ? defendingGoalie.x : attackingGoalX,
               targetY: block ? block.slot.y : shotTargetY,
-              nextCarrierIndex: block ? (lm.positions[defendingSide] || []).findIndex(slot => slot.playerId === block.player.id && slot.onIce !== false) : null,
+              nextPossessionSide: block ? defendingSide : rebound?.side || (outcome === 'мимо' ? defendingSide : side),
+              nextCarrierIndex: block ? (lm.positions[defendingSide] || []).findIndex(slot => slot.playerId === block.player.id && slot.onIce !== false) : rebound?.carrierIndex ?? null,
+              reboundX: rebound?.targetX, reboundY: rebound?.targetY, reboundFrozen: !!rebound?.frozen,
               frames: 12, totalFrames: 12,
             };
             puck.x = puck.shotAnimation.startX;
@@ -914,7 +1074,8 @@ function liveAdvance(stepSec) {
           const sideName = side === 'home' ? homeTeamNameShort() : awayTeamNameShort();
           livePushEvent({
             type: 'shot', side,
-            text: `${p.name} (${p.position}) [${sideName}] бросает — ${outcome}.`,
+            text: `${p.name} (${p.position}) [${sideName}] бросает${opportunity.type === 'breakaway' ? ' после выхода один на один' : opportunity.type === 'slot' ? ' в касание после передачи на пятак' : ''} — ${outcome}.`,
+            shooterId: p.id, shotType: opportunity.type,
             time: liveFmtTime(lm.timeLeft), period: lm.period,
           });
         }
@@ -1672,10 +1833,13 @@ function liveUpdatePositions() {
       puck.x = shot.targetX;
       puck.y = shot.targetY;
       puck.shotAnimation = null;
-      puck.looseFrames = shot.outcome === 'сейв' ? 18 : 22;
-      puck.targetX = clamp(shot.targetX + (shot.side === 'home' ? -7 : 7), 5, 195);
-      puck.targetY = clamp(shot.targetY + (shot.outcome === 'штанга' ? 8 : 3), 8, 92);
-      puck.nextPossessionSide = shot.outcome === 'сейв' || shot.outcome === 'блокирован' ? shot.defendingSide : shot.side;
+      puck.looseFrames = shot.outcome === 'сейв' || shot.outcome === 'штанга' ? (shot.reboundFrozen ? 0 : 18) : shot.outcome === 'блокирован' ? 22 : 12;
+      puck.targetX = Number.isFinite(shot.reboundX) ? shot.reboundX
+        : clamp(shot.targetX + (shot.side === 'home' ? -7 : 7), 5, 195);
+      puck.targetY = Number.isFinite(shot.reboundY) ? shot.reboundY
+        : clamp(shot.targetY + (shot.outcome === 'штанга' ? 8 : 3), 8, 92);
+      puck.nextPossessionSide = shot.nextPossessionSide
+        || (shot.outcome === 'сейв' || shot.outcome === 'блокирован' ? shot.defendingSide : shot.side);
       puck.nextCarrierIndex = Number.isInteger(shot.nextCarrierIndex) && shot.nextCarrierIndex > 0
         ? shot.nextCarrierIndex : 3 + Math.floor(visualRng() * 3);
     }
