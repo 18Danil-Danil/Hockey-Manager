@@ -57,4 +57,6 @@ assert.match(source, /lm\.gameplayPossession = \{ side: defendingSide, playerId:
   'a block must transfer gameplay possession to the defending player');
 assert.match(source, /shot\.outcome === 'сейв' \|\| shot\.outcome === 'блокирован' \? shot\.defendingSide/,
   'the puck animation must return blocked shots to the defending side');
+assert.match(source, /nextCarrierIndex: block \? \(lm\.positions\[defendingSide\] \|\| \[\]\)\.findIndex/,
+  'the visual puck should be collected by the actual blocker');
 console.log('LIVE shot-block checks passed.');
