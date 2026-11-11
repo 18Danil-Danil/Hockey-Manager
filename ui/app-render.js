@@ -4,7 +4,13 @@
 function render() {
   const root = document.getElementById('app');
   if (!G.league) return;
-
+  applyGameSettings();
+  if (G.screen === 'title') {
+    stopLiveAnimation();
+    if (G.liveMatch && G.liveMatch.intervalId) { clearInterval(G.liveMatch.intervalId); G.liveMatch.intervalId = null; }
+    G.liveMatch = null; root.innerHTML = renderTitleScreen(); bindTitleScreen(); return;
+  }
+  if (G.screen === 'settings') { stopLiveAnimation(); root.innerHTML = renderSettings(true); return; }
   if (G.screen === 'select') {
     stopLiveAnimation();
     if (G.liveMatch && G.liveMatch.intervalId) { clearInterval(G.liveMatch.intervalId); G.liveMatch.intervalId = null; }
@@ -53,9 +59,11 @@ function render() {
     G.activeTab === 'career' ? renderCareer() :
     G.activeTab === 'playoffs' ? renderPlayoffs() :
     G.activeTab === 'history' ? renderHistory() :
+    G.activeTab === 'settings' ? renderSettings(false) :
     renderRoster();
 
   root.innerHTML = renderHeader() + renderTabs() + content + renderModal() + renderTeamModal() + renderPressConferenceModal() + renderPlayoffInjuryModal() + renderInjuryPromptModal() + renderOpeningCupModal() + renderRoundResultsModal() + renderYouthPlayerModal();
-  document.querySelectorAll('.tab').forEach(el => { el.onclick = () => { G.activeTab = el.dataset.tab; render(); }; });
+  document.querySelectorAll('.tab').forEach(el => { el.onclick = () => { G.activeTab = el.dataset.tab; G.navGroupOpen = el.dataset.navGroup || null; render(); }; });
+  document.querySelectorAll('.nav-group-trigger').forEach(el => { el.onclick = () => { G.navGroupOpen = G.navGroupOpen === el.dataset.navGroup ? null : el.dataset.navGroup; render(); }; });
   saveGame();
 }
