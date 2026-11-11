@@ -511,13 +511,11 @@ function resolveLivePuckBattle(lm) {
   const opponentSide = side === 'home' ? 'away' : 'home';
   const ownSlots = (lm.positions?.[side] || []).slice(1);
   const opponentSlots = (lm.positions?.[opponentSide] || []).slice(1);
-  const active = slots => slots.filter(slot => slot.onIce !== false && slot.playerId)
+  const ownPlayers = ownSlots.filter(slot => slot.onIce !== false && slot.playerId)
     .map(slot => {
-      const lineup = lm[slot === ownSlots[0] ? side + 'Lineup' : side + 'Lineup'];
-      const player = (lineup?.skaters || []).find(item => item.id === slot.playerId);
+      const player = (lm[side + 'Lineup']?.skaters || []).find(item => item.id === slot.playerId);
       return player ? { player, slot } : null;
     }).filter(Boolean);
-  const ownPlayers = active(ownSlots);
   const opponentPlayers = opponentSlots.filter(slot => slot.onIce !== false && slot.playerId)
     .map(slot => {
       const player = (lm[opponentSide + 'Lineup']?.skaters || []).find(item => item.id === slot.playerId);
@@ -702,7 +700,7 @@ function liveAdvance(stepSec) {
     }
   }
 
-  if ((Number(lm.hg) || 0) + (Number(lm.ag) || 0) === scoreBefore) resolveLivePuckBattle(lm);
+  if ((Number(lm.hg) || 0) + (Number(lm.ag) || 0) === scoreBefore && typeof resolveLivePuckBattle === 'function') resolveLivePuckBattle(lm);
 
   lm.timeLeft -= stepSec;
   lm.totalSecPlayed = tNow;
