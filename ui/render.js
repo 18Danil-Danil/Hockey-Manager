@@ -1030,7 +1030,7 @@ function getTeamHistoricalRows(team) {
     'dinamo-spb': ['dynamo-spb', 'dynamo-saint-petersburg'],
     'dinamo-altai': ['dynamo-altai'],
     zauralye: ['zauralye-kurgan'],
-    zvezda: ['zvezda-moscow'],
+    zvezda: ['zvezda-chekhov', 'zvezda-moscow'],
     izhstal: ['izhstal-izhevsk'],
     kristall: ['kristall-saratov'],
     magnitka: ['magnitka-magnitogorsk'],
