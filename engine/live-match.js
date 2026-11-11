@@ -710,6 +710,14 @@ function liveEndPeriod() {
   if (!lm || lm.isFinished) return;
   const isLast = lm.period >= 3;
   const tied = lm.hg === lm.ag;
+  if (lm.period === 3 && tied && lm.goaliePulled) {
+    for (const side of ['home', 'away']) {
+      if (!lm.goaliePulled[side]) continue;
+      lm.goaliePulled[side] = false;
+      if (lm.positions?.[side]?.[0]) lm.positions[side][0].onIce = true;
+    }
+    reconcileLiveManpower(lm);
+  }
   if (isLast && !tied) {
     lm.isFinished = true;
     finishLiveMatch();
