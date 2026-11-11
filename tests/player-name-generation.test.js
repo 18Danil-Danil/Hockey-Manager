@@ -57,6 +57,14 @@ for (const [nationality, profile] of Object.entries(frequency)) {
 assert.ok(api.getPlayerNamePartWeight('Россия', 'first', 'Александр') >
   api.getPlayerNamePartWeight('Россия', 'first', 'Антип'),
   'common Russian first names should outweigh rare archaic names');
+assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Кузьма'), 1,
+  'Kuzma should be classified as a very rare first name');
+assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Варфоломей'), 1,
+  'Varfolomey should be classified as a very rare first name');
+assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Александр'), 500,
+  'common first names should have a strong selection weight');
+assert.equal(api.getPlayerNamePartWeight('Россия', 'first', 'Аким'), 25,
+  'unclassified first names should have a restrained ordinary weight');
 assert.ok(api.getPlayerNamePartWeight('Россия', 'last', 'Иванов') >
   api.getPlayerNamePartWeight('Россия', 'last', 'Ястребов'),
   'common Russian surnames should outweigh ordinary surnames');
@@ -77,8 +85,9 @@ const rareRussian = new Set(frequency['Россия'].first.rare.map(normalizedS
 const commonRussian = new Set(frequency['Россия'].first.common.map(normalizedSurnameKey));
 const rareRate = sampleFirstNames.filter(name => rareRussian.has(normalizedSurnameKey(name))).length / sample.length;
 const commonRate = sampleFirstNames.filter(name => commonRussian.has(normalizedSurnameKey(name))).length / sample.length;
-assert.ok(rareRate < 0.04, `rare archaic names should remain uncommon (observed ${rareRate})`);
-assert.ok(commonRate > rareRate * 4, `common names should appear much more often than rare names (common ${commonRate}, rare ${rareRate})`);
+assert.ok(rareRate < 0.015, `very rare archaic names should stay below 1.5% (observed ${rareRate})`);
+assert.ok(commonRate > 0.70, `common names should dominate the generated pool (observed ${commonRate})`);
+assert.ok(commonRate > rareRate * 20, `common names should vastly outnumber very rare names (common ${commonRate}, rare ${rareRate})`);
 
 api.resetPlayerNameRegistry();
 const russianNames = Array.from({ length: 1900 }, () => api.generatePlayerName('Россия'));
