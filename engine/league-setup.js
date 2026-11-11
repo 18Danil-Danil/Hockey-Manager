@@ -1,6 +1,51 @@
 /* ============================================================
    РАСПИСАНИЕ / ЛИГА
    ============================================================ */
+function orientScheduleRounds(pairings, teams, completedRounds = 0) {
+  const state = new Map(teams.map(team => [team.id, {
+    lastSide: null, streak: 0, home: 0, away: 0,
+  }]));
+  const record = (homeId, awayId) => {
+    for (const [id, side] of [[homeId, 'home'], [awayId, 'away']]) {
+      const entry = state.get(id);
+      if (!entry) continue;
+      if (entry.lastSide === side) entry.streak++;
+      else { entry.lastSide = side; entry.streak = 1; }
+      entry[side]++;
+    }
+  };
+  return pairings.map((round, roundIndex) => {
+    if (roundIndex < completedRounds) {
+      round.forEach(([homeId, awayId]) => record(homeId, awayId));
+      return round.map(game => game.slice());
+    }
+    return round.map(([aId, bId]) => {
+      const a = state.get(aId), b = state.get(bId);
+      const sideScore = (entry, side) => {
+        let score = 0;
+        if (entry.lastSide === side) score += entry.streak >= 3 ? -100 : 12 - entry.streak * 2;
+        else if (entry.streak >= 3) score += 10;
+        const balance = entry.home - entry.away;
+        score += side === 'home' ? -balance * 3 : balance * 3;
+        return score;
+      };
+      const aHomeScore = sideScore(a, 'home') + sideScore(b, 'away');
+      const bHomeScore = sideScore(b, 'home') + sideScore(a, 'away');
+      let aIsHome;
+      if (aHomeScore === bHomeScore) {
+        const key = `${aId}:${bId}:${roundIndex}`;
+        let hash = 0;
+        for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+        aIsHome = hash % 2 === 0;
+      } else aIsHome = aHomeScore > bHomeScore;
+      const homeId = aIsHome ? aId : bId;
+      const awayId = aIsHome ? bId : aId;
+      record(homeId, awayId);
+      return [homeId, awayId];
+    });
+  });
+}
+
 function makeSchedule(teams) {
   const arr = teams.slice();
   const n = arr.length;
@@ -14,46 +59,8 @@ function makeSchedule(teams) {
     singleRounds.push(round);
     arr.splice(1, 0, arr.pop());
   }
-
-  // Домашние/выездные серии: стараемся формировать блоки по 3 матча,
-  // допускаем 2–4 подряд и сохраняем баланс домашних/гостевых игр.
-  const state = new Map(teams.map(team => [team.id, {
-    lastSide: null, streak: 0, home: 0, away: 0,
-  }]));
-  const pairings = [...singleRounds, ...singleRounds];
-  return pairings.map((round, roundIndex) => round.map(([aId, bId]) => {
-    const a = state.get(aId), b = state.get(bId);
-    const sideScore = (entry, side) => {
-      let score = 0;
-      if (entry.lastSide === side) score += entry.streak >= 3 ? -100 : 12 - entry.streak * 2;
-      else if (entry.streak >= 3) score += 10;
-      const balance = entry.home - entry.away;
-      score += side === 'home' ? -balance * 3 : balance * 3;
-      return score;
-    };
-    const aHomeScore = sideScore(a, 'home') + sideScore(b, 'away');
-    const bHomeScore = sideScore(b, 'home') + sideScore(a, 'away');
-    let aIsHome;
-    if (aHomeScore === bHomeScore) {
-      const key = `${aId}:${bId}:${roundIndex}`;
-      let hash = 0;
-      for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
-      aIsHome = hash % 2 === 0;
-    } else aIsHome = aHomeScore > bHomeScore;
-
-    const assignments = aIsHome
-      ? [[aId, 'home'], [bId, 'away']]
-      : [[bId, 'home'], [aId, 'away']];
-    assignments.forEach(([id, side]) => {
-      const entry = state.get(id);
-      if (entry.lastSide === side) entry.streak++;
-      else { entry.lastSide = side; entry.streak = 1; }
-      entry[side]++;
-    });
-    return aIsHome ? [aId, bId] : [bId, aId];
-  }));
+  return orientScheduleRounds([...singleRounds, ...singleRounds], teams, 0);
 }
-
 function makeScheduleMeta(season, roundCount) {
   const match = String(season || '').match(/(\d{4})/);
   const startYear = match ? Number(match[1]) : 2026;
@@ -74,6 +81,13 @@ function makeScheduleMeta(season, roundCount) {
 
 function ensureScheduleCalendar(league) {
   if (!league || !Array.isArray(league.schedule)) return [];
+  // Старые сохранения: результаты и сыгранные пары не трогаем, перестраиваем
+  // только домашнюю/выездную сторону ещё не сыгранных матчей.
+  if (league.scheduleVersion !== 2) {
+    const completedRounds = Math.max(0, Math.min(league.currentRound || 0, league.schedule.length));
+    league.schedule = orientScheduleRounds(league.schedule, league.teams || [], completedRounds);
+    league.scheduleVersion = 2;
+  }
   if (!Array.isArray(league.scheduleMeta) || league.scheduleMeta.length !== league.schedule.length) {
     league.scheduleMeta = makeScheduleMeta(league.season, league.schedule.length);
   }
@@ -86,7 +100,7 @@ function genLeague() {
   const season = '2026/27';
   const schedule = makeSchedule(teams);
   const league = {
-    season, teams, schedule, scheduleMeta: makeScheduleMeta(season, schedule.length),
+    season, teams, schedule, scheduleMeta: makeScheduleMeta(season, schedule.length), scheduleVersion: 2,
     currentRound: 0, results: [],
     playoffs: null, history: [], transferLog: [], freeAgents: [], staffPool: [], waivers: [],
     aiTradeOffers: [], allTimeLeaders: { skaters: {} }, inbox: [], news: [],
