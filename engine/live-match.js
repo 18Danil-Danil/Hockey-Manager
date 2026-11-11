@@ -59,15 +59,15 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
   const liveXgA = xgA * LIVE_XG_MULTIPLIER;
 
   const visualRng = window.GAME_RNG.visualRng;
-  const initialPossessionSide = visualRng() < 0.5 ? 'home' : 'away';
   const positions = {
     home: [], away: [],
     puck: {
       x: 100, y: 50, vx: 0, vy: 0,
-      possessionSide: initialPossessionSide,
-      carrierIndex: 3 + Math.floor(visualRng() * 3),
-      actionFrames: 80 + Math.floor(visualRng() * 70),
+      possessionSide: 'home',
+      carrierIndex: 4,
+      actionFrames: 70,
       looseFrames: 0,
+      lastRuleX: 100,
     },
   };
   const formHome = buildFormation('home', homeLineup);
@@ -107,10 +107,7 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
       away: { shots: 0, goals: 0 },
     },
     positions,
-    gameplayPossession: {
-      side: initialPossessionSide,
-      playerId: positions[initialPossessionSide][positions.puck.carrierIndex]?.playerId || null,
-    },
+    gameplayPossession: { side: 'home', playerId: positions.home[4]?.playerId || null },
     puckBattleStats: {
       home: { won: 0, lost: 0, takeaways: 0 },
       away: { won: 0, lost: 0, takeaways: 0 },
@@ -127,6 +124,7 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
 
   livePushEvent({ type: 'period', text: `Период 1`, time: '20:00', period: 1 });
   G.liveMatch.pbp.push({ period: 1, time: '—', type: 'period', text: 'Период 1' });
+  resolveLiveFaceoff(G.liveMatch, 'начало матча');
 
   G.liveMatch.intervalId = setInterval(liveTick, LIVE_TICK_MS);
   render();
@@ -998,6 +996,139 @@ function resolveLiveShotRebound(lm, attackingSide, shooter, outcome, shotTargetY
   };
 }
 
+function getLiveFaceoffCenter(lm, side) {
+  const lineup = lm?.[side + 'Lineup'];
+  const slots = lm?.positions?.[side] || [];
+  const centerSlot = slots.find(slot => slot.onIce !== false
+    && (slot.position === 'C' || slot.role === 'C'))
+    || slots[4];
+  const player = (lineup?.skaters || []).find(item => item.id === centerSlot?.playerId)
+    || (lineup?.skaters || []).find(item => item.position === 'C')
+    || null;
+  const rating = Number(player?.attrs?.faceoff ?? player?.attrs?.faceoffs
+    ?? player?.attrs?.faceoffSkill ?? player?.ovr ?? 50);
+  return { player, slot: centerSlot, rating: clamp(Number.isFinite(rating) ? rating : 50, 1, 99) };
+}
+
+function resolveLiveFaceoff(lm, reason = 'вбрасывание', spot = { x: 100, y: 50 }) {
+  if (!lm?.positions?.puck) return null;
+  const home = getLiveFaceoffCenter(lm, 'home');
+  const away = getLiveFaceoffCenter(lm, 'away');
+  const homeChance = clamp(0.5 + (home.rating - away.rating) / 160, 0.25, 0.75);
+  const winner = rng() < homeChance ? 'home' : 'away';
+  const loser = winner === 'home' ? 'away' : 'home';
+  const winnerCenter = winner === 'home' ? home : away;
+  const puck = lm.positions.puck;
+  const faceoffX = clamp(Number(spot.x) || 100, 8, 192);
+  const faceoffY = clamp(Number(spot.y) || 50, 12, 88);
+
+  for (const side of ['home', 'away']) {
+    const slots = lm.positions[side] || [];
+    const direction = side === 'home' ? 1 : -1;
+    const centerX = faceoffX - direction * 1.8;
+    const center = slots.find(slot => slot.playerId === (side === 'home' ? home.player?.id : away.player?.id))
+      || slots[4];
+    if (center && center.onIce !== false) {
+      center.x = centerX;
+      center.y = faceoffY;
+      center.vx = 0;
+      center.vy = 0;
+    }
+    for (const index of [3, 5]) {
+      const winger = slots[index];
+      if (!winger || winger.onIce === false) continue;
+      winger.x = clamp(faceoffX - direction * 5, 8, 192);
+      winger.y = clamp(faceoffY + (index === 3 ? -6 : 6), 10, 90);
+      winger.vx = 0;
+      winger.vy = 0;
+    }
+    for (const index of [1, 2]) {
+      const defender = slots[index];
+      if (!defender || defender.onIce === false) continue;
+      defender.x = clamp(faceoffX - direction * 13, 8, 192);
+      defender.y = clamp(faceoffY + (index === 1 ? -12 : 12), 10, 90);
+      defender.vx = 0;
+      defender.vy = 0;
+    }
+  }
+
+  puck.x = faceoffX;
+  puck.y = faceoffY;
+  puck.vx = 0;
+  puck.vy = 0;
+  puck.possessionSide = winner;
+  puck.carrierIndex = winnerCenter.slot
+    ? (lm.positions[winner] || []).indexOf(winnerCenter.slot) : 4;
+  if (puck.carrierIndex < 1) puck.carrierIndex = 4;
+  puck.looseFrames = 0;
+  puck.shotAnimation = null;
+  puck.battle = null;
+  puck.passFrames = 0;
+  puck.reboundFrames = 0;
+  puck.nextPossessionSide = null;
+  puck.nextCarrierIndex = null;
+  puck.targetX = null;
+  puck.targetY = null;
+  puck.counterattack = null;
+  puck.actionFrames = 70;
+  puck.lastRuleX = faceoffX;
+  lm.gameplayPossession = {
+    side: winner,
+    playerId: winnerCenter.player?.id
+      || (lm.positions[winner] || [])[puck.carrierIndex]?.playerId || null,
+  };
+
+  for (const [side, center] of [['home', home], ['away', away]]) {
+    if (!center.player) continue;
+    const stats = lm.isPlayoff ? ensurePlayoffStats(center.player) : ensureStats(center.player);
+    const key = side === winner ? 'faceoffsWon' : 'faceoffsLost';
+    stats[key] = (Number(stats[key]) || 0) + 1;
+  }
+
+  const winnerName = winnerCenter.player?.name || 'Центрфорвард';
+  const loserName = (loser === 'home' ? home : away).player?.name || 'Центрфорвард';
+  const event = {
+    type: 'faceoff', side: winner,
+    text: `Вбрасывание (${reason}): ${winnerName} выигрывает у ${loserName}`,
+    winnerId: winnerCenter.player?.id || null,
+    loserId: (loser === 'home' ? home : away).player?.id || null,
+    x: faceoffX, y: faceoffY,
+    time: liveFmtTime(lm.timeLeft), period: lm.period,
+  };
+  livePushEvent(event);
+  return { winner, loser, ...event };
+}
+
+function resolveLiveOffside(lm) {
+  const puck = lm?.positions?.puck;
+  if (!puck || puck.shotAnimation || (puck.looseFrames || 0) > 0 || puck.battle) return false;
+  const side = lm.gameplayPossession?.side || puck.possessionSide;
+  if (!['home', 'away'].includes(side)) return false;
+  const blueLine = side === 'home' ? 140 : 60;
+  const previousX = Number.isFinite(puck.lastRuleX) ? puck.lastRuleX : puck.x;
+  const crossedIntoZone = side === 'home'
+    ? previousX < blueLine && puck.x >= blueLine
+    : previousX > blueLine && puck.x <= blueLine;
+  puck.lastRuleX = puck.x;
+  if (!crossedIntoZone) return false;
+
+  const carrierId = lm.gameplayPossession?.side === side ? lm.gameplayPossession.playerId : null;
+  const ahead = (lm.positions[side] || []).some((slot, index) => {
+    if (index === 0 || slot.onIce === false || !slot.playerId || slot.playerId === carrierId) return false;
+    return side === 'home' ? slot.x > blueLine : slot.x < blueLine;
+  });
+  if (!ahead) return false;
+
+  const faceoffSpot = { x: side === 'home' ? 135 : 65, y: clamp(puck.y, 24, 76) };
+  livePushEvent({
+    type: 'offside', side,
+    text: `Положение вне игры у команды ${side === 'home' ? homeTeamNameShort() : awayTeamNameShort()}`,
+    time: liveFmtTime(lm.timeLeft), period: lm.period,
+  });
+  resolveLiveFaceoff(lm, 'офсайд', faceoffSpot);
+  return true;
+}
+
 function liveAdvance(stepSec) {
   const lm = G.liveMatch;
   if (!lm || lm.isFinished) return;
@@ -1010,6 +1141,15 @@ function liveAdvance(stepSec) {
     lm.penalties[side] = lm.penalties[side].filter(p => p.endsAt > tNow);
   }
   reconcileLiveManpower(lm);
+
+  // Офсайд проверяется по фактическому пересечению синей линии шайбой,
+  // а не по одному лишь нахождению игрока в зоне.
+  if (resolveLiveOffside(lm)) {
+    lm.timeLeft -= stepSec;
+    lm.totalSecPlayed = tNow;
+    if (lm.timeLeft <= 0) liveEndPeriod();
+    return;
+  }
 
   const homePP = liveIsPP('home');
   const awayPP = liveIsPP('away');
@@ -1302,6 +1442,10 @@ function liveGoal(side) {
   lm.positions.puck.looseFrames = 48;
   lm.positions.puck.shotAnimation = null;
   lm.positions.puck.nextPossessionSide = side === 'home' ? 'away' : 'home';
+  lm.positions.puck.lastRuleX = goalX;
+
+  // После гола игра возобновляется с центральной точки вбрасывания.
+  if (lm.period !== 4) resolveLiveFaceoff(lm, 'после гола');
 
   // ⚙️ ФИКС #2: sudden death в ОТ — гол немедленно завершает матч
   if (lm.period === 4) {
@@ -1473,6 +1617,7 @@ function liveResumeFromBreak(options = {}) {
   const periodText = lm.period === 4 ? 'Овертайм' : `Период ${lm.period}`;
   livePushEvent({ type: 'period', text: periodText, time: lm.period === 4 ? '05:00' : '20:00', period: lm.period });
   lm.pbp.push({ period: lm.period, time: '—', type: 'period', text: periodText });
+  resolveLiveFaceoff(lm, lm.period === 4 ? 'начало овертайма' : 'начало периода');
   if (options.render !== false) render();
   return true;
 }
