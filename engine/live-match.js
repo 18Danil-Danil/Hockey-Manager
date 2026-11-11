@@ -1286,6 +1286,8 @@ function drawLiveCanvas() {
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(r / 7, r / 7);
+    const isFallen = (p.fallFrames || 0) > 0;
+    if (isFallen && typeof ctx.rotate === 'function') ctx.rotate(Math.PI / 2);
 
     const silhouette = () => {
       ctx.beginPath();
@@ -1407,6 +1409,8 @@ function drawLiveCanvas() {
     ctx.fillStyle = 'rgba(255,255,255,0.9)';
     ctx.fillRect(left, top + labelFont + 4, labelWidth * stamina / 100, 2);
     ctx.restore();
+
+    if (isFallen) p.fallFrames--;
 
     if ((p.contactFrames || 0) > 0) {
       ctx.beginPath();
