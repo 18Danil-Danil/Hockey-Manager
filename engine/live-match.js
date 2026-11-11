@@ -806,6 +806,19 @@ function resolveLiveShotBlock(lm, attackingSide, shooterPosition, shotTargetY) {
   return rng() < blockChance ? { ...blocker, side: defendingSide } : null;
 }
 
+function getLiveBreakawayThreat(lm, side) {
+  const possession = lm?.gameplayPossession;
+  if (possession?.side !== side || !possession.playerId) return null;
+  const slot = (lm.positions?.[side] || []).find(item =>
+    item.playerId === possession.playerId && item.onIce !== false && item.role !== 'goalie');
+  if (!slot || (side === 'home' ? slot.x < 145 : slot.x > 55)) return null;
+  const defendingSide = side === 'home' ? 'away' : 'home';
+  const closest = (lm.positions?.[defendingSide] || []).filter(item =>
+    item.onIce !== false && item.playerId && item.role !== 'goalie')
+    .reduce((best, item) => Math.min(best, Math.hypot(item.x - slot.x, item.y - slot.y)), Infinity);
+  return closest >= 19 ? possession.playerId : null;
+}
+
 function getLiveShotOpportunity(lm, side, activeSkaters, puck) {
   const direction = side === 'home' ? 1 : -1;
   const attackingZone = side === 'home' ? puck.x >= 145 : puck.x <= 55;
@@ -959,8 +972,15 @@ function liveAdvance(stepSec) {
   if (lm.goaliePulled?.away) hMod *= 1.35;
   if (lm.goaliePulled?.home) aMod *= 1.35;
 
-  const pH = hXg * hMod * lm.situation.home.attack * lm.situation.away.defense * (stepSec / 3600);
-  const pA = aXg * aMod * lm.situation.away.attack * lm.situation.home.defense * (stepSec / 3600);
+  const homeBreakaway = getLiveBreakawayThreat(lm, 'home');
+  const awayBreakaway = getLiveBreakawayThreat(lm, 'away');
+  lm.breakawayThreat = homeBreakaway
+    ? { side: 'home', playerId: homeBreakaway }
+    : awayBreakaway ? { side: 'away', playerId: awayBreakaway } : null;
+  const pH = hXg * hMod * lm.situation.home.attack * lm.situation.away.defense
+    * (homeBreakaway ? 1.32 : 1) * (stepSec / 3600);
+  const pA = aXg * aMod * lm.situation.away.attack * lm.situation.home.defense
+    * (awayBreakaway ? 1.32 : 1) * (stepSec / 3600);
 
   const rGoal = rng();
   if (rGoal < pH) { liveGoal('home'); if (lm.isFinished) return; }
@@ -1038,6 +1058,11 @@ function liveAdvance(stepSec) {
               blockerId: block.player.id, shooterId: p.id,
               time: liveFmtTime(lm.timeLeft), period: lm.period,
             });
+          }
+          if (opportunity.type === 'breakaway' || opportunity.type === 'slot') {
+            const shotTypeStats = lm.isPlayoff ? ensurePlayoffStats(p) : ensureStats(p);
+            const key = opportunity.type === 'breakaway' ? 'breakawayShots' : 'slotShots';
+            shotTypeStats[key] = (Number(shotTypeStats[key]) || 0) + 1;
           }
           if (puck) {
             const defendingGoalie = (lm.positions[defendingSide] || []).find(position => position.role === 'goalie');
@@ -1840,8 +1865,9 @@ function liveUpdatePositions() {
         : clamp(shot.targetY + (shot.outcome === 'штанга' ? 8 : 3), 8, 92);
       puck.nextPossessionSide = shot.nextPossessionSide
         || (shot.outcome === 'сейв' || shot.outcome === 'блокирован' ? shot.defendingSide : shot.side);
-      puck.nextCarrierIndex = Number.isInteger(shot.nextCarrierIndex) && shot.nextCarrierIndex > 0
-        ? shot.nextCarrierIndex : 3 + Math.floor(visualRng() * 3);
+      puck.nextCarrierIndex = shot.reboundFrozen ? 0
+        : Number.isInteger(shot.nextCarrierIndex) && shot.nextCarrierIndex > 0
+          ? shot.nextCarrierIndex : 3 + Math.floor(visualRng() * 3);
     }
   // Loose puck: players react to the destination; possession resumes after the puck settles.
   } else if ((puck.looseFrames || 0) > 0) {
