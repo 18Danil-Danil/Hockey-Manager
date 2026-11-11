@@ -87,6 +87,7 @@ function getSaveSnapshot() {
     careerOffers: G.careerOffers, freeAgentOffers: G.freeAgentOffers,
     lastRegularChampionId: G.lastRegularChampionId, lastCupHolderId: G.lastCupHolderId, lastFinalistId: G.lastFinalistId,
     lastRoundResults: G.lastRoundResults, lastRoundNumber: G.lastRoundNumber,
+    settings: G.settings || null,
     seed: getSeed(),
   };
 }
@@ -148,6 +149,8 @@ async function loadGame() {
     setSeed(data.seed || 20241111);
     G.selectedDifficulty = data.selectedDifficulty || 'normal';
     G.noFireMode = data.noFireMode || false;
+    G.settings = normalizeGameSettings(data.settings);
+    applyGameSettings();
     G.career = data.career || { reputation: 50, history: [] };
     (G.career.history || []).forEach(h => { h.season = normalizeSeasonLabel(h.season); });
     for (const list of [G.league.transferLog, G.league.news, G.league.inbox, G.league.retiredPlayers]) {
