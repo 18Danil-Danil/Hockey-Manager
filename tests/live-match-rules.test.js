@@ -330,13 +330,6 @@ tiredState.positions.home[3].playerId = 'tired';
 shiftHelpers.updateLiveShifts(tiredState, 5);
 assert.ok(tiredState.playerStamina.home.tired < 65, 'pre-match fatigue did not reduce initial stamina');
 
-// A high-fatigue skater starts with a lower stamina reserve.
-const tiredLineup = {
-  forwards: [{ id: 'tired', name: 'Tired', position: 'F', fatigue: 80 }, ...allForwards.slice(1)],
-  defense: allDefense, skaters: [{ id: 'tired', name: 'Tired', position: 'F', fatigue: 80 }, ...allForwards.slice(1), ...allDefense],
-};
-const tiredPlan = shiftHelpers.buildLiveShiftPlan({ lines: {} }, tiredLineup);
-assert.ok(100 - 80 * 0.45 < 100, 'pre-match fatigue was not factored into stamina initialization');
 
 
 // Possession-based animation must keep players on the rink and move the puck
