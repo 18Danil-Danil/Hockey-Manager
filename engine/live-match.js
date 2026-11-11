@@ -1070,6 +1070,7 @@ function resolveLiveFaceoff(lm, reason = 'вбрасывание', spot = { x: 1
   puck.targetX = null;
   puck.targetY = null;
   puck.counterattack = null;
+  puck.icingPending = null;
   puck.actionFrames = 70;
   puck.lastRuleX = faceoffX;
   lm.gameplayPossession = {
@@ -1129,6 +1130,27 @@ function resolveLiveOffside(lm) {
   return true;
 }
 
+function resolveLiveIcing(lm) {
+  const puck = lm?.positions?.puck;
+  const pending = puck?.icingPending;
+  if (!pending || !['home', 'away'].includes(pending.side)) return false;
+  const side = pending.side;
+  const defendingSide = side === 'home' ? 'away' : 'home';
+  const manpower = getLiveManpowerState(lm);
+  puck.icingPending = null;
+  // A team killing a penalty is allowed to clear the puck the full length
+  // of the ice without an icing stoppage.
+  if (manpower[side].skaters < manpower[defendingSide].skaters) return false;
+
+  livePushEvent({
+    type: 'icing', side,
+    text: `Проброс шайбы командой ${side === 'home' ? homeTeamNameShort() : awayTeamNameShort()}`,
+    time: liveFmtTime(lm.timeLeft), period: lm.period,
+  });
+  resolveLiveFaceoff(lm, 'проброс', { x: side === 'home' ? 30 : 170, y: 50 });
+  return true;
+}
+
 function liveAdvance(stepSec) {
   const lm = G.liveMatch;
   if (!lm || lm.isFinished) return;
@@ -1144,7 +1166,7 @@ function liveAdvance(stepSec) {
 
   // Офсайд проверяется по фактическому пересечению синей линии шайбой,
   // а не по одному лишь нахождению игрока в зоне.
-  if (resolveLiveOffside(lm)) {
+  if (resolveLiveIcing(lm) || resolveLiveOffside(lm)) {
     lm.timeLeft -= stepSec;
     lm.totalSecPlayed = tNow;
     if (lm.timeLeft <= 0) liveEndPeriod();
@@ -1298,6 +1320,9 @@ function liveAdvance(stepSec) {
             const attackingGoalX = side === 'home' ? 190 : 10;
             const rebound = !block && (outcome === 'сейв' || outcome === 'штанга')
               ? resolveLiveShotRebound(lm, side, p, outcome, shotTargetY) : null;
+            const isPenaltyKilling = side === 'home' ? awayPP : homePP;
+            const icingCandidate = !block && outcome === 'мимо' && !isPenaltyKilling
+              && shooterPosition && (side === 'home' ? shooterPosition.x < 100 : shooterPosition.x > 100);
             if (!block && outcome === 'мимо') {
               const nearestDefender = (lm.positions[defendingSide] || []).slice(1)
                 .filter(slot => slot.onIce !== false && slot.playerId && slot.role !== 'goalie')
@@ -1313,8 +1338,10 @@ function liveAdvance(stepSec) {
               side, outcome, defendingSide,
               startX: shooterPosition ? shooterPosition.x : puck.x,
               startY: shooterPosition ? shooterPosition.y : puck.y,
-              targetX: block ? block.slot.x : outcome === 'сейв' && defendingGoalie ? defendingGoalie.x : attackingGoalX,
+              targetX: block ? block.slot.x : outcome === 'сейв' && defendingGoalie ? defendingGoalie.x
+                : icingCandidate ? (side === 'home' ? 199 : 1) : attackingGoalX,
               targetY: block ? block.slot.y : shotTargetY,
+              icingCandidate,
               nextPossessionSide: block ? defendingSide : rebound?.side || (outcome === 'мимо' ? defendingSide : side),
               nextCarrierIndex: block ? (lm.positions[defendingSide] || []).findIndex(slot => slot.playerId === block.player.id && slot.onIce !== false) : rebound?.carrierIndex ?? null,
               reboundX: rebound?.targetX, reboundY: rebound?.targetY, reboundFrozen: !!rebound?.frozen,
@@ -2204,6 +2231,7 @@ function liveUpdatePositions() {
       puck.x = shot.targetX;
       puck.y = shot.targetY;
       puck.shotAnimation = null;
+      if (shot.icingCandidate) puck.icingPending = { side: shot.side };
       puck.looseFrames = shot.outcome === 'сейв' || shot.outcome === 'штанга' ? (shot.reboundFrozen ? 0 : 18) : shot.outcome === 'блокирован' ? 22 : 12;
       puck.targetX = Number.isFinite(shot.reboundX) ? shot.reboundX
         : clamp(shot.targetX + (shot.side === 'home' ? -7 : 7), 5, 195);
