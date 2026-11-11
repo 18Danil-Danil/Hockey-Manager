@@ -93,10 +93,17 @@ const positioningState = {
     puck: { x: 165, y: 80, possessionSide: 'home', carrierIndex: 3, actionFrames: 100, looseFrames: 0 },
   },
 };
+positioningState.gameplayPossession = { side: 'home', playerId: 'skater-3' };
 liveGlobals.liveMatch = positioningState;
 visualUpdate();
 assert.ok(positioningState.positions.away[0].y > 50,
   'goalie did not move laterally toward a puck carried across the zone');
+assert.ok(positioningState.positions.away[1].vx < 0,
+  'the first defender should step toward the actual puck carrier');
+assert.ok(positioningState.positions.away[2].vy < 0,
+  'the covering defender should shade toward the central attacking threat');
+assert.ok(positioningState.positions.away[2].x > 160,
+  'the covering defender should hold a goal-side position instead of retreating behind the goal line');
 
 // The rendered goalie tracks the shot lane and cross-ice puck movement;
 // defensive partners protect the slot instead of both chasing the carrier.
@@ -106,5 +113,5 @@ assert.match(source, /const response = isGoalie \? 0\.105 : 0\.035/);
 assert.match(source, /const opponentPossession = lm\.gameplayPossession\?\.side === opponentSide/);
 assert.match(source, /const pressureDefender = defendersByCarrier\[0\] \|\| null/);
 assert.match(source, /const markedThreats = opponentPlayers/);
-assert.match(source, /const goalSideX = threat\.x - direction \* 9/);
+assert.match(source, /const coverDepth = clamp\(Math\.abs\(threat\.x - ownGoalX\) \* 0\.55, 18, 82\)/);
 console.log('LIVE goalie and defensive-positioning checks passed.');
