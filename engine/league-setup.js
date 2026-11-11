@@ -330,7 +330,7 @@ function makeScheduleMeta(season, roundCount, teams = null) {
 }
 function ensureScheduleCalendar(league) {
   if (!league || !Array.isArray(league.schedule)) return [];
-  if (league.scheduleVersion !== 3) {
+  if (league.scheduleVersion !== 4) {
     const hasStarted = (league.currentRound || 0) > 0 || (league.results || []).length > 0;
     if (!hasStarted && hasCompleteVhlTravelMap(league.teams)) {
       league.schedule = makeSchedule(league.teams, league.season); league.scheduleVersion = 4;
