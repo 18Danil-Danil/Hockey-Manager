@@ -1702,6 +1702,18 @@ function drawLiveCanvas() {
     ctx.strokeText(String(jerseyNumber), 0, 1.2);
     ctx.fillStyle = numberColor;
     ctx.fillText(String(jerseyNumber), 0, 1.2);
+    if ((p.celebrationFrames || 0) > 0) {
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-6, -1); ctx.lineTo(-10, -7);
+      ctx.moveTo(6, -1); ctx.lineTo(10, -7);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, -10, 3.5, Math.PI, Math.PI * 2);
+      ctx.stroke();
+    }
     ctx.restore();
 
     // Фамилия показывается компактной плашкой под игроком, чтобы читаться и на телефоне.
