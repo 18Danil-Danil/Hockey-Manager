@@ -15,13 +15,35 @@ function extractFunction(name, nextName) {
   return source.slice(start, end);
 }
 
+const situationSource = extractFunction('getLiveSituationModifiers', 'liveAdvance');
+const clampSituation = (value, min, max) => Math.max(min, Math.min(max, value));
+const getLiveSituationModifiers = new Function(
+  'clamp', `${situationSource}; return getLiveSituationModifiers;`
+)(clampSituation);
+
+// Score-aware behaviour is symmetric and only becomes pronounced in the final
+// five minutes of regulation when a team is chasing or protecting a lead.
+const earlyChaser = getLiveSituationModifiers({ hg: 1, ag: 2, period: 2, timeLeft: 900 }, 'home');
+const lateChaser = getLiveSituationModifiers({ hg: 1, ag: 2, period: 3, timeLeft: 240 }, 'home');
+const lateLeader = getLiveSituationModifiers({ hg: 2, ag: 1, period: 3, timeLeft: 240 }, 'home');
+const tiedLate = getLiveSituationModifiers({ hg: 1, ag: 1, period: 3, timeLeft: 240 }, 'home');
+assert.equal(earlyChaser.state, 'chasing');
+assert.ok(earlyChaser.attack > 1, 'a trailing team did not receive an attacking urgency modifier');
+assert.ok(lateChaser.attack > earlyChaser.attack, 'late-game urgency did not increase while trailing');
+assert.ok(lateChaser.defense < 1, 'a chasing team did not accept a small defensive trade-off');
+assert.equal(lateLeader.state, 'protecting');
+assert.ok(lateLeader.attack < 1 && lateLeader.defense > 1,
+  'a late-game leader did not become more conservative');
+assert.equal(tiedLate.state, 'balanced');
+assert.equal(tiedLate.attack, 1, 'a tied game received an unjustified score modifier');
+
 // A normal non-goal shot must be credited symmetrically to either side.
 const advanceSource = extractFunction('liveAdvance', 'liveGoal');
 const liveAdvance = new Function(
   'G', 'rng', 'liveIsPP', 'liveGoal', 'livePenalty', 'pickWeighted', 'pick',
   'shotWeight', 'ensureStats', 'ensurePlayoffStats', 'livePushEvent',
   'liveFmtTime', 'homeTeamNameShort', 'awayTeamNameShort',
-  'LIVE_PENALTY_RATE', 'LIVE_PP_BOOST', 'LIVE_PK_NERF', 'LIVE_SHOT_RATE', 'clamp', 'updateLiveShifts', 'reconcileLiveManpower',
+  'LIVE_PENALTY_RATE', 'LIVE_PP_BOOST', 'LIVE_PK_NERF', 'LIVE_SHOT_RATE', 'clamp', 'updateLiveShifts', 'reconcileLiveManpower', 'getLiveSituationModifiers',
   `${advanceSource}; return liveAdvance;`
 );
 
@@ -54,7 +76,7 @@ const advance = liveAdvance(
   { liveMatch: state.lm }, rng, () => false, () => {}, () => {},
   players => players[0], arr => arr[0], () => 1, ensureStats, ensureStats,
   ev => state.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}
+  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}, getLiveSituationModifiers
 );
 advance(5);
 advance(5);
@@ -84,7 +106,7 @@ const activeShotAdvance = liveAdvance(
   players => { selectedShooters = players.slice(); return players[0]; },
   arr => arr[0], () => 1, ensureStats, ensureStats,
   () => {}, () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}
+  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}, getLiveSituationModifiers
 );
 activeShotAdvance(5);
 assert.deepEqual(selectedShooters.map(player => player.id), ['active'],
@@ -105,7 +127,7 @@ const missAdvance = liveAdvance(
   players => players[0], arr => arr[3], () => 1,
   ensureMissStats, ensureMissStats, ev => missState.lm.events.push(ev),
   () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}
+  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}, getLiveSituationModifiers
 );
 missAdvance(5);
 assert.equal(missState.lm.shotAttempts.home, 1, 'missed attempt was not recorded');
@@ -133,7 +155,7 @@ const volumeAdvance = liveAdvance(
   { liveMatch: volumeState.lm }, seededRng, () => false, () => {}, () => {},
   players => players[0], arr => arr[Math.floor(seededRng() * arr.length)], () => 1, ensureStats, ensureStats,
   ev => volumeState.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.093, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}
+  0.00195, 1.8, 0.70, 0.093, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}, getLiveSituationModifiers
 );
 for (let i = 0; i < 720; i++) volumeAdvance(5);
 const totalShots = volumeState.lm.shots.home + volumeState.lm.shots.away;
