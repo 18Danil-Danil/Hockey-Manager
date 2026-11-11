@@ -222,17 +222,25 @@ select:focus { outline: none; border-color: #ff6b35; }
 .live-controls { display: flex; justify-content: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
 .live-controls .btn { margin: 0; min-width: 60px; text-align: center; }
 .live-controls .btn.active { background: #ff6b35; color: #0f1117; }
+.live-feed-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.live-feed-heading h2 { margin-bottom: 8px; }
+.live-feed-legend { display: flex; align-items: center; gap: 14px; color: #aeb7ca; font-size: 11px; margin-bottom: 8px; }
+.live-feed-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.live-legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.live-legend-dot.is-us { background: #4ade80; }
+.live-legend-dot.is-opponent { background: #f87171; }
 .live-feed { background: #1a1e2a; border-radius: 8px; padding: 12px 16px; max-height: 220px; overflow-y: auto; font-family: 'SF Mono', Consolas, monospace; font-size: 12px; line-height: 1.7; }
-.live-feed-item { padding: 3px 8px; border-bottom: 1px solid #232838; border-left: 3px solid transparent; }
-.live-feed-item.side-home { border-left-color: #ff6b35; background: rgba(255,107,53,0.07); }
-.live-feed-item.side-away { border-left-color: #60a5fa; background: rgba(96,165,250,0.07); }
+.live-feed-item { padding: 4px 8px; border-bottom: 1px solid #232838; border-left: 3px solid transparent; }
+.live-feed-item.team-us { border-left-color: #4ade80; background: rgba(74,222,128,0.09); color: #bbf7d0; }
+.live-feed-item.team-opponent { border-left-color: #f87171; background: rgba(248,113,113,0.09); color: #fecaca; }
 .live-feed-item:last-child { border-bottom: none; }
 .live-feed-item .lfi-time { color: #7a8299; margin-right: 8px; }
-.live-feed-item.goal { color: #4ade80; font-weight: 700; }
+.live-feed-item .lfi-team-tag { display: inline-block; margin-right: 7px; font-size: 9px; line-height: 1.5; font-weight: 800; letter-spacing: .05em; opacity: .9; vertical-align: 1px; }
+.live-feed-item.goal { font-weight: 800; }
 .live-feed-item.penalty { color: #fbbf24; }
 .live-feed-item.period { color: #ff6b35; font-weight: 800; }
-.live-feed-item.faceoff { color: #60a5fa; }
-.live-feed-item.shot { color: #9aa3b8; }
+.live-feed-item.faceoff { color: #9aa3b8; }
+.live-feed-item.shot { font-weight: 600; }
 .live-pp-banner { background: rgba(251,191,36,0.15); border-left: 3px solid #fbbf24; color: #fbbf24; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: 700; margin: 6px 0; font-family: 'SF Mono', Consolas, monospace; }
 .live-break-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 900; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .live-break-card { background: #1a1e2a; border-radius: 8px; padding: 24px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; }
