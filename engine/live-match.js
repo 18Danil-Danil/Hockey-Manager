@@ -43,6 +43,16 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
   window.GAME_RNG.setVisualSeed(Date.now());
   advanceInjuries(home); advanceInjuries(away);
   const homeLineup = getLineup(home), awayLineup = getLineup(away);
+  const shiftPlans = {
+    home: buildLiveShiftPlan(home, homeLineup),
+    away: buildLiveShiftPlan(away, awayLineup),
+  };
+  const playerStamina = {
+    home: Object.fromEntries(homeLineup.skaters.map(player => [player.id,
+      clamp(100 - (player.fatigue || 0) * 0.45, 35, 100)])),
+    away: Object.fromEntries(awayLineup.skaters.map(player => [player.id,
+      clamp(100 - (player.fatigue || 0) * 0.45, 35, 100)])),
+  };
   const hTM = tacticMods(home.tactics, home), aTM = tacticMods(away.tactics, away);
   const { xgH, xgA } = computeXG(home, away, hTM, aTM, homeLineup, awayLineup);
   const liveXgH = xgH * LIVE_XG_MULTIPLIER;
@@ -84,6 +94,12 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
     xgTotal: { home: liveXgH, away: liveXgA },
     xgCurrent: { home: liveXgH, away: liveXgA },
     homeLineup, awayLineup, hTM, aTM,
+    shiftPlans,
+    shiftState: {
+      home: { forwardIndex: 0, defenseIndex: 0, elapsed: 0, pending: false, changes: 0 },
+      away: { forwardIndex: 0, defenseIndex: 0, elapsed: 0, pending: false, changes: 0 },
+    },
+    playerStamina,
     scorers: {},
     assisters: {},
     goalieStats: {
@@ -105,6 +121,82 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
 
   G.liveMatch.intervalId = setInterval(liveTick, LIVE_TICK_MS);
   render();
+}
+
+function buildLiveShiftPlan(team, lineup) {
+  const byId = new Map((lineup?.skaters || []).map(player => [player.id, player]));
+  const collect = key => (team?.lines?.[key]?.players || [])
+    .map(id => byId.get(id)).filter(Boolean);
+  const forwards = ['f1', 'f2', 'f3', 'f4'].map(collect).filter(line => line.length);
+  const defense = ['d1', 'd2', 'd3'].map(collect).filter(pair => pair.length);
+  if (!forwards.length && lineup?.forwards?.length) {
+    for (let i = 0; i < lineup.forwards.length; i += 3) forwards.push(lineup.forwards.slice(i, i + 3));
+  }
+  if (!defense.length && lineup?.defense?.length) {
+    for (let i = 0; i < lineup.defense.length; i += 2) defense.push(lineup.defense.slice(i, i + 2));
+  }
+  return { forwards, defense };
+}
+
+function applyLiveShift(lm, side) {
+  const plan = lm.shiftPlans?.[side];
+  const state = lm.shiftState?.[side];
+  const positions = lm.positions?.[side];
+  if (!plan || !state || !positions || !plan.forwards.length || !plan.defense.length) return false;
+  state.forwardIndex = (state.forwardIndex + 1) % plan.forwards.length;
+  state.defenseIndex = (state.defenseIndex + 1) % plan.defense.length;
+  const selected = [
+    ...plan.defense[state.defenseIndex].slice(0, 2),
+    ...plan.forwards[state.forwardIndex].slice(0, 3),
+  ];
+  if (selected.length < 5) return false;
+  for (let i = 0; i < 5; i++) {
+    const slot = positions[i + 1];
+    const player = selected[i];
+    if (!slot || !player) continue;
+    slot.playerId = player.id;
+    slot.playerName = player.name || '';
+    slot.position = player.position || (i < 2 ? 'D' : 'F');
+    slot.role = i < 2 ? 'D' : 'F';
+    slot.vx = 0;
+    slot.vy = 0;
+    slot.stamina = lm.playerStamina?.[side]?.[player.id] ?? 100;
+  }
+  state.elapsed = 0;
+  state.pending = false;
+  state.changes = (state.changes || 0) + 1;
+  return true;
+}
+
+function updateLiveShifts(lm, stepSec) {
+  if (!lm || !lm.shiftPlans || !lm.playerStamina || !lm.positions) return;
+  const puck = lm.positions.puck || {};
+  for (const side of ['home', 'away']) {
+    const lineup = lm[side + 'Lineup'];
+    const positions = lm.positions[side] || [];
+    const state = lm.shiftState[side];
+    const stamina = lm.playerStamina[side];
+    if (!lineup || !state || !stamina) continue;
+    const activeIds = new Set(positions.slice(1, 6).map(player => player.playerId).filter(Boolean));
+    for (const player of lineup.skaters || []) {
+      if (!Object.prototype.hasOwnProperty.call(stamina, player.id)) {
+        stamina[player.id] = clamp(100 - (player.fatigue || 0) * 0.45, 35, 100);
+      }
+      stamina[player.id] = activeIds.has(player.id)
+        ? Math.max(0, stamina[player.id] - stepSec * 0.7)
+        : Math.min(100, stamina[player.id] + stepSec * 0.55);
+    }
+    for (const player of positions.slice(1, 6)) {
+      if (player.playerId) player.stamina = stamina[player.playerId] ?? 100;
+    }
+    state.elapsed += stepSec;
+    if (state.elapsed >= 45) state.pending = true;
+    if (!state.pending || puck.shotAnimation || puck.battle) continue;
+    const puckLoose = (puck.looseFrames || 0) > 0;
+    const puckFarFromOwnGoal = side === 'home' ? puck.x > 125 : puck.x < 75;
+    const safeChange = puckLoose || (puck.possessionSide !== side && puckFarFromOwnGoal);
+    if (safeChange) applyLiveShift(lm, side);
+  }
 }
 
 function buildFormation(side, lineup = null) {
@@ -177,6 +269,7 @@ function liveAdvance(stepSec) {
   if (!lm || lm.isFinished) return;
   const tBefore = lm.totalSecPlayed;
   const tNow = tBefore + stepSec;
+  updateLiveShifts(lm, stepSec);
   for (const side of ['home', 'away']) {
     lm.penalties[side] = lm.penalties[side].filter(p => p.endsAt > tNow);
   }
@@ -209,8 +302,11 @@ function liveAdvance(stepSec) {
         const side = rng() < 0.5 ? 'home' : 'away';
         const lineup = side === 'home' ? lm.homeLineup : lm.awayLineup;
         const defendingSide = side === 'home' ? 'away' : 'home';
-        if (lineup.skaters.length) {
-          const p = pickWeighted(lineup.skaters, shotWeight);
+        const activeIds = new Set((lm.positions?.[side] || []).slice(1, 6).map(player => player.playerId));
+        const activeSkaters = lineup.skaters.filter(player => activeIds.has(player.id));
+        const shooters = activeSkaters.length ? activeSkaters : lineup.skaters;
+        if (shooters.length) {
+          const p = pickWeighted(shooters, shotWeight);
           const outcome = pick(['сейв','сейв','сейв','мимо','штанга']);
           lm.shotAttempts ||= { home: 0, away: 0 };
           lm.shotAttempts[side]++;
@@ -1130,7 +1226,8 @@ function liveUpdatePositions() {
       // Small visual variation prevents robotic movement without making players drift.
       const jitter = isGoalie ? 0.0015 : 0.004;
       const response = isGoalie ? 0.055 : 0.035;
-      const maxSpeed = isGoalie ? 0.24 : isDefender ? 0.78 : 0.9;
+      const staminaFactor = isGoalie ? 1 : clamp((player.stamina ?? 100) / 100, 0.58, 1);
+      const maxSpeed = (isGoalie ? 0.24 : isDefender ? 0.78 : 0.9) * staminaFactor;
       player.vx = (player.vx || 0) * 0.78 + (targetX - player.x) * response
         + (visualRng() - 0.5) * jitter;
       player.vy = (player.vy || 0) * 0.78 + (targetY - player.y) * response
