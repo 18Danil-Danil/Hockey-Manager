@@ -440,7 +440,7 @@ const animationEnd = source.indexOf('function liveAnimationLoop(', animationStar
 assert.ok(animationStart >= 0 && animationEnd > animationStart);
 const animationSource = source.slice(animationStart, animationEnd);
 const liveUpdatePositions = new Function(
-  'G', 'window', 'clamp', 'getLiveManpowerState',
+  'G', 'window', 'clamp', 'getLiveManpowerState = () => ({ home: { skaters: 5, advantage: 0 }, away: { skaters: 5, advantage: 0 } })',
   `${animationSource}; return liveUpdatePositions;`
 );
 const homePositions = formation.map(p => ({ ...p }));
