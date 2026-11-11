@@ -359,6 +359,77 @@ tiredState.playerStamina.home = {};
 tiredState.positions.home[3].playerId = 'tired';
 shiftHelpers.updateLiveShifts(tiredState, 5);
 assert.ok(tiredState.playerStamina.home.tired < 65, 'pre-match fatigue did not reduce initial stamina');
+assert.ok(tiredState.playerStamina.home.tired < 65, 'pre-match fatigue did not reduce initial stamina');
+
+// Penalty differential changes the actual number of visible skaters, while
+// coincidental penalties keep both teams at equal strength.
+const manpowerStart = source.indexOf('function getLiveManpowerState(');
+const manpowerEnd = source.indexOf('function updateLiveShifts(', manpowerStart);
+assert.ok(manpowerStart >= 0 && manpowerEnd > manpowerStart, 'manpower helpers were not found');
+const manpowerHelpers = new Function('clamp',
+  `${source.slice(manpowerStart, manpowerEnd)}; return { getLiveManpowerState, liveGetOnIceSkaters, reconcileLiveManpower };`
+)((v, min, max) => Math.max(min, Math.min(max, v)));
+const specialSkaters = [
+  { id: 'sd1', name: 'D1', position: 'D' }, { id: 'sd2', name: 'D2', position: 'D' },
+  { id: 'sf1', name: 'F1', position: 'F' }, { id: 'sf2', name: 'F2', position: 'F' },
+  { id: 'sf3', name: 'F3', position: 'F' }, { id: 'sf4', name: 'F4', position: 'F' },
+];
+const specialLineup = { skaters: specialSkaters };
+const specialPositions = () => [
+  { role: 'goalie', playerId: 'g' },
+  ...specialSkaters.slice(0, 5).map((player, index) => ({
+    role: player.position, idx: index + 1, playerId: player.id, playerName: player.name,
+    x: 50 + index * 5, y: 30 + index * 8, baseX: 50 + index * 5, baseY: 30 + index * 8,
+  })),
+];
+const specialLm = {
+  totalSecPlayed: 40,
+  penalties: {
+    home: [{ playerId: 'sf2', playerName: 'F2', endsAt: 160, type: '2' }],
+    away: [],
+  },
+  homeLineup: specialLineup, awayLineup: specialLineup,
+  positions: { home: specialPositions(), away: specialPositions(), puck: { x: 100, y: 50, possessionSide: 'away', carrierIndex: 3 } },
+  playerStamina: { home: {}, away: {} },
+};
+assert.equal(manpowerHelpers.getLiveManpowerState(specialLm).home.skaters, 4,
+  'a single minor penalty did not create a 5-on-4');
+assert.equal(manpowerHelpers.getLiveManpowerState(specialLm).away.skaters, 5);
+manpowerHelpers.reconcileLiveManpower(specialLm);
+assert.equal(manpowerHelpers.liveGetOnIceSkaters(specialLm, 'home').length, 4,
+  'penalty-kill side did not have four active skaters');
+assert.ok(!manpowerHelpers.liveGetOnIceSkaters(specialLm, 'home').some(player => player.id === 'sf2'),
+  'penalized player remained on the ice');
+assert.equal(specialLm.positions.home.filter((player, index) => index > 0 && player.onIce !== false).length, 4);
+assert.equal(specialLm.positions.home[5].onIce, false,
+  'the fifth skater was not removed during the penalty kill');
+
+// Coincidental penalties cancel for manpower, but both penalized players stay off ice.
+specialLm.penalties.away = [{ playerId: 'sf3', playerName: 'F3', endsAt: 160, type: '2' }];
+assert.equal(manpowerHelpers.getLiveManpowerState(specialLm).home.skaters, 5);
+assert.equal(manpowerHelpers.getLiveManpowerState(specialLm).away.skaters, 5);
+manpowerHelpers.reconcileLiveManpower(specialLm);
+assert.equal(manpowerHelpers.liveGetOnIceSkaters(specialLm, 'home').length, 5,
+  'coincidental penalties incorrectly reduced home manpower');
+assert.equal(manpowerHelpers.liveGetOnIceSkaters(specialLm, 'away').length, 5,
+  'coincidental penalties incorrectly reduced away manpower');
+assert.ok(!manpowerHelpers.liveGetOnIceSkaters(specialLm, 'away').some(player => player.id === 'sf3'));
+
+// A second penalty against the same side creates a 5-on-3; one coincidental
+// penalty on the other side leaves a 4-on-5 differential.
+specialLm.penalties.home.push({ playerId: 'sf4', playerName: 'F4', endsAt: 200, type: '2' });
+const threeOnFive = manpowerHelpers.getLiveManpowerState(specialLm);
+assert.equal(threeOnFive.home.skaters, 4, 'net one-player differential should be 4-on-5');
+specialLm.penalties.away = [];
+assert.equal(manpowerHelpers.getLiveManpowerState(specialLm).home.skaters, 3,
+  'two-man penalty differential did not create a 5-on-3');
+
+// When penalties expire, the fifth skater is restored from the available roster.
+specialLm.penalties = { home: [], away: [] };
+manpowerHelpers.reconcileLiveManpower(specialLm);
+assert.equal(manpowerHelpers.liveGetOnIceSkaters(specialLm, 'home').length, 5,
+  'full-strength manpower was not restored after penalties expired');
+
 
 
 
