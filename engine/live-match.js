@@ -1910,6 +1910,13 @@ function liveUpdatePositions() {
       puck.nextCarrierIndex = shot.reboundFrozen ? 0
         : Number.isInteger(shot.nextCarrierIndex) && shot.nextCarrierIndex > 0
           ? shot.nextCarrierIndex : 3 + Math.floor(visualRng() * 3);
+      if (shot.reboundFrozen) {
+        puck.possessionSide = shot.nextPossessionSide || shot.defendingSide;
+        puck.carrierIndex = 0;
+        puck.nextPossessionSide = null;
+        puck.nextCarrierIndex = null;
+        puck.actionFrames = 65;
+      }
     }
   // Loose puck: players react to the destination; possession resumes after the puck settles.
   } else if ((puck.looseFrames || 0) > 0) {
