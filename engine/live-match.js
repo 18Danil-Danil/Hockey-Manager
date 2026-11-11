@@ -379,6 +379,36 @@ function liveTick() {
   if (typeof updateLiveClock === 'function') updateLiveClock();
 }
 
+function getLiveSituationModifiers(lm, side) {
+  const ownScore = side === 'home' ? Number(lm?.hg) || 0 : Number(lm?.ag) || 0;
+  const opponentScore = side === 'home' ? Number(lm?.ag) || 0 : Number(lm?.hg) || 0;
+  const scoreDiff = ownScore - opponentScore;
+  const isLateRegulation = lm?.period === 3 && Number(lm?.timeLeft) <= 300;
+  const deficit = Math.max(0, -scoreDiff);
+  const lead = Math.max(0, scoreDiff);
+
+  if (deficit > 0) {
+    const urgency = clamp((isLateRegulation ? 0.34 : 0.10) + Math.min(deficit - 1, 2) * 0.08, 0.08, 0.50);
+    return {
+      state: 'chasing', urgency, protectLead: 0, lateGame: isLateRegulation,
+      attack: 1 + urgency * 0.42,
+      defense: 1 - urgency * 0.10,
+    };
+  }
+  if (lead > 0 && isLateRegulation) {
+    const protectLead = clamp(0.12 + Math.min(lead - 1, 2) * 0.045, 0.12, 0.21);
+    return {
+      state: 'protecting', urgency: 0, protectLead, lateGame: true,
+      attack: 1 - protectLead * 0.24,
+      defense: 1 + protectLead * 0.34,
+    };
+  }
+  return {
+    state: 'balanced', urgency: 0, protectLead: 0, lateGame: isLateRegulation,
+    attack: 1, defense: 1,
+  };
+}
+
 function liveAdvance(stepSec) {
   const lm = G.liveMatch;
   if (!lm || lm.isFinished) return;
@@ -393,6 +423,11 @@ function liveAdvance(stepSec) {
   const homePP = liveIsPP('home');
   const awayPP = liveIsPP('away');
 
+  // Score/time context affects the actual match probabilities, not only animation.
+  lm.situation = {
+    home: getLiveSituationModifiers(lm, 'home'),
+    away: getLiveSituationModifiers(lm, 'away'),
+  };
   const hXg = lm.xgCurrent.home;
   const aXg = lm.xgCurrent.away;
 
@@ -400,8 +435,8 @@ function liveAdvance(stepSec) {
   if (homePP) { hMod *= LIVE_PP_BOOST; aMod *= LIVE_PK_NERF; }
   if (awayPP) { aMod *= LIVE_PP_BOOST; hMod *= LIVE_PK_NERF; }
 
-  const pH = hXg * hMod * (stepSec / 3600);
-  const pA = aXg * aMod * (stepSec / 3600);
+  const pH = hXg * hMod * lm.situation.home.attack * lm.situation.away.defense * (stepSec / 3600);
+  const pA = aXg * aMod * lm.situation.away.attack * lm.situation.home.defense * (stepSec / 3600);
 
   const rGoal = rng();
   if (rGoal < pH) { liveGoal('home'); if (lm.isFinished) return; }
@@ -1290,12 +1325,13 @@ function liveUpdatePositions() {
       const value = Number(values[key]);
       return clamp(Number.isFinite(value) ? value : 50, 0, 100);
     };
+    const situation = lm.situation?.[side] || { urgency: 0, protectLead: 0 };
     return {
-      forecheck: read('forecheck'),
-      pressure: read('pressure'),
-      style: read('style'),
+      forecheck: clamp(read('forecheck') + situation.urgency * 18, 0, 100),
+      pressure: clamp(read('pressure') + situation.urgency * 25, 0, 100),
+      style: clamp(read('style') + situation.urgency * 8, 0, 100),
       physical: read('physical'),
-      risk: read('risk'),
+      risk: clamp(read('risk') + situation.urgency * 18 - situation.protectLead * 35, 0, 100),
     };
   };
   for (const side of sides) {
