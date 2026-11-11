@@ -113,7 +113,7 @@ function buildVhlSchedulePlan(teams) {
           for (let i = 0; i < sideA.length; i++) {
             const j = (i + day) % size;
             if (j < sideB.length) {
-              const fixture = reverse ? [sideB[j].id, sideA[i].id] : [sideA[i].id, sideB[j].id];
+              const fixture = homeZone.id === lower.id ? [sideA[i].id, sideB[j].id] : [sideB[j].id, sideA[i].id];
               bucket.games.push(fixture);
             }
           }
