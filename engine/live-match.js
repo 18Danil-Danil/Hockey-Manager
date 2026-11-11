@@ -1968,6 +1968,17 @@ function updateLiveClock() {
   if (homeScoreEl) homeScoreEl.textContent = lm.hg;
   if (awayScoreEl) awayScoreEl.textContent = lm.ag;
 
+  const updateStat = (id, value) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = String(value);
+  };
+  updateStat('live-stat-home-shots', lm.shots?.home || 0);
+  updateStat('live-stat-away-shots', lm.shots?.away || 0);
+  updateStat('live-stat-home-attempts', lm.shotAttempts?.home || 0);
+  updateStat('live-stat-away-attempts', lm.shotAttempts?.away || 0);
+  updateStat('live-stat-home-xg', Number(lm.xgCurrent?.home || 0).toFixed(2));
+  updateStat('live-stat-away-xg', Number(lm.xgCurrent?.away || 0).toFixed(2));
+
   const ppEl = document.getElementById('live-pp-banner');
   if (ppEl) {
     const manpower = getLiveManpowerState(lm);
