@@ -33,7 +33,7 @@ function bindTitleScreen() {
   document.querySelectorAll('[data-start-action]').forEach(button => { button.onclick = () => {
     const action = button.dataset.startAction;
     if (action === 'continue' && G.playerTeamId) { G.screen = 'game'; G.activeTab = G.activeTab || 'overview'; }
-    else if (action === 'new') { if (G.playerTeamId && G.settings?.confirmNewGame && !confirm('Начать новую карьеру?')) return; G.screen = 'select'; }
+    else if (action === 'new') { if (G.playerTeamId && G.settings?.confirmNewGame && !confirm('Начать новую карьеру?')) return; newGame(); return; }
     else if (action === 'settings') G.screen = 'settings';
     render();
   }; });
