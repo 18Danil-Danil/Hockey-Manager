@@ -104,7 +104,10 @@ function renderLiveMatchScreen() {
       ${controlBlock}
     </div>
 
-    <h2>Ход матча</h2>
+    <div class="live-feed-heading">
+      <h2>Ход матча</h2>
+      <div class="live-feed-legend"><span><i class="live-legend-dot is-us"></i> Наши</span><span><i class="live-legend-dot is-opponent"></i> Соперник</span></div>
+    </div>
     <div class="live-feed" id="live-feed"></div>
 
     ${endedHint}
