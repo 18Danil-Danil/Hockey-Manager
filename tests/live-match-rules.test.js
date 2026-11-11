@@ -44,7 +44,7 @@ const liveAdvance = new Function(
   'shotWeight', 'ensureStats', 'ensurePlayoffStats', 'livePushEvent',
   'liveFmtTime', 'homeTeamNameShort', 'awayTeamNameShort',
   'LIVE_PENALTY_RATE', 'LIVE_PP_BOOST', 'LIVE_PK_NERF', 'LIVE_SHOT_RATE', 'clamp', 'updateLiveShifts', 'reconcileLiveManpower', 'getLiveSituationModifiers',
-  `${advanceSource}; return liveAdvance;`
+  `${advanceSource}; const updateLiveGoaliePulls = () => {}; return liveAdvance;`
 );
 
 function makeLiveState() {
