@@ -177,23 +177,42 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       baseStarts[index] = new Date(cursor); cursor.setUTCDate(cursor.getUTCDate() + segment.span);
       if (index < boundaries) cursor.setUTCDate(cursor.getUTCDate() + 1);
     });
-    const newYearTarget = new Date(Date.UTC(startYear, 11, 30));
-    let newYearBoundary = 0, closest = Infinity;
-    for (let i = 0; i < boundaries; i++) {
-      const end = new Date(baseStarts[i]); end.setUTCDate(end.getUTCDate() + segments[i].span);
-      const distance = Math.abs(end.getTime() - newYearTarget.getTime());
-      if (distance < closest) { closest = distance; newYearBoundary = i; }
-    }
-    if (boundaries) gaps[newYearBoundary] = 6;
-    const specialBoundary = segments.findIndex((segment, index) => index < boundaries && segment.items.some(item => item.specialRoute));
-    if (specialBoundary >= 0 && specialBoundary !== newYearBoundary) gaps[specialBoundary] = 2;
+    const specialBoundaries = [];
+    segments.forEach((segment, index) => {
+      if (index < boundaries && segment.items.some(item => item.specialRoute)) specialBoundaries.push(index);
+    });
+    specialBoundaries.forEach(index => { gaps[index] = 2; });
     const longCandidates = [];
-    for (let i = 0; i < boundaries; i++) if (i !== newYearBoundary && i !== specialBoundary) longCandidates.push(i);
-    [0.42, 0.82].forEach(fraction => {
+    for (let i = 0; i < boundaries; i++) {
+      if (!specialBoundaries.includes(i)) longCandidates.push(i);
+    }
+    [0.42, 0.82].forEach((fraction, longIndex) => {
       const target = Math.floor(boundaries * fraction);
       const candidate = longCandidates.slice().sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
-      if (candidate != null) { gaps[candidate] = 7; longCandidates.splice(longCandidates.indexOf(candidate), 1); }
+      if (candidate != null) {
+        gaps[candidate] = longIndex === 0 ? 7 : 6;
+        longCandidates.splice(longCandidates.indexOf(candidate), 1);
+      }
     });
+    // Новогодняя пауза подбирается после остальных логистических буферов,
+    // чтобы ближайшая дата перед ней приходилась примерно на 30 декабря.
+    const provisionalEnds = [];
+    cursor = new Date(startDate);
+    segments.forEach((segment, index) => {
+      const end = new Date(cursor);
+      end.setUTCDate(end.getUTCDate() + segment.span);
+      provisionalEnds[index] = end;
+      cursor = new Date(end);
+      if (index < boundaries) cursor.setUTCDate(cursor.getUTCDate() + gaps[index]);
+    });
+    const newYearTarget = new Date(Date.UTC(startYear, 11, 30));
+    let newYearBoundary = -1, closest = Infinity;
+    for (let i = 0; i < boundaries; i++) {
+      if (specialBoundaries.includes(i) || gaps[i] > 1) continue;
+      const distance = Math.abs(provisionalEnds[i].getTime() - newYearTarget.getTime());
+      if (distance < closest) { closest = distance; newYearBoundary = i; }
+    }
+    if (newYearBoundary >= 0) gaps[newYearBoundary] = 6;
     const result = Array(roundCount); cursor = new Date(startDate);
     segments.forEach((segment, segmentIndex) => {
       segment.items.forEach(({ index, ...item }) => {
