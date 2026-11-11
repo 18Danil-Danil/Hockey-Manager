@@ -687,9 +687,9 @@ function runLiveShootout() {
   finishLiveMatch();
 }
 
-function liveResumeFromBreak() {
+function liveResumeFromBreak(options = {}) {
   const lm = G.liveMatch;
-  if (!lm) return;
+  if (!lm || !lm.isBreak || lm.isFinished) return false;
   const home = G.league.teams.find(t => t.id === lm.homeId);
   const away = G.league.teams.find(t => t.id === lm.awayId);
   const hTM = tacticMods(home.tactics, home), aTM = tacticMods(away.tactics, away);
@@ -702,13 +702,14 @@ function liveResumeFromBreak() {
   lm.periodStarts.push(lm.totalSecPlayed);
   lm.isBreak = false;
   lm.paused = false;
-  // ⚙️ ФИКС #14: перезапускаем интервал
-  if (!lm.intervalId && !lm.isFinished) {
+  if (options.startInterval !== false && !lm.intervalId && !lm.isFinished) {
     lm.intervalId = setInterval(liveTick, LIVE_TICK_MS);
   }
-  livePushEvent({ type: 'period', text: lm.period === 4 ? 'Овертайм' : `Период ${lm.period}`, time: lm.period === 4 ? '05:00' : '20:00', period: lm.period });
-  lm.pbp.push({ period: lm.period, time: '—', type: 'period', text: lm.period === 4 ? 'Овертайм' : `Период ${lm.period}` });
-  render();
+  const periodText = lm.period === 4 ? 'Овертайм' : `Период ${lm.period}`;
+  livePushEvent({ type: 'period', text: periodText, time: lm.period === 4 ? '05:00' : '20:00', period: lm.period });
+  lm.pbp.push({ period: lm.period, time: '—', type: 'period', text: periodText });
+  if (options.render !== false) render();
+  return true;
 }
 
 function finishLiveMatch() {
@@ -800,50 +801,33 @@ function finishLiveMatch() {
 
 function exitLiveMatchEarly() {
   const lm = G.liveMatch;
-  if (!lm) return;
+  if (!lm || lm.isFinished) return;
   if (lm.intervalId) { clearInterval(lm.intervalId); lm.intervalId = null; }
 
-  // ⚙️ ФИКС #3: корректный расчёт остатка времени
-  // — если в ОТ: только остаток текущего ОТ
-  // — если в регуляке: остаток текущего периода + все оставшиеся периоды
-  const remInCurrent = Math.max(0, lm.timeLeft);
-  const periodNow = lm.period;
-  let totalRemSec;
-  if (periodNow === 4) {
-    totalRemSec = remInCurrent;
-  } else {
-    totalRemSec = remInCurrent + (3 - periodNow) * LIVE_PERIOD_SEC;
+  // Досимулируем матч тем же игровым шагом, что и обычный LIVE.
+  // Так голы, ассисты, броски, удаления и вратарская статистика
+  // проходят через штатные обработчики и не теряются при ускорении.
+  lm.paused = false;
+  let safety = 0;
+  while (!lm.isFinished && safety < 5000) {
+    safety++;
+    if (lm.isBreak) {
+      if (!liveResumeFromBreak({ startInterval: false, render: false })) break;
+      continue;
+    }
+    if (lm.timeLeft <= 0) {
+      liveEndPeriod();
+      continue;
+    }
+    const before = lm.totalSecPlayed;
+    liveAdvance(Math.min(LIVE_TICK_SEC, lm.timeLeft));
+    if (!lm.isFinished && !lm.isBreak && lm.totalSecPlayed <= before) break;
   }
 
-  const hXg = lm.xgCurrent.home, aXg = lm.xgCurrent.away;
-  const addH = poisson(hXg * totalRemSec / 3600);
-  const addA = poisson(aXg * totalRemSec / 3600);
-  lm.hg += addH; lm.ag += addA;
-  // добавляем броски пропорционально голам, чтобы не сломать SV% совсем уж грубо
-  lm.shots.home += addH;
-  lm.shots.away += addA;
-  lm.shotAttempts ||= { home: 0, away: 0 };
-  lm.shotAttempts.home += addH;
-  lm.shotAttempts.away += addA;
-
-  // Если после регуляки всё ещё ничья — ОТ (или буллиты, если ОТ не помог)
-  if (lm.hg === lm.ag && periodNow < 4) {
-    lm.ot = true;
-    const otH = poisson(hXg * (300 / 3600));
-    const otA = poisson(aXg * (300 / 3600));
-    lm.hg += otH; lm.ag += otA;
-    lm.shots.home += otH;
-    lm.shots.away += otA;
-    lm.shotAttempts ||= { home: 0, away: 0 };
-    lm.shotAttempts.home += otH;
-    lm.shotAttempts.away += otA;
+  if (!lm.isFinished && !lm.isBreak) {
+    // Защита от некорректного состояния, чтобы матч не завис навсегда.
+    finishLiveMatch();
   }
-  if (lm.hg === lm.ag) {
-    runLiveShootout();
-    return;
-  }
-
-  finishLiveMatch();
 }
 
 function closeLiveMatchModal() {
