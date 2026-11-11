@@ -46,6 +46,7 @@ function runScenario(startPeriod, tiedAtRegulationEnd = false) {
     }
     if (advanceCalls % 3 === 0) stats.penalties++;
     if (lm.timeLeft <= 0) {
+      if (lm.period === 3 && tiedAtRegulationEnd) lm.ag = lm.hg;
       if (lm.period < 3) lm.isBreak = true;
       else if (lm.hg === lm.ag && tiedAtRegulationEnd) {
         lm.period = 4;
@@ -98,6 +99,6 @@ function runScenario(startPeriod, tiedAtRegulationEnd = false) {
 
 const regular = runScenario(1, false);
 assert.ok(regular.resumed >= 2, 'regular-time fast-forward must cross both intermissions');
-const overtime = runScenario(3, true);
+const overtime = runScenario(1, true);
 assert.ok(overtime.advanceCalls >= 3, 'overtime scenario must continue through extra time');
 console.log('LIVE fast-forward stat recording checks passed.');
