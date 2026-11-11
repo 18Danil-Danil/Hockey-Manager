@@ -532,11 +532,11 @@ function resolveLivePuckBattle(lm) {
   const opponentTeamId = opponentSide === 'home' ? lm.homeId : lm.awayId;
   const ownTeam = G.league?.teams?.find(team => team.id === ownTeamId);
   const opponentTeam = G.league?.teams?.find(team => team.id === opponentTeamId);
-  const ownTactics = ownTeam?.tactics || {};
   const opponentTactics = opponentTeam?.tactics || {};
-  const pressure = clamp((Number(opponentTactics.pressure) || 50) / 100, 0, 1);
-  const forecheck = clamp((Number(opponentTactics.forecheck) || 50) / 100, 0, 1);
-  const physical = clamp((Number(opponentTactics.physical) || 50) / 100, 0, 1);
+  const tacticValue = key => Number.isFinite(Number(opponentTactics[key])) ? Number(opponentTactics[key]) : 50;
+  const pressure = clamp(tacticValue('pressure') / 100, 0, 1);
+  const forecheck = clamp(tacticValue('forecheck') / 100, 0, 1);
+  const physical = clamp(tacticValue('physical') / 100, 0, 1);
   const duelRate = clamp(0.025 + pressure * 0.012 + forecheck * 0.008 + physical * 0.005, 0.025, 0.05);
   if (rng() >= duelRate) return false;
 
