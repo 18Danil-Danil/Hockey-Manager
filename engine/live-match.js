@@ -491,15 +491,21 @@ function updateLiveGoaliePulls(lm) {
   }
 }
 
-function getLiveDuelRating(player, role, stamina = 100) {
+function getLiveDuelRating(player, role, stamina = 100, boardBattle = false) {
   const attrs = player?.attrs || {};
   const fallback = Number(player?.ovr) || 50;
   const read = key => clamp(Number(attrs[key]) || fallback, 1, 99);
-  const skill = role === 'carrier'
-    ? read('physical') * 0.18 + read('skating') * 0.20 + read('passing') * 0.22
-      + read('iq') * 0.25 + read('defense') * 0.15
-    : read('physical') * 0.25 + read('defense') * 0.30 + read('skating') * 0.15
-      + read('iq') * 0.20 + read('passing') * 0.10;
+  const skill = boardBattle
+    ? role === 'carrier'
+      ? read('physical') * 0.30 + read('defense') * 0.26 + read('skating') * 0.12
+        + read('iq') * 0.20 + read('passing') * 0.12
+      : read('physical') * 0.35 + read('defense') * 0.34 + read('skating') * 0.10
+        + read('iq') * 0.16 + read('passing') * 0.05
+    : role === 'carrier'
+      ? read('physical') * 0.18 + read('skating') * 0.20 + read('passing') * 0.22
+        + read('iq') * 0.25 + read('defense') * 0.15
+      : read('physical') * 0.25 + read('defense') * 0.30 + read('skating') * 0.15
+        + read('iq') * 0.20 + read('passing') * 0.10;
   return skill * (0.65 + clamp(Number(stamina) || 0, 0, 100) * 0.0035);
 }
 
@@ -541,12 +547,17 @@ function resolveLivePuckBattle(lm) {
   const duelRate = clamp(0.025 + pressure * 0.012 + forecheck * 0.008 + physical * 0.005, 0.025, 0.05);
   if (rng() >= duelRate) return false;
 
-  const challenger = opponentPlayers[Math.floor(rng() * opponentPlayers.length)];
+  const puckY = Number(lm.positions?.puck?.y ?? carrier.slot.y ?? 50);
+  const isBoardBattle = puckY <= 18 || puckY >= 82;
+  const challenger = isBoardBattle
+    ? opponentPlayers.slice().sort((a, b) => Math.hypot(a.slot.x - carrier.slot.x, a.slot.y - carrier.slot.y)
+      - Math.hypot(b.slot.x - carrier.slot.x, b.slot.y - carrier.slot.y))[0]
+    : opponentPlayers[Math.floor(rng() * opponentPlayers.length)];
   const carrierStamina = lm.playerStamina?.[side]?.[carrier.player.id] ?? carrier.slot.stamina ?? 100;
   const challengerStamina = lm.playerStamina?.[opponentSide]?.[challenger.player.id] ?? challenger.slot.stamina ?? 100;
-  const carrierRating = getLiveDuelRating(carrier.player, 'carrier', carrierStamina);
-  const challengerRating = getLiveDuelRating(challenger.player, 'defender', challengerStamina);
-  const tacticalEdge = (physical - 0.5) * 0.08 + (pressure - 0.5) * 0.04;
+  const carrierRating = getLiveDuelRating(carrier.player, 'carrier', carrierStamina, isBoardBattle);
+  const challengerRating = getLiveDuelRating(challenger.player, 'defender', challengerStamina, isBoardBattle);
+  const tacticalEdge = (physical - 0.5) * (isBoardBattle ? 0.12 : 0.08) + (pressure - 0.5) * 0.04;
   const challengerWinChance = clamp(0.5 + (challengerRating - carrierRating) / 180 + tacticalEdge, 0.25, 0.75);
   const takeaway = rng() < challengerWinChance;
   const statsFor = (player, key) => {
@@ -564,6 +575,10 @@ function resolveLivePuckBattle(lm) {
   challengerStats[ takeaway ? 'won' : 'lost' ]++;
   statsFor(carrier.player, takeaway ? 'puckBattlesLost' : 'puckBattlesWon');
   statsFor(challenger.player, takeaway ? 'puckBattlesWon' : 'puckBattlesLost');
+  if (isBoardBattle) {
+    statsFor(carrier.player, takeaway ? 'boardBattlesLost' : 'boardBattlesWon');
+    statsFor(challenger.player, takeaway ? 'boardBattlesWon' : 'boardBattlesLost');
+  }
 
   if (takeaway) {
     challengerStats.takeaways++;
@@ -577,12 +592,16 @@ function resolveLivePuckBattle(lm) {
 
   const winnerName = takeaway ? challenger.player.name : carrier.player.name;
   const loserName = takeaway ? carrier.player.name : challenger.player.name;
-  const text = takeaway
-    ? `${challenger.player.name} отбирает шайбу у ${carrier.player.name}`
-    : `${carrier.player.name} выигрывает борьбу за шайбу у ${challenger.player.name}`;
+  const text = isBoardBattle
+    ? takeaway
+      ? `${challenger.player.name} выигрывает борьбу у борта и отбирает шайбу у ${carrier.player.name}`
+      : `${carrier.player.name} удерживает шайбу в борьбе у борта с ${challenger.player.name}`
+    : takeaway
+      ? `${challenger.player.name} отбирает шайбу у ${carrier.player.name}`
+      : `${carrier.player.name} выигрывает борьбу за шайбу у ${challenger.player.name}`;
   livePushEvent({
-    type: 'puck_battle', side: takeaway ? opponentSide : side,
-    text, winner: winnerName, loser: loserName, takeaway,
+    type: isBoardBattle ? 'board_battle' : 'puck_battle', side: takeaway ? opponentSide : side,
+    text, winner: winnerName, loser: loserName, takeaway, boardBattle: isBoardBattle,
     time: liveFmtTime(lm.timeLeft), period: lm.period,
   });
 
