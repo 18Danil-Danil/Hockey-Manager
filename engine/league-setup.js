@@ -99,7 +99,11 @@ function buildVhlSchedulePlan(teams) {
       pairs.forEach((pair, pairIndex) => {
         const slot = slots[pairIndex]; pair.forEach(zone => previousSlots.set(zone.id, slot));
         const lower = pair[0].id < pair[1].id ? pair[0] : pair[1], higher = pair[0].id < pair[1].id ? pair[1] : pair[0];
-        const homeZone = reverse ? higher : lower, awayZone = reverse ? lower : higher;
+        // Круговая ориентация пар зон распределяет домашние серии: каждая зона принимает примерно половину остальных зон.
+        const firstLegHomeZone = (higher.id - lower.id) <= 4 ? lower : higher;
+        const firstLegAwayZone = firstLegHomeZone.id === lower.id ? higher : lower;
+        const homeZone = reverse ? firstLegAwayZone : firstLegHomeZone;
+        const awayZone = reverse ? firstLegHomeZone : firstLegAwayZone;
         // Сопернические пары фиксируются в первой части сезона; во второй меняется только площадка.
         const sideA = lower.clubs, sideB = higher.clubs, size = Math.max(sideA.length, sideB.length);
         for (let day = 0; day < size; day++) {
