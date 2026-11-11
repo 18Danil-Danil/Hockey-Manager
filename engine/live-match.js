@@ -699,6 +699,39 @@ function resolveLivePhysicalContact(lm, stepSec = LIVE_TICK_SEC) {
   return true;
 }
 
+function resolveLiveShotBlock(lm, attackingSide, shooterPosition, shotTargetY) {
+  if (!lm || !['home', 'away'].includes(attackingSide) || !shooterPosition) return null;
+  const defendingSide = attackingSide === 'home' ? 'away' : 'home';
+  const goalX = attackingSide === 'home' ? 190 : 10;
+  const shotDx = goalX - shooterPosition.x;
+  if (Math.abs(shotDx) < 1) return null;
+  const candidates = (lm.positions?.[defendingSide] || [])
+    .slice(1)
+    .filter(slot => slot.onIce !== false && slot.playerId && slot.role !== 'goalie')
+    .map(slot => {
+      const progress = (slot.x - shooterPosition.x) / shotDx;
+      if (progress < 0.12 || progress > 0.88) return null;
+      const lineY = shooterPosition.y + (shotTargetY - shooterPosition.y) * progress;
+      const laneDistance = Math.abs(slot.y - lineY);
+      if (laneDistance > 7.5) return null;
+      const player = (lm[defendingSide + 'Lineup']?.skaters || [])
+        .find(item => item.id === slot.playerId);
+      if (!player) return null;
+      const attrs = player.attrs || {};
+      const fallback = Number(player.ovr) || 50;
+      const blocking = clamp(Number(attrs.blocking) || Number(attrs.defense) || fallback, 1, 99);
+      const physical = clamp(Number(attrs.physical) || fallback, 1, 99);
+      const stamina = lm.playerStamina?.[defendingSide]?.[player.id] ?? slot.stamina ?? 100;
+      const rating = (blocking * 0.72 + physical * 0.28) * (0.72 + clamp(stamina, 0, 100) * 0.0028);
+      return { player, slot, progress, laneDistance, rating };
+    }).filter(Boolean)
+    .sort((a, b) => a.laneDistance - b.laneDistance || a.progress - b.progress);
+  const blocker = candidates[0];
+  if (!blocker) return null;
+  const blockChance = clamp(0.18 + blocker.rating / 260, 0.20, 0.62);
+  return rng() < blockChance ? { ...blocker, side: defendingSide } : null;
+}
+
 function liveAdvance(stepSec) {
   const lm = G.liveMatch;
   if (!lm || lm.isFinished) return;
@@ -754,10 +787,18 @@ function liveAdvance(stepSec) {
         const shooters = activeSkaters.length ? activeSkaters : lineup.skaters;
         if (shooters.length) {
           const p = pickWeighted(shooters, shotWeight);
-          const outcome = pick(['сейв','сейв','сейв','мимо','штанга']);
+          let outcome = pick(['сейв','сейв','сейв','мимо','штанга']);
           lm.shotAttempts ||= { home: 0, away: 0 };
           lm.shotAttempts[side]++;
-          // Только бросок в створ засчитывается вратарю и личную статистику бросков.
+          const puck = lm.positions?.puck;
+          const shooterPositions = lm.positions[side] || [];
+          const shooterIndex = shooterPositions.findIndex(position => position.playerId === p.id);
+          const shooterPosition = shooterPositions[shooterIndex >= 0 ? shooterIndex : 3];
+          const shotTargetY = clamp((puck?.y ?? 50) + (outcome === 'штанга' ? ((puck?.y ?? 50) < 50 ? -7 : 7) : 0), 43, 57);
+          const block = outcome === 'сейв'
+            ? resolveLiveShotBlock(lm, side, shooterPosition, shotTargetY) : null;
+          if (block) outcome = 'блокирован';
+          // В створ идут только сейвы и голы; заблокированный бросок не считается броском в створ.
           if (outcome === 'сейв') {
             lm.shots[side]++;
             const goalieOnIce = lm.positions?.[defendingSide]?.[0]?.onIce !== false;
@@ -765,22 +806,29 @@ function liveAdvance(stepSec) {
             const isPlayoff = lm.isPlayoff;
             (isPlayoff ? ensurePlayoffStats(p) : ensureStats(p)).shots++;
           }
-          const puck = lm.positions?.puck;
+          if (block) {
+            const isPlayoff = lm.isPlayoff;
+            const blockerStats = isPlayoff ? ensurePlayoffStats(block.player) : ensureStats(block.player);
+            blockerStats.blocks = (Number(blockerStats.blocks) || 0) + 1;
+            lm.gameplayPossession = { side: defendingSide, playerId: block.player.id };
+            livePushEvent({
+              type: 'shot_block', side: defendingSide,
+              text: `${block.player.name} блокирует бросок ${p.name}`,
+              blockerId: block.player.id, shooterId: p.id,
+              time: liveFmtTime(lm.timeLeft), period: lm.period,
+            });
+          }
           if (puck) {
-            const shooterPositions = lm.positions[side] || [];
-            const shooterIndex = shooterPositions.findIndex(position => position.playerId === p.id);
-            const shooterPosition = shooterPositions[shooterIndex >= 0 ? shooterIndex : 3];
             const defendingGoalie = (lm.positions[defendingSide] || []).find(position => position.role === 'goalie');
             const attackingGoalX = side === 'home' ? 190 : 10;
-            const shotTargetY = clamp(puck.y + (outcome === 'штанга' ? (puck.y < 50 ? -7 : 7) : 0), 43, 57);
             puck.possessionSide = side;
             puck.carrierIndex = null;
             puck.shotAnimation = {
               side, outcome, defendingSide,
               startX: shooterPosition ? shooterPosition.x : puck.x,
               startY: shooterPosition ? shooterPosition.y : puck.y,
-              targetX: outcome === 'сейв' && defendingGoalie ? defendingGoalie.x : attackingGoalX,
-              targetY: shotTargetY,
+              targetX: block ? block.slot.x : outcome === 'сейв' && defendingGoalie ? defendingGoalie.x : attackingGoalX,
+              targetY: block ? block.slot.y : shotTargetY,
               frames: 12, totalFrames: 12,
             };
             puck.x = puck.shotAnimation.startX;
@@ -1552,7 +1600,7 @@ function liveUpdatePositions() {
       puck.looseFrames = shot.outcome === 'сейв' ? 18 : 22;
       puck.targetX = clamp(shot.targetX + (shot.side === 'home' ? -7 : 7), 5, 195);
       puck.targetY = clamp(shot.targetY + (shot.outcome === 'штанга' ? 8 : 3), 8, 92);
-      puck.nextPossessionSide = shot.outcome === 'сейв' ? shot.defendingSide : shot.side;
+      puck.nextPossessionSide = shot.outcome === 'сейв' || shot.outcome === 'блокирован' ? shot.defendingSide : shot.side;
       puck.nextCarrierIndex = 3 + Math.floor(visualRng() * 3);
     }
   // Loose puck: players react to the destination; possession resumes after the puck settles.
