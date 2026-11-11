@@ -214,12 +214,8 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       if (!segment || segment.id !== item.segmentId) { segment = { id: item.segmentId, items: [], span: 0 }; segments.push(segment); }
       segment.items.push({ ...item, index }); segment.span = Math.max(segment.span, item.segmentOffset || 0);
     });
-    const boundaries = Math.max(0, segments.length - 1), gaps = Array(boundaries).fill(2), baseStarts = [];
+    const boundaries = Math.max(0, segments.length - 1), gaps = Array(boundaries).fill(2);
     let cursor = new Date(startDate);
-    segments.forEach((segment, index) => {
-      baseStarts[index] = new Date(cursor); cursor.setUTCDate(cursor.getUTCDate() + segment.span);
-      if (index < boundaries) cursor.setUTCDate(cursor.getUTCDate() + 1);
-    });
     const specialBoundaries = [];
     segments.forEach((segment, index) => {
       if (index < boundaries && segment.items.some(item => item.specialRoute)) specialBoundaries.push(index);
@@ -230,12 +226,13 @@ function makeScheduleMeta(season, roundCount, teams = null) {
     [0.35, 0.75].forEach(fraction => {
       const target = Math.floor(boundaries * fraction);
       const candidate = longCandidates.slice().sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
-      if (candidate != null) { gaps[candidate] = 8; longCandidates.splice(longCandidates.indexOf(candidate), 1); }
+      if (candidate != null) { gaps[candidate] = 8; longBoundaries.push(candidate); longCandidates.splice(longCandidates.indexOf(candidate), 1); }
     });
+    const shortBoundaries = [];
     [0.18, 0.52, 0.9].forEach(fraction => {
       const target = Math.floor(boundaries * fraction);
       const candidate = longCandidates.slice().sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
-      if (candidate != null) { gaps[candidate] = 3; longCandidates.splice(longCandidates.indexOf(candidate), 1); }
+      if (candidate != null) { gaps[candidate] = 3; shortBoundaries.push(candidate); longCandidates.splice(longCandidates.indexOf(candidate), 1); }
     });
     // Новогодняя пауза подбирается после остальных логистических буферов,
     // чтобы ближайшая дата перед ней приходилась примерно на 30 декабря.
@@ -251,7 +248,7 @@ function makeScheduleMeta(season, roundCount, teams = null) {
     const newYearTarget = new Date(Date.UTC(startYear, 11, 30));
     let newYearBoundary = -1, closest = Infinity;
     for (let i = 0; i < boundaries; i++) {
-      if (specialBoundaries.includes(i) || gaps[i] > 1) continue;
+      if (specialBoundaries.includes(i) || longBoundaries.includes(i) || shortBoundaries.includes(i)) continue;
       const distance = Math.abs(provisionalEnds[i].getTime() - newYearTarget.getTime());
       if (distance < closest) { closest = distance; newYearBoundary = i; }
     }
