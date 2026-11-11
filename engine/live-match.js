@@ -115,6 +115,7 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
       home: { won: 0, lost: 0, takeaways: 0 },
       away: { won: 0, lost: 0, takeaways: 0 },
     },
+    physicalContactCooldown: 0,
     isBreak: false,
     isFinished: false,
     ot: false,
@@ -600,6 +601,104 @@ function resolveLivePuckBattle(lm) {
   return true;
 }
 
+function getLiveContactRating(player, stamina = 100) {
+  const attrs = player?.attrs || {};
+  const fallback = Number(player?.ovr) || 50;
+  const read = key => clamp(Number(attrs[key]) || fallback, 1, 99);
+  const base = read('physical') * 0.48 + read('skating') * 0.22
+    + read('defense') * 0.20 + read('iq') * 0.10;
+  return base * (0.70 + clamp(Number(stamina) || 0, 0, 100) * 0.003);
+}
+
+function resolveLivePhysicalContact(lm, stepSec = LIVE_TICK_SEC) {
+  if (!lm || lm.isFinished || lm.isBreak || lm.shootout) return false;
+  lm.physicalContactCooldown = Math.max(0, (Number(lm.physicalContactCooldown) || 0) - stepSec);
+  if (lm.physicalContactCooldown > 0) return false;
+
+  const possession = lm.gameplayPossession;
+  if (!possession?.playerId || !['home', 'away'].includes(possession.side)) return false;
+  const defendingSide = possession.side === 'home' ? 'away' : 'home';
+  const carrierSlot = (lm.positions?.[possession.side] || []).find(slot =>
+    slot.playerId === possession.playerId && slot.onIce !== false && slot.role !== 'goalie'
+  );
+  if (!carrierSlot) return false;
+
+  const defenders = (lm.positions?.[defendingSide] || [])
+    .filter(slot => slot.onIce !== false && slot.playerId && slot.role !== 'goalie')
+    .map(slot => {
+      const player = (lm[defendingSide + 'Lineup']?.skaters || []).find(item => item.id === slot.playerId);
+      return player ? { player, slot, distance: Math.hypot(slot.x - carrierSlot.x, slot.y - carrierSlot.y) } : null;
+    }).filter(Boolean).sort((a, b) => a.distance - b.distance);
+  const challenger = defenders[0];
+  if (!challenger || challenger.distance > 24) return false;
+
+  const defendingTeamId = defendingSide === 'home' ? lm.homeId : lm.awayId;
+  const defendingTeam = G.league?.teams?.find(team => team.id === defendingTeamId);
+  const physical = clamp((Number(defendingTeam?.tactics?.physical) || 50) / 100, 0, 1);
+  const contactChance = clamp(0.012 + physical * 0.035, 0.012, 0.047);
+  if (rng() >= contactChance) return false;
+
+  const carrier = (lm[possession.side + 'Lineup']?.skaters || []).find(item => item.id === possession.playerId);
+  if (!carrier) return false;
+  const carrierStamina = lm.playerStamina?.[possession.side]?.[carrier.id] ?? carrierSlot.stamina ?? 100;
+  const challengerStamina = lm.playerStamina?.[defendingSide]?.[challenger.player.id] ?? challenger.slot.stamina ?? 100;
+  const hitRating = getLiveContactRating(challenger.player, challengerStamina);
+  const resistance = getLiveContactRating(carrier, carrierStamina);
+  const hitAdvantage = hitRating - resistance;
+  const cleanHitChance = clamp(0.38 + hitAdvantage / 180 + physical * 0.08, 0.20, 0.72);
+  const cleanHit = rng() < cleanHitChance;
+
+  const statsFor = (player, key) => {
+    const stats = lm.isPlayoff ? ensurePlayoffStats(player) : ensureStats(player);
+    stats[key] = (Number(stats[key]) || 0) + 1;
+  };
+  statsFor(challenger.player, 'hits');
+  statsFor(carrier, 'hitsReceived');
+  lm.physicalContactCooldown = 15;
+  challenger.slot.contactFrames = 9;
+  carrierSlot.contactFrames = 9;
+  if (cleanHit) carrierSlot.fallFrames = 10;
+
+  const dislodged = cleanHit && rng() < clamp(0.24 + hitAdvantage / 260, 0.10, 0.48);
+  if (dislodged) {
+    possession.side = defendingSide;
+    possession.playerId = challenger.player.id;
+    const puck = lm.positions?.puck;
+    const receiverIndex = (lm.positions[defendingSide] || []).findIndex(slot =>
+      slot.playerId === challenger.player.id && slot.onIce !== false
+    );
+    if (puck) {
+      puck.carrierIndex = null;
+      puck.looseFrames = 9;
+      puck.nextPossessionSide = defendingSide;
+      puck.nextCarrierIndex = receiverIndex > 0 ? receiverIndex : 3;
+      puck.targetX = challenger.slot.x;
+      puck.targetY = challenger.slot.y;
+      puck.battle = null;
+    }
+  }
+
+  const hitterName = challenger.player.name || 'Защитник';
+  const carrierName = carrier.name || 'Нападающий';
+  livePushEvent({
+    type: 'body_check', side: defendingSide,
+    text: cleanHit
+      ? `${hitterName} проводит силовой приём против ${carrierName}${dislodged ? ' — шайба потеряна' : ''}`
+      : `${carrierName} выдерживает силовой приём ${hitterName}`,
+    hitterId: challenger.player.id, targetId: carrier.id, cleanHit, dislodged,
+    time: liveFmtTime(lm.timeLeft), period: lm.period,
+  });
+
+  // Only reckless contact can become a penalty; ordinary legal checks remain part of play.
+  const discipline = clamp(Number(challenger.player.attrs?.iq) || Number(challenger.player.ovr) || 50, 1, 99);
+  const infractionChance = clamp(0.004 + Math.max(0, physical - 0.65) * 0.055
+    + Math.max(0, 50 - discipline) * 0.00035, 0.002, 0.035);
+  if (rng() < infractionChance && typeof livePenalty === 'function') {
+    livePenalty(defendingSide, lm.totalSecPlayed, challenger.player.id, 'силовой приём с нарушением правил');
+  }
+  return true;
+}
+
 function liveAdvance(stepSec) {
   const lm = G.liveMatch;
   if (!lm || lm.isFinished) return;
@@ -701,6 +800,7 @@ function liveAdvance(stepSec) {
   }
 
   if ((Number(lm.hg) || 0) + (Number(lm.ag) || 0) === scoreBefore && typeof resolveLivePuckBattle === 'function') resolveLivePuckBattle(lm);
+  if ((Number(lm.hg) || 0) + (Number(lm.ag) || 0) === scoreBefore && typeof resolveLivePhysicalContact === 'function') resolveLivePhysicalContact(lm, stepSec);
 
   lm.timeLeft -= stepSec;
   lm.totalSecPlayed = tNow;
@@ -793,7 +893,7 @@ function liveGoal(side) {
   }
 }
 
-function livePenalty(side, startedAt = null) {
+function livePenalty(side, startedAt = null, offenderId = null, reasonOverride = null) {
   const lm = G.liveMatch;
   const lineup = side === 'home' ? lm.homeLineup : lm.awayLineup;
   if (!lineup.skaters.length) return;
@@ -804,7 +904,7 @@ function livePenalty(side, startedAt = null) {
     !(lm.penalties[side] || []).some(penalty => penalty.playerId === player.id && penalty.endsAt > lm.totalSecPlayed)
   );
   if (!eligible.length) return;
-  const p = pick(eligible);
+  const p = eligible.find(player => player.id === offenderId) || pick(eligible);
   const isMajor = rng() < 0.12;
   const duration = isMajor ? 300 : 120;
   const type = isMajor ? '5' : '2';
@@ -817,7 +917,7 @@ function livePenalty(side, startedAt = null) {
     scoredDuringPP: false,
   });
   reconcileLiveManpower(lm);
-  const reason = isMajor ? pick(['удар в голову','драка','атака вратаря']) : pick(['задержка','подножка','грубость','толчок','удар соперника']);
+  const reason = reasonOverride || (isMajor ? pick(['удар в голову','драка','атака вратаря']) : pick(['задержка','подножка','грубость','толчок','удар соперника']));
   const sideName = side === 'home' ? G.league.teams.find(t => t.id === lm.homeId).name : G.league.teams.find(t => t.id === lm.awayId).name;
   livePushEvent({
     type: 'penalty',
