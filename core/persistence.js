@@ -323,13 +323,31 @@ function isSafeCareerSaveValue(value, depth = 0, budget = { count: 0 }) {
 
 function isValidCareerSave(data) {
   const save = data && data.format === 'hockey-manager-save' ? data.data : data;
-  if (!save || typeof save !== 'object' || !save.league ||
+  const isRecord = value => !!value && typeof value === 'object' && !Array.isArray(value);
+  if (!isRecord(save) || !isRecord(save.league) ||
       !Array.isArray(save.league.teams) ||
       save.league.teams.length === 0 || save.league.teams.length > 100 ||
-      !save.league.teams.every(team =>
-        team && typeof team === 'object' &&
-        Array.isArray(team.roster) && team.roster.length <= 100)) return false;
-  if (save.league.freeAgents !== undefined && !Array.isArray(save.league.freeAgents)) return false;
+      !Array.isArray(save.league.freeAgents)) return false;
+  if (!save.league.teams.every(team =>
+      isRecord(team) && Array.isArray(team.roster) && team.roster.length <= 100 &&
+      isRecord(team.finance) && isRecord(team.finance.expenses) &&
+      isRecord(team.finance.income) && isRecord(team.staff) &&
+      team.roster.every(player => isRecord(player) && isRecord(player.contract)))) return false;
+  if (!save.league.freeAgents.every(player => isRecord(player))) return false;
+  for (const key of ['history', 'transferLog', 'news', 'inbox', 'retiredPlayers']) {
+    if (save.league[key] !== undefined && !Array.isArray(save.league[key])) return false;
+  }
+  for (const team of save.league.teams) {
+    if (team.history !== undefined && !Array.isArray(team.history)) return false;
+    if (team.trophies !== undefined && team.trophies !== null && !isRecord(team.trophies)) return false;
+    if (team.trophies) {
+      for (const key of ['petrov', 'regular', 'opening', 'finals']) {
+        if (team.trophies[key] !== undefined && !Array.isArray(team.trophies[key])) return false;
+      }
+    }
+  }
+  if (save.career && (!isRecord(save.career) ||
+      (save.career.history !== undefined && !Array.isArray(save.career.history)))) return false;
   return isSafeCareerSaveValue(save);
 }
 
