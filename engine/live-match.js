@@ -1032,7 +1032,7 @@ function liveAdvance(stepSec) {
               : ['сейв','сейв','сейв','мимо','штанга']);
           lm.shotAttempts ||= { home: 0, away: 0 };
           lm.shotAttempts[side]++;
-          const shooterPositions = lm.positions[side] || [];
+          const shooterPositions = lm.positions?.[side] || [];
           const shooterIndex = shooterPositions.findIndex(position => position.playerId === p.id);
           const shooterPosition = shooterPositions[shooterIndex >= 0 ? shooterIndex : 3];
           const shotTargetY = clamp((puck?.y ?? 50) + (outcome === 'штанга' ? ((puck?.y ?? 50) < 50 ? -7 : 7) : 0), 43, 57);
