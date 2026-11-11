@@ -848,12 +848,60 @@ function getLiveShotOpportunity(lm, side, activeSkaters, puck) {
       const passing = clamp(Number(passer.attrs?.passing) || Number(passer.ovr) || 50, 1, 99);
       const passChance = clamp(0.10 + passing * 0.0015, 0.10, 0.25);
       if (rng() < passChance) {
-        return { shooter: slotTargets[0].player, type: 'slot', passer, slotPass: true };
+        const receiver = slotTargets[0].player;
+        const interception = resolveLivePassInterception(lm, side, passer, receiver);
+        if (interception) {
+          return { shooter: null, type: 'intercepted', passer, receiver, interceptor: interception.player,
+            interceptorSlot: interception.slot, slotPass: false };
+        }
+        return { shooter: receiver, type: 'slot', passer, slotPass: true };
       }
     }
   }
   const shooter = activeSkaters.length ? pickWeighted(activeSkaters, shotWeight) : null;
   return { shooter, type: 'standard', passer: null, slotPass: false };
+}
+
+function resolveLivePassInterception(lm, side, passer, receiver) {
+  if (!lm || !passer || !receiver) return null;
+  const defendingSide = side === 'home' ? 'away' : 'home';
+  const passerSlot = (lm.positions?.[side] || []).find(slot =>
+    slot.playerId === passer.id && slot.onIce !== false);
+  const receiverSlot = (lm.positions?.[side] || []).find(slot =>
+    slot.playerId === receiver.id && slot.onIce !== false);
+  if (!passerSlot || !receiverSlot) return null;
+  const dx = receiverSlot.x - passerSlot.x;
+  const dy = receiverSlot.y - passerSlot.y;
+  const lengthSquared = dx * dx + dy * dy;
+  if (lengthSquared < 1) return null;
+  const passing = clamp(Number(passer.attrs?.passing) || Number(passer.ovr) || 50, 1, 99);
+  const candidates = (lm.positions?.[defendingSide] || []).slice(1)
+    .filter(slot => slot.onIce !== false && slot.playerId && slot.role !== 'goalie')
+    .map(slot => {
+      const progress = ((slot.x - passerSlot.x) * dx + (slot.y - passerSlot.y) * dy) / lengthSquared;
+      if (progress < 0.14 || progress > 0.86) return null;
+      const laneY = passerSlot.y + dy * progress;
+      const laneX = passerSlot.x + dx * progress;
+      const laneDistance = Math.hypot(slot.x - laneX, slot.y - laneY);
+      if (laneDistance > 8.5) return null;
+      const player = (lm[defendingSide + 'Lineup']?.skaters || [])
+        .find(item => item.id === slot.playerId);
+      if (!player) return null;
+      const attrs = player.attrs || {};
+      const fallback = Number(player.ovr) || 50;
+      const anticipation = clamp(Number(attrs.interception) || Number(attrs.defense) || fallback, 1, 99);
+      const iq = clamp(Number(attrs.iq) || fallback, 1, 99);
+      const stamina = lm.playerStamina?.[defendingSide]?.[player.id] ?? slot.stamina ?? 100;
+      const rating = (anticipation * 0.58 + iq * 0.42) * (0.72 + clamp(stamina, 0, 100) * 0.0028);
+      return { player, slot, progress, laneDistance, rating };
+    }).filter(Boolean).sort((a, b) => a.laneDistance - b.laneDistance);
+  const interceptor = candidates[0];
+  if (!interceptor) return null;
+  const interceptionChance = clamp(
+    0.12 + (interceptor.rating - passing) / 190 + (8.5 - interceptor.laneDistance) * 0.018,
+    0.08, 0.58
+  );
+  return rng() < interceptionChance ? { ...interceptor, side: defendingSide } : null;
 }
 
 function getLiveGoalieControl(goaliePlayer) {
@@ -1014,6 +1062,32 @@ function liveAdvance(stepSec) {
           const puck = lm.positions?.puck;
           const puckForShot = puck || { x: side === 'home' ? 150 : 50, y: 50 };
           const opportunity = getLiveShotOpportunity(lm, side, activeSkaters.length ? activeSkaters : shooters, puckForShot);
+          if (opportunity.type === 'intercepted' && opportunity.interceptor) {
+            const interceptor = opportunity.interceptor;
+            const interceptorSlot = opportunity.interceptorSlot;
+            const interceptionStats = lm.isPlayoff ? ensurePlayoffStats(interceptor) : ensureStats(interceptor);
+            interceptionStats.interceptions = (Number(interceptionStats.interceptions) || 0) + 1;
+            lm.gameplayPossession = { side: defendingSide, playerId: interceptor.id };
+            if (puck && interceptorSlot) {
+              const carrierIndex = (lm.positions[defendingSide] || []).findIndex(slot =>
+                slot.playerId === interceptor.id && slot.onIce !== false);
+              puck.passFromX = puck.x;
+              puck.passFromY = puck.y;
+              puck.passFrames = 12;
+              puck.possessionSide = defendingSide;
+              puck.carrierIndex = carrierIndex;
+              puck.looseFrames = 0;
+              puck.shotAnimation = null;
+              puck.actionFrames = 75;
+            }
+            livePushEvent({
+              type: 'pass_interception', side: defendingSide,
+              text: `${interceptor.name} перехватывает передачу ${opportunity.passer.name} на партнёра`,
+              interceptorId: interceptor.id, passerId: opportunity.passer.id,
+              receiverId: opportunity.receiver.id,
+              time: liveFmtTime(lm.timeLeft), period: lm.period,
+            });
+          } else {
           const p = opportunity.shooter || pickWeighted(shooters, shotWeight);
           if (opportunity.slotPass && opportunity.passer) {
             const passerStats = lm.isPlayoff ? ensurePlayoffStats(opportunity.passer) : ensureStats(opportunity.passer);
@@ -1115,6 +1189,7 @@ function liveAdvance(stepSec) {
             shooterId: p.id, shotType: opportunity.type,
             time: liveFmtTime(lm.timeLeft), period: lm.period,
           });
+          }
         }
       }
     }
