@@ -1500,9 +1500,9 @@ function liveUpdatePositions() {
       const currentSide = puck.possessionSide || 'home';
       const currentCarrierIndex = Number.isInteger(puck.carrierIndex) ? puck.carrierIndex : 3;
       const currentPlayers = lm.positions[currentSide] || [];
-      const isTurnover = visualRng() < 0.18;
+      const isBobble = visualRng() < 0.18;
 
-      if (isTurnover) {
+      if (isBobble) {
         // A visual bobble is recovered by the same team; only the gameplay
         // puck-battle resolver is allowed to award possession to the opponent.
         const nextSide = currentSide;
