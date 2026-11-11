@@ -203,6 +203,7 @@ function renderCalendar() {
   if (!team) return '<div class="subtitle">Клуб не найден.</div>';
   const schedule = G.league.schedule || [];
   const meta = ensureScheduleCalendar(G.league);
+  const travelZone = window.VHL_TRAVEL_ZONE_BY_SLUG?.[team.slug] || null;
   const myGames = [];
   schedule.forEach((round, idx) => {
     const game = round.find(([h, a]) => h === team.id || a === team.id);
@@ -210,22 +211,30 @@ function renderCalendar() {
     const isHome = game[0] === team.id;
     const opp = G.league.teams.find(t => t.id === (isHome ? game[1] : game[0]));
     const result = G.league.results.find(r => r.round === idx && (r.homeId === team.id || r.awayId === team.id));
+    const roundMeta = meta[idx] || {};
+    const opponentZone = window.VHL_TRAVEL_ZONE_BY_SLUG?.[opp?.slug] || null;
+    const zoneBlock = travelZone && opponentZone
+      ? (roundMeta.zoneBlocks || []).find(block =>
+          (block.zoneAId === travelZone.id || block.zoneBId === travelZone.id) &&
+          (block.zoneAId === opponentZone.id || block.zoneBId === opponentZone.id))
+      : null;
+    let seriesLabel = '';
+    if (zoneBlock) {
+      seriesLabel = isHome
+        ? `Домашняя серия · гости из зоны «${zoneBlock.awayZoneName}»`
+        : `Выездная серия · ${zoneBlock.homeZoneName}`;
+      seriesLabel += ` · матч ${zoneBlock.dayIndex}/${zoneBlock.seriesDays}`;
+    } else if (roundMeta.phase === 'local-derby' && (roundMeta.zoneIds || []).includes(travelZone?.id)) {
+      seriesLabel = 'Внутризональный матч';
+    }
+    if (roundMeta.travelNote && (roundMeta.zoneIds || []).includes(travelZone?.id)) {
+      seriesLabel += (seriesLabel ? ' · ' : '') + roundMeta.travelNote;
+    }
     myGames.push({
       round: idx + 1, opp, isHome, result, isCurrent: idx === G.league.currentRound,
-      date: meta[idx]?.date || null,
+      date: roundMeta.date || null, seriesLabel,
     });
   });
-
-  // Отмечаем серии из последовательных домашних или выездных матчей.
-  for (let i = 0; i < myGames.length;) {
-    let j = i + 1;
-    while (j < myGames.length && myGames[j].isHome === myGames[i].isHome) j++;
-    const count = j - i;
-    if (count >= 2) {
-      myGames[i].seriesLabel = `${myGames[i].isHome ? 'Домашняя' : 'Выездная'} серия · ${count} матча`;
-    }
-    i = j;
-  }
 
   const byMonth = new Map();
   myGames.forEach(game => {
@@ -242,7 +251,7 @@ function renderCalendar() {
     : 'Дата не назначена';
 
   let html = `<h2>Календарь сезона ${G.league.season}</h2>
-    <div class="calendar-summary">${myGames.length} матчей регулярного чемпионата · игровые дни распределены с интервалами 3–4 дня · предусмотрена новогодняя пауза</div>`;
+    <div class="calendar-summary">${myGames.length} матчей регулярного чемпионата · матчи сгруппированы в выездные и домашние серии по логистическим зонам ВХЛ</div>`;
   byMonth.forEach((games, month) => {
     html += `<div class="season-card calendar-month"><div class="head"><span class="season-num">${formatMonth(month)}</span><span class="tag">${games.length} матчей</span></div>`;
     games.forEach(g => {
@@ -1248,9 +1257,14 @@ function renderOverview() {
   const total = G.league.schedule.length;
   const progress = total ? Math.round(G.league.currentRound / total * 100) : 0;
   const seasonDone = G.league.currentRound >= total;
-  const fixture = (G.league.schedule[G.league.currentRound] || []).find(([h, a]) => h === team.id || a === team.id);
   const scheduleMeta = ensureScheduleCalendar(G.league);
-  const nextDate = scheduleMeta[G.league.currentRound]?.date || null;
+  let nextGameIndex = G.league.currentRound;
+  let fixture = null;
+  while (nextGameIndex < G.league.schedule.length && !fixture) {
+    fixture = (G.league.schedule[nextGameIndex] || []).find(([h, a]) => h === team.id || a === team.id) || null;
+    if (!fixture) nextGameIndex++;
+  }
+  const nextDate = scheduleMeta[nextGameIndex]?.date || null;
   const nextDateLabel = nextDate
     ? new Date(nextDate + 'T00:00:00Z').toLocaleDateString('ru-RU', { weekday: 'short', day: '2-digit', month: 'long', timeZone: 'UTC' })
     : 'Дата не назначена';
@@ -1286,7 +1300,7 @@ function renderOverview() {
     '<article class="dashboard-kpi"><span>БЮДЖЕТ КЛУБА</span><strong class="' + (team.finance.balance >= 0 ? 'positive' : 'negative') + '">' + Math.round(team.finance.balance) + ' млн ₽</strong><small>из ' + team.finance.seasonBudget + ' млн ₽ на сезон</small></article></div>' +
     '<div class="dashboard-main-grid">' +
     '<section class="dashboard-panel"><div class="dashboard-panel-heading"><div><span class="dashboard-eyebrow">БЛИЖАЙШЕЕ СОБЫТИЕ</span><h3>' + (opponent ? 'Следующий матч' : 'Календарь сезона') + '</h3></div><button class="dashboard-link" onclick="G.activeTab=\'calendar\';render()">Весь календарь →</button></div>' + nextMatch + '</section>' +
-    '<section class="dashboard-panel"><div class="dashboard-panel-heading"><div><span class="dashboard-eyebrow">СЕЗОН ' + G.league.season + '</span><h3>Путь по чемпионату</h3></div><strong>' + progress + '%</strong></div><div class="dashboard-progress"><span style="width:' + progress + '%"></span></div><div class="dashboard-progress-meta"><span>Турнирная дистанция</span><b>' + G.league.currentRound + ' / ' + total + ' туров</b></div><div class="dashboard-form-heading">Последние результаты <span>последние ' + recent.length + ' матчей</span></div><div class="dashboard-form">' + form + '</div><button class="btn secondary dashboard-wide-btn" onclick="G.activeTab=\'standings\';render()">Открыть турнирную таблицу</button></section>' +
+    '<section class="dashboard-panel"><div class="dashboard-panel-heading"><div><span class="dashboard-eyebrow">СЕЗОН ' + G.league.season + '</span><h3>Путь по чемпионату</h3></div><strong>' + progress + '%</strong></div><div class="dashboard-progress"><span style="width:' + progress + '%"></span></div><div class="dashboard-progress-meta"><span>Турнирная дистанция</span><b>' + G.league.currentRound + ' / ' + total + ' игровых дат</b></div><div class="dashboard-form-heading">Последние результаты <span>последние ' + recent.length + ' матчей</span></div><div class="dashboard-form">' + form + '</div><button class="btn secondary dashboard-wide-btn" onclick="G.activeTab=\'standings\';render()">Открыть турнирную таблицу</button></section>' +
     '<section class="dashboard-panel"><div class="dashboard-panel-heading"><div><span class="dashboard-eyebrow">КОМАНДА</span><h3>Лидеры состава</h3></div><button class="dashboard-link" onclick="G.activeTab=\'roster\';render()">Весь состав →</button></div><div class="dashboard-player-list">' + (playerCards || '<span class="dashboard-muted">Нет данных по игрокам</span>') + '</div><div class="dashboard-injury-note ' + (injuries.length ? 'has-injuries' : '') + '">' + (injuries.length ? '🚑 В лазарете: ' + injuries.length + ' игроков' : '✓ Нет травмированных игроков') + '</div></section>' +
     '<section class="dashboard-panel"><div class="dashboard-panel-heading"><div><span class="dashboard-eyebrow">БЫСТРЫЙ ДОСТУП</span><h3>Управление клубом</h3></div></div><div class="dashboard-actions">' +
     '<button onclick="G.activeTab=\'lines\';render()"><span>▤</span><b>Звенья</b><small>Состав и сочетания</small></button><button onclick="G.activeTab=\'tactics\';render()"><span>⌁</span><b>Тактика</b><small>Стиль игры</small></button><button onclick="G.activeTab=\'market\';render()"><span>＋</span><b>Трансферы</b><small>Усиление команды</small></button><button onclick="G.activeTab=\'finance\';render()"><span>₽</span><b>Финансы</b><small>Доходы и расходы</small></button><button onclick="G.activeTab=\'inbox\';render()"><span>✉</span><b>Почта</b><small>' + unreadInboxCount() + ' непрочитанных</small></button><button onclick="G.activeTab=\'news\';render()"><span>▣</span><b>Новости</b><small>Лента лиги</small></button></div></section></div></section>';
