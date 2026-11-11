@@ -869,7 +869,7 @@ function renderClubDirectory() {
       <details class="directory-details"><summary>Сезонная история</summary><div class="table-scroll"><table><thead><tr><th>Сезон</th><th>Название клуба</th><th>Место</th><th>И</th><th>В-П-ПО</th><th>О</th><th>Шайбы</th><th>Плей-офф</th></tr></thead><tbody>${seasonRows}</tbody></table></div></details>
     </article>`;
   }).join('');
-  return `<div class="directory-intro"><div><h2>🏒 Клубы в истории ВХЛ</h2><p>Все исторические участники лиги за 16 сезонов. Совпадение названий само по себе не означает, что это один клуб.</p></div><div class="directory-count">${clubs.length}<small>исторических карточек</small></div></div>
+  return `<div class="directory-intro"><div><h2>🏒 Клубы в истории ВХЛ</h2><p>Все исторические участники лиги за 16 сезонов. В одну карточку объединены только клубы с подтверждённой историей преемственности.</p></div><div class="directory-count">${clubs.length}<small>исторических карточек</small></div></div>
     <div class="directory-stats"><div><b>${clubs.length}</b><span>клубов в архиве</span></div><div><b>${activeCount}</b><span>представлены в игре</span></div><div><b>${historicCount}</b><span>другие участники</span></div><div><b>2010/11–2025/26</b><span>охват архива</span></div></div>
     <div class="directory-tools"><input id="club-directory-search" type="search" placeholder="Найти клуб или прежнее название…" oninput="filterClubDirectory(this.value)" /><select aria-label="Фильтр клубов" onchange="filterClubDirectory(document.getElementById('club-directory-search').value,this.value)"><option value="all">Все клубы</option><option value="current">Клубы текущей игры</option><option value="historic">Остальные участники</option></select><span id="club-directory-count">${clubs.length} из ${clubs.length}</span></div>
     <div class="club-directory-grid">${cards}</div>`;
@@ -1018,9 +1018,9 @@ function extendContract(playerId, years) {
    МОДАЛКА КОМАНДЫ
    ============================================================ */
 function getTeamHistoricalRows(team) {
-  // Здесь перечислены только подтверждённые исторические идентификаторы.
-  // Динамо СПб не объединяется с другими клубами системы «Динамо».
-  // СКА-Нева и СКА-ВМФ — одна команда с переименованием.
+  // Здесь перечислены подтверждённые исторические идентификаторы клубов.
+  // Динамо СПб остаётся отдельным клубом; история Динамо МО не смешивается с ним.
+  // История СКА-ВМФ включает ХК ВМФ, ВМФ-Карелию, СКА-Карелию и СКА-Неву.
   const historicalIdsBySlug = {
     akm: ['akm-tula'],
     bars: ['bars-kazan'],
@@ -1041,14 +1041,14 @@ function getTeamHistoricalRows(team) {
     olimpiya: ['olimpiya-kirovo-chepetsk'],
     'omskie-krylya': ['omskie-krylya-omsk'],
     rubin: ['rubin-tyumen'],
-    'ryazan-vdv': ['ryazan'],
-    'ska-vmf': ['ska-neva', 'ska-vmf'],
+    'ryazan-vdv': ['ryazan', 'hk-ryazan'],
+    'ska-vmf': ['khk-vmf', 'vmf-karelia', 'ska-karelia-kondopoga', 'ska-neva', 'ska-vmf'],
     sokol: ['sokol-krasnoyarsk'],
     tambov: ['tambov'],
     toros: ['toros-neftekamsk'],
     khimik: ['khimik-voskresensk'],
     'csk-vvs': ['csk-vvs-samara'],
-    chelmet: ['chelmet-chelyabinsk'],
+    chelmet: ['mechel-chelyabinsk', 'chelmet-chelyabinsk'],
     yugra: ['yugra-khanty-mansiysk'],
     'yuzhny-ural': ['yuzhny-ural', 'yuzhny-ural-orsk']
   };
