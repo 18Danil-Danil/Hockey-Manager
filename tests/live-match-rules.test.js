@@ -168,7 +168,12 @@ const volumeAdvance = liveAdvance(
   ev => volumeState.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
   0.00195, 1.8, 0.70, 0.093, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}, getLiveSituationModifiers, () => null
 );
-for (let i = 0; i < 720; i++) volumeAdvance(5);
+for (let i = 0; i < 720; i++) {
+  // This isolated volume test deliberately re-rolls the attacking side on
+  // each tick; possession persistence is covered by the dedicated puck tests.
+  volumeState.lm.gameplayPossession = null;
+  volumeAdvance(5);
+}
 const totalShots = volumeState.lm.shots.home + volumeState.lm.shots.away;
 assert.ok(totalShots >= 35 && totalShots <= 55, `unexpected LIVE shots-on-goal volume: ${totalShots}`);
 assert.ok(volumeState.lm.shots.home >= 10 && volumeState.lm.shots.away >= 10,
