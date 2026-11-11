@@ -35,19 +35,18 @@ function simRound(forceNoPrompt = false) {
   G.lastRoundResults = roundResults;
   G.league.currentRound++;
   const activeTeamIds = new Set(round.flatMap(([homeId, awayId]) => [homeId, awayId]));
-  G.league.teams.filter(t => activeTeamIds.has(t.id)).forEach(t => { paySalaries(t); paySponsors(t); processMerchRevenue(t); });
+  G.league.teams.filter(t => activeTeamIds.has(t.id)).forEach(t => { paySalaries(t); paySponsors(t); processMerchRevenue(t); checkScoutMission(t); });
   if (G.league.currentRound % scaledInterval(10) === 0) G.league.teams.forEach(t => { payTVInstallment(t); processSponsorPayouts(t); });
   if (G.league.currentRound % scaledInterval(3) === 0) processWaivers();
   if (G.league.currentRound % scaledInterval(4) === 0) runAIActions();
   if (G.league.currentRound % scaledInterval(8) === 0) updateStaffPool();
   if (G.league.currentRound % scaledInterval(3) === 0 && rng() < 0.3) generateRandomEvent();
-  G.league.teams.forEach(t => checkScoutMission(t));
-  generateBoardMessage();
+  if (G.league.currentRound % scaledInterval(3) === 0) generateBoardMessage();
   checkTradeDeadlineNews();
   if (G.league.currentRound === scaledInterval(15) && !G.league.retroMatch) triggerRetroMatch();
   if (G.league.currentRound === G.league.schedule.length) createPlayoffs();
-  maybeStartPressConference();
-  if (G.playerTeamId) {
+  if (G.league.currentRound % scaledInterval(3) === 0) maybeStartPressConference();
+  if (G.playerTeamId && activeTeamIds.has(G.playerTeamId)) {
     if (G.career.noFireMode) { if (maybeForcedFreeAgent()) { G.activeTab = 'career'; render(); return; } }
     else { if (maybeFirePlayer()) { G.activeTab = 'career'; render(); return; } }
   }
@@ -71,14 +70,13 @@ function simSeason() {
     simYouthRoundBoth(true, G.league.currentRound + 1);
     G.league.currentRound++;
     const activeTeamIds = new Set(round.flatMap(([homeId, awayId]) => [homeId, awayId]));
-    G.league.teams.filter(t => activeTeamIds.has(t.id)).forEach(t => { paySalaries(t); paySponsors(t); processMerchRevenue(t); });
+    G.league.teams.filter(t => activeTeamIds.has(t.id)).forEach(t => { paySalaries(t); paySponsors(t); processMerchRevenue(t); checkScoutMission(t); });
     if (G.league.currentRound % scaledInterval(10) === 0) G.league.teams.forEach(t => { payTVInstallment(t); processSponsorPayouts(t); });
     if (G.league.currentRound % scaledInterval(3) === 0) processWaivers();
     if (G.league.currentRound % scaledInterval(4) === 0) runAIActions();
     if (G.league.currentRound % scaledInterval(8) === 0) updateStaffPool();
     if (G.league.currentRound % scaledInterval(3) === 0 && rng() < 0.3) generateRandomEvent();
-    G.league.teams.forEach(t => checkScoutMission(t));
-    generateBoardMessage();
+    if (G.league.currentRound % scaledInterval(3) === 0) generateBoardMessage();
     checkTradeDeadlineNews();
     if (G.playerTeamId) {
       if (G.career.noFireMode) { if (maybeForcedFreeAgent()) { G.activeTab = 'career'; render(); return; } }
