@@ -251,7 +251,7 @@ function renderCalendar() {
     : 'Дата не назначена';
 
   let html = `<h2>Календарь сезона ${G.league.season}</h2>
-    <div class="calendar-summary">${myGames.length} матчей регулярного чемпионата · матчи сгруппированы в выездные и домашние серии по логистическим зонам ВХЛ</div>`;
+    <div class="calendar-summary">${myGames.length} матчей регулярного чемпионата · логистическая зона: ${travelZone?.name || "не определена"} · матчи сгруппированы в серии ВХЛ</div>`;
   byMonth.forEach((games, month) => {
     html += `<div class="season-card calendar-month"><div class="head"><span class="season-num">${formatMonth(month)}</span><span class="tag">${games.length} матчей</span></div>`;
     games.forEach(g => {
