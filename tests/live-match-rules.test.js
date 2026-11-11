@@ -403,7 +403,13 @@ assert.equal(liveIsPPCheck({ liveMatch: specialLm }, manpowerHelpers.getLiveManp
   'away side did not receive the power-play state');
 assert.equal(liveIsPPCheck({ liveMatch: specialLm }, manpowerHelpers.getLiveManpowerState)('home'), false,
   'penalty-kill side was incorrectly marked as having a power play');
+specialLm.positions.puck.possessionSide = 'home';
+specialLm.positions.puck.carrierIndex = 4;
 manpowerHelpers.reconcileLiveManpower(specialLm);
+assert.equal(specialLm.positions.puck.carrierIndex, null,
+  'puck stayed attached to a player sent to the penalty box');
+assert.ok(specialLm.positions.puck.looseFrames >= 4,
+  'puck was not released when its carrier was penalized');
 assert.equal(manpowerHelpers.liveGetOnIceSkaters(specialLm, 'home').length, 4,
   'penalty-kill side did not have four active skaters');
 assert.ok(!manpowerHelpers.liveGetOnIceSkaters(specialLm, 'home').some(player => player.id === 'sf2'),
