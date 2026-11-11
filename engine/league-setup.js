@@ -74,9 +74,13 @@ function assignZonePairSlots(pairs, previousSlots) {
   let best = permutations[0], bestScore = Infinity;
   permutations.forEach(slots => {
     let score = 0;
-    pairs.forEach((pair, index) => [pair[0].id, pair[1].id].forEach(zoneId => {
-      if (previousSlots.has(zoneId)) score += Math.abs(previousSlots.get(zoneId) - slots[index]);
-    }));
+    pairs.forEach((pair, index) => {
+      [pair[0].id, pair[1].id].forEach(zoneId => {
+        if (previousSlots.has(zoneId)) score += Math.abs(previousSlots.get(zoneId) - slots[index]);
+      });
+      // Не ставим единственную пару зон 3×3 в последний слот: тогда у календаря терялся бы финальный игровой день серии.
+      if (pair[0].clubs.length === 3 && pair[1].clubs.length === 3 && slots[index] === 3) score += 100;
+    });
     if (score < bestScore) { bestScore = score; best = slots; }
   });
   return best;
