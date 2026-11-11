@@ -265,10 +265,29 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       cursor.setUTCDate(cursor.getUTCDate() + segment.span);
       if (segmentIndex < boundaries) cursor.setUTCDate(cursor.getUTCDate() + gaps[segmentIndex]);
     });
-    // Последняя игра перед новогодней паузой — 30 декабря; следующая дата — 5 января.
-    if (newYearBoundary >= 0) {
-      const lastRoundIndex = segments[newYearBoundary].items[segments[newYearBoundary].items.length - 1].index;
-      result[lastRoundIndex].date = startYear + '-12-30';
+    // Официальная новогодняя пауза ВХЛ: резервные даты 30 декабря и 5 января,
+    // матчи до паузы завершаются 29 декабря, возобновление — 6 января.
+    if (newYearBoundary >= 2) {
+      const beforeOne = segments[newYearBoundary - 2];
+      const beforeTwo = segments[newYearBoundary - 1];
+      const holidaySegment = segments[newYearBoundary];
+      const shiftSegment = (segment, days) => segment.items.forEach(item => {
+        const date = new Date(result[item.index].date + 'T00:00:00Z');
+        date.setUTCDate(date.getUTCDate() + days);
+        result[item.index].date = date.toISOString().slice(0, 10);
+      });
+      if (beforeOne.id.includes('derby') && beforeTwo.id.includes('derby') && holidaySegment.id.includes('zone-round')) {
+        shiftSegment(beforeOne, -2);
+        shiftSegment(beforeTwo, -3);
+        shiftSegment(holidaySegment, -4);
+        const holidayEndIndex = holidaySegment.items[holidaySegment.items.length - 1].index;
+        for (let i = holidayEndIndex + 1; i < result.length; i++) {
+          const date = new Date(result[i].date + 'T00:00:00Z');
+          date.setUTCDate(date.getUTCDate() - 3);
+          result[i].date = date.toISOString().slice(0, 10);
+        }
+        result[result.length - 1].date = (startYear + 1) + '-03-18';
+      }
     }
     return result;
   }
