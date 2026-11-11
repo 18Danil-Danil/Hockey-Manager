@@ -1145,13 +1145,17 @@ function updateLiveClock() {
 
   const ppEl = document.getElementById('live-pp-banner');
   if (ppEl) {
+    const manpower = getLiveManpowerState(lm);
     const hp = liveGetActivePenalties('home');
     const ap = liveGetActivePenalties('away');
     const parts = [];
-    if (hp.length) parts.push(`${awayTeamNameShort()} в большинстве (${hp.map(p => p.type + ' мин').join(', ')})`);
-    if (ap.length) parts.push(`${homeTeamNameShort()} в большинстве (${ap.map(p => p.type + ' мин').join(', ')})`);
-    if (parts.length) { ppEl.textContent = '⚠ ' + parts.join(' · '); ppEl.style.display = 'block'; }
-    else ppEl.style.display = 'none';
+    if (manpower.home.advantage > 0) parts.push(`${homeTeamNameShort()} — большинство ${manpower.home.skaters} на ${manpower.away.skaters}`);
+    if (manpower.away.advantage > 0) parts.push(`${awayTeamNameShort()} — большинство ${manpower.away.skaters} на ${manpower.home.skaters}`);
+    if (hp.length || ap.length) {
+      const box = [...hp.map(p => `${p.playerName}: ${p.type} мин`), ...ap.map(p => `${p.playerName}: ${p.type} мин`)];
+      ppEl.textContent = [parts.join(' · '), box.join(' | ')].filter(Boolean).join(' — ');
+      ppEl.style.display = 'block';
+    } else ppEl.style.display = 'none';
   }
 
   const feedEl = document.getElementById('live-feed');
@@ -1281,6 +1285,7 @@ function liveUpdatePositions() {
   }
 
   const possessionSide = puck.possessionSide || 'home';
+  const manpower = getLiveManpowerState(lm);
   const directionFor = side => side === 'home' ? 1 : -1;
   for (const side of sides) {
     const players = lm.positions[side] || [];
@@ -1314,6 +1319,24 @@ function liveUpdatePositions() {
         targetX = ownGoalX + direction * (puckInOwnZone ? 5 : 2);
         targetY = clamp(puck.shotAnimation && puck.shotAnimation.defendingSide === side
           ? puck.shotAnimation.targetY : 50 + (puck.y - 50) * 0.16, 42, 58);
+      } else if (manpower[side].skaters < 5) {
+        // Penalty kill: compact box protects the slot and passing lanes.
+        const boxX = side === 'home' ? 43 : 157;
+        const boxY = [35, 65, 43, 57, 50][player.idx - 1] ?? 50;
+        const boxOffset = player.idx <= 2 ? 0 : player.idx === 3 ? 12 : -12;
+        targetX = boxX + direction * boxOffset;
+        targetY = boxY;
+        if (isCarrier) { targetX = puck.x; targetY = puck.y; }
+      } else if (manpower[side].advantage > 0 && hasPuck) {
+        // Power play: spread into an umbrella with a central shooting lane.
+        const attackX = side === 'home' ? 155 : 45;
+        const umbrella = [
+          { x: -17, y: -20 }, { x: -17, y: 20 }, { x: 4, y: -27 },
+          { x: 17, y: 0 }, { x: 4, y: 27 },
+        ][player.idx - 1] || { x: 0, y: 0 };
+        targetX = attackX + direction * umbrella.x;
+        targetY = 50 + umbrella.y;
+        if (isCarrier) { targetX = puck.x + direction * 6; targetY = puck.y; }
       } else if (hasPuck) {
         if (isCarrier) {
           // Puck carrier drives toward the attacking end instead of orbiting a fixed slot.
