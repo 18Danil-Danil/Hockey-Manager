@@ -125,14 +125,32 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
 
 function buildLiveShiftPlan(team, lineup) {
   const byId = new Map((lineup?.skaters || []).map(player => [player.id, player]));
-  const collect = key => (team?.lines?.[key]?.players || [])
-    .map(id => byId.get(id)).filter(Boolean);
-  const forwards = ['f1', 'f2', 'f3', 'f4'].map(collect).filter(line => line.length);
-  const defense = ['d1', 'd2', 'd3'].map(collect).filter(pair => pair.length);
+  const buildGroups = (keys, pool, size) => {
+    const used = new Set();
+    const groups = keys.map(key => (team?.lines?.[key]?.players || [])
+      .map(id => byId.get(id)).filter(player => {
+        if (!player || used.has(player.id)) return false;
+        used.add(player.id);
+        return true;
+      }));
+    const extras = (pool || []).filter(player => player && !used.has(player.id));
+    for (const group of groups) {
+      while (group.length < size && extras.length) {
+        const player = extras.shift();
+        group.push(player);
+        used.add(player.id);
+      }
+    }
+    return groups.filter(group => group.length);
+  };
+  let forwards = buildGroups(['f1', 'f2', 'f3', 'f4'], lineup?.forwards, 3);
+  let defense = buildGroups(['d1', 'd2', 'd3'], lineup?.defense, 2);
   if (!forwards.length && lineup?.forwards?.length) {
+    forwards = [];
     for (let i = 0; i < lineup.forwards.length; i += 3) forwards.push(lineup.forwards.slice(i, i + 3));
   }
   if (!defense.length && lineup?.defense?.length) {
+    defense = [];
     for (let i = 0; i < lineup.defense.length; i += 2) defense.push(lineup.defense.slice(i, i + 2));
   }
   return { forwards, defense };
