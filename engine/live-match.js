@@ -2247,8 +2247,8 @@ function liveUpdatePositions() {
             .slice(0, 1).some(defender => defender === player))?.player || null;
           const coverX = ownGoalX + direction * (24 + tactics.pressure * 0.018);
           if (threat) {
-            const goalSideX = threat.x - direction * 9;
-            targetX = clamp(goalSideX, ownGoalX + direction * 12, ownGoalX + direction * 48);
+            const coverDepth = clamp(Math.abs(threat.x - ownGoalX) * 0.55, 18, 82);
+            targetX = ownGoalX + direction * coverDepth;
             targetY = clamp(threat.y + (50 - threat.y) * 0.16, 30, 70);
           } else {
             targetX = coverX;
