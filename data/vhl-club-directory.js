@@ -912,7 +912,8 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffOpponent": "Металлург Нк",
         "seriesScore": "1:4"
       }
-    ]
+    ],
+    "note": "Единая история «Горняка»: команда выступала в Учалах, а в 2021 году переехала в Верхнюю Пышму. В сезонном архиве встречаются названия «Горняк» и «Горняк-УГМК»."
   },
   {
     "id": "dizel-penza",
@@ -2245,15 +2246,18 @@ window.VHL_CLUB_DIRECTORY = [
     ]
   },
   {
-    "id": "zvezda-chekhov",
+    "id": "zvezda-moscow",
     "name": "Звезда",
     "historicalIds": [
+      "zvezda-moscow",
       "zvezda-chekhov"
     ],
     "aliases": [
-      "Звезда"
+      "Звезда",
+      "Звезда (Чехов)",
+      "Звезда (Москва)"
     ],
-    "currentTeamSlug": null,
+    "currentTeamSlug": "zvezda",
     "seasons": [
       {
         "season": "2015/16",
@@ -2309,20 +2313,7 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffStage": "playoff_participant",
         "playoffOpponent": "Зауралье",
         "seriesScore": "0:4"
-      }
-    ]
-  },
-  {
-    "id": "zvezda-moscow",
-    "name": "Звезда",
-    "historicalIds": [
-      "zvezda-moscow"
-    ],
-    "aliases": [
-      "Звезда"
-    ],
-    "currentTeamSlug": "zvezda",
-    "seasons": [
+      },
       {
         "season": "2018/19",
         "historicalId": "zvezda-moscow",
@@ -2471,7 +2462,8 @@ window.VHL_CLUB_DIRECTORY = [
         "points": 62,
         "playoffStage": "missed"
       }
-    ]
+    ],
+    "note": "Единая история команды ЦСКА: основана в 2015 году и первые сезоны базировалась в Чехове; с 2018 года переехала в Москву. «Звезда-ВДВ» — отдельная команда и в эту историю не входит."
   },
   {
     "id": "zvezda-vdv-dmitrov",
@@ -2794,123 +2786,6 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffStage": "round16",
         "playoffOpponent": "Химик",
         "seriesScore": "1:4"
-      }
-    ]
-  },
-  {
-    "id": "kazzinc-torpedo",
-    "name": "Казцинк-Торпедо",
-    "historicalIds": [
-      "kazzinc-torpedo"
-    ],
-    "aliases": [
-      "Казцинк-Торпедо"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2010/11",
-        "historicalId": "kazzinc-torpedo",
-        "clubName": "Казцинк-Торпедо",
-        "regularPlace": 9,
-        "games": 56,
-        "wins": 23,
-        "overtimeWins": 1,
-        "shootoutWins": 4,
-        "shootoutLosses": 6,
-        "overtimeLosses": 1,
-        "losses": 21,
-        "goalsFor": 151,
-        "goalsAgainst": 153,
-        "points": 86,
-        "playoffStage": "conference_quarterfinal",
-        "playoffOpponent": "Молот-Прикамье",
-        "seriesScore": "2:3"
-      },
-      {
-        "season": "2011/12",
-        "historicalId": "kazzinc-torpedo",
-        "clubName": "Казцинк-Торпедо",
-        "regularPlace": 8,
-        "games": 53,
-        "wins": 23,
-        "overtimeWins": 4,
-        "shootoutWins": 3,
-        "shootoutLosses": 2,
-        "overtimeLosses": 0,
-        "losses": 21,
-        "goalsFor": 154,
-        "goalsAgainst": 140,
-        "points": 85,
-        "playoffStage": "conference_quarterfinal",
-        "playoffOpponent": "Ермак",
-        "seriesScore": "2:3"
-      },
-      {
-        "season": "2012/13",
-        "historicalId": "kazzinc-torpedo",
-        "clubName": "Казцинк-Торпедо",
-        "regularPlace": 14,
-        "games": 52,
-        "wins": 22,
-        "overtimeWins": 3,
-        "shootoutWins": 3,
-        "shootoutLosses": 5,
-        "overtimeLosses": 1,
-        "losses": 18,
-        "goalsFor": 147,
-        "goalsAgainst": 123,
-        "points": 84,
-        "playoffStage": "playoff_participant"
-      }
-    ]
-  },
-  {
-    "id": "kazcink-torpedo-ust-kamenogorsk",
-    "name": "Казцинк-Торпедо",
-    "historicalIds": [
-      "kazcink-torpedo-ust-kamenogorsk"
-    ],
-    "aliases": [
-      "Казцинк-Торпедо"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2013/14",
-        "historicalId": "kazcink-torpedo-ust-kamenogorsk",
-        "clubName": "Казцинк-Торпедо",
-        "regularPlace": 11,
-        "games": 50,
-        "wins": 20,
-        "overtimeWins": 2,
-        "shootoutWins": 6,
-        "shootoutLosses": 4,
-        "overtimeLosses": 2,
-        "losses": 16,
-        "goalsFor": 140,
-        "goalsAgainst": 146,
-        "points": 82,
-        "playoffStage": "playoff_participant",
-        "playoffOpponent": "Дизель",
-        "seriesScore": "2:4"
-      },
-      {
-        "season": "2014/15",
-        "historicalId": "kazcink-torpedo-ust-kamenogorsk",
-        "clubName": "Казцинк-Торпедо",
-        "regularPlace": 15,
-        "games": 52,
-        "wins": 19,
-        "overtimeWins": 2,
-        "shootoutWins": 3,
-        "shootoutLosses": 5,
-        "overtimeLosses": 3,
-        "losses": 20,
-        "goalsFor": 126,
-        "goalsAgainst": 143,
-        "points": 75,
-        "playoffStage": "playoff_participant"
       }
     ]
   },
@@ -3423,13 +3298,16 @@ window.VHL_CLUB_DIRECTORY = [
     "note": "Единая история «Лады». В сезонах 2014/15–2017/18 клуб выступал в КХЛ, поэтому этих сезонов нет в таблице ВХЛ; в ВХЛ команда вернулась в 2018/19. С сезона 2023/24 снова выступает в КХЛ."
   },
   {
-    "id": "lokomotiv-yaroslavl",
+    "id": "lokomotiv-vhl-yaroslavl",
     "name": "Локомотив",
     "historicalIds": [
+      "lokomotiv-vhl-yaroslavl",
       "lokomotiv-yaroslavl"
     ],
     "aliases": [
-      "Локомотив"
+      "Локомотив",
+      "Локомотив-ВХЛ",
+      "Локомотив (Ярославль)"
     ],
     "currentTeamSlug": null,
     "seasons": [
@@ -3452,20 +3330,7 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffOpponent": "Дизель",
         "seriesScore": "2:3",
         "note": "Команда была включена в чемпионат после трагедии 7 сентября 2011 года; сыграла 22 матча регулярного чемпионата."
-      }
-    ]
-  },
-  {
-    "id": "lokomotiv-vhl-yaroslavl",
-    "name": "Локомотив",
-    "historicalIds": [
-      "lokomotiv-vhl-yaroslavl"
-    ],
-    "aliases": [
-      "Локомотив"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
+      },
       {
         "season": "2012/13",
         "historicalId": "lokomotiv-vhl-yaroslavl",
@@ -3484,7 +3349,8 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffStage": "playoff_participant",
         "note": "В сезонной таблице Википедии команда обозначена как «Локомотив-2», официальный итоговый журнал ВХЛ использует название «Локомотив». Источниковое расхождение сохранено в документации; правопреемство не предполагается."
       }
-    ]
+    ],
+    "note": "Единая история ярославской команды, выступавшей в ВХЛ после трагедии в сезонах 2011/12 и 2012/13; в архиве 2012/13 встречается уточнение «Локомотив-ВХЛ». После сезона 2012/13 клуб прекратил участие в ВХЛ."
   },
   {
     "id": "magnitka-magnitogorsk",
@@ -3726,7 +3592,8 @@ window.VHL_CLUB_DIRECTORY = [
     "id": "molot-prikamye-perm",
     "name": "Молот",
     "historicalIds": [
-      "molot-prikamye-perm"
+      "molot-prikamye-perm",
+      "molot-perm"
     ],
     "aliases": [
       "Молот-Прикамье",
@@ -3734,6 +3601,61 @@ window.VHL_CLUB_DIRECTORY = [
     ],
     "currentTeamSlug": "molot",
     "seasons": [
+      {
+        "season": "2010/11",
+        "historicalId": "molot-perm",
+        "clubName": "Молот-Прикамье",
+        "regularPlace": 4,
+        "games": 56,
+        "wins": 25,
+        "overtimeWins": 3,
+        "shootoutWins": 4,
+        "shootoutLosses": 6,
+        "overtimeLosses": 1,
+        "losses": 17,
+        "goalsFor": 162,
+        "goalsAgainst": 156,
+        "points": 96,
+        "playoffStage": "conference_semifinal",
+        "playoffOpponent": "Торос",
+        "seriesScore": "0:3"
+      },
+      {
+        "season": "2011/12",
+        "historicalId": "molot-perm",
+        "clubName": "Молот-Прикамье",
+        "regularPlace": 12,
+        "games": 53,
+        "wins": 19,
+        "overtimeWins": 2,
+        "shootoutWins": 1,
+        "shootoutLosses": 11,
+        "overtimeLosses": 2,
+        "losses": 18,
+        "goalsFor": 150,
+        "goalsAgainst": 149,
+        "points": 76,
+        "playoffStage": "conference_quarterfinal",
+        "playoffOpponent": "Торос",
+        "seriesScore": "0:3"
+      },
+      {
+        "season": "2012/13",
+        "historicalId": "molot-perm",
+        "clubName": "Молот-Прикамье",
+        "regularPlace": 13,
+        "games": 52,
+        "wins": 23,
+        "overtimeWins": 2,
+        "shootoutWins": 2,
+        "shootoutLosses": 4,
+        "overtimeLosses": 3,
+        "losses": 18,
+        "goalsFor": 145,
+        "goalsAgainst": 141,
+        "points": 84,
+        "playoffStage": "playoff_participant"
+      },
       {
         "season": "2013/14",
         "historicalId": "molot-prikamye-perm",
@@ -3972,75 +3894,8 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffOpponent": "Горняк-УГМК",
         "seriesScore": "3:4"
       }
-    ]
-  },
-  {
-    "id": "molot-perm",
-    "name": "Молот-Прикамье",
-    "historicalIds": [
-      "molot-perm"
     ],
-    "aliases": [
-      "Молот-Прикамье"
-    ],
-    "currentTeamSlug": null,
-    "seasons": [
-      {
-        "season": "2010/11",
-        "historicalId": "molot-perm",
-        "clubName": "Молот-Прикамье",
-        "regularPlace": 4,
-        "games": 56,
-        "wins": 25,
-        "overtimeWins": 3,
-        "shootoutWins": 4,
-        "shootoutLosses": 6,
-        "overtimeLosses": 1,
-        "losses": 17,
-        "goalsFor": 162,
-        "goalsAgainst": 156,
-        "points": 96,
-        "playoffStage": "conference_semifinal",
-        "playoffOpponent": "Торос",
-        "seriesScore": "0:3"
-      },
-      {
-        "season": "2011/12",
-        "historicalId": "molot-perm",
-        "clubName": "Молот-Прикамье",
-        "regularPlace": 12,
-        "games": 53,
-        "wins": 19,
-        "overtimeWins": 2,
-        "shootoutWins": 1,
-        "shootoutLosses": 11,
-        "overtimeLosses": 2,
-        "losses": 18,
-        "goalsFor": 150,
-        "goalsAgainst": 149,
-        "points": 76,
-        "playoffStage": "conference_quarterfinal",
-        "playoffOpponent": "Торос",
-        "seriesScore": "0:3"
-      },
-      {
-        "season": "2012/13",
-        "historicalId": "molot-perm",
-        "clubName": "Молот-Прикамье",
-        "regularPlace": 13,
-        "games": 52,
-        "wins": 23,
-        "overtimeWins": 2,
-        "shootoutWins": 2,
-        "shootoutLosses": 4,
-        "overtimeLosses": 3,
-        "losses": 18,
-        "goalsFor": 145,
-        "goalsAgainst": 141,
-        "points": 84,
-        "playoffStage": "playoff_participant"
-      }
-    ]
+    "note": "Единая история пермского клуба: в сезонах 2010/11–2020/21 выступал как «Молот-Прикамье», с сезона 2021/22 — как «Молот»."
   },
   {
     "id": "neftyanik-almetyevsk",
@@ -4578,7 +4433,8 @@ window.VHL_CLUB_DIRECTORY = [
         "points": 49,
         "playoffStage": "missed"
       }
-    ]
+    ],
+    "note": "Одна команда: «КРС-ОЭРДЖИ» в сезоне 2018/19, затем самостоятельная «ОЭРДЖИ» в сезоне 2019/20 после выхода из структуры «Куньлунь Ред Стар»."
   },
   {
     "id": "rostov-rostov-na-donu",
@@ -6645,14 +6501,109 @@ window.VHL_CLUB_DIRECTORY = [
     "id": "torpedo-ust-kamenogorsk",
     "name": "Торпедо УК",
     "historicalIds": [
-      "torpedo-ust-kamenogorsk"
+      "torpedo-ust-kamenogorsk",
+      "kazzinc-torpedo",
+      "kazcink-torpedo-ust-kamenogorsk"
     ],
     "aliases": [
       "Торпедо",
-      "Торпедо УК"
+      "Торпедо УК",
+      "Казцинк-Торпедо",
+      "Торпедо (Усть-Каменогорск)"
     ],
     "currentTeamSlug": null,
     "seasons": [
+      {
+        "season": "2010/11",
+        "historicalId": "kazzinc-torpedo",
+        "clubName": "Казцинк-Торпедо",
+        "regularPlace": 9,
+        "games": 56,
+        "wins": 23,
+        "overtimeWins": 1,
+        "shootoutWins": 4,
+        "shootoutLosses": 6,
+        "overtimeLosses": 1,
+        "losses": 21,
+        "goalsFor": 151,
+        "goalsAgainst": 153,
+        "points": 86,
+        "playoffStage": "conference_quarterfinal",
+        "playoffOpponent": "Молот-Прикамье",
+        "seriesScore": "2:3"
+      },
+      {
+        "season": "2011/12",
+        "historicalId": "kazzinc-torpedo",
+        "clubName": "Казцинк-Торпедо",
+        "regularPlace": 8,
+        "games": 53,
+        "wins": 23,
+        "overtimeWins": 4,
+        "shootoutWins": 3,
+        "shootoutLosses": 2,
+        "overtimeLosses": 0,
+        "losses": 21,
+        "goalsFor": 154,
+        "goalsAgainst": 140,
+        "points": 85,
+        "playoffStage": "conference_quarterfinal",
+        "playoffOpponent": "Ермак",
+        "seriesScore": "2:3"
+      },
+      {
+        "season": "2012/13",
+        "historicalId": "kazzinc-torpedo",
+        "clubName": "Казцинк-Торпедо",
+        "regularPlace": 14,
+        "games": 52,
+        "wins": 22,
+        "overtimeWins": 3,
+        "shootoutWins": 3,
+        "shootoutLosses": 5,
+        "overtimeLosses": 1,
+        "losses": 18,
+        "goalsFor": 147,
+        "goalsAgainst": 123,
+        "points": 84,
+        "playoffStage": "playoff_participant"
+      },
+      {
+        "season": "2013/14",
+        "historicalId": "kazcink-torpedo-ust-kamenogorsk",
+        "clubName": "Казцинк-Торпедо",
+        "regularPlace": 11,
+        "games": 50,
+        "wins": 20,
+        "overtimeWins": 2,
+        "shootoutWins": 6,
+        "shootoutLosses": 4,
+        "overtimeLosses": 2,
+        "losses": 16,
+        "goalsFor": 140,
+        "goalsAgainst": 146,
+        "points": 82,
+        "playoffStage": "playoff_participant",
+        "playoffOpponent": "Дизель",
+        "seriesScore": "2:4"
+      },
+      {
+        "season": "2014/15",
+        "historicalId": "kazcink-torpedo-ust-kamenogorsk",
+        "clubName": "Казцинк-Торпедо",
+        "regularPlace": 15,
+        "games": 52,
+        "wins": 19,
+        "overtimeWins": 2,
+        "shootoutWins": 3,
+        "shootoutLosses": 5,
+        "overtimeLosses": 3,
+        "losses": 20,
+        "goalsFor": 126,
+        "goalsAgainst": 143,
+        "points": 75,
+        "playoffStage": "playoff_participant"
+      },
       {
         "season": "2015/16",
         "historicalId": "torpedo-ust-kamenogorsk",
@@ -6746,7 +6697,8 @@ window.VHL_CLUB_DIRECTORY = [
         "playoffOpponent": "Звезда",
         "seriesScore": "1:4"
       }
-    ]
+    ],
+    "note": "Единая история усть-каменогорского клуба: «Казцинк-Торпедо» (2010/11–2014/15) → «Торпедо» (с 2015/16). В 2015 году клуб вернул историческое название."
   },
   {
     "id": "torpedo-gorky-nizhny-novgorod",
@@ -7260,7 +7212,8 @@ window.VHL_CLUB_DIRECTORY = [
         "points": 47,
         "playoffStage": "missed"
       }
-    ]
+    ],
+    "note": "Одна команда, основанная в 2023 году: в архиве за сезон 2023/24 использовано короткое название «Норильск», в последующих сезонах — «ХК Норильск»."
   },
   {
     "id": "sarov",
@@ -7593,7 +7546,8 @@ window.VHL_CLUB_DIRECTORY = [
         "points": 58,
         "playoffStage": "missed"
       }
-    ]
+    ],
+    "note": "Одна команда из Тамбова: сезонный архив использует варианты «Тамбов» и «ХК Тамбов»; это не отдельные клубы."
   },
   {
     "id": "humo-tashkent",
@@ -7847,7 +7801,8 @@ window.VHL_CLUB_DIRECTORY = [
         "points": 27,
         "playoffStage": "missed"
       }
-    ]
+    ],
+    "note": "Варианты «Ценг Тоу», «Чэн Тоу» и «Цэнг Тоу» — разные варианты передачи названия одной китайской команды."
   },
   {
     "id": "chelmet-chelyabinsk",
