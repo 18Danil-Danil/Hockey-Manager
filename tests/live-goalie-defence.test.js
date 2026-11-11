@@ -86,6 +86,7 @@ const positioningState = {
       makeSlot('goalie', 0, 188, 50),
       makeSlot('D', 1, 160, 40),
       makeSlot('D', 2, 160, 60),
+      makeSlot('D', 6, 160, 80),
       makeSlot('F', 3, 175, 35),
       makeSlot('C', 4, 175, 50),
       makeSlot('F', 5, 175, 65),
@@ -104,6 +105,10 @@ assert.ok(positioningState.positions.away[2].vy < 0,
   'the covering defender should shade toward the central attacking threat');
 assert.ok(positioningState.positions.away[2].x > 160,
   'the covering defender should hold a goal-side position instead of retreating behind the goal line');
+assert.ok(positioningState.positions.away[3].vy < 0,
+  'an additional defender should receive a separate dangerous forward instead of duplicating the first cover assignment');
+assert.ok(positioningState.positions.away[2].y < positioningState.positions.away[3].y,
+  'covering defenders should occupy distinct lanes when multiple forwards threaten the slot');
 
 // The rendered goalie tracks the shot lane and cross-ice puck movement;
 // defensive partners protect the slot instead of both chasing the carrier.
@@ -113,5 +118,8 @@ assert.match(source, /const response = isGoalie \? 0\.105 : 0\.035/);
 assert.match(source, /const opponentPossession = lm\.gameplayPossession\?\.side === opponentSide/);
 assert.match(source, /const pressureDefender = defendersByCarrier\[0\] \|\| null/);
 assert.match(source, /const markedThreats = opponentPlayers/);
+assert.match(source, /const coverAssignments = new Map\(\)/);
+assert.match(source, /unassignedThreats\.splice\(selectedIndex, 1\)/);
+assert.match(source, /coverAssignments\.get\(player\)/);
 assert.match(source, /const coverDepth = clamp\(Math\.abs\(threat\.x - ownGoalX\) \* 0\.55, 18, 82\)/);
 console.log('LIVE goalie and defensive-positioning checks passed.');
