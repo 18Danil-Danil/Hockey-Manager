@@ -84,7 +84,7 @@ const activeShotAdvance = liveAdvance(
   players => { selectedShooters = players.slice(); return players[0]; },
   arr => arr[0], () => 1, ensureStats, ensureStats,
   () => {}, () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}
+  0.00195, 1.8, 0.70, 0.055, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}
 );
 activeShotAdvance(5);
 assert.deepEqual(selectedShooters.map(player => player.id), ['active'],
@@ -133,7 +133,7 @@ const volumeAdvance = liveAdvance(
   { liveMatch: volumeState.lm }, seededRng, () => false, () => {}, () => {},
   players => players[0], arr => arr[Math.floor(seededRng() * arr.length)], () => 1, ensureStats, ensureStats,
   ev => volumeState.lm.events.push(ev), () => '19:00', () => 'HOME', () => 'AWAY',
-  0.00195, 1.8, 0.70, 0.093, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}
+  0.00195, 1.8, 0.70, 0.093, (v, min, max) => Math.max(min, Math.min(max, v)), () => {}, () => {}
 );
 for (let i = 0; i < 720; i++) volumeAdvance(5);
 const totalShots = volumeState.lm.shots.home + volumeState.lm.shots.away;
