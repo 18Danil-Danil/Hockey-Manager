@@ -287,6 +287,8 @@ const shiftHelpers = new Function('clamp', `${shiftSource}; return { buildLiveSh
 );
 const allForwards = Array.from({ length: 12 }, (_, i) => ({ id: `f${i + 1}`, name: `F${i + 1}`, position: 'F', fatigue: 0 }));
 const allDefense = Array.from({ length: 6 }, (_, i) => ({ id: `d${i + 1}`, name: `D${i + 1}`, position: 'D', fatigue: 0 }));
+allDefense[2].number = 44;
+allForwards[3].jerseyNumber = 91;
 const allSkaters = [...allForwards, ...allDefense];
 const shiftTeam = { lines: {
   f1: { players: ['f1', 'f2', 'f3'] }, f2: { players: ['f4', 'f5', 'f6'] },
@@ -332,6 +334,8 @@ shiftHelpers.updateLiveShifts(safeShift, 5);
 assert.equal(safeShift.shiftState.home.changes, 1, 'line did not change at the safe loose-puck moment');
 assert.equal(safeShift.positions.home[1].playerId, 'd3', 'defensive pair did not rotate');
 assert.equal(safeShift.positions.home[3].playerId, 'f4', 'forward line did not rotate');
+assert.equal(safeShift.positions.home[1].number, 44, 'jersey number was lost during a defensive change');
+assert.equal(safeShift.positions.home[3].jerseyNumber, 91, 'jersey number was lost during a forward change');
 assert.ok(safeShift.playerStamina.home.f1 < 100, 'active skater did not lose stamina');
 assert.ok(safeShift.playerStamina.home.f10 > 100 - 0.01, 'resting skater did not recover stamina');
 assert.ok(safeShift.playerStamina.home.f1 < 70, 'active shift did not meaningfully drain stamina');
