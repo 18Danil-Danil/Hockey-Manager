@@ -2146,9 +2146,25 @@ function liveUpdatePositions() {
       .filter(player => player !== opponentCarrier && player.role !== 'D')
       .map(player => ({
         player,
+        // Чем ближе соперник к нашим воротам и центральной оси, тем выше угроза.
         danger: Math.abs(player.x - ownGoalX) * 0.72 + Math.abs(player.y - 50) * 0.34,
       }))
       .sort((a, b) => a.danger - b.danger);
+    // Назначения пересчитываются каждый кадр: при поперечной передаче и
+    // пересечении форвардов защитники меняют опекаемых, а не держат номера игроков.
+    const coverAssignments = new Map();
+    const unassignedThreats = markedThreats.slice();
+    for (const defender of defendersByCarrier.slice(1)) {
+      if (!unassignedThreats.length) break;
+      const selectedIndex = unassignedThreats.reduce((bestIndex, item, index) => {
+        const distance = Math.hypot(item.player.x - defender.x, item.player.y - defender.y);
+        const score = distance * 0.58 + item.danger * 0.42;
+        if (score < bestIndex.score) return { index, score };
+        return bestIndex;
+      }, { index: 0, score: Infinity }).index;
+      const [selected] = unassignedThreats.splice(selectedIndex, 1);
+      coverAssignments.set(defender, selected.player);
+    }
     let closestSkater = null;
     let closestDistance = Infinity;
 
@@ -2243,10 +2259,11 @@ function liveUpdatePositions() {
           targetX = opponentCarrier.x - direction * containGap;
           targetY = opponentCarrier.y + (50 - opponentCarrier.y) * 0.08;
         } else {
-          const threat = markedThreats.find(item => !defendersByCarrier
-            .slice(0, 1).some(defender => defender === player))?.player || null;
+          const threat = coverAssignments.get(player) || null;
           const coverX = ownGoalX + direction * (24 + tactics.pressure * 0.018);
           if (threat) {
+            // Защитник занимает позицию между своей целью и воротами,
+            // сохраняя небольшой запас для реакции на передачу.
             const coverDepth = clamp(Math.abs(threat.x - ownGoalX) * 0.55, 18, 82);
             targetX = ownGoalX + direction * coverDepth;
             targetY = clamp(threat.y + (50 - threat.y) * 0.16, 30, 70);
