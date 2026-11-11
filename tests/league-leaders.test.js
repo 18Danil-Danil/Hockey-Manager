@@ -8,7 +8,7 @@ const players = Array.from({ length: 12 }, (_, i) => ({
   id: i + 1,
   name: 'Player ' + String(i + 1).padStart(2, '0'),
   position: 'C',
-  stats: { gp: 20 + i, goals: 12 - i, assists: i, points: 12, wins: 0, shotsAgainst: 0, saves: 0, goalsAgainst: 0, shutouts: 0 },
+  stats: { gp: 20 + i, goals: 12 - i, assists: 12 - i, points: 12, wins: 0, shotsAgainst: 0, saves: 0, goalsAgainst: 0, shutouts: 0 },
   playoffStats: { gp: i < 8 ? 1 : 0, goals: i < 8 ? 2 : 0, assists: 0, points: i < 8 ? 2 : 0, wins: 0, shotsAgainst: 0, saves: 0, goalsAgainst: 0, shutouts: 0 },
 }));
 const goalie = {
