@@ -962,6 +962,11 @@ function drawLiveCanvas() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(labelText, x, labelY, labelWidth - 5);
+    const stamina = clamp(p.stamina ?? 100, 0, 100);
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.fillRect(left, top + labelFont + 4, labelWidth, 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.fillRect(left, top + labelFont + 4, labelWidth * stamina / 100, 2);
     ctx.restore();
 
     if ((p.contactFrames || 0) > 0) {
