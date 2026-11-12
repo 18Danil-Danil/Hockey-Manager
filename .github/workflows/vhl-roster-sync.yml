@@ -59,6 +59,7 @@ jobs:
             echo "Составы не изменились — новый коммит не требуется."
           else
             git commit -m "chore: update VHL rosters"
+            git pull --rebase origin refactoring
             git push origin HEAD:refactoring
           fi
 
