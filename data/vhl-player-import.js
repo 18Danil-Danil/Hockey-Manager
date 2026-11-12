@@ -51,18 +51,24 @@
         if (ids.has(playerId)) throw new Error('Повторяется ID игрока ' + playerId + '.');
         ids.add(playerId);
         const born = String(player.born || '');
-        if (born && !/^\\d{2}\\.\\d{2}\\.\\d{4}$/.test(born)) {
+        if (born && !/^\d{2}\.\d{2}\.\d{4}$/.test(born)) {
           throw new Error('Некорректная дата рождения игрока ' + name + '.');
         }
         return {
           playerId, name, position, jersey,
           born: born || null,
           country: normalizeCountry(player.country),
-          heightCm: Number.isFinite(Number(player.heightCm)) ? Number(player.heightCm) : null,
-          weightKg: Number.isFinite(Number(player.weightKg)) ? Number(player.weightKg) : null,
+          heightCm: player.heightCm != null && Number.isFinite(Number(player.heightCm)) ? Number(player.heightCm) : null,
+          weightKg: player.weightKg != null && Number.isFinite(Number(player.weightKg)) ? Number(player.weightKg) : null,
           playerUrl: 'https://www.vhlru.ru/players/' + playerId + '/'
         };
       });
+      const forwardCount = players.filter(player => player.position === 'forward').length;
+      const defenseCount = players.filter(player => player.position === 'defense').length;
+      const goalieCount = players.filter(player => player.position === 'goaltender').length;
+      if (forwardCount < 12 || defenseCount < 6 || goalieCount < 2) {
+        throw new Error('Состав ' + (team.teamName || team.teamSlug) + ' неполный: нужно минимум 12 нападающих, 6 защитников и 2 вратаря.');
+      }
       return {
         teamPageId: Number(team.teamPageId) || null,
         teamSlug: team.teamSlug,
@@ -96,7 +102,7 @@
 
   function ageFromBirthDate(value) {
     if (!value) return null;
-    const match = /^(\\d{2})\\.(\\d{2})\\.(\\d{4})$/.exec(value);
+    const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value);
     if (!match) return null;
     const birth = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
     if (Number.isNaN(birth.getTime())) return null;
@@ -182,9 +188,10 @@
 
   function renderVhlImportSettings() {
     const data = readImportedVhlData();
+    const safeText = value => String(value || '').replace(/[&<>\"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[char]));
     const summary = data
-      ? data.teams.map(team => '<li>' + escapeHtml(team.teamName) + ': ' + team.players.length + ' игроков' +
-          (team.rosterAsOf ? ' · на ' + escapeHtml(team.rosterAsOf) : '') + '</li>').join('')
+      ? data.teams.map(team => '<li>' + safeText(team.teamName) + ': ' + team.players.length + ' игроков' +
+          (team.rosterAsOf ? ' · на ' + safeText(team.rosterAsOf) : '') + '</li>').join('')
       : '<li>Пока нет импортированных составов.</li>';
     return `<article class="settings-card vhl-import-card">
       <div class="settings-card-icon">🏒</div>
