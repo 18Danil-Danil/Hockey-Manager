@@ -73,20 +73,22 @@ if (marker < 0) throw new Error('Не найден раздел «Основно
 const tableStart = html.indexOf('<table', marker);
 const tableEnd = html.indexOf('</table>', tableStart);
 if (tableStart < 0 || tableEnd < 0) throw new Error('Не удалось найти таблицу основного состава.');
-const players = parseTable(html.slice(tableStart, tableEnd + 8));
-if (players.length < 20) {
-  throw new Error(`Получено только ${players.length} игроков. Экспорт остановлен: проверьте структуру страницы вручную.`);
-}
+const parsedPlayers = parseTable(html.slice(tableStart, tableEnd + 8));
 const ids = new Set();
-const uniquePlayers = players.filter(player => !ids.has(player.playerId) && ids.add(player.playerId));
-const rosterAsOf = (textOf(html.slice(Math.max(0, marker - 6000), marker)).match(/По состоянию на\s+(\d{2}\.\d{2}\.\d{4})/i) || [])[1] || null;
+const uniquePlayers = parsedPlayers.filter(player => !ids.has(player.playerId) && ids.add(player.playerId));
+if (uniquePlayers.length < 20) {
+  throw new Error(`Получено только ${uniquePlayers.length} уникальных игроков. Экспорт остановлен: проверьте структуру страницы вручную.`);
+}
+const rosterAsOf = (textOf(html.slice(Math.max(0, marker - 6000), marker)).match(/По состоянию на\\s+(\\d{2}\\.\\d{2}\\.\\d{4})/i) || [])[1] || null;
+const headingMatch = html.match(/<h1\\b[^>]*>([\\s\\S]*?)<\\/h1>/i);
+const teamName = headingMatch ? textOf(headingMatch[1]) : teamSlug;
 const output = {
   schemaVersion: 1,
   source: 'vhlru',
   sourceUrl: url,
   exportedAt: new Date().toISOString(),
   teams: [{
-    teamPageId, teamSlug, teamName: teamSlug,
+    teamPageId, teamSlug, teamName,
     rosterAsOf, players: uniquePlayers
   }]
 };
