@@ -1,0 +1,59 @@
+name: Синхронизация составов ВХЛ
+
+on:
+  workflow_dispatch:
+    inputs:
+      team:
+        description: "Клуб для проверки (slug) или all для всей лиги"
+        required: false
+        default: "all"
+        type: string
+  schedule:
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vhl-roster-sync
+  cancel-in-progress: false
+
+jobs:
+  sync-rosters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Получить код проекта
+        uses: actions/checkout@v4
+        with:
+          ref: refactoring
+
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Загрузить и проверить составы
+        run: |
+          TEAM="\${{ github.event.inputs.team || 'all' }}"
+          node tools/vhl-roster-sync.mjs --team "$TEAM"
+
+      - name: Добавить отчёт в сводку запуска
+        if: always()
+        run: |
+          if [ -f vhl-roster-sync-report.md ]; then
+            cat vhl-roster-sync-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Отчёт не создан. Проверьте журнал шага загрузки." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Сохранить JSON и отчёт как артефакт
+        if: always() && hashFiles('vhl-rosters.json', 'vhl-roster-sync-report.md') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: vhl-rosters-\${{ github.run_number }}
+          path: |
+            vhl-rosters.json
+            vhl-roster-sync-report.md
+          retention-days: 14
+          if-no-files-found: warn
