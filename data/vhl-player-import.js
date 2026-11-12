@@ -18,7 +18,6 @@
 
   function normalizeCountry(country) {
     const value = String(country || '').trim();
-    if (!value) return 'Россия';
     return COUNTRIES[value] || value;
   }
 
@@ -43,17 +42,36 @@
         const jersey = player.jersey === null || player.jersey === '' ? null : Number(player.jersey);
         const name = String(player.name || '').trim();
         const position = String(player.position || '').toLowerCase();
+        const country = normalizeCountry(player.country);
+        const born = String(player.born || '');
+        const heightCm = player.heightCm == null || player.heightCm === '' ? null : Number(player.heightCm);
+        const weightKg = player.weightKg == null || player.weightKg === '' ? null : Number(player.weightKg);
         if (!Number.isSafeInteger(playerId) || playerId <= 0 ||
-            !name || name.length > 100 || !/^[\\p{L}\\p{M} .'-]+$/u.test(name) ||
+            !name || name.length > 100 || !/^[\p{L}\p{M} .'-]+$/u.test(name) ||
             !['forward', 'defense', 'goaltender'].includes(position) ||
             (jersey !== null && (!Number.isInteger(jersey) || jersey < 0 || jersey > 99))) {
           throw new Error('Некорректная запись игрока в составе ' + team.teamName + '.');
         }
+        if (!ALLOWED_COUNTRIES.has(country)) {
+          throw new Error('Неизвестное гражданство игрока ' + name + ': ' + (country || 'не указано') + '.');
+        }
         if (ids.has(playerId)) throw new Error('Повторяется ID игрока ' + playerId + '.');
         ids.add(playerId);
-        const born = String(player.born || '');
-        if (born && !/^\d{2}\.\d{2}\.\d{4}$/.test(born)) {
-          throw new Error('Некорректная дата рождения игрока ' + name + '.');
+        if (born) {
+          if (!/^\d{2}\.\d{2}\.\d{4}$/.test(born)) {
+            throw new Error('Некорректная дата рождения игрока ' + name + '.');
+          }
+          const [day, month, year] = born.split('.').map(Number);
+          const date = new Date(year, month - 1, day);
+          if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+            throw new Error('Несуществующая дата рождения игрока ' + name + '.');
+          }
+        }
+        if (heightCm !== null && (!Number.isInteger(heightCm) || heightCm < 130 || heightCm > 230)) {
+          throw new Error('Некорректный рост игрока ' + name + '.');
+        }
+        if (weightKg !== null && (!Number.isInteger(weightKg) || weightKg < 40 || weightKg > 160)) {
+          throw new Error('Некорректный вес игрока ' + name + '.');
         }
         return {
           playerId, name, position, jersey,
