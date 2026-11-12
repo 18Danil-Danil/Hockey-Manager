@@ -18,7 +18,7 @@ on:
     - cron: "17 4 * * 1"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: vhl-roster-sync
@@ -43,6 +43,20 @@ jobs:
         run: |
           TEAM="${{ github.event.inputs.team || 'all' }}"
           node tools/vhl-roster-sync.mjs --team "$TEAM"
+
+
+      - name: Обновить базу составов в ветке refactoring
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/vhl-rosters.js
+          if git diff --cached --quiet; then
+            echo "Составы не изменились — новый коммит не требуется."
+          else
+            git commit -m "chore: update VHL rosters"
+            git push origin HEAD:refactoring
+          fi
 
       - name: Добавить отчёт в сводку запуска
         if: always()
