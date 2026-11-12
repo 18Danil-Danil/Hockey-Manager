@@ -10,7 +10,7 @@ const BASE = 'https://www.vhlru.ru';
 const USER_AGENT = 'HockeyManagerVHLRosterBot/1.0 (GitHub Actions; low-frequency roster sync)';
 const OUTPUT_FILE = 'vhl-rosters.json';
 const REPORT_FILE = 'vhl-roster-sync-report.md';
-const DELAY_MS = 1250;
+const DELAY_MS = 1251;
 
 const TEAMS = [
   ['akm', 'АКМ'], ['bars', 'Барс'], ['buran', 'Буран'],
@@ -242,7 +242,7 @@ const report = [
   '## Замечания и ошибки',
   ...(failures.length ? failures.map(message => `- ${message}`) : ['- Нет']),
   '',
-  ' > Полная выгрузка также формирует data/vhl-rosters.js для автоматического подключения в игре. JSON и отчёт сохраняются как GitHub Actions Artifact.'
+  '  > Полная выгрузка также формирует data/vhl-rosters.js для автоматического подключения в игре. JSON и отчёт сохраняются как GitHub Actions Artifact.'
 ].join('\n');
 await fs.writeFile(REPORT_FILE, report + '\n', 'utf8');
 console.log(report);
