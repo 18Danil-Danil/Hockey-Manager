@@ -1,6 +1,9 @@
 name: Синхронизация составов ВХЛ
 
 on:
+  push:
+    branches:
+      - refactoring
   workflow_dispatch:
     inputs:
       team:
@@ -35,7 +38,7 @@ jobs:
 
       - name: Загрузить и проверить составы
         run: |
-          TEAM="\${{ github.event.inputs.team || 'all' }}"
+          TEAM="${{ github.event.inputs.team || 'all' }}"
           node tools/vhl-roster-sync.mjs --team "$TEAM"
 
       - name: Добавить отчёт в сводку запуска
@@ -51,7 +54,7 @@ jobs:
         if: always() && hashFiles('vhl-rosters.json', 'vhl-roster-sync-report.md') != ''
         uses: actions/upload-artifact@v4
         with:
-          name: vhl-rosters-\${{ github.run_number }}
+          name: vhl-rosters-${{ github.run_number }}
           path: |
             vhl-rosters.json
             vhl-roster-sync-report.md
