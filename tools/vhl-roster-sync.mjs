@@ -225,6 +225,7 @@ const output = {
   teams: results
 };
 await fs.writeFile(OUTPUT_FILE, JSON.stringify(output, null, 2) + '\n', 'utf8');
+await fs.writeFile('data/vhl-rosters.js', '/* Автоматически обновляется GitHub Actions. Не редактировать вручную. */\nwindow.VHL_ROSTER_DATA = ' + JSON.stringify(output) + ';\n', 'utf8');
 
 const report = [
   '# Отчёт синхронизации составов ВХЛ',
