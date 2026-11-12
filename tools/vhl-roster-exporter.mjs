@@ -79,8 +79,8 @@ const uniquePlayers = parsedPlayers.filter(player => !ids.has(player.playerId) &
 if (uniquePlayers.length < 20) {
   throw new Error(`Получено только ${uniquePlayers.length} уникальных игроков. Экспорт остановлен: проверьте структуру страницы вручную.`);
 }
-const rosterAsOf = (textOf(html.slice(Math.max(0, marker - 6000), marker)).match(/По состоянию на\\s+(\\d{2}\\.\\d{2}\\.\\d{4})/i) || [])[1] || null;
-const headingMatch = html.match(/<h1\\b[^>]*>([\\s\\S]*?)<\\/h1>/i);
+const rosterAsOf = (textOf(html.slice(Math.max(0, marker - 6000), marker)).match(/По состоянию на\s+(\d{2}\.\d{2}\.\d{4})/i) || [])[1] || null;
+const headingMatch = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i);
 const teamName = headingMatch ? textOf(headingMatch[1]) : teamSlug;
 const output = {
   schemaVersion: 1,
