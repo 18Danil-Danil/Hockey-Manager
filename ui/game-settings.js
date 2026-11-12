@@ -41,13 +41,36 @@ function renderTitleScreen() {
   </main>`;
 }
 function bindTitleScreen() {
-  document.querySelectorAll('[data-start-action]').forEach(button => { button.onclick = () => {
-    const action = button.dataset.startAction;
-    if (action === 'continue' && G.playerTeamId) { G.screen = 'game'; G.activeTab = G.activeTab || 'overview'; }
-    else if (action === 'new') { if (G.playerTeamId && G.settings?.confirmNewGame && !confirm('Начать новую карьеру?')) return; newGame(); return; }
-    else if (action === 'settings') G.screen = 'settings';
-    render();
-  }; });
+  document.querySelectorAll('[data-start-action]').forEach(button => {
+    button.onclick = event => {
+      const action = button.dataset.startAction;
+      if (action === 'continue' && G.playerTeamId) {
+        G.screen = 'game';
+        G.activeTab = G.activeTab || 'overview';
+      } else if (action === 'new') {
+        if (G.playerTeamId && G.settings?.confirmNewGame && !confirm('Начать новую карьеру?')) return;
+        newGame();
+        return;
+      } else if (action === 'settings') {
+        G.titleAboutOpen = false;
+        G.screen = 'settings';
+      } else if (action === 'about') {
+        G.titleAboutOpen = true;
+      } else if (action === 'close-about') {
+        if (event.target.closest('.start-about-card') && !event.target.closest('.start-about-close')) return;
+        G.titleAboutOpen = false;
+      } else if (action === 'exit') {
+        if (confirm('Закрыть Hockey Manager?')) {
+          window.close();
+          setTimeout(() => {
+            if (!document.hidden) showToast('Чтобы выйти из игры, закройте вкладку браузера.');
+          }, 100);
+        }
+        return;
+      }
+      render();
+    };
+  });
 }
 function renderSettings(fromTitle = false) {
   const s = normalizeGameSettings(G.settings);
