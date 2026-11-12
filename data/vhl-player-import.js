@@ -189,7 +189,7 @@
 
   function renderVhlImportSettings() {
     const data = readImportedVhlData();
-    const safeText = value => String(value || '').replace(/[&<>\"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[char]));
+    const safeText = value => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const summary = data
       ? data.teams.map(team => '<li>' + safeText(team.teamName) + ': ' + team.players.length + ' игроков' +
           (team.rosterAsOf ? ' · на ' + safeText(team.rosterAsOf) : '') + '</li>').join('')
