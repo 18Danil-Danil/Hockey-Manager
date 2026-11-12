@@ -8,29 +8,29 @@ function genTeam(meta) {
   const def = meta.ratings.def;
   const gk  = meta.ratings.gk;
 
-  const fTemplate = [att + 4, att + 2, att, att - 2, att - 4, att - 6, att - 8, att - 10, att - 12, att - 14, att - 16, att - 18, att - 20];
-  const fPositions = ['C','C','C','LW','LW','LW','RW','RW','RW','C','LW','RW','C'];
-  fTemplate.forEach((baseOvr, i) => {
-    const ovr = clamp(Math.round(baseOvr + gauss(0, 2)), 52, 99);
-    roster.push(genPlayer(fPositions[i], ovr));
-  });
-  const dTemplate = [def + 2, def, def - 2, def - 4, def - 6, def - 8, def - 10];
-  dTemplate.forEach(baseOvr => {
-    const ovr = clamp(Math.round(baseOvr + gauss(0, 2)), 52, 99);
-    roster.push(genPlayer('D', ovr));
-  });
-  [gk, gk - 6].forEach(baseOvr => {
-    const ovr = clamp(Math.round(baseOvr + gauss(0, 2)), 52, 99);
-    roster.push(genPlayer('G', ovr));
-  });
   let importedRoster = null;
   if (typeof buildImportedVhlRoster === 'function') {
     try { importedRoster = buildImportedVhlRoster(meta); }
     catch (error) { console.warn('Не удалось применить состав ВХЛ для ' + meta.name + ':', error); }
   }
   if (importedRoster) {
-    roster.length = 0;
     roster.push(...importedRoster.players);
+  } else {
+    const fTemplate = [att + 4, att + 2, att, att - 2, att - 4, att - 6, att - 8, att - 10, att - 12, att - 14, att - 16, att - 18, att - 20];
+    const fPositions = ['C','C','C','LW','LW','LW','RW','RW','RW','C','LW','RW','C'];
+    fTemplate.forEach((baseOvr, i) => {
+      const ovr = clamp(Math.round(baseOvr + gauss(0, 2)), 52, 99);
+      roster.push(genPlayer(fPositions[i], ovr));
+    });
+    const dTemplate = [def + 2, def, def - 2, def - 4, def - 6, def - 8, def - 10];
+    dTemplate.forEach(baseOvr => {
+      const ovr = clamp(Math.round(baseOvr + gauss(0, 2)), 52, 99);
+      roster.push(genPlayer('D', ovr));
+    });
+    [gk, gk - 6].forEach(baseOvr => {
+      const ovr = clamp(Math.round(baseOvr + gauss(0, 2)), 52, 99);
+      roster.push(genPlayer('G', ovr));
+    });
   }
   roster.sort((a, b) => b.ovr - a.ovr);
 
