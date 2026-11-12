@@ -145,7 +145,8 @@
   function buildImportedVhlRoster(teamMeta) {
     const imported = getImportedVhlRoster(teamMeta.slug);
     if (!imported) return null;
-    const players = imported.players.map((player, index) => makeImportedVhlPlayer(player, index, teamMeta));
+    let forwardIndex = 0;
+    const players = imported.players.map(player => makeImportedVhlPlayer(player, player.position === 'forward' ? forwardIndex++ : 0, teamMeta));
     const minimum = { F: 12, D: 6, G: 2 };
     const counts = {
       F: players.filter(p => ['C', 'LW', 'RW'].includes(p.position)).length,
