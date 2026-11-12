@@ -157,6 +157,9 @@
     });
     const age = ageFromBirthDate(source.born);
     player.name = source.name;
+    // На сайте ВХЛ ФИО записано в порядке «Фамилия Имя Отчество».
+    // Храним фамилию отдельно, чтобы live-матч не принимал отчество за фамилию.
+    player.surname = source.name.split(/\s+/)[0] || source.name;
     player.nationality = source.country;
     if (age !== null) {
       player.age = age;
