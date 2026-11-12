@@ -941,25 +941,32 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
 .start-hotspot {
   position: absolute;
   left: 4.1%;
-  width: 32%;
-  height: 6.8%;
-  border: 1px solid transparent;
-  border-radius: 5px;
+  width: 32.1%;
+  height: 7.6%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background: transparent;
+  clip-path: polygon(4% 0,100% 0,96% 100%,0 100%);
   cursor: pointer;
-  transition: background .16s ease,border-color .16s ease,box-shadow .16s ease;
+  transition: background .16s ease,filter .16s ease;
+  -webkit-tap-highlight-color: transparent;
 }
-.start-hotspot:hover,.start-hotspot:focus-visible {
-  outline: none;
-  border-color: rgba(255,255,255,.78);
-  background: rgba(255,255,255,.10);
-  box-shadow: 0 0 22px rgba(224,30,45,.26),inset 0 0 18px rgba(255,255,255,.05);
+.start-hotspot:hover {
+  background: linear-gradient(90deg,rgba(255,255,255,.10),rgba(255,255,255,.025));
+  filter: brightness(1.12);
 }
-.start-hotspot-new { top: 52.2%; height: 7.6%; }
-.start-hotspot-continue { top: 61.2%; height: 7.2%; left: 4.3%; width: 30.5%; }
-.start-hotspot-settings { top: 69.3%; height: 6.2%; left: 4.4%; width: 28.6%; }
-.start-hotspot-about { top: 76.1%; height: 5.8%; left: 4.5%; width: 27.5%; }
-.start-hotspot-exit { top: 82.3%; height: 5.8%; left: 4.5%; width: 27.5%; }
+.start-hotspot:focus-visible {
+  outline: 2px solid rgba(255,255,255,.9);
+  outline-offset: -3px;
+  background: rgba(255,255,255,.08);
+}
+.start-hotspot-new:hover { background: linear-gradient(90deg,rgba(255,255,255,.16),rgba(255,255,255,.035)); }
+.start-hotspot-new { top: 52.05%; }
+.start-hotspot-continue { top: 61.3%; left: 4.25%; width: 30.8%; height: 7.0%; }
+.start-hotspot-settings { top: 69.6%; left: 4.35%; width: 29.2%; height: 5.9%; }
+.start-hotspot-about { top: 76.0%; left: 4.4%; width: 28.2%; height: 5.9%; }
+.start-hotspot-exit { top: 82.1%; left: 4.4%; width: 28.2%; height: 5.9%; }
 .start-hotspot.is-disabled { cursor: not-allowed; }
 .start-hotspot.is-disabled:hover { border-color: transparent; background: transparent; box-shadow: none; }
 .start-screen-mobile-actions { display: none; }
