@@ -1155,5 +1155,5 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
   .start-about-card { padding: 26px 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .start-hotspot { transition: none; }
+  .start-menu-button { transition: none; }
 }
