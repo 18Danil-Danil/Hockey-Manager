@@ -130,6 +130,14 @@ function startLiveMatch(homeId, awayId, isPlayoff) {
   render();
 }
 
+function getLivePlayerSurname(player) {
+  if (!player) return '';
+  if (player.surname) return String(player.surname).trim();
+  // В старых сохранениях отдельного поля surname ещё нет, но источник ВХЛ сохранён.
+  if (player.source === 'vhlru') return String(player.name || '').trim().split(/\s+/)[0] || '';
+  return '';
+}
+
 function buildLiveShiftPlan(team, lineup) {
   const byId = new Map((lineup?.skaters || []).map(player => [player.id, player]));
   const buildGroups = (keys, pool, size) => {
@@ -183,7 +191,7 @@ function applyLiveShift(lm, side) {
     if (!slot || !player) continue;
     slot.playerId = player.id;
     slot.playerName = player.name || '';
-    slot.playerSurname = player.surname || '';
+    slot.playerSurname = getLivePlayerSurname(player);
     slot.jerseyNumber = player.jerseyNumber ?? null;
     slot.number = player.number ?? null;
     slot.position = player.position || (i < 2 ? 'D' : 'F');
@@ -204,7 +212,7 @@ function applyLiveShift(lm, side) {
     extraSlot.onIce = !!extra;
     extraSlot.playerId = extra?.id || null;
     extraSlot.playerName = extra?.name || '';
-    extraSlot.playerSurname = extra?.surname || '';
+    extraSlot.playerSurname = getLivePlayerSurname(extra);
     extraSlot.jerseyNumber = extra?.jerseyNumber ?? null;
     extraSlot.number = extra?.number ?? null;
     extraSlot.position = extra?.position || 'F';
@@ -293,7 +301,7 @@ function reconcileLiveManpower(lm) {
       }
       slot.playerId = player.id;
       slot.playerName = player.name || '';
-      slot.playerSurname = player.surname || '';
+      slot.playerSurname = getLivePlayerSurname(player);
       slot.jerseyNumber = player.jerseyNumber ?? null;
       slot.number = player.number ?? null;
       slot.position = player.position || (i < defenseCount ? 'D' : 'F');
@@ -370,7 +378,7 @@ function buildFormation(side, lineup = null) {
     (lineup?.skaters || []).find(p => ![...defenders.slice(0, 2), ...forwards.slice(0, 3)].some(existing => existing.id === p.id)) || null];
   return slots.map((slot, i) => ({
     ...slot, idx: i, playerId: assigned[i]?.id || null,
-    playerName: assigned[i]?.name || '', playerSurname: assigned[i]?.surname || '',
+    playerName: assigned[i]?.name || '', playerSurname: getLivePlayerSurname(assigned[i]),
     onIce: i === 0 || i <= 5 ? true : false,
     jerseyNumber: assigned[i]?.jerseyNumber ?? null,
     number: assigned[i]?.number ?? null,
