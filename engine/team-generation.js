@@ -23,6 +23,15 @@ function genTeam(meta) {
     const ovr = clamp(Math.round(baseOvr + gauss(0, 2)), 52, 99);
     roster.push(genPlayer('G', ovr));
   });
+  let importedRoster = null;
+  if (typeof buildImportedVhlRoster === 'function') {
+    try { importedRoster = buildImportedVhlRoster(meta); }
+    catch (error) { console.warn('Не удалось применить состав ВХЛ для ' + meta.name + ':', error); }
+  }
+  if (importedRoster) {
+    roster.length = 0;
+    roster.push(...importedRoster.players);
+  }
   roster.sort((a, b) => b.ovr - a.ovr);
 
   const budget = meta.budget / 1_000_000;
@@ -50,6 +59,7 @@ function genTeam(meta) {
     baseMarket: meta.baseMarket, gmType: meta.gmType,
     coachStyle: meta.coachStyle, staffSkill: meta.staffSkill,
     roster,
+    rosterSource: importedRoster ? { source: 'vhlru', teamName: importedRoster.sourceTeamName, rosterAsOf: importedRoster.rosterAsOf } : { source: 'generated' },
     record: { w: 0, l: 0, otl: 0, pts: 0, gf: 0, ga: 0 },
     finance: {
       seasonBudget: budget,
