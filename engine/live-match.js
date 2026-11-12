@@ -183,6 +183,7 @@ function applyLiveShift(lm, side) {
     if (!slot || !player) continue;
     slot.playerId = player.id;
     slot.playerName = player.name || '';
+    slot.playerSurname = player.surname || '';
     slot.jerseyNumber = player.jerseyNumber ?? null;
     slot.number = player.number ?? null;
     slot.position = player.position || (i < 2 ? 'D' : 'F');
@@ -203,6 +204,7 @@ function applyLiveShift(lm, side) {
     extraSlot.onIce = !!extra;
     extraSlot.playerId = extra?.id || null;
     extraSlot.playerName = extra?.name || '';
+    extraSlot.playerSurname = extra?.surname || '';
     extraSlot.jerseyNumber = extra?.jerseyNumber ?? null;
     extraSlot.number = extra?.number ?? null;
     extraSlot.position = extra?.position || 'F';
@@ -284,12 +286,14 @@ function reconcileLiveManpower(lm) {
       if (!slot.onIce) {
         slot.playerId = null;
         slot.playerName = '';
+        slot.playerSurname = '';
         slot.vx = 0;
         slot.vy = 0;
         continue;
       }
       slot.playerId = player.id;
       slot.playerName = player.name || '';
+      slot.playerSurname = player.surname || '';
       slot.jerseyNumber = player.jerseyNumber ?? null;
       slot.number = player.number ?? null;
       slot.position = player.position || (i < defenseCount ? 'D' : 'F');
@@ -366,7 +370,8 @@ function buildFormation(side, lineup = null) {
     (lineup?.skaters || []).find(p => ![...defenders.slice(0, 2), ...forwards.slice(0, 3)].some(existing => existing.id === p.id)) || null];
   return slots.map((slot, i) => ({
     ...slot, idx: i, playerId: assigned[i]?.id || null,
-    playerName: assigned[i]?.name || '', onIce: i === 0 || i <= 5 ? true : false,
+    playerName: assigned[i]?.name || '', playerSurname: assigned[i]?.surname || '',
+    onIce: i === 0 || i <= 5 ? true : false,
     jerseyNumber: assigned[i]?.jerseyNumber ?? null,
     number: assigned[i]?.number ?? null,
     position: assigned[i]?.position || slot.role,
@@ -2051,7 +2056,7 @@ function drawLiveCanvas() {
 
     // Фамилия показывается компактной плашкой под игроком, чтобы читаться и на телефоне.
     const fullName = String(p.playerName || '').trim();
-    const surname = fullName ? fullName.split(/\s+/).slice(-1)[0] : 'Игрок';
+    const surname = String(p.playerSurname || '').trim() || (fullName ? fullName.split(/\s+/).slice(-1)[0] : 'Игрок');
     const surnameText = surname.length > 10 ? surname.slice(0, 9) + '…' : surname;
     const labelFont = Math.max(6, Math.min(9, W / 58));
     ctx.save();
