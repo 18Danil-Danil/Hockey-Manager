@@ -22,21 +22,41 @@ function renderTitleScreen() {
   const team = hasCareer ? G.league.teams.find(t => t.id === G.playerTeamId) : null;
   const aboutOpen = !!G.titleAboutOpen;
   return `<main class="start-screen start-screen-art" aria-label="Главное меню Hockey Manager">
-    <div class="start-screen-artwork" role="img" aria-label="Хоккейная арена, игроки и тренер"></div>
+    <div class="start-screen-artwork" role="img" aria-label="Хоккейный матч: нападающий против вратаря"></div>
     <div class="start-screen-vignette" aria-hidden="true"></div>
-    <div class="start-screen-hotspots" aria-label="Главное меню">
-      <button class="start-hotspot start-hotspot-new" data-start-action="new" aria-label="Новая карьера" title="Новая карьера"></button>
-      <button class="start-hotspot start-hotspot-continue ${hasCareer ? '' : 'is-disabled'}" data-start-action="continue" ${hasCareer ? '' : 'disabled'} aria-label="Продолжить карьеру" title="${hasCareer ? 'Продолжить карьеру' : 'Сохранённая карьера не найдена'}"></button>
-      <button class="start-hotspot start-hotspot-settings" data-start-action="settings" aria-label="Настройки" title="Настройки"></button>
-      <button class="start-hotspot start-hotspot-about" data-start-action="about" aria-label="О игре" title="О игре"></button>
-      <button class="start-hotspot start-hotspot-exit" data-start-action="exit" aria-label="Выход" title="Выход"></button>
-    </div>
-    <div class="start-screen-mobile-actions">
-      ${hasCareer ? '<button class="start-mobile-button" data-start-action="continue">Продолжить карьеру <span>→</span></button>' : ''}
-      <button class="start-mobile-button is-primary" data-start-action="new">Новая карьера <span>→</span></button>
-      <button class="start-mobile-button" data-start-action="settings">Настройки</button>
-      <div class="start-mobile-save">${hasCareer ? `Сейчас в игре: ${team?.name || 'Твой клуб'} · ${G.league.season}` : '30 клубов · регулярный чемпионат · плей-офф'}</div>
-    </div>
+    <header class="start-screen-brand">
+      <div class="start-screen-brand-kicker">ХОККЕЙНЫЙ МЕНЕДЖМЕНТ</div>
+      <h1>HOCKEY <span>MANAGER</span></h1>
+      <div class="start-screen-brand-line">СТРОЙ КОМАНДУ. ВЕДИ К ПОБЕДЕ.</div>
+    </header>
+    <nav class="start-screen-menu" aria-label="Главное меню">
+      <button class="start-menu-button start-menu-primary" data-start-action="new">
+        <span class="start-menu-icon" aria-hidden="true">▶</span>
+        <span class="start-menu-label">Новая карьера</span>
+        <span class="start-menu-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="start-menu-button" data-start-action="continue" ${hasCareer ? '' : 'disabled'}>
+        <span class="start-menu-icon" aria-hidden="true">↻</span>
+        <span class="start-menu-label">Продолжить</span>
+        <span class="start-menu-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="start-menu-button" data-start-action="settings">
+        <span class="start-menu-icon" aria-hidden="true">⚙</span>
+        <span class="start-menu-label">Настройки</span>
+        <span class="start-menu-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="start-menu-button" data-start-action="about">
+        <span class="start-menu-icon" aria-hidden="true">ⓘ</span>
+        <span class="start-menu-label">Об игре</span>
+        <span class="start-menu-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="start-menu-button start-menu-exit" data-start-action="exit">
+        <span class="start-menu-icon" aria-hidden="true">⏻</span>
+        <span class="start-menu-label">Выход</span>
+        <span class="start-menu-arrow" aria-hidden="true">↗</span>
+      </button>
+    </nav>
+    <div class="start-screen-status">${hasCareer ? `АКТИВНАЯ КАРЬЕРА · ${team?.name || 'ВАША КОМАНДА'} · ${G.league.season}` : '30 КЛУБОВ · РЕГУЛЯРНЫЙ ЧЕМПИОНАТ · ПЛЕЙ-ОФФ'}</div>
     ${aboutOpen ? `<div class="start-about-backdrop" data-start-action="close-about"><section class="start-about-card" role="dialog" aria-modal="true" aria-labelledby="start-about-title"><button class="start-about-close" data-start-action="close-about" aria-label="Закрыть">×</button><div class="start-about-eyebrow">ХОККЕЙНЫЙ МЕНЕДЖМЕНТ</div><h2 id="start-about-title">Hockey Manager</h2><p>Стань руководителем хоккейного клуба: управляй составом, развивай команду, проходи регулярный чемпионат и борись за победу в плей-офф.</p><div class="start-about-meta">ВХЛ · Одиночная карьера · Версия 0.1.0</div></section></div>` : ''}
   </main>`;
 }
