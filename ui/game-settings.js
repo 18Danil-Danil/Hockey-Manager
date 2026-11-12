@@ -20,14 +20,25 @@ function updateGameSetting(key, value) {
 function renderTitleScreen() {
   const hasCareer = !!G.playerTeamId;
   const team = hasCareer ? G.league.teams.find(t => t.id === G.playerTeamId) : null;
-  return `<main class="start-screen">
-    <div class="start-screen-backdrop" aria-hidden="true"><div class="start-rink"></div><div class="start-player start-player-away"></div><div class="start-player start-player-home"></div><div class="start-puck"></div><div class="start-crowd"></div></div><div class="start-screen-shade"></div>
-    <section class="start-content"><div class="start-kicker"><span></span> МЕНЕДЖЕРСКАЯ СИМУЛЯЦИЯ ВХЛ</div><div class="start-emblem">🏒</div>
-      <h1>Хоккейный<br><strong>менеджер</strong></h1><p class="start-lead">Построй команду. Проживи сезон. Создай хоккейную историю.</p>
-      <div class="start-actions">${hasCareer ? '<button class="start-primary" data-start-action="continue">Продолжить карьеру <span>→</span></button>' : ''}
-        <button class="start-primary" data-start-action="new">${hasCareer ? 'Новая карьера' : 'Начать карьеру'} <span>→</span></button><button class="start-secondary" data-start-action="settings">Настройки</button>
-        <div class="start-save-note">${hasCareer ? `Сейчас в игре: ${team?.name || 'Твой клуб'} · ${G.league.season}` : '30 клубов · регулярный чемпионат · плей-офф'}</div></div>
-      <div class="start-footer"><span>HOCKEY MANAGER</span><span>ВХЛ · КАРЬЕРА ТРЕНЕРА</span></div></section></main>`;
+  const aboutOpen = !!G.titleAboutOpen;
+  return `<main class="start-screen start-screen-art" aria-label="Главное меню Hockey Manager">
+    <div class="start-screen-artwork" role="img" aria-label="Хоккейная арена, игроки и тренер"></div>
+    <div class="start-screen-vignette" aria-hidden="true"></div>
+    <div class="start-screen-hotspots" aria-label="Главное меню">
+      <button class="start-hotspot start-hotspot-new" data-start-action="new" aria-label="Новая карьера" title="Новая карьера"></button>
+      <button class="start-hotspot start-hotspot-continue ${hasCareer ? '' : 'is-disabled'}" data-start-action="continue" ${hasCareer ? '' : 'disabled'} aria-label="Продолжить карьеру" title="${hasCareer ? 'Продолжить карьеру' : 'Сохранённая карьера не найдена'}"></button>
+      <button class="start-hotspot start-hotspot-settings" data-start-action="settings" aria-label="Настройки" title="Настройки"></button>
+      <button class="start-hotspot start-hotspot-about" data-start-action="about" aria-label="О игре" title="О игре"></button>
+      <button class="start-hotspot start-hotspot-exit" data-start-action="exit" aria-label="Выход" title="Выход"></button>
+    </div>
+    <div class="start-screen-mobile-actions">
+      ${hasCareer ? '<button class="start-mobile-button" data-start-action="continue">Продолжить карьеру <span>→</span></button>' : ''}
+      <button class="start-mobile-button is-primary" data-start-action="new">Новая карьера <span>→</span></button>
+      <button class="start-mobile-button" data-start-action="settings">Настройки</button>
+      <div class="start-mobile-save">${hasCareer ? `Сейчас в игре: ${team?.name || 'Твой клуб'} · ${G.league.season}` : '30 клубов · регулярный чемпионат · плей-офф'}</div>
+    </div>
+    ${aboutOpen ? `<div class="start-about-backdrop" data-start-action="close-about"><section class="start-about-card" role="dialog" aria-modal="true" aria-labelledby="start-about-title"><button class="start-about-close" data-start-action="close-about" aria-label="Закрыть">×</button><div class="start-about-eyebrow">ХОККЕЙНЫЙ МЕНЕДЖМЕНТ</div><h2 id="start-about-title">Hockey Manager</h2><p>Стань руководителем хоккейного клуба: управляй составом, развивай команду, проходи регулярный чемпионат и борись за победу в плей-офф.</p><div class="start-about-meta">ВХЛ · Одиночная карьера · Версия 0.1.0</div></section></div>` : ''}
+  </main>`;
 }
 function bindTitleScreen() {
   document.querySelectorAll('[data-start-action]').forEach(button => { button.onclick = () => {
