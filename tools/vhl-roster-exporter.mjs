@@ -55,7 +55,8 @@ function parseTable(tableHtml) {
     const name = cells.find(value => value.length > 3 && /[А-ЯЁа-яё]/.test(value) && !/^\d+$/.test(value) &&
       !/вратарь|защитник|нападающ/i.test(value) && value !== born) || '';
     const jerseyCell = cells.find(value => /^\d{1,2}$/.test(value));
-    const country = cells.find(value => /^(Россия|Беларусь|Казахстан|Канада|США|Финляндия|Швеция|Чехия|Словакия|Латвия|Германия|Швейцария|Дания|Норвегия|Украина)$/.test(value)) || 'Россия';
+    const bornIndex = cells.indexOf(born);
+    const country = bornIndex >= 0 ? (cells[bornIndex + 1] || '') : '';
     if (!position || !name) continue;
     players.push({
       playerId, name, position,
