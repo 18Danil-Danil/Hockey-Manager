@@ -928,7 +928,7 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: #080e1b url("assets/hockey-manager-start-screen.jpg") center center / cover no-repeat;
+  background: #080e1b url("assets/hockey-manager-start-screen.png") center center / cover no-repeat;
 }
 .start-screen-vignette {
   position: absolute;
@@ -940,9 +940,9 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
 .start-screen-hotspots { position: absolute; inset: 0; }
 .start-hotspot {
   position: absolute;
-  left: 4.1%;
-  width: 32%;
-  height: 7.7%;
+  left: 36.8%;
+  width: 26.5%;
+  height: 6.8%;
   border: 1px solid transparent;
   border-radius: 5px;
   background: transparent;
@@ -955,11 +955,11 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
   background: rgba(255,255,255,.10);
   box-shadow: 0 0 22px rgba(224,30,45,.26),inset 0 0 18px rgba(255,255,255,.05);
 }
-.start-hotspot-new { top: 51.2%; }
-.start-hotspot-continue { top: 60.4%; }
-.start-hotspot-settings { top: 68.5%; }
-.start-hotspot-about { top: 74.8%; }
-.start-hotspot-exit { top: 80.9%; }
+.start-hotspot-new { top: 64.2%; }
+.start-hotspot-continue { top: 72.0%; }
+.start-hotspot-settings { top: 77.9%; }
+.start-hotspot-about { top: 83.3%; }
+.start-hotspot-exit { top: 88.8%; }
 .start-hotspot.is-disabled { cursor: not-allowed; }
 .start-hotspot.is-disabled:hover { border-color: transparent; background: transparent; box-shadow: none; }
 .start-screen-mobile-actions { display: none; }
