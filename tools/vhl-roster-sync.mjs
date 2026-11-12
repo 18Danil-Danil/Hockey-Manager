@@ -242,7 +242,7 @@ const report = [
   '## Замечания и ошибки',
   ...(failures.length ? failures.map(message => `- ${message}`) : ['- Нет']),
   '',
-  '> Данные сохранены как артефакт GitHub Actions и не коммитятся в репозиторий. Указание источника не заменяет разрешение на автоматизированное получение и повторное использование материалов.'
+  ' > Полная выгрузка также формирует data/vhl-rosters.js для автоматического подключения в игре. JSON и отчёт сохраняются как GitHub Actions Artifact.'
 ].join('\n');
 await fs.writeFile(REPORT_FILE, report + '\n', 'utf8');
 console.log(report);
