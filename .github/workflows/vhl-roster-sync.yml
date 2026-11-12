@@ -6,6 +6,7 @@ on:
       - refactoring
     paths:
       - 'tools/vhl-roster-sync.mjs'
+      - 'tools/vhl-roster-smoke-test.mjs'
       - 'data/teams.js'
   workflow_dispatch:
     inputs:
@@ -44,6 +45,9 @@ jobs:
           TEAM="${{ github.event.inputs.team || 'all' }}"
           node tools/vhl-roster-sync.mjs --team "$TEAM"
 
+
+      - name: Проверить связку импортёра и генератора составов
+        run: node tools/vhl-roster-smoke-test.mjs
 
       - name: Обновить базу составов в ветке refactoring
         if: success() && (github.event_name != 'workflow_dispatch' || inputs.team == 'all')
