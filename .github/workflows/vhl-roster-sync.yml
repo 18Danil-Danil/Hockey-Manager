@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - refactoring
+    paths:
+      - 'tools/vhl-roster-sync.mjs'
+      - 'data/teams.js'
   workflow_dispatch:
     inputs:
       team:
