@@ -114,6 +114,21 @@
     }
   }
 
+  function syncBundledVhlData() {
+    try {
+      if (!window.VHL_ROSTER_DATA) return;
+      const bundled = validateVhlImport(window.VHL_ROSTER_DATA);
+      const current = readImportedVhlData();
+      const bundledTime = Date.parse(bundled.importedAt) || 0;
+      const currentTime = Date.parse(current?.importedAt || '') || 0;
+      if (!current || bundledTime >= currentTime) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(bundled));
+      }
+    } catch (error) {
+      console.warn('Не удалось автоматически обновить составы ВХЛ:', error);
+    }
+  }
+
   function getImportedVhlRoster(teamSlug) {
     const data = readImportedVhlData();
     return data?.teams.find(team => team.teamSlug === teamSlug) || null;
@@ -209,20 +224,22 @@
   function renderVhlImportSettings() {
     const data = readImportedVhlData();
     const safeText = value => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const totalPlayers = data ? data.teams.reduce((sum, team) => sum + team.players.length, 0) : 0;
     const summary = data
       ? data.teams.map(team => '<li>' + safeText(team.teamName) + ': ' + team.players.length + ' игроков' +
           (team.rosterAsOf ? ' · на ' + safeText(team.rosterAsOf) : '') + '</li>').join('')
-      : '<li>Пока нет импортированных составов.</li>';
+      : '<li>Автоматическая база пока не загружена.</li>';
     return `<article class="settings-card vhl-import-card">
       <div class="settings-card-icon">🏒</div>
       <h3>Реальные составы ВХЛ</h3>
-      <p>Загрузи JSON, подготовленный локальным инструментом импорта. Реальные составы будут использоваться при создании новых карьер. Уже начатые карьеры не меняются.</p>
-      <label class="vhl-import-file">Выбрать JSON-файл<input type="file" accept=".json,application/json" onchange="importVhlRosterFile(this)"></label>
+      <p>${data ? 'Автоматическая база подключена. Новые карьеры используют реальные составы клубов ВХЛ.' : 'Ожидается автоматическое обновление базы составов через GitHub Actions.'} Уже начатые карьеры не меняются.</p>
+      <div class="vhl-import-status"><strong>${data ? data.teams.length + ' клубов · ' + totalPlayers + ' игроков' : 'Нет данных'}</strong><span>${data ? 'Обновлено: ' + safeText(data.importedAt) : 'Проверь подключение к интернету и обнови страницу.'}</span></div>
       <ul class="vhl-import-summary">${summary}</ul>
-      ${data ? '<button class="btn secondary" type="button" onclick="clearImportedVhlData()">Удалить импортированные данные</button>' : ''}
-      <div class="settings-footnote">Источник: vhlru.ru. Не импортируются фотографии. Использование и распространение данных требуют проверки разрешений правообладателя.</div>
+      <div class="settings-footnote">База автоматически обновляется вместе с проектом. Для применения новой версии достаточно перезагрузить игру и начать новую карьеру.</div>
     </article>`;
   }
+
+  syncBundledVhlData();
 
   window.validateVhlImport = validateVhlImport;
   window.readImportedVhlData = readImportedVhlData;
