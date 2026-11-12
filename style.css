@@ -1157,3 +1157,16 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
 @media (prefers-reduced-motion: reduce) {
   .start-menu-button { transition: none; }
 }
+
+
+/* VHL real-roster import */
+.vhl-import-card { grid-column: 1 / -1; }
+.vhl-import-file {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 42px; padding: 10px 16px; border-radius: 10px;
+  background: var(--accent, #e87524); color: #fff; font-weight: 700;
+  cursor: pointer; width: fit-content;
+}
+.vhl-import-file input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.vhl-import-summary { margin: 12px 0; padding-left: 20px; color: var(--text-secondary, #9ca3af); }
+.vhl-import-card .settings-footnote { margin-top: 12px; }
