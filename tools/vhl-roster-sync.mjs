@@ -56,7 +56,7 @@ async function getText(url) {
     headers: { 'User-Agent': USER_AGENT, 'Accept': 'text/html, text/plain;q=0.9, */*;q=0.8' },
     signal: AbortSignal.timeout(25000)
   });
-  if (!response.ok) throw new Error(\`HTTP ${response.status} при запросе ${url}\`);
+  if (!response.ok) throw new Error(`HTTP ${response.status} при запросе ${url}`);
   return response.text();
 }
 
@@ -91,19 +91,19 @@ function robotsAllowsTeams(robotsText) {
 }
 
 async function discoverTeams() {
-  const robotsResponse = await fetch(\`${BASE}/robots.txt\`, {
+  const robotsResponse = await fetch(`${BASE}/robots.txt`, {
     headers: { 'User-Agent': USER_AGENT, 'Accept': 'text/plain' },
     signal: AbortSignal.timeout(15000)
   });
   if (!robotsResponse.ok) {
-    throw new Error(\`Не удалось проверить robots.txt (HTTP ${robotsResponse.status}); автоматическая загрузка остановлена.\`);
+    throw new Error(`Не удалось проверить robots.txt (HTTP ${robotsResponse.status}); автоматическая загрузка остановлена.`);
   }
   const robots = await robotsResponse.text();
   if (!robotsAllowsTeams(robots)) {
     throw new Error('robots.txt запрещает автоматическое обращение к разделу /teams/. Загрузка остановлена.');
   }
 
-  const html = await getText(\`${BASE}/teams/\`);
+  const html = await getText(`${BASE}/teams/`);
   const links = new Map();
   for (const match of html.matchAll(/<a\b[^>]*href=["'](?:https?:\/\/www\.vhlru\.ru)?\/teams\/(\d+)\/?["'][^>]*>([\s\S]*?)<\/a>/gi)) {
     const id = Number(match[1]);
@@ -123,7 +123,7 @@ async function discoverTeams() {
     else discovered.push({ ...team, teamPageId: found[0], directoryLabel: found[1] });
   }
   if (discovered.length < 25) {
-    throw new Error(\`В каталоге распознано только ${discovered.length} из ${TEAMS.length} клубов. Выгрузка остановлена, чтобы не получить неполную базу.\`);
+    throw new Error(`В каталоге распознано только ${discovered.length} из ${TEAMS.length} клубов. Выгрузка остановлена, чтобы не получить неполную базу.`);
   }
   return { discovered, missing };
 }
@@ -171,7 +171,7 @@ function parseRoster(html, team) {
     goalies: unique.filter(player => player.position === 'goaltender').length
   };
   if (unique.length < 20 || counts.forwards < 12 || counts.defensemen < 6 || counts.goalies < 2) {
-    throw new Error(\`Состав не прошёл проверку: ${unique.length} игроков; нападающие ${counts.forwards}, защитники ${counts.defensemen}, вратари ${counts.goalies}.\`);
+    throw new Error(`Состав не прошёл проверку: ${unique.length} игроков; нападающие ${counts.forwards}, защитники ${counts.defensemen}, вратари ${counts.goalies}.`);
   }
   const markerText = textOf(html.slice(Math.max(0, marker - 8000), marker));
   const rosterAsOf = (markerText.match(/По состоянию на\s+(\d{2}\.\d{2}\.\d{4})/i) || [])[1] || null;
@@ -195,20 +195,20 @@ try {
     ? directory.discovered
     : directory.discovered.filter(team => team.slug === requestedTeam);
   if (requestedTeam !== 'all' && !teamList.length) {
-    throw new Error(\`Клуб «${requestedTeam}» не найден в актуальном каталоге ВХЛ или не сопоставлен с командами игры.\`);
+    throw new Error(`Клуб «${requestedTeam}» не найден в актуальном каталоге ВХЛ или не сопоставлен с командами игры.`);
   }
-  if (directory.missing.length) failures.push(\`Не сопоставлены клубы: ${directory.missing.join(', ')}\`);
+  if (directory.missing.length) failures.push(`Не сопоставлены клубы: ${directory.missing.join(', ')}`);
 
   for (let index = 0; index < teamList.length; index++) {
     const team = teamList[index];
     try {
-      console.log(\`[${index + 1}/${teamList.length}] ${team.name}: ${BASE}/teams/${team.teamPageId}/\`);
-      const html = await getText(\`${BASE}/teams/${team.teamPageId}/\`);
+      console.log(`[${index + 1}/${teamList.length}] ${team.name}: ${BASE}/teams/${team.teamPageId}/`);
+      const html = await getText(`${BASE}/teams/${team.teamPageId}/`);
       results.push(parseRoster(html, team));
-      console.log(\`  OK: ${results.at(-1).players.length} игроков\`);
+      console.log(`  OK: ${results.at(-1).players.length} игроков`);
     } catch (error) {
-      failures.push(\`${team.name}: ${error.message}\`);
-      console.error(\`  ERROR: ${error.message}\`);
+      failures.push(`${team.name}: ${error.message}`);
+      console.error(`  ERROR: ${error.message}`);
     }
     if (index < teamList.length - 1) await sleep(DELAY_MS);
   }
@@ -220,7 +220,7 @@ const totalPlayers = results.reduce((sum, team) => sum + team.players.length, 0)
 const output = {
   schemaVersion: 1,
   source: 'vhlru',
-  sourceUrl: \`${BASE}/teams/\`,
+  sourceUrl: `${BASE}/teams/`,
   exportedAt: new Date().toISOString(),
   teams: results
 };
@@ -229,17 +229,17 @@ await fs.writeFile(OUTPUT_FILE, JSON.stringify(output, null, 2) + '\n', 'utf8');
 const report = [
   '# Отчёт синхронизации составов ВХЛ',
   '',
-  \`- Начало: ${startedAt}\`,
-  \`- Завершение: ${new Date().toISOString()}\`,
-  \`- Режим: ${requestedTeam}\`,
-  \`- Успешно клубов: ${results.length}/${teamList.length}\`,
-  \`- Игроков: ${totalPlayers}\`,
+  `- Начало: ${startedAt}`,
+  `- Завершение: ${new Date().toISOString()}`,
+  `- Режим: ${requestedTeam}`,
+  `- Успешно клубов: ${results.length}/${teamList.length}`,
+  `- Игроков: ${totalPlayers}`,
   '',
   '## Успешно обработаны',
-  ...(results.length ? results.map(team => \`- ${team.teamName}: ${team.players.length} игроков; дата состава: ${team.rosterAsOf || 'не указана'}\`) : ['- Нет']),
+  ...(results.length ? results.map(team => `- ${team.teamName}: ${team.players.length} игроков; дата состава: ${team.rosterAsOf || 'не указана'}`) : ['- Нет']),
   '',
   '## Замечания и ошибки',
-  ...(failures.length ? failures.map(message => \`- ${message}\`) : ['- Нет']),
+  ...(failures.length ? failures.map(message => `- ${message}`) : ['- Нет']),
   '',
   '> Данные сохранены как артефакт GitHub Actions и не коммитятся в репозиторий. Указание источника не заменяет разрешение на автоматизированное получение и повторное использование материалов.'
 ].join('\n');
