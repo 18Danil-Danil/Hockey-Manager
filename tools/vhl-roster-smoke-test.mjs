@@ -30,7 +30,7 @@ if (typeof window.validateVhlImport !== 'function' ||
 
 const validated = window.validateVhlImport(window.VHL_ROSTER_DATA);
 if (validated.teams.length !== 30) {
-  throw new Error(\`Ожидалось 30 клубов, получено ${validated.teams.length}.\`);
+  throw new Error(`Ожидалось 30 клубов, получено ${validated.teams.length}.`);
 }
 
 let totalPlayers = 0;
@@ -40,9 +40,9 @@ for (const team of validated.teams) {
     name: team.teamName,
     ratings: { att: 70, def: 70, gk: 70 }
   });
-  if (!roster) throw new Error(\`Для клуба ${team.teamSlug} импортёр вернул пустой состав.\`);
+  if (!roster) throw new Error(`Для клуба ${team.teamSlug} импортёр вернул пустой состав.`);
   if (roster.players.length !== team.players.length) {
-    throw new Error(\`Для клуба ${team.teamSlug} потерялись игроки.\`);
+    throw new Error(`Для клуба ${team.teamSlug} потерялись игроки.`);
   }
   const counts = {
     forwards: roster.players.filter(p => ['C', 'LW', 'RW'].includes(p.position)).length,
@@ -50,16 +50,16 @@ for (const team of validated.teams) {
     goalies: roster.players.filter(p => p.position === 'G').length
   };
   if (counts.forwards < 12 || counts.defense < 6 || counts.goalies < 2) {
-    throw new Error(\`Некорректное распределение амплуа в ${team.teamSlug}.\`);
+    throw new Error(`Некорректное распределение амплуа в ${team.teamSlug}.`);
   }
   if (roster.players.some(p => p.source !== 'vhlru' || !p.sourcePlayerId || !p.name)) {
-    throw new Error(\`Не заполнены исходные данные игроков в ${team.teamSlug}.\`);
+    throw new Error(`Не заполнены исходные данные игроков в ${team.teamSlug}.`);
   }
   totalPlayers += roster.players.length;
-  console.log(\`OK ${team.teamSlug}: ${roster.players.length} игроков\`);
+  console.log(`OK ${team.teamSlug}: ${roster.players.length} игроков`);
 }
 
 if (totalPlayers !== validated.teams.reduce((sum, team) => sum + team.players.length, 0)) {
   throw new Error('Итоговое количество игроков не совпало.');
 }
-console.log(\`Успешно: ${validated.teams.length} клубов, ${totalPlayers} игроков прошли реальный импортёр и генератор состава.\`);
+console.log(`Успешно: ${validated.teams.length} клубов, ${totalPlayers} игроков прошли реальный импортёр и генератор состава.`);
