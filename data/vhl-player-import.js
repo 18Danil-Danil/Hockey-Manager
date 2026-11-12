@@ -7,6 +7,7 @@
   const MAX_FILE_BYTES = 2 * 1024 * 1024;
   const MAX_TEAMS = 40;
   const MAX_PLAYERS_PER_TEAM = 60;
+  const ALLOWED_COUNTRIES = new Set(['Россия','Беларусь','Казахстан','Канада','США','Финляндия','Швеция','Чехия','Словакия','Латвия','Германия','Швейцария','Дания','Норвегия','Украина']);
   const COUNTRIES = {
     Russia: 'Россия', Belarus: 'Беларусь', Kazakhstan: 'Казахстан',
     Canada: 'Канада', USA: 'США', Finland: 'Финляндия', Sweden: 'Швеция',
@@ -43,7 +44,7 @@
         const name = String(player.name || '').trim();
         const position = String(player.position || '').toLowerCase();
         if (!Number.isSafeInteger(playerId) || playerId <= 0 ||
-            !name || name.length > 100 ||
+            !name || name.length > 100 || !/^[\\p{L}\\p{M} .'-]+$/u.test(name) ||
             !['forward', 'defense', 'goaltender'].includes(position) ||
             (jersey !== null && (!Number.isInteger(jersey) || jersey < 0 || jersey > 99))) {
           throw new Error('Некорректная запись игрока в составе ' + team.teamName + '.');
@@ -57,9 +58,9 @@
         return {
           playerId, name, position, jersey,
           born: born || null,
-          country: normalizeCountry(player.country),
-          heightCm: player.heightCm != null && Number.isFinite(Number(player.heightCm)) ? Number(player.heightCm) : null,
-          weightKg: player.weightKg != null && Number.isFinite(Number(player.weightKg)) ? Number(player.weightKg) : null,
+          country,
+          heightCm,
+          weightKg,
           playerUrl: 'https://www.vhlru.ru/players/' + playerId + '/'
         };
       });
