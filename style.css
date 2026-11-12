@@ -1160,7 +1160,7 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
 
 
 /* VHL real-roster import */
-.vhl-import-card { grid-column: 1 / -1; }
+.vhl-import-card { margin-top: 16px; }
 .vhl-import-file {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 42px; padding: 10px 16px; border-radius: 10px;
