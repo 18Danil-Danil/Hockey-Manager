@@ -10,7 +10,7 @@ const BASE = 'https://www.vhlru.ru';
 const USER_AGENT = 'HockeyManagerVHLRosterBot/1.0 (GitHub Actions; low-frequency roster sync)';
 const OUTPUT_FILE = 'vhl-rosters.json';
 const REPORT_FILE = 'vhl-roster-sync-report.md';
-const DELAY_MS = 1251;
+const DELAY_MS = 1252;
 
 const TEAMS = [
   ['akm', 'АКМ'], ['bars', 'Барс'], ['buran', 'Буран'],
