@@ -29,32 +29,32 @@ function decode(value) {
     .replace(/&#39;|&apos;/gi, "'")
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
-    .replace(/&#(\\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
     .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
 }
 function textOf(value) {
-  return decode(value.replace(/<script[\\s\\S]*?<\\/script>/gi, ' ')
-    .replace(/<style[\\s\\S]*?<\\/style>/gi, ' ')
+  return decode(value.replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<[^>]+>/g, ' '))
-    .replace(/\\s+/g, ' ').trim();
+    .replace(/\s+/g, ' ').trim();
 }
 function parseTable(tableHtml) {
   const players = [];
-  for (const rowMatch of tableHtml.matchAll(/<tr\\b[^>]*>([\\s\\S]*?)<\\/tr>/gi)) {
+  for (const rowMatch of tableHtml.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)) {
     const row = rowMatch[1];
-    const idMatch = row.match(/href=["'][^"']*\\/players\\/(\\d+)\\/[^"']*["']/i);
+    const idMatch = row.match(/href=["'][^"']*\/players\/(\d+)\/[^"']*["']/i);
     if (!idMatch) continue;
-    const cells = [...row.matchAll(/<t[dh]\\b[^>]*>([\\s\\S]*?)<\\/t[dh]>/gi)].map(match => textOf(match[1]));
+    const cells = [...row.matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(match => textOf(match[1]));
     if (cells.length < 4) continue;
     const playerId = Number(idMatch[1]);
     const positionText = cells.find(value => /вратарь|защитник|нападающ/i.test(value)) || '';
     const position = /вратарь/i.test(positionText) ? 'goaltender'
       : /защитник/i.test(positionText) ? 'defense'
       : /нападающ/i.test(positionText) ? 'forward' : null;
-    const born = cells.find(value => /^\\d{2}\\.\\d{2}\\.\\d{4}$/.test(value)) || '';
-    const name = cells.find(value => value.length > 3 && /[А-ЯЁа-яё]/.test(value) && !/^\\d+$/.test(value) &&
+    const born = cells.find(value => /^\d{2}\.\d{2}\.\d{4}$/.test(value)) || '';
+    const name = cells.find(value => value.length > 3 && /[А-ЯЁа-яё]/.test(value) && !/^\d+$/.test(value) &&
       !/вратарь|защитник|нападающ/i.test(value) && value !== born) || '';
-    const jerseyCell = cells.find(value => /^\\d{1,2}$/.test(value));
+    const jerseyCell = cells.find(value => /^\d{1,2}$/.test(value));
     const country = cells.find(value => /^(Россия|Беларусь|Казахстан|Канада|США|Финляндия|Швеция|Чехия|Словакия|Латвия|Германия|Швейцария|Дания|Норвегия|Украина)$/.test(value)) || 'Россия';
     if (!position || !name) continue;
     players.push({
@@ -67,7 +67,7 @@ function parseTable(tableHtml) {
   return players;
 }
 
-const marker = html.search(/Основной\\s+состав/i);
+const marker = html.search(/Основной\s+состав/i);
 if (marker < 0) throw new Error('Не найден раздел «Основной состав» на странице ВХЛ.');
 const tableStart = html.indexOf('<table', marker);
 const tableEnd = html.indexOf('</table>', tableStart);
@@ -78,7 +78,7 @@ if (players.length < 20) {
 }
 const ids = new Set();
 const uniquePlayers = players.filter(player => !ids.has(player.playerId) && ids.add(player.playerId));
-const rosterAsOf = (textOf(html.slice(Math.max(0, marker - 6000), marker)).match(/По состоянию на\\s+(\\d{2}\\.\\d{2}\\.\\d{4})/i) || [])[1] || null;
+const rosterAsOf = (textOf(html.slice(Math.max(0, marker - 6000), marker)).match(/По состоянию на\s+(\d{2}\.\d{2}\.\d{4})/i) || [])[1] || null;
 const output = {
   schemaVersion: 1,
   source: 'vhlru',
@@ -90,6 +90,6 @@ const output = {
   }]
 };
 const outputPath = `vhl-${teamSlug}-roster.json`;
-await fs.writeFile(outputPath, JSON.stringify(output, null, 2) + '\\n', 'utf8');
+await fs.writeFile(outputPath, JSON.stringify(output, null, 2) + '\n', 'utf8');
 console.log(`Exported ${uniquePlayers.length} players from ${url} -> ${outputPath}`);
 console.log('Review the generated JSON and verify source permissions before redistribution.');
