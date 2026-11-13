@@ -8,6 +8,8 @@ on:
       - 'tools/vhl-player-stats-sync.mjs'
       - 'tools/vhl-tournament-map.mjs'
       - 'tools/vhl-player-career-parser.mjs'
+      - 'tools/vhl-season-stats-parser.mjs'
+      - 'tests/vhl-season-stats-parser.test.mjs'
       - 'tests/vhl-player-career-parser.test.mjs'
       - 'tests/vhl-tournament-map.test.mjs'
       - 'data/vhl-rosters.js'
@@ -53,6 +55,9 @@ jobs:
 
       - name: Проверить парсер карьеры игроков ВХЛ
         run: node tests/vhl-player-career-parser.test.mjs
+
+      - name: Проверить парсер сезонной статистики ВХЛ
+        run: node tests/vhl-season-stats-parser.test.mjs
 
       - name: Загрузить сезонную статистику
         run: node tools/vhl-player-stats-sync.mjs
