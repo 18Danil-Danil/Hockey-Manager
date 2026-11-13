@@ -71,4 +71,12 @@ sandbox.VHL_PLAYER_LEAGUE_HISTORY = {
 const historyOnlyRating = sandbox.makeVhlRating('prospect', { ratings: { att: 70, def: 70, gk: 70 } }, 20);
 assert.ok(historyOnlyRating && historyOnlyRating.leagueBonus > 0, 'separate verified league-history data should be used without VHL season stats');
 assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 20 }, { season: '24/25', league: 'KHL', gp: 20 }], 2026), sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 20 }], 2026), 'duplicate rows for the same team and stage should not inflate experience');
+sandbox.VHL_PLAYER_STATS_DATA = { seasons: [], players: {} };
+sandbox.VHL_PLAYER_LEAGUE_HISTORY = {
+  schemaVersion: 2,
+  players: { careerVeteran: { position: 'forward', career: [{ scope: 'career', league: 'KHL', gp: 123 }] } }
+};
+const careerOnlyRating = sandbox.makeVhlRating('careerVeteran', { ratings: { att: 70, def: 70, gk: 70 } }, 32);
+assert.ok(careerOnlyRating && careerOnlyRating.leagueBonus > 0, 'career-only records should produce a usable rating');
+assert.equal(careerOnlyRating.source, 'league-history');
 console.log('VHL player rating model checks passed.');
