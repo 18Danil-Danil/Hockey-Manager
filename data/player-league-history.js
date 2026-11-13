@@ -1447,5 +1447,39 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 152 }
       ]
     },
+    // Александр Подкорытов — 454 матча ВХЛ (414 регулярных + 40 плей-офф).
+    // Источник: https://www.vhlru/players/23250/
+    "23250": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 454 }
+      ]
+    },
+    // Никита Колесников — 291 матч ВХЛ (276 регулярных + 15 плей-офф).
+    // Источник: https://www.vhlru/players/23780/
+    "23780": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 291 }
+      ]
+    },
+    // Даниил Лапин — 371 матч ВХЛ (340 регулярных + 31 плей-офф).
+    // Источник: https://www.vhlru/players/23353/
+    "23353": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 371 }
+      ]
+    },
+    // Александр Шепелев — 148 матчей ВХЛ и 152 матча КХЛ.
+    // Источники: https://www.vhlru/lenta/607845/
+    // https://ru.wikipedia.org/wiki/Шепелев,_Александр_Сергеевич
+    "23447": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 148 },
+        { scope: "career", league: "KHL", gp: 152 }
+      ]
+    },
   }
 };
