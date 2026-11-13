@@ -99,7 +99,7 @@ function parsePlayerProfile(html, expectedPosition, wantedSeasons) {
       const gp = numeric(c[2]);
       if (!gp) continue;
       seasons.push({
-        season, stage, gp, wins: numeric(c[3]), losses: numeric(c[4]),
+        season, stage, gp, team: c[0], wins: numeric(c[3]), losses: numeric(c[4]),
         shotsAgainst: numeric(c[6]), goalsAgainst: numeric(c[7]), saves: numeric(c[8]),
         savePct: numeric(c[9]), gaa: numeric(c[10]), goals: numeric(c[11]),
         assists: numeric(c[12]), shutouts: numeric(c[13]), pim: numeric(c[14]),
@@ -110,7 +110,7 @@ function parsePlayerProfile(html, expectedPosition, wantedSeasons) {
       const gp = numeric(c[2]);
       if (!gp) continue;
       seasons.push({
-        season, stage, gp, goals: numeric(c[3]), assists: numeric(c[4]),
+        season, stage, gp, team: c[0], goals: numeric(c[3]), assists: numeric(c[4]),
         points: numeric(c[5]), plusMinus: numeric(c[6]), pim: numeric(c[7]),
         ppGoals: numeric(c[9]), shots: numeric(c[14]), shootingPct: numeric(c[15]),
         faceoffs: numeric(c[17]), faceoffsWon: numeric(c[18]), faceoffPct: numeric(c[19]),
@@ -168,6 +168,42 @@ for (const [id, player] of players) {
 if (withStats < Math.min(50, Math.ceil(players.size * 0.2))) {
   throw new Error(`Слишком мало профилей со статистикой: ${withStats}/${players.size}. Старую базу не перезаписываем.`);
 }
+
+const HISTORY_FILE = 'data/player-league-history.js';
+const historyText = await fs.readFile(HISTORY_FILE, 'utf8');
+const existingHistoryIds = new Set(
+  [...historyText.matchAll(/^\\s{4}"(\\d+)":\\s*\\{/gm)].map(match => match[1])
+);
+const historyTarget = 500;
+const historyAdditions = [];
+for (const [id, playerStats] of Object.entries(outputPlayers)) {
+  if (existingHistoryIds.has(id) || historyAdditions.length >= historyTarget - existingHistoryIds.size) continue;
+  const seasons = (playerStats.seasons || []).filter(row => Number(row.gp) > 0).map(row => ({
+    season: row.season,
+    league: 'VHL',
+    gp: row.gp,
+    ...(row.team ? { team: row.team } : {}),
+    stage: row.stage === 'playoff' ? 'playoffs' : 'regular'
+  }));
+  if (!seasons.length) continue;
+  historyAdditions.push(
+    `    // Источник: https://www.vhlru.ru/players/${id}/ — сезонная статистика по официальной карточке игрока.\n` +
+    `    "${id}": ${JSON.stringify({ position: playerStats.position, seasons })}`
+  );
+}
+const historyTotal = existingHistoryIds.size + historyAdditions.length;
+if (historyTotal < historyTarget) {
+  throw new Error(`Недостаточно подтверждённых профилей для цели ${historyTarget}: собрано ${historyTotal}. История не перезаписывается.`);
+}
+if (historyAdditions.length) {
+  const updatedHistory = historyText.replace(
+    /\\n  }\\n};\\s*$/,
+    '\\n' + historyAdditions.join(',\\n') + ',\\n  }\\n};\\n'
+  );
+  if (updatedHistory === historyText) throw new Error('Не удалось безопасно обновить конец player-league-history.js.');
+  await fs.writeFile(HISTORY_FILE, updatedHistory, 'utf8');
+}
+
 const payload = {
   schemaVersion: 1, source: 'vhlru', sourceUrl: `${BASE}/players/{playerId}/`,
   importedAt: new Date().toISOString(), seasons: SEASONS, players: outputPlayers
@@ -176,7 +212,7 @@ await fs.writeFile(OUTPUT_FILE, '/* Сезонная статистика ВХЛ
 const report = [
   '# Отчёт импорта статистики игроков ВХЛ', '',
   `- Игроков в текущих составах: ${players.size}`,
-  `- Профилей со статистикой за выбранные сезоны: ${withStats}`,
+  `- Профилей со статистикой за выбранные сезоны: ${withStats}`,\n  `- Игроков в карьерной истории после импорта: ${historyTotal}`,\n  `- Новых игроков добавлено в карьерную историю: ${historyAdditions.length}`,
   `- Сезоны: ${SEASONS.join(', ')}`,
   `- Дата импорта: ${payload.importedAt}`,
   `- Ошибок загрузки: ${failures.length}`, '',
