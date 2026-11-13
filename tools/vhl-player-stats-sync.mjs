@@ -249,7 +249,8 @@ const historyText = await fs.readFile(HISTORY_FILE, 'utf8');
 const existingHistoryIds = new Set(
   [...historyText.matchAll(/^\s{4}"(\d+)":\s*\{/gm)].map(match => match[1])
 );
-const historyTarget = 500;
+// История должна покрывать всех игроков текущих составов, а не старый лимит в 500 записей.
+const historyTarget = Math.max(500, rosterPlayers.size);
 const historyAdditions = [];
 for (const [id, playerStats] of Object.entries(outputPlayers)) {
   if (existingHistoryIds.has(id) || historyAdditions.length >= historyTarget - existingHistoryIds.size) continue;
