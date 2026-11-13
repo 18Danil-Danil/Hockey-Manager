@@ -667,12 +667,12 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 248 }
       ]
     },
-    // Арсений Ерохин — 646 матчей ВХЛ (574 регулярных + 72 плей-офф).
-    // Источник: https://www.vhlru.ru/players/17636/
+    // Арсений Ерохин — 653 матча ВХЛ по актуальной суммарной статистике лиги.
+    // Источник: https://www.vhlru/stats/players/all/
     "17636": {
       position: "defense",
       career: [
-        { scope: "career", league: "VHL", gp: 646 }
+        { scope: "career", league: "VHL", gp: 653 }
       ]
     },
     // Валерий Поляков — 567 матчей ВХЛ, 213 МХЛ и 43 в чемпионате Беларуси;
@@ -821,6 +821,41 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "forward",
       career: [
         { scope: "career", league: "VHL", gp: 654 }
+      ]
+    },
+    // Егор Шалапов — 121 матч ВХЛ, 166 НМХЛ и 2 матча за «Номад» (Казахстан).
+    // Источники: https://www.vhlru/players/21548/
+    // https://nmhl.fhr.ru/players/21548/
+    "21548": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 121 },
+        { scope: "career", league: "NMHL", gp: 166 },
+        { scope: "career", league: "KAZAKHSTAN", gp: 2 }
+      ]
+    },
+    // Андрей Виноградов — 489 матчей ВХЛ по актуальной суммарной статистике.
+    // Источник: https://www.vhlru/stats/players/all/
+    "22535": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 489 }
+      ]
+    },
+    // Андрей Ерофеев — 563 матча ВХЛ по официальной карточке лиги.
+    // Источник: https://www.vhlru/players/19050/
+    "19050": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 563 }
+      ]
+    },
+    // Денис Дюрягин — 604 матча ВХЛ по официальной карточке лиги.
+    // Источник: https://www.vhlru/players/19503/
+    "19503": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 604 }
       ]
     },
   }
