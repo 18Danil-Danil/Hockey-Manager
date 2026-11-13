@@ -13,7 +13,7 @@ assert.ok(reconcileStart >= 0 && reconcileEnd > reconcileStart, 'Could not locat
 const getLiveManpowerState = () => ({ home: { skaters: 5 }, away: { skaters: 5 } });
 const reconcileLiveManpower = new Function('getLiveManpowerState', 'clamp', 'getLivePlayerSurname',
   source.slice(reconcileStart, reconcileEnd) + '; return reconcileLiveManpower;'
-)(getLiveManpowerState, clamp, player => player?.surname || String(player?.name || '').split(/\\s+/)[0] || '');
+)(getLiveManpowerState, clamp, player => player?.surname || String(player?.name || '').split(/\s+/)[0] || '');
 
 const start = source.indexOf('function getLiveContactRating(');
 const end = source.indexOf('function resolveLiveShotBlock(', start);
