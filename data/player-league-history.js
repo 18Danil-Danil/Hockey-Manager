@@ -1209,5 +1209,45 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 376 }
       ]
     },
+    // Егор Бабенко — 197 матчей ВХЛ по суммарной статистике лиги.
+    // Источник: https://www.vhlru/players/21263/
+    "21263": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 197 }
+      ]
+    },
+    // Егор Попов — 337 матчей ВХЛ (278 регулярных + 59 плей-офф).
+    // Источник: https://www.vhlru/players/22248/
+    "22248": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 337 }
+      ]
+    },
+    // Дмитрий Жукенов — 258 матчей ВХЛ (226 регулярных + 32 плей-офф).
+    // Источник: https://www.vhlru/players/21980/
+    "21980": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 258 }
+      ]
+    },
+    // Владимир Барабанов — 442 матча ВХЛ по актуальной суммарной статистике.
+    // Источник: https://www.vhlru/stats/players/all/
+    "20973": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 442 }
+      ]
+    },
+    // Павел Ткаченко — 371 матч ВХЛ по актуальной суммарной статистике.
+    // Источник: https://www.vhlru/players/21799/
+    "21799": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 371 }
+      ]
+    },
   }
 };
