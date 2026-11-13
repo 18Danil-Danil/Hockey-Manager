@@ -45,7 +45,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/vhl-player-stats.js
+          git add data/vhl-player-stats.js data/player-league-history.js
           if git diff --cached --quiet; then
             echo "Статистика не изменилась — новый коммит не требуется."
           else
