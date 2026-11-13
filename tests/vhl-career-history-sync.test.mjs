@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseVhlCareer } from '../tools/vhl-career-history-sync.mjs';
+import { parseVhlCareer, parseVhlIdentity } from '../tools/vhl-career-history-sync.mjs';
 
 test('parses full skater season statistics by stage and team', () => {
   const html = '<table>' +
@@ -35,4 +35,13 @@ test('does not create rows for zero-game seasons', () => {
     '<tr><td>26/27</td><td>Regular Season</td></tr>' +
     '<tr><td><a href="/teams/1/">Dynamo-Altai</a></td><td>-</td><td>0</td><td>0</td></tr>';
   assert.deepEqual(parseVhlCareer(html), []);
+});
+
+
+test('extracts English name and birth date for cross-league matching', () => {
+  const html = '<h1># Borodkin Artyom #5</h1><div>Born: 11.10.1991</div>';
+  assert.deepEqual(parseVhlIdentity(html), {
+    nameEn: 'Borodkin Artyom',
+    birthDate: '1991-10-11'
+  });
 });
