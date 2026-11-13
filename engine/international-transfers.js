@@ -140,14 +140,21 @@ function createInternationalMarket() {
       clubs.push(club);
     }
   }
-  return {version:2,clubs,transferLog:[]};
+  return {version:3,clubs,transferLog:[]};
 }
 function ensureInternationalMarket() {
   if (!G.league) return;
   const previous = G.league.internationalMarket;
-  if (previous && previous.version >= 2 && Array.isArray(previous.clubs)) return;
+  if (previous && previous.version >= 3 && Array.isArray(previous.clubs)) return;
   const rebuilt = createInternationalMarket();
-  if (previous && Array.isArray(previous.transferLog)) rebuilt.transferLog = previous.transferLog.slice();
+  if (previous && Array.isArray(previous.transferLog)) {
+    rebuilt.transferLog = previous.transferLog.slice();
+    const signedNames = new Set(previous.transferLog.map(item => String(item.playerName || '').trim().toLocaleLowerCase()).filter(Boolean));
+    for (const club of rebuilt.clubs) {
+      club.roster = club.roster.filter(player => !signedNames.has(String(player.name || '').trim().toLocaleLowerCase()));
+      club.averageOvr = club.roster.reduce((sum, player) => sum + player.ovr, 0) / Math.max(1, club.roster.length);
+    }
+  }
   G.league.internationalMarket = rebuilt;
 }
 function findInternationalPlayer(playerId) {
