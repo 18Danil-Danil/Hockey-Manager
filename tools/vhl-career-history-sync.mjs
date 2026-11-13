@@ -233,14 +233,16 @@ function formatRows(rows) {
     'evenStrengthGoals', 'powerPlayGoals', 'shortHandedGoals', 'overtimeGoals',
     'gameWinningGoals', 'shootoutDecidingShots', 'shotsPerGame', 'faceoffs',
     'faceoffsWon', 'faceoffPercentage', 'timeOnIce', 'timeOnIcePerGame',
-    'shiftsPerGame', 'hits', 'blockedShots', 'team', 'stage'
+    'shiftsPerGame', 'hits', 'blockedShots', 'powerPlayAssists', 'shortHandedAssists',
+    'gameTyingGoals', 'tiesOrOvertimeLosses', 'emptyNetGoals', 'minutes', 'source',
+    'team', 'stage'
   ];
   return rows.map(row => '        { ' + keys
     .filter(key => row[key] !== undefined && row[key] !== null)
     .map(key => key + ': ' + JSON.stringify(row[key]))
     .join(', ') + ' }');
 }
-function mergePlayerSeasons(historyText, playerId, rows, position, identity) {
+export function mergePlayerSeasons(historyText, playerId, rows, position, identity) {
   const marker = new RegExp('(^[ \\t]*)"' + playerId + '"\\s*:\\s*\\{', 'm');
   const match = marker.exec(historyText);
   const identityFields = [];
