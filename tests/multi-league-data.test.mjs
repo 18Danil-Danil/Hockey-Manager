@@ -56,8 +56,8 @@ const registryPosition = html.indexOf('data/league-registry.js');
 const statsPosition = html.indexOf('data/international-player-stats.js');
 assert.ok(registryPosition >= 0 && statsPosition > registryPosition, 'league registry must load before player data');
 const vhlImporter = fs.readFileSync('tools/vhl-player-stats-sync.mjs', 'utf8');
-assert.ok(vhlImporter.includes('const historyTarget = Math.max(500, rosterPlayers.size);'),
-  'VHL career history must cover all current roster players');
+assert.ok(vhlImporter.includes('const missingRosterHistory = [...rosterPlayers.keys()]'),
+  'VHL importer must verify career-history coverage for every current roster player');
 
 console.log('OK: ' + leagues.length + ' configured international leagues; ' +
   khl.clubs.length + ' KHL clubs; ' + khlPlayers.length + ' verified KHL player records; ' +
