@@ -4,7 +4,7 @@
    в игровые атрибуты относительно игроков той же позиции.
    ============================================================ */
 (function () {
-  const SEASON_WEIGHTS = { '25/26': 1, '24/25': 0.76, '23/24': 0.56 };
+  const DEFAULT_SEASON_WEIGHTS = [1, 0.76, 0.56];
   const clampValue = (value, min, max) => Math.max(min, Math.min(max, value));
   const numberOrNull = value => value === null || value === undefined || value === '' || !Number.isFinite(Number(value)) ? null : Number(value);
 
@@ -19,13 +19,13 @@
     return weight ? total / weight : null;
   }
 
-  function summarizePlayerStats(playerStats) {
+  function summarizePlayerStats(playerStats, seasonWeights) {
     const rows = (playerStats?.seasons || []).filter(row =>
-      row && row.stage === 'regular' && SEASON_WEIGHTS[row.season] && Number(row.gp) > 0
+      row && row.stage === 'regular' && seasonWeights[row.season] && Number(row.gp) > 0
     );
     const weightedRows = rows.map(row => ({
       ...row,
-      weight: SEASON_WEIGHTS[row.season] * Math.min(1, Number(row.gp) / 20)
+      weight: seasonWeights[row.season] * Math.min(1, Number(row.gp) / 20)
     })).filter(row => row.weight > 0);
     if (!weightedRows.length) return null;
 
@@ -125,9 +125,12 @@
   }
 
   function buildVhlRatingIndex(data) {
+    const seasonWeights = Object.fromEntries((data?.seasons || []).map((season, index) => [
+      season, DEFAULT_SEASON_WEIGHTS[index] || 0.4
+    ]));
     const players = Object.entries(data?.players || {}).map(([id, value]) => ({
       id: String(id), position: value.position,
-      summary: summarizePlayerStats(value)
+      summary: summarizePlayerStats(value, seasonWeights)
     })).filter(item => item.summary);
     const makeSkaterMetrics = position => ({
       goals: percentileMap(players, position, 'goalsPerGame'),
