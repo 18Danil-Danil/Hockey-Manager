@@ -716,5 +716,43 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 477 }
       ]
     },
+    // Илья Хохлов — 496 матчей КХЛ, 199 МХЛ и 49 ВХЛ.
+    // Источники: https://www.vhlru/players/17457/
+    // https://mhl.khl.ru/players/17457/
+    // https://www.vhlru/lenta/607707/
+    "17457": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 496 },
+        { scope: "career", league: "MHL", gp: 199 },
+        { scope: "career", league: "VHL", gp: 49 }
+      ]
+    },
+    // Константин Рыжов — 408 матчей ВХЛ и 69 матчей МХЛ-Б/НМХЛ.
+    // Источники: https://www.vhlru/players/22109/
+    // https://www.vhlru/lenta/542923/
+    "22109": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 408 },
+        { scope: "career", league: "MHLB", gp: 69 }
+      ]
+    },
+    // Александр Борисенков — 468 матчей ВХЛ по официальной карточке лиги.
+    // Источник: https://www.vhlru/players/19316/
+    "19316": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 468 }
+      ]
+    },
+    // Егор Назаров — 498 матчей ВХЛ по официальной карточке лиги.
+    // Источник: https://www.vhlru/players/19405/
+    "19405": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 498 }
+      ]
+    },
   }
 };
