@@ -191,11 +191,12 @@ for (const target of targets) {
 
 // Для игроков с пробелами в сезонных таблицах используем их официальные карточки:
 // в них есть полная разбивка ВХЛ по сезонам, этапам и клубам.
+const seasonsNeedingCareerFallback = new Set(emptyPages.map(gap => gap.season));
 const careerCandidateIds = new Set(
   [...rosterPlayers.entries()]
     .filter(([id]) => {
       const rows = outputPlayers[id]?.seasons || [];
-      return !rows.length || rows.some(row => row.season === '21/22' || row.season === '23/24');
+      return !rows.length || rows.some(row => seasonsNeedingCareerFallback.has(row.season));
     })
     .map(([id]) => id)
 );
