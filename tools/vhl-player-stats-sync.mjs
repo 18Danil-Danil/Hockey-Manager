@@ -157,7 +157,7 @@ const selectedYears = [...new Set(tournaments.map(item => item.endYear))]
 const selectedYearSet = new Set(selectedYears);
 const targets = tournaments
   .filter(item => selectedYearSet.has(item.endYear))
-  .sort((a, b) => b.endYear - a.endYear || (a.stage === 'regular' ? -1 : 1));
+  .sort((a, b) => b.endYear - a.endYear || (Number(a.stage !== 'regular') - Number(b.stage !== 'regular')));
 const seasons = [...selectedYears].sort((a, b) => b - a).map(seasonLabel);
 console.log(`Найдены турниры ВХЛ: ${targets.length}; сезоны: ${seasons.join(', ')}`);
 
@@ -239,7 +239,7 @@ for (const [id, playerStats] of Object.entries(outputPlayers)) {
   );
 }
 const historyTotal = existingHistoryIds.size + historyAdditions.length;
-if (failures.length === SEASONS.length * 2) {
+if (failures.length === targets.length) {
   throw new Error(`Не удалось загрузить ни одну сезонную таблицу: ${failures.join(' | ')}`);
 }
 if (historyTotal < historyTarget) {
