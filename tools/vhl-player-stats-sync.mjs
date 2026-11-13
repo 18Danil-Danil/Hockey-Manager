@@ -155,6 +155,7 @@ if (!robotsAllowsPath(robotsText, '/en/stats/players/')) {
 const outputPlayers = {};
 const failures = [];
 const pageReports = [];
+const emptyPages = [];
 for (const seasonInfo of SEASONS) {
   for (const stage of ['regular', 'playoff']) {
     const url = `${BASE}/en/stats/players/${seasonInfo.endYear}/?stage=${stage}`;
@@ -168,12 +169,28 @@ for (const seasonInfo of SEASONS) {
         rowsAdded += records.length;
       }
       pageReports.push(`- ${seasonInfo.label} (${stage}): ${seasonPlayers.size} игроков, ${rowsAdded} строк статистики`);
+      if (!rowsAdded) emptyPages.push(`${seasonInfo.label} (${stage})`);
       console.log(`Загружен сезон ${seasonInfo.label} / ${stage}: ${seasonPlayers.size} игроков`);
     } catch (error) {
       failures.push(`${seasonInfo.label} ${stage}: ${error.message}`);
     }
     await sleep(DELAY_MS);
   }
+}
+
+if (emptyPages.length) {
+  const diagnostic = [
+    '# Отчёт проверки качества сезонной статистики ВХЛ',
+    '',
+    '- Импорт остановлен: одна или несколько ожидаемых таблиц вернули ноль строк.',
+    '- Пустые выборки: ' + emptyPages.join(', '),
+    '- Сезонные таблицы:',
+    ...pageReports,
+    '',
+    'Новые данные не опубликованы. Проверьте параметры выбора сезона и этапа на сайте-источнике.'
+  ].join('\\n');
+  await fs.writeFile(REPORT_FILE, diagnostic + '\\n', 'utf8');
+  throw new Error('Статистический импорт остановлен: пустые таблицы — ' + emptyPages.join(', '));
 }
 
 const suspiciousDuplicates = findSuspiciousCrossSeasonDuplicates(outputPlayers);
