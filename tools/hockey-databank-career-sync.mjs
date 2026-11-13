@@ -57,6 +57,25 @@ export function normalizeName(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '');
 }
+function nameVariants(value) {
+  const base = normalizeName(value);
+  const variants = new Set([base]);
+  variants.add(base.replace(/ey/g, 'ei'));
+  variants.add(base.replace(/ei/g, 'ey'));
+  variants.add(base.replace(/iy$/g, 'y'));
+  variants.add(base.replace(/ii$/g, 'y'));
+  variants.add(base.replace(/y$/g, 'i'));
+  variants.add(base.replace(/i$/g, 'y'));
+  variants.add(base.replace(/kh/g, 'h'));
+  variants.add(base.replace(/h/g, 'kh'));
+  variants.add(base.replace(/ya/g, 'ia'));
+  variants.add(base.replace(/ia/g, 'ya'));
+  return [...variants].filter(Boolean);
+}
+function namesEquivalent(left, right) {
+  const rightVariants = new Set(nameVariants(right));
+  return nameVariants(left).some(value => rightVariants.has(value));
+}
 function numberOrNull(value) {
   if (value === undefined || value === null || String(value).trim() === '') return null;
   const result = Number(String(value).trim());
@@ -75,12 +94,10 @@ export function matchMasterPlayer(identity, masterRows) {
   if (parts.length < 2) return null;
   const candidates = masterRows.filter(player => {
     if (dateFromMaster(player) !== identity.birthDate) return false;
-    const first = normalizeName(player.firstName);
-    const last = normalizeName(player.lastName);
-    const firstOrderMatch = normalizeName(parts[0]) === last &&
-      (normalizeName(parts.slice(1).join(' ')) === first || normalizeName(parts[1]) === first);
-    const reverseOrderMatch = normalizeName(parts[parts.length - 1]) === last &&
-      normalizeName(parts.slice(0, -1).join(' ')) === first;
+    const firstOrderMatch = namesEquivalent(parts[0], player.lastName) &&
+      (namesEquivalent(parts.slice(1).join(' '), player.firstName) || namesEquivalent(parts[1], player.firstName));
+    const reverseOrderMatch = namesEquivalent(parts[parts.length - 1], player.lastName) &&
+      namesEquivalent(parts.slice(0, -1).join(' '), player.firstName);
     return firstOrderMatch || reverseOrderMatch;
   });
   if (candidates.length === 1) return candidates[0];
