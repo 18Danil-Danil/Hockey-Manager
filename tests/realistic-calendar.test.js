@@ -72,7 +72,7 @@ for (const team of teams) {
     if (index) maxTeamRest = Math.max(maxTeamRest, (Date.parse(game.date) - Date.parse(appearances[index - 1].date)) / 86400000);
   });
 }
-assert.ok(maxTeamRest <= 14, 'team rest interval does not exceed 14 days');
+assert.ok(maxTeamRest <= 14, 'team rest interval does not exceed 14 days: ' + maxTeamRest);
 assert.ok(maxVenueStreak <= 10, 'home or away run remains a bounded series');
 assert.ok(meta.some(item => item.travelNote && item.travelNote.includes('Норильск — Красноярск')));
 assert.ok(meta.some(item => item.phase === 'local-derby'));
