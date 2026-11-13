@@ -20,7 +20,7 @@ export function parseVhlTournamentOptions(html) {
   const selects = [...source.matchAll(/<select\b([^>]*)>([\s\S]*?)<\/select>/gi)];
   const tournamentSelect = selects.find(match => /\bname\s*=\s*["']tournament["']/i.test(match[1]));
   // If the select name changes, inspect option lists but accept only calendar IDs with season/stage labels.
-  const optionSource = tournamentSelect ? tournamentSelect[2] : (selects.map(match => match[2]).join('\n') || source);
+  const optionSource = tournamentSelect ? tournamentSelect[2] : source;
 
   const tournaments = [];
   const seen = new Set();
