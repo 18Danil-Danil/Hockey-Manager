@@ -18,6 +18,7 @@ sandbox.window = sandbox;
 vm.runInNewContext(source, sandbox);
 
 const data = {
+  seasons: ['25/26', '24/25', '23/24'],
   players: {
     f1: { position: 'forward', seasons: [{ season: '25/26', stage: 'regular', gp: 50, goals: 25, assists: 30, points: 55, shots: 150, shootingPct: 16.7, plusMinus: 20, hits: 25, blocks: 10, pim: 10, toiPerGame: 19, shiftsPerGame: 25 }] },
     f2: { position: 'forward', seasons: [{ season: '25/26', stage: 'regular', gp: 50, goals: 10, assists: 15, points: 25, shots: 100, shootingPct: 10, plusMinus: 0, hits: 15, blocks: 15, pim: 20, toiPerGame: 15, shiftsPerGame: 20 }] },
