@@ -1056,6 +1056,79 @@ function renderModal() {
     const regular=isG?'Регулярка: '+(row.gp||0)+' игр · '+(row.wins||0)+' побед · SV '+(row.shotsAgainst>0?(row.saves/row.shotsAgainst).toFixed(3).replace(/^0/,''):'—'):'Регулярка: '+(row.gp||0)+' игр · '+(row.goals||0)+' голов · '+(row.assists||0)+' передач · '+(row.points||0)+' очков';
     return '<article class="profile-season-row"><div class="profile-season-marker">'+(i===0?'●':'○')+'</div><div class="profile-season-main"><div class="profile-season-heading"><b>'+row.season+'</b><span>'+(row.teamName||'Клуб не указан')+'</span></div><div class="profile-season-details">'+regular+'</div>'+(poText?'<div class="profile-season-playoff">'+poText+'</div>':'')+'</div><div class="profile-season-ovr"><b>'+(row.ovr||'—')+'</b><small>OVR</small></div></article>';
   }).join('')+'</div>' : '<div class="profile-empty">История сезонов начнёт заполняться после завершения первого сезона в этой карьере.</div>';
+  const sourceCareer = p.source === 'vhlru' && p.sourcePlayerId
+    ? window.VHL_PLAYER_LEAGUE_HISTORY?.players?.[String(p.sourcePlayerId)]
+    : null;
+  const sourceCareerGroups = new Map();
+  (sourceCareer?.seasons || []).forEach(row => {
+    const season = String(row.season || '');
+    const league = String(row.league || '');
+    const teamName = String(row.team || 'Клуб не указан');
+    if (!season || !league) return;
+    const key = [season, league, teamName].join('|');
+    if (!sourceCareerGroups.has(key)) {
+      sourceCareerGroups.set(key, { season, league, teamName, regularStats: null, playoffStats: null });
+    }
+    const item = sourceCareerGroups.get(key);
+    const stageKey = row.stage === 'playoffs' ? 'playoffStats' : 'regularStats';
+    const target = item[stageKey] || (item[stageKey] = {});
+    [
+      'gp', 'goals', 'assists', 'points', 'plusMinus', 'pim', 'wins', 'losses',
+      'shootoutsPlayed', 'shotsOnGoal', 'shotsAgainst', 'goalsAgainst', 'saves',
+      'savePercentage', 'goalsAgainstAverage', 'shutouts', 'evenStrengthGoals',
+      'powerPlayGoals', 'shortHandedGoals', 'overtimeGoals', 'gameWinningGoals',
+      'shootoutDecidingShots', 'hits', 'blockedShots'
+    ].forEach(key => {
+      if (row[key] === undefined || row[key] === null) return;
+      const value = Number(row[key]);
+      if (!Number.isFinite(value)) return;
+      target[key] = (target[key] || 0) + value;
+    });
+    ['timeOnIce', 'timeOnIcePerGame'].forEach(key => {
+      if (row[key] !== undefined && row[key] !== null) target[key] = row[key];
+    });
+  });
+  const escapeCareerText = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+  const careerLeagueLabels = {
+    NHL: 'НХЛ', AHL: 'АХЛ', KHL: 'КХЛ', VHL: 'ВХЛ', MHL: 'МХЛ',
+    RHL: 'РХЛ', SHL: 'SHL', LIIGA: 'Liiga', DEL: 'DEL', ECHL: 'ECHL'
+  };
+  const sourceCareerRows = [...sourceCareerGroups.values()].sort((a,b) =>
+    String(b.season).localeCompare(String(a.season), 'en', { numeric: true }) ||
+    a.league.localeCompare(b.league) || a.teamName.localeCompare(b.teamName)
+  );
+  const sourceCareerTimeline = sourceCareerRows.length
+    ? '<div class="profile-career-timeline">' + sourceCareerRows.map((row, index) => {
+      const regular = row.regularStats || {}, playoffs = row.playoffStats || {};
+      const formatGoalie = stats => {
+        const pct = stats.shotsAgainst > 0
+          ? stats.saves / stats.shotsAgainst
+          : (stats.savePercentage > 1 ? stats.savePercentage / 100 : stats.savePercentage);
+        return 'Регулярка: ' + (stats.gp || 0) + ' игр · ' + (stats.wins || 0) +
+          ' побед · SV ' + (pct != null ? pct.toFixed(3).replace(/^0/, '') : '—');
+      };
+      const formatSkater = stats => 'Регулярка: ' + (stats.gp || 0) + ' игр · ' +
+        (stats.goals || 0) + ' голов · ' + (stats.assists || 0) + ' передач · ' +
+        (stats.points || 0) + ' очков';
+      const regularText = regular.gp ? (isG ? formatGoalie(regular) : formatSkater(regular)) : '';
+      const playoffText = playoffs.gp
+        ? (isG
+          ? 'Плей-офф: ' + playoffs.gp + ' игр · ' + (playoffs.wins || 0) + ' побед'
+          : 'Плей-офф: ' + playoffs.gp + ' игр · ' + (playoffs.goals || 0) + ' голов · ' +
+            (playoffs.assists || 0) + ' передач · ' + (playoffs.points || 0) + ' очков')
+        : '';
+      return '<article class="profile-season-row"><div class="profile-season-marker">' +
+        (index === 0 ? '●' : '○') + '</div><div class="profile-season-main">' +
+        '<div class="profile-season-heading"><b>' + escapeCareerText(row.season) +
+        '</b><span>' + escapeCareerText(careerLeagueLabels[row.league] || row.league) +
+        ' · ' + escapeCareerText(row.teamName) + '</span></div>' +
+        (regularText ? '<div class="profile-season-details">' + regularText + '</div>' : '') +
+        (playoffText ? '<div class="profile-season-playoff">' + playoffText + '</div>' : '') +
+        '</div></article>';
+    }).join('') + '</div>'
+    : '';
   const transfers=(G.league.transferLog||[]).flatMap(e=>(e.transfers||[]).filter(t=>t.player===p.name).map(t=>({season:e.season,from:t.from,to:t.to})));
   const transferHtml=transfers.length?'<div class="profile-transfer-list">'+transfers.slice().reverse().map(t=>'<div><span>'+t.season+'</span><b>'+t.from+' → '+t.to+'</b></div>').join('')+'</div>':'<div class="profile-empty">Зафиксированных переходов между клубами пока нет.</div>';
   const canExtend=isMyTeam&&contract.years<=1&&p.status==='contract', canRelease=isMyTeam&&p.status==='contract';
@@ -1074,7 +1147,7 @@ function renderModal() {
     '<section class="profile-section"><span class="profile-eyebrow">НАВЫКИ</span><h2>Игровые атрибуты</h2><div class="profile-attributes">'+attrRows+'</div></section>'+
     '<section class="profile-section"><span class="profile-eyebrow">ТЕКУЩИЙ СЕЗОН</span><h2>Регулярный чемпионат</h2>'+tileGrid(statTiles)+'<h2 class="profile-subheading">Плей-офф</h2>'+tileGrid(playoffTiles)+'</section>'+
     '<section class="profile-section"><span class="profile-eyebrow">КАРЬЕРА</span><h2>Суммарная статистика</h2>'+tileGrid(totals)+'</section>'+
-    '<section class="profile-section"><span class="profile-eyebrow">ПУТЬ ИГРОКА</span><h2>История сезонов</h2>'+timeline+'</section>'+
+    (sourceCareerTimeline ? '<section class="profile-section"><span class="profile-eyebrow">РЕАЛЬНАЯ КАРЬЕРА</span><h2>Сезоны до начала игры</h2>'+sourceCareerTimeline+'</section>' : '')+    '<section class="profile-section"><span class="profile-eyebrow">ПУТЬ ИГРОКА</span><h2>История сезонов</h2>'+timeline+'</section>'+
     '<section class="profile-section"><span class="profile-eyebrow">ПЕРЕМЕЩЕНИЯ</span><h2>История переходов</h2>'+transferHtml+'</section>'+
     '<section class="profile-section"><span class="profile-eyebrow">ДОСТИЖЕНИЯ</span><h2>Индивидуальные награды</h2>'+awardHtml+'</section></div>'+
     '<aside class="profile-side-column"><section class="profile-section profile-contract"><span class="profile-eyebrow">СОГЛАШЕНИЕ</span><h2>Контракт</h2><div class="profile-contract-value"><b>'+Number(contract.salary||0).toFixed(1)+'</b><span>млн ₽ / сезон</span></div><div class="profile-contract-row"><span>Срок</span><b>'+(contract.years||0)+' лет</b></div><div class="profile-contract-row"><span>Статус</span><b>'+(p.status==='contract'?'Действует':p.status==='ufa'?'Свободный агент':p.status)+'</b></div>'+
