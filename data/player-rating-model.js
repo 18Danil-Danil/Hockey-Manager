@@ -207,7 +207,8 @@
       const summary = value.position ? summarizePlayerStats(value, seasonWeights) : null;
       const leagueHistory = [
         ...(Array.isArray(value.leagueHistory) ? value.leagueHistory : []),
-        ...(Array.isArray(career.seasons) ? career.seasons : [])
+        ...(Array.isArray(career.seasons) ? career.seasons : []),
+        ...(Array.isArray(career.career) ? career.career : [])
       ];
       return { id: String(id), position: value.position || career.position, summary, leagueHistory };
     }).filter(item => item.position && (item.summary || item.leagueHistory.length));
