@@ -5,20 +5,20 @@ function decode(value) {
     .replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
 }
 function textOf(value) {
-  return decode(String(value).replace(/<script[\\s\\S]*?<\\/script>/gi, ' ')
-    .replace(/<style[\\s\\S]*?<\\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')).replace(/\\s+/g, ' ').trim();
+  return decode(String(value).replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
 function cellsOf(row) {
-  return [...row.matchAll(/<t[dh]\\b[^>]*>([\\s\\S]*?)<\\/t[dh]>/gi)].map(match => textOf(match[1]));
+  return [...row.matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(match => textOf(match[1]));
 }
 function numeric(value) {
   if (value === undefined || value === null || value === '' || value === '-' || value === '—') return null;
-  const parsed = Number(String(value).replace(',', '.').replace(/\\s/g, ''));
+  const parsed = Number(String(value).replace(',', '.').replace(/\s/g, ''));
   return Number.isFinite(parsed) ? parsed : null;
 }
 function minutes(value) {
-  const match = /^(\\d+):(\\d{2})$/.exec(String(value || '').trim());
+  const match = /^(\d+):(\d{2})$/.exec(String(value || '').trim());
   return match ? Number(match[1]) + Number(match[2]) / 60 : null;
 }
 function normalizeStage(value) {
@@ -31,27 +31,27 @@ export function parseVhlPlayerCareer(html, playerId, fallbackPosition) {
   if (!new RegExp('/players/' + id + '/games/').test(source)) {
     throw new Error('Карточка ВХЛ не подтвердила ID игрока ' + id + '.');
   }
-  const subtitle = source.match(/class=["'][^"']*player-card__subtitle[^"']*["'][^>]*>([\\s\\S]*?)<\\/[^>]+>/i);
+  const subtitle = source.match(/class=["'][^"']*player-card__subtitle[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i);
   const positionText = subtitle ? textOf(subtitle[1]).toLowerCase() : '';
   const position = /goalkeeper|goaltender|вратар/i.test(positionText) ? 'goaltender'
     : /defen[cs]|защит/i.test(positionText) ? 'defense'
     : /forward|напада/i.test(positionText) ? 'forward' : fallbackPosition;
-  const table = source.match(/<table\\b[^>]*>([\\s\\S]*?)<\\/table>/i);
+  const table = source.match(/<table\b[^>]*>([\s\S]*?)<\/table>/i);
   if (!table) throw new Error('В карточке игрока ' + id + ' не найдена таблица карьеры ВХЛ.');
 
   const seasons = [];
   let scope = null;
-  for (const match of table[1].matchAll(/<tr\\b[^>]*>([\\s\\S]*?)<\\/tr>/gi)) {
+  for (const match of table[1].matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)) {
     const rowHtml = match[1];
     const cells = cellsOf(rowHtml);
     if (!cells.length) continue;
-    const label = /^(\\d{2,4}\\/\\d{2,4})\\s*\\|\\s*(Regular Season|Playoffs?)$/i.exec(cells[0]);
+    const label = /^(\d{2,4}\/\d{2,4})\s*\|\s*(Regular Season|Playoffs?)$/i.exec(cells[0]);
     if (label) {
       scope = { season: label[1], stage: normalizeStage(label[2]) };
       continue;
     }
     if (!scope) continue;
-    const teamLink = rowHtml.match(/href=["'][^"']*\\/stats\\/players\\/(\\d+)\\/all\\/(\\d+)\\/[^"']*["']/i);
+    const teamLink = rowHtml.match(/href=["'][^"']*\/stats\/players\/(\d+)\/all\/(\d+)\/[^"']*["']/i);
     if (!teamLink) continue;
 
     const row = { ...scope, team: cells[0], gp: numeric(cells[2]) };
