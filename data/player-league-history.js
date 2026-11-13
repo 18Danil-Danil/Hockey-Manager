@@ -2000,5 +2000,41 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 176 }
       ]
     },
+    // Егор Егоров — 16 матчей ВХЛ в сезоне 2026/27 на 13.11.2026.
+    // Источник: https://www.vhlru/stats/players/1230/all/13641/
+    "25227": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 16 }
+      ]
+    },
+    // Евгений Каницкий — 483 матча ВХЛ и 95 матчей МХЛ.
+    // Источники: https://www.vhlru/players/23735/
+    // https://mhl.khl.ru/players/23735/
+    "23735": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 483 },
+        { scope: "career", league: "MHL", gp: 95 }
+      ]
+    },
+    // Павел Колтыгин — 148 матчей ВХЛ (131 регулярный + 17 плей-офф).
+    // Источник: https://www.vhlru/players/24042/
+    "24042": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 148 }
+      ]
+    },
+    // Георгий Дедов — 231 матч ВХЛ и 95 матчей МХЛ.
+    // Источники: https://www.vhlru/players/24858/
+    // https://mhl.khl.ru/players/24858/
+    "24858": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 231 },
+        { scope: "career", league: "MHL", gp: 95 }
+      ]
+    },
   }
 };
