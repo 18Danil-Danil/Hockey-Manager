@@ -225,15 +225,8 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "forward",
       career: [
         { scope: "career", league: "MHL", gp: 146 },
-        { scope: "career", league: "KHL", gp: 516 }
-      ],
-      seasons: [
-        { season: "11/12", league: "VHL", gp: 17, team: "Локомотив" },
-        { season: "12/13", league: "VHL", gp: 5, team: "Локомотив" },
-        { season: "21/22", league: "VHL", gp: 41, team: "Ермак" },
-        { season: "24/25", league: "VHL", gp: 35, team: "Металлург Новокузнецк" },
-        { season: "25/26", league: "VHL", gp: 56, team: "Металлург Новокузнецк" },
-        { season: "26/27", league: "VHL", gp: 11, team: "Металлург Новокузнецк" }
+        { scope: "career", league: "KHL", gp: 516 },
+        { scope: "career", league: "VHL", gp: 201 }
       ]
     },
     // Святослав Гребенщиков: КХЛ — 262 матча по сообщению клуба в 2025 году;
@@ -246,7 +239,7 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "forward",
       career: [
         { scope: "career", league: "KHL", gp: 262 },
-        { scope: "career", league: "VHL", gp: 359 },
+        { scope: "career", league: "VHL", gp: 351 },
         { scope: "career", league: "ALLSVENSKAN", gp: 9 }
       ]
     },
@@ -307,6 +300,59 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "defense",
       career: [
         { scope: "career", league: "VHL", gp: 544 }
+      ]
+    },
+    // Григорий Глебов: 823 матча ВХЛ по актуальной суммарной карточке;
+    // также 42 КХЛ, 81 Первая лига и 3 МХЛ-Б по юбилейной новости ВХЛ (2024).
+    // Источники: https://www.vhlru.ru/players/17229/
+    // https://www.vhlru.ru/lenta/506696/
+    "17229": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 823 },
+        { scope: "career", league: "KHL", gp: 42 },
+        { scope: "career", league: "RUSSIAN_FIRST", gp: 81 },
+        { scope: "career", league: "MHLB", gp: 3 }
+      ]
+    },
+    // Михаил Мокин: ВХЛ — 683 матча; МХЛ — 256 матчей (регулярка,
+    // плей-офф и плей-аут) по официальным карточкам лиг.
+    // Источники: https://www.vhlru.ru/players/16234/
+    // https://mhl.khl.ru/players/16234/
+    "16234": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 683 },
+        { scope: "career", league: "MHL", gp: 256 }
+      ]
+    },
+    // Максим Салахов: ВХЛ — 631 матч; МХЛ — 51 матч регулярного чемпионата
+    // в сезоне 2014/15 (подтверждённая строка сезонной статистики).
+    // Источники: https://www.vhlru.ru/players/13184/
+    // https://mhl.khl.ru/stat/players/272/all/183/
+    "13184": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 631 }
+      ],
+      seasons: [
+        { season: "14/15", league: "MHL", gp: 51, team: "Капитан", stage: "regular" }
+      ]
+    },
+    // Дмитрий Бойчук — 542 матча ВХЛ по официальной карточке лиги.
+    // Источник: https://vhlru.ru/players/19054/
+    "19054": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 542 }
+      ]
+    },
+    // Виталий Каменев — 944 матча ВХЛ (784 регулярка + 160 плей-офф).
+    // Источник: https://www.vhlru.ru/players/15796/
+    "15796": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 944 }
       ]
     },
   }
