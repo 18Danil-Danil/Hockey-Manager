@@ -18,14 +18,15 @@ function plainText(value) {
 export function parseVhlTournamentOptions(html) {
   const source = String(html);
   const selects = [...source.matchAll(/<select\b([^>]*)>([\s\S]*?)<\/select>/gi)];
-  const tournamentSelect = selects.find(match => /\bname\s*=\s*["']tournament["']/i.test(match[1]));
+  const tournamentSelect = selects.find(match => /\bname\s*=\s*(?:["']tournament["']|tournament\b)/i.test(match[1]));
   // If the select name changes, inspect option lists but accept only calendar IDs with season/stage labels.
   const optionSource = tournamentSelect ? tournamentSelect[2] : source;
 
   const tournaments = [];
   const seen = new Set();
   for (const option of optionSource.matchAll(/<option\b([^>]*)>([\s\S]*?)<\/option>/gi)) {
-    const value = /\bvalue\s*=\s*["']([^"']+)["']/i.exec(option[1])?.[1] || '';
+    const valueMatch = /\bvalue\s*=\s*(?:["']([^"']*)["']|([^\s>]+))/i.exec(option[1]);
+    const value = valueMatch?.[1] ?? valueMatch?.[2] ?? '';
     const tnMatch = /\/calendar\/(\d+)\//i.exec(decodeHtml(value));
     const label = plainText(option[2]);
     const seasonMatch = /(\d{2,4})\s*\/\s*(\d{2,4})/.exec(label);
