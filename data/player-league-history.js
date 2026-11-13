@@ -1121,5 +1121,37 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 58 }
       ]
     },
+    // Артём Чмыхов — 309 матчей ВХЛ (255 регулярных + 54 плей-офф).
+    // Источник: https://www.vhlru/players/22226/
+    "22226": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 309 }
+      ]
+    },
+    // Савва Андреев — 418 матчей ВХЛ (371 регулярный + 47 плей-офф).
+    // Источник: https://www.vhlru/players/22239/
+    "22239": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 418 }
+      ]
+    },
+    // Алексей Богданов — 315 матчей ВХЛ по суммарной статистике лиги.
+    // Источник: https://www.vhlru/players/25359/
+    "25359": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 315 }
+      ]
+    },
+    // Михаил Епишин — 360 матчей ВХЛ (320 регулярных + 40 плей-офф).
+    // Источник: https://www.vhlru/players/22496/
+    "22496": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 360 }
+      ]
+    },
   }
 };
