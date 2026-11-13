@@ -46,8 +46,10 @@
       const endYear = seasonEndYear(row?.season);
       if (!strength || strength <= 1 || !gp || endYear === null || endYear > currentYear) continue;
       const key = String(row.season) + ':' + league;
-      const previous = grouped.get(key) || { league, season: row.season, gp: 0, strength, endYear };
-      previous.gp += gp;
+      const previous = grouped.get(key) || { league, season: row.season, gp: 0, strength, endYear, entries: new Map() };
+      const entryKey = String(row.team || 'all-teams') + ':' + String(row.stage || 'total');
+      previous.entries.set(entryKey, Math.max(previous.entries.get(entryKey) || 0, gp));
+      previous.gp = [...previous.entries.values()].reduce((sum, value) => sum + value, 0);
       grouped.set(key, previous);
     }
     let impact = 0;
@@ -281,7 +283,7 @@
       attrPot,
       ovr: overallFromAttrs(attrs, entry.attrs.reflexes !== undefined),
       pot: overallFromAttrs(attrPot, entry.attrs.reflexes !== undefined),
-      source: leagueBonus > 0 ? 'vhl-statistics+league-history' : 'vhl-statistics',
+      source: leagueBonus > 0 ? (entry.gamesSample > 0 ? 'vhl-statistics+league-history' : 'league-history') : 'vhl-statistics',
       leagueBonus,
       sampleGames: Math.round(entry.gamesSample),
       seasons: [...new Set(entry.seasons)]
