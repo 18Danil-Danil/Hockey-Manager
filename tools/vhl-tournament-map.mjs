@@ -30,7 +30,7 @@ export function parseVhlTournamentOptions(html) {
     if (!tnMatch || !seasonMatch) continue;
 
     const stageText = label.toLowerCase();
-    const stage = /play.?offs?|плей.?офф/i.test(stageText) ? 'playoff'
+    const stage = /playoffs?|плей.?офф/i.test(stageText) ? 'playoff'
       : /regular|регуляр/i.test(stageText) ? 'regular' : null;
     if (!stage) continue;
 
@@ -47,5 +47,5 @@ export function parseVhlTournamentOptions(html) {
   if (!tournaments.length) {
     throw new Error('В списке турниров ВХЛ не удалось распознать ни одного сезона и этапа.');
   }
-  return tournaments.sort((a, b) => b.endYear - a.endYear || (a.stage === 'regular' ? -1 : 1));
+  return tournaments.sort((a, b) => b.endYear - a.endYear || (Number(a.stage !== 'regular') - Number(b.stage !== 'regular')));
 }
