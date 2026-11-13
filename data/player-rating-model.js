@@ -10,7 +10,7 @@
 
   const LEAGUE_STRENGTH = {
     NHL: 1.65, KHL: 1.38, SHL: 1.30, LIIGA: 1.27, NL: 1.27,
-    AHL: 1.25, KHL2: 1.16, DEL: 1.18, CZECH: 1.17, EXTRALIGA: 1.17, ECHL: 0.95, ALLSVENSKAN: 1.0, RHL: 0.8, RUSSIAN_FIRST: 0.8,
+    AHL: 1.25, KHL2: 1.16, DEL: 1.18, CZECH: 1.17, EXTRALIGA: 1.17, ECHL: 0.95, ALLSVENSKAN: 1.0, RHL: 0.8, RUSSIAN_FIRST: 0.8, MHLB: 0.78,
     NCAA: 1.10, VHL: 1, MHL: 0.86, OHL: 0.94, WHL: 0.94, QMJHL: 0.94
   };
   const LEAGUE_ALIASES = {
@@ -23,7 +23,7 @@
     DEL: 'DEL', 'DEUTSCHE EISHOCKEY LIGA': 'DEL',
     CZECH: 'CZECH', 'CZECH EXTRALIGA': 'CZECH', 'ЧЕШСКАЯ ЭКСТРАЛИГА': 'CZECH',
     NCAA: 'NCAA', VHL: 'VHL', 'ВХЛ': 'VHL', MHL: 'MHL', 'МХЛ': 'MHL',
-    OHL: 'OHL', WHL: 'WHL', QMJHL: 'QMJHL', ECHL: 'ECHL', ALLSVENSKAN: 'ALLSVENSKAN', 'HOCKEYALLSVENSKAN': 'ALLSVENSKAN', RHL: 'RHL', 'РОССИЙСКАЯ ХОККЕЙНАЯ ЛИГА': 'RHL', 'РХЛ': 'RHL', RUSSIAN_FIRST: 'RUSSIAN_FIRST', 'ПЕРВАЯ ЛИГА': 'RUSSIAN_FIRST'
+    OHL: 'OHL', WHL: 'WHL', QMJHL: 'QMJHL', ECHL: 'ECHL', ALLSVENSKAN: 'ALLSVENSKAN', 'HOCKEYALLSVENSKAN': 'ALLSVENSKAN', RHL: 'RHL', 'РОССИЙСКАЯ ХОККЕЙНАЯ ЛИГА': 'RHL', 'РХЛ': 'RHL', MHLB: 'MHLB', 'МХЛ-Б': 'MHLB', 'MHL B': 'MHLB', RUSSIAN_FIRST: 'RUSSIAN_FIRST', 'ПЕРВАЯ ЛИГА': 'RUSSIAN_FIRST'
   };
   function normalizeLeagueCode(value) {
     const name = String(value || '').trim().toUpperCase().replace(/[._-]+/g, ' ').replace(/\s+/g, ' ');
