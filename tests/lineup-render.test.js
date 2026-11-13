@@ -56,7 +56,7 @@ const html = sandbox.renderLines();
 
 assert.strictEqual((html.match(/class="lineup-line-card/g) || []).length, 7, 'Должно быть 7 карточек полевых сочетаний');
 assert.strictEqual((html.match(/class="lineup-player-select"/g) || []).length, 20, 'Должно быть 20 селекторов выбора хоккеистов');
-assert.strictEqual((html.match(/class="lineup-goalie-card"/g) || []).length, 2, 'Должно быть 2 карточки вратарей');
+assert.strictEqual((html.match(/class="lineup-goalie-card /g) || []).length, 2, 'Должно быть 2 карточки вратарей');
 assert(html.includes('Первое звено') && html.includes('Четвёртое звено'));
 assert(html.includes('Первая пара') && html.includes('Третья пара'));
 assert(html.includes('ХИМИЯ') && html.includes('СТИЛЬ ИГРЫ') && html.includes('РОЛЬ ЗВЕНА'));
