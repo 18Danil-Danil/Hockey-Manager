@@ -1516,5 +1516,45 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 111 }
       ]
     },
+    // Ильдар Абдеев — 383 матча ВХЛ (343 регулярных + 40 плей-офф).
+    // Источник: https://www.vhlru/players/25357/
+    "25357": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 383 }
+      ]
+    },
+    // Денис Толпегин — 267 матчей ВХЛ (261 регулярный + 6 плей-офф).
+    // Источник: https://www.vhlru/players/23526/
+    "23526": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 267 }
+      ]
+    },
+    // Дмитрий Зайцев — 272 матча ВХЛ (252 регулярных + 20 плей-офф).
+    // Источник: https://www.vhlru/players/20988/
+    "20988": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 272 }
+      ]
+    },
+    // Антон Назаревич — 302 матча ВХЛ (220 регулярных + 82 плей-офф).
+    // Источник: https://www.vhlru/players/23650/
+    "23650": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 302 }
+      ]
+    },
+    // Анатолий Елизаров — 477 матчей ВХЛ по публикации клуба от 16.06.2026.
+    // Источник: https://www.vhlru/lenta/604253/
+    "22749": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 477 }
+      ]
+    },
   }
 };
