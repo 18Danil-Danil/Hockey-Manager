@@ -11,6 +11,7 @@ on:
       - 'tests/player-league-history-merge.test.mjs'
       - 'tools/vhl-career-history-sync.mjs'
       - 'ui/render.js'
+      - 'tests/market-render.test.js'
       - 'ui/game-settings.js'
       - '.github/workflows/player-rating-tests.yml'
   workflow_dispatch:
@@ -30,6 +31,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Проверить рынок и сортировки
+        run: node tests/market-render.test.js
       - name: Проверить модель рейтингов
         run: node tests/player-rating-model.test.js
       - name: Проверить объединение карьерных сезонов
