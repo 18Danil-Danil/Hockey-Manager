@@ -2365,5 +2365,28 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 212 }
       ]
     },
+    // Захар Шабловский — ВХЛ 121, КХЛ 31, МХЛ 147,
+    // чемпионат Латвии 14 и чемпионат Казахстана 32 матча.
+    // Источник: https://metallurg-nk.ru/club/news/v-metallurge-zakhar-shablovskiy/
+    "25432": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 121 },
+        { scope: "career", league: "KHL", gp: 31 },
+        { scope: "career", league: "MHL", gp: 147 },
+        { scope: "career", league: "LATVIA", gp: 14 },
+        { scope: "career", league: "KAZAKHSTAN", gp: 32 }
+      ]
+    },
+    // Никита Зимин — 182 матча ВХЛ и 165 матчей МХЛ.
+    // Источники: https://www.vhlru/players/26770/
+    // https://mhl.khl.ru/players/26770/
+    "26770": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 182 },
+        { scope: "career", league: "MHL", gp: 165 }
+      ]
+    },
   }
 };
