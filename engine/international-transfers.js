@@ -18,7 +18,10 @@ function getInternationalRatingIndex() {
     for (const player of rows) {
       const sameRole = rows.filter(item => (item.position === 'G') === (player.position === 'G') &&
         (item.position === 'G' || (item.position === 'D') === (player.position === 'D')));
-      const gp = Math.max(1, player.gp || 0);
+      const careerFallback = league === 'belarus' ? window.BELARUS_CAREER_STATS_DATA?.players?.[player.key] : null;
+      if (!(player.gp > 0) && !(careerFallback?.gp > 0)) continue;
+      const sourceStats = player.gp > 0 ? player : { ...player, gp: careerFallback.gp, g: careerFallback.g || 0, a: careerFallback.a || 0, pim: careerFallback.pim || 0, pm: player.pm || 0 };
+      const gp = Math.max(1, sourceStats.gp || 0);
       const sample = Math.min(1, gp / 20);
       let attrs, rating;
       if (player.position === 'G') {
@@ -38,11 +41,11 @@ function getInternationalRatingIndex() {
         };
         rating = overallFromAttrs(attrs, true);
       } else {
-        const ppg = (player.g + player.a) / gp;
-        const gpg = player.g / gp;
-        const apg = player.a / gp;
-        const pmRate = (player.pm || 0) / gp;
-        const pimRate = (player.pim || 0) / gp;
+        const ppg = ((sourceStats.g || 0) + (sourceStats.a || 0)) / gp;
+        const gpg = (sourceStats.g || 0) / gp;
+        const apg = (sourceStats.a || 0) / gp;
+        const pmRate = (sourceStats.pm || 0) / gp;
+        const pimRate = (sourceStats.pim || 0) / gp;
         const ppgRank = percentile(sameRole, item => ((item.g || 0)+(item.a || 0))/Math.max(1,item.gp || 0), ppg);
         const goalRank = percentile(sameRole, item => (item.g || 0)/Math.max(1,item.gp || 0), gpg);
         const assistRank = percentile(sameRole, item => (item.a || 0)/Math.max(1,item.gp || 0), apg);
@@ -108,6 +111,11 @@ function createInternationalMarket() {
         player.pot = overallFromAttrs(player.attrPot, position === 'G');
         player.internationalRealPlayer = true;
         player.internationalStats = {...record, season:window.INTERNATIONAL_PLAYER_STATS_DATA.season};
+        const belarusCareer = league.id === 'belarus' ? window.BELARUS_CAREER_STATS_DATA?.players?.[record.key] : null;
+        if (belarusCareer) {
+          player.realCareerStats = {...belarusCareer, leagueId:'belarus', scope:'Betera-Экстралига'};
+          player.realCareerStatsSource = window.BELARUS_CAREER_STATS_DATA.source;
+        }
         player.internationalSource = window.INTERNATIONAL_PLAYER_STATS_DATA.source;
         player.contract.salary = Math.max(0.5, Math.round(player.contract.salary * club.salaryMultiplier * 10) / 10);
         player.internationalClubId = club.id;
