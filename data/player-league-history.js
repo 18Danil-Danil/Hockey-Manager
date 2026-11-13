@@ -1177,5 +1177,37 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 553 }
       ]
     },
+    // Кирилл Меляков — 408 матчей ВХЛ (337 регулярных + 71 плей-офф).
+    // Источник: https://www.vhlru/players/21894/
+    "21894": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 408 }
+      ]
+    },
+    // Андрей Банников — 417 матчей ВХЛ (383 регулярных + 34 плей-офф).
+    // Источник: https://www.vhlru/players/21554/
+    "21554": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 417 }
+      ]
+    },
+    // Руслан Петрищев — 404 матча ВХЛ (330 регулярных + 74 плей-офф).
+    // Источник: https://www.vhlru/players/22254/
+    "22254": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 404 }
+      ]
+    },
+    // Данил Воеводин — 376 матчей ВХЛ (334 регулярных + 42 плей-офф).
+    // Источник: https://www.vhlru/players/22769/
+    "22769": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 376 }
+      ]
+    },
   }
 };
