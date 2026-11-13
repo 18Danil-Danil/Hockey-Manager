@@ -537,7 +537,7 @@ function renderFinance() {
 }
 function setTicketPrice(v) { const team = G.league.teams.find(t => t.id === G.playerTeamId); team.finance.ticketPrice = Number(v); render(); }
 
-function renderMarket() {
+function renderFreeAgentMarket() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId); const hasScout = !!team.staff.scout;
   const filtered = (G.league.freeAgents || []).filter(p => { if (G.marketFilter === 'all') return true; if (G.marketFilter === 'F') return p.position !== 'D' && p.position !== 'G'; if (G.marketFilter === 'D') return p.position === 'D'; if (G.marketFilter === 'G') return p.position === 'G'; return true; });
   const sorted = filtered.slice().sort((a, b) => b.ovr - a.ovr);
@@ -551,6 +551,60 @@ function renderMarket() {
   return `<div class="market-filters"><button class="${G.marketFilter === 'all' ? 'active' : ''}" onclick="G.marketFilter='all'; render();">Все</button><button class="${G.marketFilter === 'F' ? 'active' : ''}" onclick="G.marketFilter='F'; render();">Форварды</button><button class="${G.marketFilter === 'D' ? 'active' : ''}" onclick="G.marketFilter='D'; render();">Защитники</button><button class="${G.marketFilter === 'G' ? 'active' : ''}" onclick="G.marketFilter='G'; render();">Вратари</button></div><h2>Свободные агенты (${sorted.length})</h2><table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>ЗП</th><th>Действия</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+function renderMarket() {
+  const tabs = [
+    ['free', 'Свободные агенты'],
+    ['kazakhstan', 'Казахстан'],
+    ['belarus', 'Беларусь'],
+    ['europe', 'Европа']
+  ];
+  const tabsHtml = tabs.map(([key, label]) =>
+    `<button class="market-region-tab ${G.marketLeague === key ? 'active' : ''}" onclick="G.marketLeague='${key}'; render();">${label}</button>`
+  ).join('');
+  const content = G.marketLeague === 'free'
+    ? renderFreeAgentMarket()
+    : renderInternationalMarket(G.marketLeague);
+  return `<section class="market-shell"><div class="market-region-tabs">${tabsHtml}</div>${content}</section>`;
+}
+function renderInternationalMarket(region) {
+  const team = G.league.teams.find(item => item.id === G.playerTeamId);
+  const clubs = (G.league.internationalMarket?.clubs || []).filter(club => club.region === region);
+  const allPlayers = clubs.flatMap(club => club.roster.map(player => ({ player, club })));
+  const filtered = allPlayers.filter(({ player }) => {
+    if (G.marketFilter === 'F') return player.position !== 'D' && player.position !== 'G';
+    if (G.marketFilter === 'D') return player.position === 'D';
+    if (G.marketFilter === 'G') return player.position === 'G';
+    return true;
+  }).sort((a, b) => b.player.ovr - a.player.ovr);
+  const filters = `<div class="market-filters">
+    <button class="${G.marketFilter === 'all' ? 'active' : ''}" onclick="G.marketFilter='all'; render();">Все</button>
+    <button class="${G.marketFilter === 'F' ? 'active' : ''}" onclick="G.marketFilter='F'; render();">Форварды</button>
+    <button class="${G.marketFilter === 'D' ? 'active' : ''}" onclick="G.marketFilter='D'; render();">Защитники</button>
+    <button class="${G.marketFilter === 'G' ? 'active' : ''}" onclick="G.marketFilter='G'; render();">Вратари</button>
+  </div>`;
+  const rows = filtered.map(({ player, club }) => {
+    const quote = getInternationalTransferQuote(player, club, team);
+    const cls = player.ovr >= 85 ? 'hi' : player.ovr >= 75 ? 'mid' : 'lo';
+    const tag = player.transferListed ? '<span class="tag transfer-listed">В списке на трансфер</span>' : '';
+    const disabled = quote.allowed ? '' : 'disabled';
+    const title = quote.allowed ? 'Купить игрока' : quote.reason;
+    return `<tr>
+      <td><span class="pos ${player.position === 'G' ? 'G' : player.position === 'D' ? 'D' : 'F'}">${player.position}</span></td>
+      <td><b>${player.name}</b> ${tag}<small class="market-player-meta">${player.age} лет · ${player.nationality}</small></td>
+      <td>${club.name}<small class="market-player-meta">${club.city}, ${club.country}</small></td>
+      <td>${club.leagueName}</td>
+      <td class="ovr ${cls}">${player.ovr}</td>
+      <td class="salary">${quote.salary.toFixed(1)}M</td>
+      <td class="salary">${quote.price.toFixed(1)}M</td>
+      <td><button class="btn small" ${disabled} title="${title}" onclick="buyInternationalPlayer(${player.id})">Купить</button></td>
+    </tr>`;
+  }).join('');
+  const title = region === 'kazakhstan' ? 'Клубы Казахстана' : region === 'belarus' ? 'Клубы Беларуси' : 'Европейские клубы';
+  return `<div class="market-intro"><div><h2>${title} (${filtered.length})</h2><p>Игроки переходят в ВХЛ за трансферную компенсацию. Учитываются зарплатный потолок и лимит легионеров.</p></div><span class="market-data-note">Составы пока смоделированы генератором игры</span></div>
+    ${filters}
+    <div class="market-table-wrap"><table><thead><tr><th>Поз.</th><th>Игрок</th><th>Клуб</th><th>Лига</th><th>OVR</th><th>ЗП</th><th>Трансфер</th><th>Действие</th></tr></thead><tbody>${rows || '<tr><td colspan="8" class="market-empty">В этой лиге пока нет доступных игроков</td></tr>'}</tbody></table></div>
+    <p class="market-footnote">Все суммы указаны в млн ₽. Трансферное окно закрывается после 40-го тура.</p>`;
+}
 function renderTrades() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   const offers = G.league.aiTradeOffers || [];
