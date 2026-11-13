@@ -160,6 +160,36 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       career: [
         { scope: "career", league: "KHL", gp: 701 }
       ]
+    },
+    // Источник: https://hctraktor.org/media/news/49632-artyem-borodkin-na-prosmotre-v-traktore/
+    // 530 матчей в КХЛ, завершил выступления в лиге в 2022/23.
+    "15979": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 530 }
+      ]
+    },
+    // Источник: https://vhlru.ru/lenta/619944/ — 57 матчей в КХЛ, подтверждено в октябре 2026.
+    "16005": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 57 }
+      ]
+    },
+    // Источник: https://www.vhlru.ru/lenta/290243/ — 28 матчей за «Амур».
+    "15399": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 28 }
+      ]
+    },
+    // Источник: https://www.sports.ru/hockey/person/vladimir-sokhatskiy/
+    // 121 матч регулярного чемпионата; плей-офф в эту цифру не включён.
+    "15802": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "KHL", gp: 121 }
+      ]
     }
   }
 };
