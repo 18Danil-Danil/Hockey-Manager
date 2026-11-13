@@ -2216,5 +2216,24 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 81 }
       ]
     },
+    // Вячеслав Сараев — 90 матчей ВХЛ и 18 матчей КХЛ.
+    // Совпадают ФИО и дата рождения 17.03.2000.
+    // Источники: https://ru.wikipedia.org/wiki/Сараев,_Вячеслав_Викторович
+    // https://dynamospb.ru/vhl/players/saraev-vyacheslav_vhl/
+    "26654": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 90 },
+        { scope: "career", league: "KHL", gp: 18 }
+      ]
+    },
+    // Дмитрий Шаров — 71 матч ВХЛ (68 регулярных + 3 плей-офф).
+    // Источник: https://www.vhlru/players/26842/
+    "26842": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 71 }
+      ]
+    },
   }
 };
