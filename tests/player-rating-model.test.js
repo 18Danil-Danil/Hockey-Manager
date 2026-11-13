@@ -51,6 +51,14 @@ const smallCareerBonus = sandbox.calculateLeagueHistoryBonus([{ scope: 'career',
 assert.ok(careerOnlyBonus > 0, 'career totals without season breakdown should contribute a league bonus');
 assert.ok(careerOnlyBonus < oneKhlSeason, 'undated career totals should be discounted versus a recent full season');
 assert.ok(smallCareerBonus > 0 && smallCareerBonus < careerOnlyBonus, 'small career samples should have a smaller bonus');
+const splitStageCareerBonus = sandbox.calculateLeagueHistoryBonus([
+  { scope: 'career', league: 'KHL', gp: 100, stage: 'regular' },
+  { scope: 'career', league: 'KHL', gp: 20, stage: 'playoffs' }
+], 2026);
+const combinedStageCareerBonus = sandbox.calculateLeagueHistoryBonus([
+  { scope: 'career', league: 'KHL', gp: 120 }
+], 2026);
+assert.equal(splitStageCareerBonus, combinedStageCareerBonus, 'regular season and playoff career totals should combine into one league experience bonus');
 const oldKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '14/15', league: 'KHL', gp: 45 }], 2026);
 assert.ok(oneKhlSeason > 0, 'a verified KHL season should add a league-strength bonus');
 assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'ВХЛ', gp: 45 }], 2026), 0, 'VHL experience should remain the baseline and not add a higher-league bonus');
