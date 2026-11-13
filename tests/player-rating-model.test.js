@@ -55,8 +55,7 @@ const leagueOnlyData = {
 };
 sandbox.VHL_PLAYER_STATS_DATA = leagueOnlyData;
 const veteranRating = sandbox.makeVhlRating('veteran', { ratings: { att: 70, def: 70, gk: 70 } }, 31);
-const baselineRating = sandbox.makeVhlRating('veteran', { ratings: { att: 70, def: 70, gk: 70 } }, 31);
 assert.ok(veteranRating && veteranRating.leagueBonus > 0, 'league history alone should create a usable rating entry');
 assert.equal(veteranRating.source, 'vhl-statistics+league-history');
-assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 45 }, { season: '24/25', league: 'KHL', gp: 45 }], 2026), oneKhlSeason * 2 > 5 ? 5 : oneKhlSeason * 2, 'same-season rows should be combined and capped rather than ignored');
+assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 45 }, { season: '24/25', league: 'KHL', gp: 45 }], 2026), oneKhlSeason, 'same-season rows should not double-count the same season after games played saturate');
 console.log('VHL player rating model checks passed.');
