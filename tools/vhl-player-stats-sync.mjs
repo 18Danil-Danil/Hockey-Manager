@@ -266,8 +266,10 @@ for (const [id, playerStats] of Object.entries(outputPlayers)) {
     `    // Источник: ${BASE}/en/stats/players/ — официальная сезонная статистика ВХЛ.\n` +
     `    "${id}": ${JSON.stringify({ position: playerStats.position, seasons })}`
   );
+  historyIdsAfterImport.add(id);
 }
-const historyTotal = existingHistoryIds.size + historyAdditions.length;
+const historyTotal = historyIdsAfterImport.size;
+const missingRosterHistory = [...rosterPlayers.keys()].filter(id => !historyIdsAfterImport.has(id));
 if (failures.length) {
   throw new Error(`Не удалось полностью загрузить все выбранные турнирные таблицы. Публикация отменена: ${failures.join(' | ')}`);
 }
