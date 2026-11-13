@@ -582,28 +582,37 @@ function renderInternationalMarket(region) {
     <button class="${G.marketFilter === 'D' ? 'active' : ''}" onclick="G.marketFilter='D'; render();">Защитники</button>
     <button class="${G.marketFilter === 'G' ? 'active' : ''}" onclick="G.marketFilter='G'; render();">Вратари</button>
   </div>`;
+  const realCount = allPlayers.filter(({player}) => player.internationalRealPlayer).length;
+  const generatedCount = allPlayers.length - realCount;
   const rows = filtered.map(({ player, club }) => {
     const quote = getInternationalTransferQuote(player, club, team);
     const cls = player.ovr >= 85 ? 'hi' : player.ovr >= 75 ? 'mid' : 'lo';
-    const tag = player.transferListed ? '<span class="tag transfer-listed">В списке на трансфер</span>' : '';
+    const tag = player.internationalRealPlayer ? '<span class="tag real-player">Реальная статистика</span>' : '';
+    const listed = player.transferListed ? '<span class="tag transfer-listed">На трансфере</span>' : '';
+    const stats = player.internationalStats
+      ? (player.position === 'G'
+        ? `${player.internationalStats.gp} игр · ${Number(player.internationalStats.gaa).toFixed(2)} КН · ${Number(player.internationalStats.svPct).toFixed(1)}% ОБ`
+        : `${player.internationalStats.gp} игр · ${player.internationalStats.g}-${player.internationalStats.a}-${player.internationalStats.g + player.internationalStats.a} очк. · +/- ${player.internationalStats.pm > 0 ? '+' : ''}${player.internationalStats.pm}`)
+      : 'Нет подтверждённой сезонной статистики';
     const disabled = quote.allowed ? '' : 'disabled';
     const title = quote.allowed ? 'Купить игрока' : quote.reason;
     return `<tr>
       <td><span class="pos ${player.position === 'G' ? 'G' : player.position === 'D' ? 'D' : 'F'}">${player.position}</span></td>
-      <td><b>${player.name}</b> ${tag}<small class="market-player-meta">${player.age} лет · ${player.nationality}</small></td>
+      <td><b>${player.name}</b> ${tag} ${listed}<small class="market-player-meta">${player.age} лет · ${player.nationality}</small></td>
       <td>${club.name}<small class="market-player-meta">${club.city}, ${club.country}</small></td>
       <td>${club.leagueName}</td>
       <td class="ovr ${cls}">${player.ovr}</td>
+      <td class="market-player-stats">${stats}</td>
       <td class="salary">${quote.salary.toFixed(1)}M</td>
       <td class="salary">${quote.price.toFixed(1)}M</td>
       <td><button class="btn small" ${disabled} title="${title}" onclick="buyInternationalPlayer(${player.id})">Купить</button></td>
     </tr>`;
   }).join('');
   const title = region === 'kazakhstan' ? 'Клубы Казахстана' : region === 'belarus' ? 'Клубы Беларуси' : 'Европейские клубы';
-  return `<div class="market-intro"><div><h2>${title} (${filtered.length})</h2><p>Игроки переходят в ВХЛ за трансферную компенсацию. Учитываются зарплатный потолок и лимит легионеров.</p></div><span class="market-data-note">Составы пока смоделированы генератором игры</span></div>
+  return `<div class="market-intro"><div><h2>${title} (${filtered.length})</h2><p>Проверка зарплатного потолка, трансферной суммы и лимита легионеров действует при каждом подписании.</p></div><span class="market-data-note">${realCount} игроков с реальной статистикой · ${generatedCount} игровых дополнений</span></div>
     ${filters}
-    <div class="market-table-wrap"><table><thead><tr><th>Поз.</th><th>Игрок</th><th>Клуб</th><th>Лига</th><th>OVR</th><th>ЗП</th><th>Трансфер</th><th>Действие</th></tr></thead><tbody>${rows || '<tr><td colspan="8" class="market-empty">В этой лиге пока нет доступных игроков</td></tr>'}</tbody></table></div>
-    <p class="market-footnote">Все суммы указаны в млн ₽. Трансферное окно закрывается после 40-го тура.</p>`;
+    <div class="market-table-wrap"><table><thead><tr><th>Поз.</th><th>Игрок</th><th>Клуб</th><th>Лига</th><th>OVR</th><th>Статистика сезона</th><th>ЗП</th><th>Трансфер</th><th>Действие</th></tr></thead><tbody>${rows || '<tr><td colspan="9" class="market-empty">В этой лиге пока нет доступных игроков</td></tr>'}</tbody></table></div>
+    <p class="market-footnote">Статистика — регулярный чемпионат сезона 2026/27. Возраст игроков без подтверждённого профиля пока временный. Все суммы указаны в млн ₽.</p>`;
 }
 function renderTrades() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
