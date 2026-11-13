@@ -1397,5 +1397,23 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 171 }
       ]
     },
+    // Владислав Курбатов — 443 матча ВХЛ (379 регулярных + 64 плей-офф).
+    // Источник: https://www.vhlru/players/22590/
+    "22590": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 443 }
+      ]
+    },
+    // Александр Протапович — 410 матчей ВХЛ по карьерной статистике
+    // (398 регулярных матчей и 12 матчей плей-офф).
+    // Источники: https://www.vhlru/players/20363/
+    // https://www.quanthockey.com/vhl/en/birth-year/active-vhl-players-born-in-1996.html
+    "20363": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 410 }
+      ]
+    },
   }
 };
