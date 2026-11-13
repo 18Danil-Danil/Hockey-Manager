@@ -1617,5 +1617,29 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 66 }
       ]
     },
+    // Александр Севостьянов — 332 матча ВХЛ (295 регулярных + 37 плей-офф).
+    // Источник: https://www.vhlru/players/23226/
+    "23226": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 332 }
+      ]
+    },
+    // Евгений Сорокин — 380 матчей ВХЛ (344 регулярных + 36 плей-офф).
+    // Источник: https://www.vhlru/players/25292/
+    "25292": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 380 }
+      ]
+    },
+    // Павел Кукштель — 321 матч ВХЛ (240 регулярных + 81 плей-офф).
+    // Источник: https://www.vhlru/players/23349/
+    "23349": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 321 }
+      ]
+    },
   }
 };
