@@ -536,12 +536,14 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 19, stage: "playoffs" }
       ]
     },
-    // Георгий Бусаров: 741 матч ВХЛ и 50 матчей КХЛ с плей-офф.
-    // Источник: https://vmf.ska.ru/news/view/485609-ska-podpisal-kontrakt-s-georgiem-busarovym/
+    // Георгий Бусаров: 761 матч ВХЛ по актуальной суммарной статистике;
+    // 50 матчей КХЛ с плей-офф по публикации клуба.
+    // Источники: https://www.vhlru/stats/players/all/
+    // https://vmf.ska.ru/news/view/485609-ska-podpisal-kontrakt-s-georgiem-busarovym/
     "17519": {
       position: "forward",
       career: [
-        { scope: "career", league: "VHL", gp: 741 },
+        { scope: "career", league: "VHL", gp: 761 },
         { scope: "career", league: "KHL", gp: 50 }
       ]
     },
