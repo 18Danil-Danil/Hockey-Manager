@@ -1481,5 +1481,40 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "KHL", gp: 152 }
       ]
     },
+    // Владимир Михасёнок — 227 матчей ВХЛ (210 регулярных + 17 плей-офф).
+    // Источники: https://www.vhlru/players/24406/
+    // https://silasporta.ru/athletes/vladimir-mikhasenok/
+    "24406": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 227 }
+      ]
+    },
+    // Павел Синявский — 277 матчей ВХЛ (252 регулярных + 25 плей-офф).
+    // Источник: https://www.vhlru/players/23928/
+    "23928": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 277 }
+      ]
+    },
+    // Сергей Голоднюк — 282 матча ВХЛ (242 регулярных + 40 плей-офф).
+    // Источник: https://www.vhlru/players/23742/
+    "23742": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 282 }
+      ]
+    },
+    // Илья Авраменко — 503 матча ВХЛ и 111 матчей МХЛ.
+    // Источники: https://www.vhlru/players/23483/
+    // https://mhl.khl.ru/players/23483/
+    "23483": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 503 },
+        { scope: "career", league: "MHL", gp: 111 }
+      ]
+    },
   }
 };
