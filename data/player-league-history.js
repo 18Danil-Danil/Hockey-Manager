@@ -2036,5 +2036,44 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 95 }
       ]
     },
+    // Максим Колмыков — 335 матчей ВХЛ (317 регулярных + 18 плей-офф).
+    // Источник: https://www.vhlru/players/24399/
+    "24399": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 335 }
+      ]
+    },
+    // Айдар Галимов — 131 матч ВХЛ по суммарной статистике официальной карточки.
+    // Источник: https://www.vhlru/players/24560/
+    "24560": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 131 }
+      ]
+    },
+    // Василий Филяев — 196 матчей ВХЛ (168 регулярных + 28 плей-офф).
+    // Источник: https://www.vhlru/players/40381/
+    "40381": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 196 }
+      ]
+    },
+    // Сергей Колесников — ВХЛ 272, КХЛ 9, МХЛ 31, НМХЛ 37,
+    // Словакия 13 и ВХЛ-Б 2 матча.
+    // Источники: https://www.flashscorekz.com/player/kolesnikov-sergei/p47GYcEc/
+    // https://forchecking.ru/player.php?id=18213
+    "25074": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 272 },
+        { scope: "career", league: "KHL", gp: 9 },
+        { scope: "career", league: "MHL", gp: 31 },
+        { scope: "career", league: "NMHL", gp: 37 },
+        { scope: "career", league: "SLOVAK", gp: 13 },
+        { scope: "career", league: "RUSSIAN_FIRST", gp: 2 }
+      ]
+    },
   }
 };
