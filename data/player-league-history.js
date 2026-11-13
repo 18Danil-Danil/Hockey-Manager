@@ -2108,5 +2108,21 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 20 }
       ]
     },
+    // Леонид Николенко — 64 матча ВХЛ (55 регулярных + 9 плей-офф).
+    // Источник: https://www.vhlru/players/24837/
+    "24837": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 64 }
+      ]
+    },
+    // Илья Гатиятулин — 247 матчей ВХЛ (233 регулярных + 14 плей-офф).
+    // Источник: https://www.vhlru/players/26297/
+    "26297": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 247 }
+      ]
+    },
   }
 };
