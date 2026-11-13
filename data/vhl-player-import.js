@@ -174,6 +174,7 @@
         player.pot = statisticalRating.pot;
         player.ratingSource = statisticalRating.source;
         player.ratingSampleGames = statisticalRating.sampleGames;
+        player.ratingLeagueBonus = statisticalRating.leagueBonus;
         player.ratingSeasons = statisticalRating.seasons;
         player.contract = contractFor(player.ovr, player.age);
       }
