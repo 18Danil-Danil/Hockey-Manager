@@ -1201,3 +1201,24 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
   font-size: 12px;
   line-height: 1.5;
 }
+
+/* Международный трансферный рынок */
+.market-shell { width: 100%; }
+.market-region-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin: 4px 0 18px; padding-bottom: 12px; border-bottom: 1px solid #252b3a; }
+.market-region-tab { border: 1px solid #30384b; background: #171c28; color: #9aa3b8; border-radius: 6px; padding: 9px 13px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.market-region-tab:hover { color: #e6e8ee; border-color: #59647e; }
+.market-region-tab.active { background: #38251f; border-color: #ff6b35; color: #ff9a72; }
+.market-intro { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.market-intro h2 { margin: 8px 0 5px; }
+.market-intro p, .market-footnote { color: #7a8299; font-size: 12px; line-height: 1.5; }
+.market-data-note { color: #d4a85e; background: #292315; border: 1px solid #594522; border-radius: 5px; padding: 6px 9px; font-size: 11px; }
+.market-table-wrap { width: 100%; overflow-x: auto; }
+.market-table-wrap table { min-width: 850px; }
+.market-player-meta { display: block; color: #7a8299; font-size: 10px; margin-top: 3px; }
+.transfer-listed { color: #4ade80; margin-left: 5px; }
+.market-empty { color: #7a8299; text-align: center; padding: 20px; }
+.market-footnote { margin-top: 10px; }
+@media (max-width: 640px) {
+  .market-region-tab { flex: 1 1 calc(50% - 7px); }
+  .market-intro { align-items: flex-start; }
+}
