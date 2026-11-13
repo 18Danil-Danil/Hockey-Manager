@@ -540,7 +540,7 @@ function setTicketPrice(v) { const team = G.league.teams.find(t => t.id === G.pl
 function renderFreeAgentMarket() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId); const hasScout = !!team.staff.scout;
   const filtered = (G.league.freeAgents || []).filter(p => { if (G.marketFilter === 'all') return true; if (G.marketFilter === 'F') return p.position !== 'D' && p.position !== 'G'; if (G.marketFilter === 'D') return p.position === 'D'; if (G.marketFilter === 'G') return p.position === 'G'; return true; });
-  const sortMode = G.marketSort || 'ovr-desc';
+  const sortMode = !hasScout && String(G.marketSort || '').startsWith('pot-') ? 'ovr-desc' : (G.marketSort || 'ovr-desc');
   const sortValues = { 'age-asc': p => -p.age, 'age-desc': p => p.age, 'ovr-desc': p => p.ovr, 'ovr-asc': p => -p.ovr, 'pot-desc': p => p.pot || p.ovr, 'pot-asc': p => -(p.pot || p.ovr) };
   const sorted = filtered.slice().sort((a, b) => (sortValues[sortMode](b) - sortValues[sortMode](a)) || b.ovr - a.ovr || a.name.localeCompare(b.name, 'ru'));
   const sortControl = `<label class="market-sort-label">Сортировка <select class="market-sort-select" value="${sortMode}" onchange="G.marketSort=this.value; render();">
