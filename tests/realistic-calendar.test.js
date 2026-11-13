@@ -62,7 +62,7 @@ for (const team of teams) {
   const appearances = [];
   schedule.forEach((round, roundIndex) => {
     const game = round.find(([homeId, awayId]) => homeId === team.id || awayId === team.id);
-    if (game) appearances.push({ date: meta[roundIndex].date, side: game[0] === team.id ? 'H' : 'A' });
+    if (game) appearances.push({ date: meta[roundIndex].date, side: game[0] === team.id ? 'H' : 'A', roundIndex });
   });
   let lastSide = '', streak = 0;
   appearances.forEach((game, index) => {
@@ -73,7 +73,7 @@ for (const team of teams) {
       const restDays = (Date.parse(game.date) - Date.parse(appearances[index - 1].date)) / 86400000;
       if (restDays > maxTeamRest) {
         maxTeamRest = restDays;
-        maxTeamRestDetail = { team: team.name, from: appearances[index - 1].date, to: game.date };
+        maxTeamRestDetail = { team: team.name, from: appearances[index - 1].date, to: game.date, fromSegment: meta[appearances[index - 1].roundIndex].segmentId, toSegment: meta[game.roundIndex].segmentId };
       }
     }
   });
