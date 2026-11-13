@@ -243,7 +243,7 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       if (!segment || segment.id !== item.segmentId) { segment = { id: item.segmentId, items: [], span: 0 }; segments.push(segment); }
       segment.items.push({ ...item, index }); segment.span = Math.max(segment.span, item.segmentOffset || 0);
     });
-    const boundaries = Math.max(0, segments.length - 1), gaps = Array(boundaries).fill(2);
+    const boundaries = Math.max(0, segments.length - 1);
     let cursor = new Date(startDate);
     const specialBoundaries = [];
     segments.forEach((segment, index) => {
