@@ -930,5 +930,33 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 481 }
       ]
     },
+    // Андрей Алексеев — 337 матчей ВХЛ и 16 матчей МХЛ.
+    // Источники: https://www.vhlru/players/17850/
+    // https://mhl.khl.ru/players/17850/
+    "17850": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 337 },
+        { scope: "career", league: "MHL", gp: 16 }
+      ]
+    },
+    // Александр Шаров — 87 матчей ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru/players/18993/
+    "18993": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 87 }
+      ]
+    },
+    // Артур Болтанов — 523 матча ВХЛ и 180 матчей МХЛ.
+    // Источники: https://www.vhlru/players/20225/
+    // https://mhl.khl.ru/players/20225/
+    "20225": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 523 },
+        { scope: "career", league: "MHL", gp: 180 }
+      ]
+    },
   }
 };
