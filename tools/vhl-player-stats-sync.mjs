@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-/* Сбор сезонной статистики игроков ВХЛ по публичным карточкам игроков.
- * Данные используются как приблизительная основа игровых рейтингов.
- * Скрипт проверяет robots.txt, работает последовательно и делает паузу между запросами.
+/* Сбор сезонной статистики ВХЛ из официальных таблиц статистики лиги.
+ * Загружает шесть сезонных таблиц (регулярный чемпионат и плей-офф),
+ * сопоставляет игроков с текущими составами и дополняет карьерную историю.
  */
 import fs from 'node:fs/promises';
 
@@ -9,15 +9,19 @@ const BASE = 'https://www.vhlru.ru';
 const USER_AGENT = 'HockeyManagerVHLStatsBot/1.0 (low-frequency statistics import)';
 const INPUT_FILE = 'data/vhl-rosters.js';
 const OUTPUT_FILE = 'data/vhl-player-stats.js';
+const HISTORY_FILE = 'data/player-league-history.js';
 const REPORT_FILE = 'vhl-player-stats-report.md';
-const DELAY_MS = 1350;
+const DELAY_MS = 900;
 const SEASONS = lastCompletedSeasons();
 
 function lastCompletedSeasons(now = new Date()) {
   const currentStartYear = now.getUTCMonth() >= 8 ? now.getUTCFullYear() : now.getUTCFullYear() - 1;
   return [1, 2, 3].map(offset => {
-    const start = currentStartYear - offset;
-    return String(start).slice(-2) + '/' + String(start + 1).slice(-2);
+    const endYear = currentStartYear - offset + 1;
+    return {
+      endYear,
+      label: String(endYear - 1).slice(-2) + '/' + String(endYear).slice(-2)
+    };
   });
 }
 function decode(value) {
@@ -45,7 +49,7 @@ function minutes(value) {
   const match = /^(\d+):(\d{2})$/.exec(String(value || '').trim());
   return match ? Number(match[1]) + Number(match[2]) / 60 : null;
 }
-function robotsAllowsPlayers(robotsText) {
+function robotsAllowsPath(robotsText, targetPath) {
   const lines = robotsText.split(/\r?\n/).map(line => line.split('#')[0].trim()).filter(Boolean);
   const groups = [];
   let current = null;
@@ -63,7 +67,7 @@ function robotsAllowsPlayers(robotsText) {
   const applicable = groups.filter(group => group.agents.includes('*') ||
     group.agents.some(agent => USER_AGENT.toLowerCase().includes(agent)));
   const rules = applicable.flatMap(group => group.rules)
-    .filter(rule => rule.path && ('/players/'.startsWith(rule.path) || rule.path.startsWith('/players/')))
+    .filter(rule => rule.path && (targetPath.startsWith(rule.path) || rule.path.startsWith(targetPath)))
     .sort((a, b) => b.path.length - a.path.length);
   return !rules.length || rules[0].type === 'allow';
 }
@@ -77,99 +81,98 @@ async function getText(url) {
   return response.text();
 }
 
-function parsePlayerProfile(html, expectedPosition, wantedSeasons) {
-  const rows = [...html.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)].map(match => ({
-    html: match[1], cells: cellsOf(match[1])
-  }));
-  let season = null, stage = null;
-  const seasons = [];
-  for (const row of rows) {
-    const c = row.cells;
-    if (c.length >= 2 && /^\d{2}\/\d{2}$/.test(c[0]) &&
-        /регулярн|плей-офф/i.test(c[1])) {
-      season = c[0];
-      stage = /плей-офф/i.test(c[1]) ? 'playoff' : 'regular';
-      continue;
-    }
-    if (!season || !stage || !wantedSeasons.includes(season) || c.length < 15) continue;
-    // Строки команд содержат название клуба, номер игрока и статистические показатели.
-    if (!/^\d{1,2}$/.test(c[1] || '')) continue;
-    if (expectedPosition === 'goaltender') {
-      if (c.length < 16) continue;
-      const gp = numeric(c[2]);
-      if (!gp) continue;
-      seasons.push({
-        season, stage, gp, team: c[0], wins: numeric(c[3]), losses: numeric(c[4]),
-        shotsAgainst: numeric(c[6]), goalsAgainst: numeric(c[7]), saves: numeric(c[8]),
-        savePct: numeric(c[9]), gaa: numeric(c[10]), goals: numeric(c[11]),
-        assists: numeric(c[12]), shutouts: numeric(c[13]), pim: numeric(c[14]),
-        minutes: minutes(c[15])
-      });
+function parseSeasonStats(html, season, stage, rosterPlayers) {
+  const rows = [...html.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)];
+  const parsed = new Map();
+  for (const match of rows) {
+    const rowHtml = match[1];
+    const idMatch = rowHtml.match(/href=["'][^"']*\/players\/(\d+)\/?(?:\?[^"']*)?["']/i);
+    if (!idMatch) continue;
+    const id = idMatch[1];
+    const player = rosterPlayers.get(id);
+    if (!player) continue;
+    const c = cellsOf(rowHtml);
+    if (c.length < 4) continue;
+    const gp = numeric(c[3]);
+    if (!gp || gp <= 0) continue;
+
+    let record;
+    if (player.position === 'goaltender') {
+      if (c.length < 17) continue;
+      record = {
+        season, stage, gp, team: c[2],
+        wins: numeric(c[4]), losses: numeric(c[5]),
+        shotsAgainst: numeric(c[7]), goalsAgainst: numeric(c[8]),
+        saves: numeric(c[9]), savePct: numeric(c[10]), gaa: numeric(c[11]),
+        goals: numeric(c[12]), assists: numeric(c[13]), shutouts: numeric(c[14]),
+        pim: numeric(c[15]), minutes: minutes(c[16])
+      };
     } else {
-      if (c.length < 24) continue;
-      const gp = numeric(c[2]);
-      if (!gp) continue;
-      seasons.push({
-        season, stage, gp, team: c[0], goals: numeric(c[3]), assists: numeric(c[4]),
-        points: numeric(c[5]), plusMinus: numeric(c[6]), pim: numeric(c[7]),
-        ppGoals: numeric(c[9]), shots: numeric(c[14]), shootingPct: numeric(c[15]),
-        faceoffs: numeric(c[17]), faceoffsWon: numeric(c[18]), faceoffPct: numeric(c[19]),
-        toiPerGame: minutes(c[20]), shiftsPerGame: numeric(c[21]),
-        hits: numeric(c[22]), blocks: numeric(c[23])
-      });
+      if (c.length < 27) continue;
+      record = {
+        season, stage, gp, team: c[2],
+        goals: numeric(c[4]), assists: numeric(c[5]), points: numeric(c[6]),
+        plusMinus: numeric(c[7]), pim: numeric(c[10]), ppGoals: numeric(c[12]),
+        shots: numeric(c[17]), shootingPct: numeric(c[18]),
+        faceoffs: numeric(c[20]), faceoffsWon: numeric(c[21]),
+        faceoffPct: numeric(c[22]), toiPerGame: minutes(c[23]),
+        shiftsPerGame: numeric(c[24]), hits: numeric(c[25]), blocks: numeric(c[26])
+      };
     }
+    if (!parsed.has(id)) parsed.set(id, []);
+    parsed.get(id).push(record);
   }
-  return seasons;
+  return parsed;
 }
 
 const sourceText = await fs.readFile(INPUT_FILE, 'utf8');
 const rosterMatch = sourceText.match(/window\.VHL_ROSTER_DATA\s*=\s*(\{[\s\S]*\})\s*;?\s*$/);
 if (!rosterMatch) throw new Error('Не удалось прочитать data/vhl-rosters.js.');
 const rosterData = JSON.parse(rosterMatch[1]);
-const players = new Map();
+const rosterPlayers = new Map();
 for (const team of rosterData.teams || []) {
   for (const player of team.players || []) {
-    if (player.playerId && player.position) players.set(String(player.playerId), {
+    if (player.playerId && player.position) rosterPlayers.set(String(player.playerId), {
       playerId: Number(player.playerId), position: player.position
     });
   }
 }
-if (!players.size) throw new Error('В текущей базе составов не найдено игроков.');
+if (!rosterPlayers.size) throw new Error('В текущей базе составов не найдено игроков.');
 
 const robotsResponse = await fetch(`${BASE}/robots.txt`, {
   headers: { 'User-Agent': USER_AGENT, 'Accept': 'text/plain' },
   signal: AbortSignal.timeout(15000)
 });
 if (!robotsResponse.ok) throw new Error(`Не удалось проверить robots.txt: HTTP ${robotsResponse.status}`);
-if (!robotsAllowsPlayers(await robotsResponse.text())) {
-  throw new Error('robots.txt не разрешает автоматическое обращение к /players/. Сбор остановлен.');
+const robotsText = await robotsResponse.text();
+if (!robotsAllowsPath(robotsText, '/en/stats/players/')) {
+  throw new Error('robots.txt не разрешает автоматическое обращение к сезонной статистике. Сбор остановлен.');
 }
 
 const outputPlayers = {};
 const failures = [];
-let withStats = 0;
-let processed = 0;
-for (const [id, player] of players) {
-  processed++;
-  try {
-    const html = await getText(`${BASE}/players/${id}/`);
-    const seasons = parsePlayerProfile(html, player.position, SEASONS);
-    if (seasons.length) {
-      outputPlayers[id] = { position: player.position, seasons };
-      withStats++;
+const pageReports = [];
+for (const seasonInfo of SEASONS) {
+  for (const stage of ['regular', 'playoff']) {
+    const url = `${BASE}/en/stats/players/${seasonInfo.endYear}/?stage=${stage}`;
+    try {
+      const html = await getText(url);
+      const seasonPlayers = parseSeasonStats(html, seasonInfo.label, stage, rosterPlayers);
+      let rowsAdded = 0;
+      for (const [id, records] of seasonPlayers) {
+        if (!outputPlayers[id]) outputPlayers[id] = { position: rosterPlayers.get(id).position, seasons: [] };
+        outputPlayers[id].seasons.push(...records);
+        rowsAdded += records.length;
+      }
+      pageReports.push(`- ${seasonInfo.label} (${stage}): ${seasonPlayers.size} игроков, ${rowsAdded} строк статистики`);
+      console.log(`Загружен сезон ${seasonInfo.label} / ${stage}: ${seasonPlayers.size} игроков`);
+    } catch (error) {
+      failures.push(`${seasonInfo.label} ${stage}: ${error.message}`);
     }
-  } catch (error) {
-    failures.push(`${id}: ${error.message}`);
+    await sleep(DELAY_MS);
   }
-  if (processed % 50 === 0) console.log(`Обработано ${processed}/${players.size}; статистика найдена у ${withStats}`);
-  if (processed < players.size) await sleep(DELAY_MS);
 }
 
-if (withStats < Math.min(50, Math.ceil(players.size * 0.2))) {
-  throw new Error(`Слишком мало профилей со статистикой: ${withStats}/${players.size}. Старую базу не перезаписываем.`);
-}
-
-const HISTORY_FILE = 'data/player-league-history.js';
 const historyText = await fs.readFile(HISTORY_FILE, 'utf8');
 const existingHistoryIds = new Set(
   [...historyText.matchAll(/^\s{4}"(\d+)":\s*\{/gm)].map(match => match[1])
@@ -187,39 +190,49 @@ for (const [id, playerStats] of Object.entries(outputPlayers)) {
   }));
   if (!seasons.length) continue;
   historyAdditions.push(
-    `    // Источник: https://www.vhlru.ru/players/${id}/ — сезонная статистика по официальной карточке игрока.\n` +
+    `    // Источник: ${BASE}/en/stats/players/ — официальная сезонная статистика ВХЛ.\n` +
     `    "${id}": ${JSON.stringify({ position: playerStats.position, seasons })}`
   );
 }
 const historyTotal = existingHistoryIds.size + historyAdditions.length;
-if (historyTotal < historyTarget) {
-  throw new Error(`Недостаточно подтверждённых профилей для цели ${historyTarget}: собрано ${historyTotal}. История не перезаписывается.`);
+if (failures.length === SEASONS.length * 2) {
+  throw new Error(`Не удалось загрузить ни одну сезонную таблицу: ${failures.join(' | ')}`);
 }
-if (historyAdditions.length) {
-  const updatedHistory = historyText.replace(
-    /\n  }\n};\s*$/,
-    '\n' + historyAdditions.join(',\n') + ',\n  }\n};\n'
-  );
-  if (updatedHistory === historyText) throw new Error('Не удалось безопасно обновить конец player-league-history.js.');
-  await fs.writeFile(HISTORY_FILE, updatedHistory, 'utf8');
+if (historyTotal < historyTarget) {
+  throw new Error(`Недостаточно подтверждённых игроков для цели ${historyTarget}: собрано ${historyTotal}, новых ${historyAdditions.length}. История не перезаписывается.`);
 }
 
+const updatedHistory = historyText.replace(
+  /\n  }\n};\s*$/,
+  '\n' + historyAdditions.join(',\n') + ',\n  }\n};\n'
+);
+if (historyAdditions.length && updatedHistory === historyText) {
+  throw new Error('Не удалось безопасно обновить конец player-league-history.js.');
+}
+if (historyAdditions.length) await fs.writeFile(HISTORY_FILE, updatedHistory, 'utf8');
+
 const payload = {
-  schemaVersion: 1, source: 'vhlru', sourceUrl: `${BASE}/players/{playerId}/`,
-  importedAt: new Date().toISOString(), seasons: SEASONS, players: outputPlayers
+  schemaVersion: 1,
+  source: 'vhlru',
+  sourceUrl: `${BASE}/en/stats/players/{season}/?stage={regular|playoff}`,
+  importedAt: new Date().toISOString(),
+  seasons: SEASONS.map(item => item.label),
+  players: outputPlayers
 };
 await fs.writeFile(OUTPUT_FILE, '/* Сезонная статистика ВХЛ; формируется tools/vhl-player-stats-sync.mjs. */\nwindow.VHL_PLAYER_STATS_DATA = ' + JSON.stringify(payload) + ';\n', 'utf8');
+
 const report = [
   '# Отчёт импорта статистики игроков ВХЛ', '',
-  `- Игроков в текущих составах: ${players.size}`,
-  `- Профилей со статистикой за выбранные сезоны: ${withStats}`,
+  `- Игроков в текущих составах: ${rosterPlayers.size}`,
+  `- Игроков с сезонной статистикой за выбранные сезоны: ${Object.keys(outputPlayers).length}`,
   `- Игроков в карьерной истории после импорта: ${historyTotal}`,
   `- Новых игроков добавлено в карьерную историю: ${historyAdditions.length}`,
-  `- Сезоны: ${SEASONS.join(', ')}`,
-  `- Дата импорта: ${payload.importedAt}`,
-  `- Ошибок загрузки: ${failures.length}`, '',
-  '## Ошибки',
-  ...(failures.length ? failures.slice(0, 100).map(value => '- ' + value) : ['- Нет'])
+  `- Сезоны: ${SEASONS.map(item => item.label).join(', ')}`,
+  `- Дата импорта: ${payload.importedAt}`, '',
+  '## Загруженные таблицы',
+  ...pageReports,
+  '', '## Ошибки',
+  ...(failures.length ? failures.map(value => '- ' + value) : ['- Нет'])
 ].join('\n');
 await fs.writeFile(REPORT_FILE, report + '\n', 'utf8');
 console.log(report);
