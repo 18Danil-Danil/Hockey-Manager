@@ -1193,3 +1193,11 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
   letter-spacing: .08em;
 }
 .start-about-credit p { margin: 0; }
+
+
+.profile-note {
+  margin: 0 0 12px;
+  color: var(--muted, rgba(255,255,255,.62));
+  font-size: 12px;
+  line-height: 1.5;
+}
