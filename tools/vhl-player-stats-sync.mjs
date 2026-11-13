@@ -250,10 +250,10 @@ const existingHistoryIds = new Set(
   [...historyText.matchAll(/^\s{4}"(\d+)":\s*\{/gm)].map(match => match[1])
 );
 // История должна покрывать всех игроков текущих составов, а не старый лимит в 500 записей.
-const historyTarget = Math.max(500, rosterPlayers.size);
 const historyAdditions = [];
+const historyIdsAfterImport = new Set(existingHistoryIds);
 for (const [id, playerStats] of Object.entries(outputPlayers)) {
-  if (existingHistoryIds.has(id) || historyAdditions.length >= historyTarget - existingHistoryIds.size) continue;
+  if (existingHistoryIds.has(id)) continue;
   const seasons = (playerStats.seasons || []).filter(row => Number(row.gp) > 0).map(row => ({
     season: row.season,
     league: 'VHL',
@@ -271,8 +271,8 @@ const historyTotal = existingHistoryIds.size + historyAdditions.length;
 if (failures.length) {
   throw new Error(`Не удалось полностью загрузить все выбранные турнирные таблицы. Публикация отменена: ${failures.join(' | ')}`);
 }
-if (historyTotal < historyTarget) {
-  throw new Error(`Недостаточно подтверждённых игроков для цели ${historyTarget}: собрано ${historyTotal}, новых ${historyAdditions.length}. История не перезаписывается.`);
+if (missingRosterHistory.length) {
+  throw new Error(`Карьерная история не покрывает ${missingRosterHistory.length} игроков текущих составов ВХЛ. Примеры ID: ${missingRosterHistory.slice(0, 20).join(', ')}. Публикация отменена.`);
 }
 
 const updatedHistory = historyText.replace(
@@ -298,6 +298,7 @@ const report = [
   '# Отчёт импорта статистики игроков ВХЛ', '',
   `- Игроков в текущих составах: ${rosterPlayers.size}`,
   `- Игроков с сезонной статистикой за выбранные сезоны: ${Object.keys(outputPlayers).length}`,
+  `- Игроков текущих составов с карьерной историей: ${rosterPlayers.size - missingRosterHistory.length}/${rosterPlayers.size}`,
   `- Игроков в карьерной истории после импорта: ${historyTotal}`,
   `- Новых игроков добавлено в карьерную историю: ${historyAdditions.length}`,
   `- Сезоны: ${seasons.join(', ')}`,
