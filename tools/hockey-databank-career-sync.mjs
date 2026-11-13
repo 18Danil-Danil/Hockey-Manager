@@ -226,7 +226,7 @@ async function main() {
     '',
     '- Игроков из истории ВХЛ: ' + Object.keys(history.players).length,
     '- Игроков однозначно сопоставлено с Hockey Databank: ' + matched.size,
-    '- Игроков с найденными историческими сезонами: ' + playersWithNhlHistory,
+    '- Игроков с найденными историческими сезонами: ' + playersWithDatabankHistory,
     '- Сезонных строк добавлено: ' + added,
     '- Существующих строк обогащено: ' + enriched,
     '- Игроков с identity без точного совпадения: ' + ambiguous.length,
