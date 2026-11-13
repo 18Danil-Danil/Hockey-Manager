@@ -1,0 +1,73 @@
+name: Полная сезонная история игроков ВХЛ
+
+on:
+  push:
+    branches:
+      - refactoring
+    paths:
+      - 'tools/vhl-career-history-sync.mjs'
+      - 'tests/vhl-career-history-sync.test.mjs'
+      - 'data/vhl-rosters.js'
+      - '.github/workflows/vhl-career-history-sync.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: "41 5 1 * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vhl-career-history-sync
+  cancel-in-progress: false
+
+jobs:
+  sync-career-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Получить код проекта
+        uses: actions/checkout@v4
+        with:
+          ref: refactoring
+
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Проверить разбор сезонной истории
+        run: node --test tests/vhl-career-history-sync.test.mjs
+
+      - name: Собрать карьерные сезоны ВХЛ
+        run: node tools/vhl-career-history-sync.mjs
+
+      - name: Сохранить полную историю в ветке refactoring
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/player-league-history.js
+          if git diff --cached --quiet; then
+            echo "Новых сезонных данных нет — коммит не требуется."
+          else
+            git commit -m "data: complete VHL player career seasons"
+            git pull --rebase origin refactoring
+            git push origin HEAD:refactoring
+          fi
+
+      - name: Добавить отчёт в сводку запуска
+        if: always()
+        run: |
+          if [ -f vhl-career-history-report.md ]; then
+            cat vhl-career-history-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Отчёт не создан. Проверьте журнал шага импорта." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Сохранить отчёт как артефакт
+        if: always() && hashFiles('vhl-career-history-report.md') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: vhl-career-history
+          path: vhl-career-history-report.md
+          retention-days: 30
