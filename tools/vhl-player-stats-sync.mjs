@@ -78,9 +78,15 @@ async function getText(url, redirects = 0) {
       headers: { 'User-Agent': USER_AGENT, 'Accept': 'text/html, text/plain;q=0.9, */*;q=0.8' },
       // VHL has multiple A records; one of them intermittently stalls. Pin only this host
       // to the working address documented by the independent fastRhockey client.
-      lookup(hostname, options, callback) {
-        if (hostname === 'www.vhlru.ru') callback(null, '188.128.49.29', 4);
-        else dns.lookup(hostname, options, callback);
+      lookup(hostname, optionsOrCallback, maybeCallback) {
+        const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
+        const options = typeof optionsOrCallback === 'function' ? {} : (optionsOrCallback || {});
+        if (hostname === 'www.vhlru.ru') {
+          if (options.all) callback(null, [{ address: '188.128.49.29', family: 4 }]);
+          else callback(null, '188.128.49.29', 4);
+        } else {
+          dns.lookup(hostname, options, callback);
+        }
       }
     }, response => {
       const status = response.statusCode || 0;
