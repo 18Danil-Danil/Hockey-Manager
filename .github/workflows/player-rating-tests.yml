@@ -6,6 +6,7 @@ on:
       - refactoring
     paths:
       - 'data/player-rating-model.js'
+      - 'data/player-league-history.js'
       - 'tests/player-rating-model.test.js'
       - 'tests/player-league-history-merge.test.mjs'
       - 'tools/vhl-career-history-sync.mjs'
