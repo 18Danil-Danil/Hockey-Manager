@@ -38,6 +38,9 @@ jobs:
       - name: Проверить разбор сезонной истории
         run: node --test tests/vhl-career-history-sync.test.mjs
 
+      - name: Проверить синтаксис интерфейса игрока
+        run: node --check ui/render.js
+
       - name: Собрать карьерные сезоны ВХЛ
         run: node tools/vhl-career-history-sync.mjs
 
