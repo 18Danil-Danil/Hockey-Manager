@@ -279,5 +279,35 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { season: "23/24", league: "KHL", gp: 35, team: "Адмирал" }
       ]
     },
+    // Никита Богданов: 274 матча в ВХЛ (данные на сентябрь 2026) и
+    // 10 матчей регулярного чемпионата КХЛ: 8 в 2023/24 и 2 в 2026/27.
+    // Источники: https://vhlru.ru/lenta/608000/
+    // https://silasporta.ru/athletes/nikita-bogdanov/
+    "14498": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 274 },
+        { scope: "career", league: "KHL", gp: 10 }
+      ]
+    },
+    // Илья Бочков: 870 матчей в ВХЛ по сообщению клуба от 01.06.2026.
+    // Отдельно 108 матчей в Первой лиге/Первенстве ВХЛ по сообщению ВХЛ 2021 года.
+    // Источники: https://www.vhlru.ru/lenta/603852/
+    // https://vhlru.ru/lenta/403623/
+    "14585": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 870 },
+        { scope: "career", league: "RUSSIAN_FIRST", gp: 108 }
+      ]
+    },
+    // Александр Угольников — 544 матча в ВХЛ с плей-офф, данные клуба 2026 года.
+    // Источник: https://www.hcda.ru/press_center/news/sostav-dinamo-altay-popolnil-zashchitnik-aleksandr-ugolnikov/
+    "15644": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 544 }
+      ]
+    },
   }
 };
