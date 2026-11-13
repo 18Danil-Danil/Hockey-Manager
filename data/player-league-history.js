@@ -404,5 +404,58 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "BELARUS", gp: 18, stage: "playoffs" }
       ]
     },
+    // Антон Андриянов: 579 матчей регулярных чемпионатов + 41 плей-офф ВХЛ.
+    // Источник: https://www.vhlru.ru/players/16491/
+    "16491": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 579, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 41, stage: "playoffs" }
+      ]
+    },
+    // Николай Тимашов: КХЛ — 436 регулярных + 27 плей-офф;
+    // ВХЛ — 169 регулярных + 41 плей-офф по сезонной статистике до 26/27.
+    // Источники: https://www.sports.ru/hockey/person/nikolai-timashov/career/
+    // https://silasporta.ru/athletes/nikolay-timashov/
+    "17312": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 436, stage: "regular" },
+        { scope: "career", league: "KHL", gp: 27, stage: "playoffs" },
+        { scope: "career", league: "VHL", gp: 169, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 41, stage: "playoffs" }
+      ]
+    },
+    // Денис Вихарев — 286 матчей регулярных чемпионатов + 49 плей-офф ВХЛ.
+    // Источник: https://www.vhlru.ru/players/17788/
+    "17788": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 286, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 49, stage: "playoffs" }
+      ]
+    },
+    // Александр Сумин — 746 матчей регулярных чемпионатов + 144 плей-офф ВХЛ.
+    // Источник: https://vhlru.ru/players/15605/
+    "15605": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 746, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 144, stage: "playoffs" }
+      ]
+    },
+    // Павел Куликов: 561 матч в КХЛ, 69 матчей в чемпионате Беларуси;
+    // ВХЛ — 57 регулярных матчей + 15 плей-офф.
+    // Источники: https://ahc-neftyanik.ru/article.asp?id=Pavel-Kulikov-%E2%80%93-novichok-Neftjanika-7351
+    // https://silasporta.ru/athletes/pavel-kulikov/
+    "15998": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 561 },
+        { scope: "career", league: "BELARUS", gp: 69 },
+        { scope: "career", league: "VHL", gp: 57, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 15, stage: "playoffs" }
+      ]
+    },
   }
 };
