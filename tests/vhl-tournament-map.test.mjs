@@ -17,5 +17,10 @@ assert.deepEqual(parsed, [
   { endYear: 2025, stage: 'playoff', tn: 1311, label: '2024/2025 | Playoffs' }
 ]);
 
+assert.deepEqual(
+  parseVhlTournamentOptions('<select id="season"><option value="/en/calendar/1374/0/">2025/2026 | Regular Season</option></select>'),
+  [{ endYear: 2026, stage: 'regular', tn: 1374, label: '2025/2026 | Regular Season' }]
+);
+
 assert.throws(() => parseVhlTournamentOptions('<html></html>'));
 console.log('VHL tournament mapping checks passed.');
