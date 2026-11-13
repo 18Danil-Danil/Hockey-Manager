@@ -48,6 +48,7 @@ assert.equal(sandbox.makeVhlRating('missing', { ratings: { att: 70, def: 70, gk:
 const oneKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 45 }], 2026);
 const oldKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '14/15', league: 'KHL', gp: 45 }], 2026);
 assert.ok(oneKhlSeason > 0, 'a verified KHL season should add a league-strength bonus');
+assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'ВХЛ', gp: 45 }], 2026), 0, 'VHL experience should remain the baseline and not add a higher-league bonus');
 assert.ok(oldKhlSeason > 0 && oldKhlSeason < oneKhlSeason, 'older high-league experience should decay');
 const leagueOnlyData = {
   seasons: ['25/26', '24/25', '23/24'],
