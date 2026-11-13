@@ -26,7 +26,7 @@
     OHL: 'OHL', WHL: 'WHL', QMJHL: 'QMJHL'
   };
   function normalizeLeagueCode(value) {
-    const name = String(value || '').trim().toUpperCase().replace(/[._-]+/g, ' ').replace(/\\s+/g, ' ');
+    const name = String(value || '').trim().toUpperCase().replace(/[._-]+/g, ' ').replace(/\s+/g, ' ');
     return LEAGUE_ALIASES[name] || name;
   }
   function seasonEndYear(season) {
