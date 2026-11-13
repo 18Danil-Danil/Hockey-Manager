@@ -43,6 +43,9 @@ jobs:
       - name: Проверить качество сезонной статистики
         run: node tests/player-stats-quality.test.mjs
 
+      - name: Проверить карту турниров ВХЛ
+        run: node tests/vhl-tournament-map.test.mjs
+
       - name: Загрузить сезонную статистику
         run: node tools/vhl-player-stats-sync.mjs
 
