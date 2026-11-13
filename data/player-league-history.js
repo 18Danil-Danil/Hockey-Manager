@@ -2148,5 +2148,39 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 379 }
       ]
     },
+    // Максим Махрин — 307 матчей ВХЛ (287 регулярных + 20 плей-офф).
+    // Источник: https://vhlru.ru/players/27564/
+    "27564": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 307 }
+      ]
+    },
+    // Иван Ежов — 139 матчей ВХЛ (118 регулярных + 21 плей-офф).
+    // Источник: https://vhlru.ru/players/31847/
+    "31847": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 139 }
+      ]
+    },
+    // Николай Майоров — 298 матчей ВХЛ (271 регулярный + 27 плей-офф).
+    // Источник: https://www.vhlru.ru/players/32162/
+    "32162": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 298 }
+      ]
+    },
+    // Данил Савунов — 307 матчей ВХЛ и 2 матча МХЛ.
+    // Источники: https://www.vhlru/players/25722/
+    // https://mhl.khl.ru/players/25722/
+    "25722": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 307 },
+        { scope: "career", league: "MHL", gp: 2 }
+      ]
+    },
   }
 };
