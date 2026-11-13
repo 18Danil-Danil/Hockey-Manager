@@ -43,8 +43,18 @@
       const league = normalizeLeagueCode(row?.league);
       const strength = LEAGUE_STRENGTH[league];
       const gp = Math.max(0, Number(row?.gp) || 0);
+      if (!strength || strength <= 1 || !gp) continue;
+      if (row?.scope === 'career' || row?.career === true) {
+        const key = 'career:' + league + ':' + String(row.stage || 'all');
+        const previous = grouped.get(key) || { league, gp: 0, strength, career: true, entries: new Map() };
+        const entryKey = String(row.team || 'career-total') + ':' + String(row.stage || 'all');
+        previous.entries.set(entryKey, Math.max(previous.entries.get(entryKey) || 0, gp));
+        previous.gp = [...previous.entries.values()].reduce((sum, value) => sum + value, 0);
+        grouped.set(key, previous);
+        continue;
+      }
       const endYear = seasonEndYear(row?.season);
-      if (!strength || strength <= 1 || !gp || endYear === null || endYear > currentYear) continue;
+      if (endYear === null || endYear > currentYear) continue;
       const key = String(row.season) + ':' + league;
       const previous = grouped.get(key) || { league, season: row.season, gp: 0, strength, endYear, entries: new Map() };
       const entryKey = String(row.team || 'all-teams') + ':' + String(row.stage || 'total');
@@ -54,9 +64,16 @@
     }
     let impact = 0;
     for (const row of grouped.values()) {
-      const recency = Math.pow(0.88, Math.max(0, currentYear - row.endYear));
-      const experience = Math.min(1, row.gp / 45);
-      impact += (row.strength - 1) * experience * recency;
+      if (row.career) {
+        // Карьерный итог без разбивки по сезонам: не выдумываем давность.
+        // Учитываем накопленный опыт с консервативным коэффициентом доверия.
+        const experience = Math.min(1, row.gp / 120);
+        impact += (row.strength - 1) * experience * 0.65;
+      } else {
+        const recency = Math.pow(0.88, Math.max(0, currentYear - row.endYear));
+        const experience = Math.min(1, row.gp / 45);
+        impact += (row.strength - 1) * experience * recency;
+      }
     }
     return Math.round(clampValue(impact * 5.5, 0, 5) * 10) / 10;
   }
