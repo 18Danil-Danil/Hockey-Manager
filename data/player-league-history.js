@@ -2182,5 +2182,39 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 2 }
       ]
     },
+    // Иван Лапшин — 285 матчей ВХЛ (249 регулярных + 36 плей-офф).
+    // Источник: https://www.vhlru/players/25176/
+    "25176": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 285 }
+      ]
+    },
+    // Никита Рожков — 204 матча ВХЛ по официальной статистике.
+    // Источник: https://www.vhlru/players/27912/
+    "27912": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 204 }
+      ]
+    },
+    // Егор Алексеев — ВХЛ 227, КХЛ 34 и МХЛ 172 матча.
+    // Источник: https://forchecking.ru/player.php?id=15074
+    "25813": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 227 },
+        { scope: "career", league: "KHL", gp: 34 },
+        { scope: "career", league: "MHL", gp: 172 }
+      ]
+    },
+    // Владислав Лещенко — 81 матч ВХЛ (70 регулярных + 11 плей-офф).
+    // Источник: https://www.vhlru/players/31667/
+    "31667": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 81 }
+      ]
+    },
   }
 };
