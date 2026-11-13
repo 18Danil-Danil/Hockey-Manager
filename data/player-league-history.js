@@ -2124,5 +2124,29 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 247 }
       ]
     },
+    // Роман Папст — 297 матчей ВХЛ по официальной суммарной статистике лиги.
+    // Источник: https://www.vhlru/stats/players/all/all/81/
+    "25063": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 297 }
+      ]
+    },
+    // Тимур Ибрагимов — 56 матчей ВХЛ (50 регулярных + 6 плей-офф).
+    // Источник: https://www.vhlru/players/25559/
+    "25559": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 56 }
+      ]
+    },
+    // Данил Гизатуллин — 379 матчей ВХЛ (320 регулярных + 59 плей-офф).
+    // Источник: https://www.vhlru/players/25395/
+    "25395": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 379 }
+      ]
+    },
   }
 };
