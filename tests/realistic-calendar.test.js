@@ -109,7 +109,7 @@ console.log('Youth schedule fallback passed.');
 const oldSchedule = context.orientScheduleRounds(Array.from({ length: 58 }, () => []), teams, 0);
 const unstarted = { season: '2026/27', teams, schedule: oldSchedule, scheduleVersion: 2, currentRound: 0, results: [] };
 context.ensureScheduleCalendar(unstarted);
-assert.equal(unstarted.scheduleVersion, 3);
+assert.equal(unstarted.scheduleVersion, 4);
 assert.equal(unstarted.schedule.length, 152);
 const startedSchedule = oldSchedule.map(round => round.slice());
 const started = { season: '2026/27', teams, schedule: startedSchedule, scheduleVersion: 2, currentRound: 4, results: [{ round: 0 }] };
