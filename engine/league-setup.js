@@ -237,7 +237,7 @@ function makeScheduleMeta(season, roundCount, teams = null) {
   const match = String(season || '').match(/(\d{4})/), startYear = match ? Number(match[1]) : 2026;
   const startDate = new Date(Date.UTC(startYear, 8, 2)), zoneTeams = teams || window.VHL_TEAMS || [];
   if (roundCount === 152 && hasCompleteVhlTravelMap(zoneTeams)) {
-    const info = buildVhlSchedulePlan(zoneTeams, season).roundInfo, segments = [];
+    const plan = buildVhlSchedulePlan(zoneTeams, season), info = plan.roundInfo, schedule = plan.schedule, segments = [];
     info.forEach((item, index) => {
       let segment = segments[segments.length - 1];
       if (!segment || segment.id !== item.segmentId) { segment = { id: item.segmentId, items: [], span: 0 }; segments.push(segment); }
@@ -250,74 +250,127 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       if (index < boundaries && segment.items.some(item => item.specialRoute)) specialBoundaries.push(index);
     });
     specialBoundaries.forEach(index => { gaps[index] = 3; });
-    const longCandidates = [], longBoundaries = [];
+    const longCandidates = [];
     for (let i = 0; i < boundaries; i++) if (!specialBoundaries.includes(i)) longCandidates.push(i);
-    [0.35, 0.75].forEach(fraction => {
-      const target = Math.floor(boundaries * fraction);
-      const candidate = longCandidates.slice().sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
-      if (candidate != null) { gaps[candidate] = longBoundaries.length === 0 ? 8 : 7; longBoundaries.push(candidate); longCandidates.splice(longCandidates.indexOf(candidate), 1); }
-    });
     const shortBoundaries = [];
     [0.18, 0.52, 0.9].forEach(fraction => {
       const target = Math.floor(boundaries * fraction);
       const candidate = longCandidates.slice().sort((a, b) => Math.abs(a - target) - Math.abs(b - target))[0];
-      if (candidate != null) { gaps[candidate] = 3; shortBoundaries.push(candidate); longCandidates.splice(longCandidates.indexOf(candidate), 1); }
+      if (candidate != null) { shortBoundaries.push(candidate); longCandidates.splice(longCandidates.indexOf(candidate), 1); }
     });
-    // Новогодняя пауза подбирается после остальных логистических буферов,
-    // чтобы ближайшая дата перед ней приходилась примерно на 30 декабря.
-    const provisionalEnds = [];
-    cursor = new Date(startDate);
-    segments.forEach((segment, index) => {
-      const end = new Date(cursor);
-      end.setUTCDate(end.getUTCDate() + segment.span);
-      provisionalEnds[index] = end;
-      cursor = new Date(end);
-      if (index < boundaries) cursor.setUTCDate(cursor.getUTCDate() + gaps[index]);
-    });
+
     const newYearTarget = new Date(Date.UTC(startYear, 11, 30));
-    let newYearBoundary = -1, closest = Infinity;
-    for (let i = 0; i < boundaries; i++) {
-      if (specialBoundaries.includes(i) || longBoundaries.includes(i) || shortBoundaries.includes(i)) continue;
-      const distance = Math.abs(provisionalEnds[i].getTime() - newYearTarget.getTime());
-      if (distance < closest) { closest = distance; newYearBoundary = i; }
-    }
-    if (newYearBoundary >= 0) gaps[newYearBoundary] = 7;
-    const result = Array(roundCount); cursor = new Date(startDate);
-    segments.forEach((segment, segmentIndex) => {
-      segment.items.forEach(({ index, ...item }) => {
-        const date = new Date(cursor); date.setUTCDate(date.getUTCDate() + (item.segmentOffset || 0));
-        result[index] = {
-          ...item, round: index, date: date.toISOString().slice(0, 10),
-          travelNote: item.specialRoute === 'norilsk-krasnoyarsk' ? 'Дополнительный день на маршруте Норильск — Красноярск' : null,
-        };
+    const targetLongA = Math.floor(boundaries * 0.35);
+    const targetLongB = Math.floor(boundaries * 0.75);
+    const makeCalendarResult = (gaps, newYearBoundary) => {
+      const result = Array(roundCount);
+      let dateCursor = new Date(startDate);
+      segments.forEach((segment, segmentIndex) => {
+        segment.items.forEach(({ index, ...item }) => {
+          const date = new Date(dateCursor);
+          date.setUTCDate(date.getUTCDate() + (item.segmentOffset || 0));
+          result[index] = {
+            ...item, round: index, date: date.toISOString().slice(0, 10),
+            travelNote: item.specialRoute === 'norilsk-krasnoyarsk' ? 'Дополнительный день на маршруте Норильск — Красноярск' : null,
+          };
+        });
+        dateCursor.setUTCDate(dateCursor.getUTCDate() + segment.span);
+        if (segmentIndex < boundaries) dateCursor.setUTCDate(dateCursor.getUTCDate() + gaps[segmentIndex]);
       });
-      cursor.setUTCDate(cursor.getUTCDate() + segment.span);
-      if (segmentIndex < boundaries) cursor.setUTCDate(cursor.getUTCDate() + gaps[segmentIndex]);
-    });
-    // Официальная новогодняя пауза ВХЛ: резервные даты 30 декабря и 5 января,
-    // матчи до паузы завершаются 29 декабря, возобновление — 6 января.
-    if (newYearBoundary >= 2) {
-      const beforeOne = segments[newYearBoundary - 2];
-      const beforeTwo = segments[newYearBoundary - 1];
-      const holidaySegment = segments[newYearBoundary];
-      const shiftSegment = (segment, days) => segment.items.forEach(item => {
-        const date = new Date(result[item.index].date + 'T00:00:00Z');
-        date.setUTCDate(date.getUTCDate() + days);
-        result[item.index].date = date.toISOString().slice(0, 10);
-      });
-      if (beforeOne.id.includes('derby') && beforeTwo.id.includes('derby') && holidaySegment.id.includes('zone-round')) {
-        shiftSegment(beforeOne, -2);
-        shiftSegment(beforeTwo, -3);
-        shiftSegment(holidaySegment, -4);
-        const holidayEndIndex = holidaySegment.items[holidaySegment.items.length - 1].index;
-        for (let i = holidayEndIndex + 1; i < result.length; i++) {
-          const date = new Date(result[i].date + 'T00:00:00Z');
-          date.setUTCDate(date.getUTCDate() - 3);
-          result[i].date = date.toISOString().slice(0, 10);
+      if (newYearBoundary >= 2) {
+        const beforeOne = segments[newYearBoundary - 2];
+        const beforeTwo = segments[newYearBoundary - 1];
+        const holidaySegment = segments[newYearBoundary];
+        if (beforeOne.id.includes('derby') && beforeTwo.id.includes('derby') && holidaySegment.id.includes('zone-round')) {
+          const shiftSegment = (segment, days) => segment.items.forEach(item => {
+            const shifted = new Date(result[item.index].date + 'T00:00:00Z');
+            shifted.setUTCDate(shifted.getUTCDate() + days);
+            result[item.index].date = shifted.toISOString().slice(0, 10);
+          });
+          shiftSegment(beforeOne, -2);
+          shiftSegment(beforeTwo, -3);
+          shiftSegment(holidaySegment, -4);
+          const holidayEndIndex = holidaySegment.items[holidaySegment.items.length - 1].index;
+          for (let i = holidayEndIndex + 1; i < result.length; i++) {
+            const shifted = new Date(result[i].date + 'T00:00:00Z');
+            shifted.setUTCDate(shifted.getUTCDate() - 3);
+            result[i].date = shifted.toISOString().slice(0, 10);
+          }
+          result[result.length - 1].date = (startYear + 1) + '-03-18';
         }
-        result[result.length - 1].date = (startYear + 1) + '-03-18';
+      }
+      return result;
+    };
+    const getMaximumTeamRest = dates => {
+      const appearances = new Map(teams.map(team => [team.id, []]));
+      schedule.forEach((games, roundIndex) => {
+        const date = dates[roundIndex]?.date;
+        games.forEach(([homeId, awayId]) => {
+          appearances.get(homeId)?.push(date);
+          appearances.get(awayId)?.push(date);
+        });
+      });
+      let maximum = 0;
+      for (const teamDates of appearances.values()) {
+        teamDates.sort();
+        for (let i = 1; i < teamDates.length; i++) {
+          maximum = Math.max(maximum, (Date.parse(teamDates[i]) - Date.parse(teamDates[i - 1])) / 86400000);
+        }
+      }
+      return maximum;
+    };
+
+    let bestCalendar = null;
+    for (let a = 0; a < longCandidates.length; a++) {
+      for (let b = a + 1; b < longCandidates.length; b++) {
+        const first = longCandidates[a], second = longCandidates[b];
+        const gaps = Array(boundaries).fill(2);
+        specialBoundaries.forEach(index => { gaps[index] = 3; });
+        shortBoundaries.forEach(index => { gaps[index] = 3; });
+        const normalOrder = Math.abs(first - targetLongA) + Math.abs(second - targetLongB);
+        const reverseOrder = Math.abs(second - targetLongA) + Math.abs(first - targetLongB);
+        const longBoundaries = normalOrder <= reverseOrder ? [first, second] : [second, first];
+        gaps[longBoundaries[0]] = 8;
+        gaps[longBoundaries[1]] = 7;
+
+        const provisionalEnds = [];
+        let provisionalCursor = new Date(startDate);
+        segments.forEach((segment, index) => {
+          const segmentEnd = new Date(provisionalCursor);
+          segmentEnd.setUTCDate(segmentEnd.getUTCDate() + segment.span);
+          provisionalEnds[index] = segmentEnd;
+          provisionalCursor = new Date(segmentEnd);
+          if (index < boundaries) provisionalCursor.setUTCDate(provisionalCursor.getUTCDate() + gaps[index]);
+        });
+        const excluded = new Set([...specialBoundaries, ...shortBoundaries, ...longBoundaries]);
+        const validNewYearBoundaries = [];
+        for (let i = 2; i < boundaries; i++) {
+          if (excluded.has(i)) continue;
+          if (!segments[i - 2].id.includes('derby') || !segments[i - 1].id.includes('derby') || !segments[i].id.includes('zone-round')) continue;
+          validNewYearBoundaries.push(i);
+        }
+        const newYearBoundary = validNewYearBoundaries.sort((a, b) =>
+          Math.abs(provisionalEnds[a].getTime() - newYearTarget.getTime()) -
+          Math.abs(provisionalEnds[b].getTime() - newYearTarget.getTime())
+        )[0];
+        if (newYearBoundary == null) continue;
+        gaps[newYearBoundary] = 7;
+        const result = makeCalendarResult(gaps, newYearBoundary);
+        const maxRest = getMaximumTeamRest(result);
+        const tieScore = Math.abs(longBoundaries[0] - targetLongA) +
+          Math.abs(longBoundaries[1] - targetLongB) +
+          Math.abs(provisionalEnds[newYearBoundary].getTime() - newYearTarget.getTime()) / 86400000;
+        if (!bestCalendar || maxRest < bestCalendar.maxRest ||
+          (maxRest === bestCalendar.maxRest && tieScore < bestCalendar.tieScore)) {
+          bestCalendar = { gaps, longBoundaries, newYearBoundary, result, maxRest, tieScore };
+        }
       }
     }
+    if (!bestCalendar) throw new Error('Не удалось подобрать календарные паузы без нарушения структуры сезона');
+    const gaps = bestCalendar.gaps;
+    const longBoundaries = bestCalendar.longBoundaries;
+    const newYearBoundary = bestCalendar.newYearBoundary;
+    const result = bestCalendar.result;
     return result;
   }
   const intervals = [3, 3, 3, 3, 4], meta = [], date = new Date(startDate);
