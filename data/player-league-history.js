@@ -347,7 +347,7 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 542 }
       ]
     },
-    // Виталий Каменев — 944 матча ВХЛ (784 регулярка + 160 плей-офф).
+    // Виталий Каменев — 955 матчей ВХЛ по официальной таблице статистики лиги.
     // Источник: https://www.vhlru.ru/players/15796/
     "15796": {
       position: "forward",
@@ -466,7 +466,7 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 96, stage: "playoffs" }
       ]
     },
-    // Алексей Князев — 678 матчей регулярных чемпионатов + 113 плей-офф ВХЛ.
+    // Алексей Князев — 795 матчей ВХЛ по актуальной официальной таблице лиги.
     // Источник: https://www.vhlru.ru/players/19426/
     "19426": {
       position: "forward",
