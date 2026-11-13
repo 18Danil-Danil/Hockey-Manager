@@ -138,7 +138,7 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       ]
     },
     // Источник: https://www.sports.ru/hockey/person/denis-golubev/career/
-    // 478 матчей регулярного чемпионата + 45 матчей Кубка Гагрина.
+    // 478 матчей регулярного чемпионата + 45 матчей Кубка Гагарина.
     "15649": {
       position: "forward",
       career: [
@@ -151,6 +151,14 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "forward",
       career: [
         { scope: "career", league: "KHL", gp: 163 }
+      ]
+    },
+    // Источник: https://www.sports.ru/hockey/1117291272-34-letnij-makeev-pereshel-v-gornyak-ugmk-kontrakt-s-farmom-avtomobilis.html
+    // 701 матч в КХЛ с учётом плей-офф, подтверждено в 2026 году.
+    "19368": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 701 }
       ]
     }
   }
