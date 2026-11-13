@@ -1710,5 +1710,17 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 3 }
       ]
     },
+    // Семён Панкратов — ВХЛ 224, КХЛ 196 и МХЛ 165 матчей.
+    // Совпадают ФИО и дата рождения 26.05.1998.
+    // Источники: https://www.vhlru.ru/players/23546/
+    // https://www.eliteprospects.com/player/337864/semyon-pankratov
+    "23546": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 224 },
+        { scope: "career", league: "KHL", gp: 196 },
+        { scope: "career", league: "MHL", gp: 165 }
+      ]
+    },
   }
 };
