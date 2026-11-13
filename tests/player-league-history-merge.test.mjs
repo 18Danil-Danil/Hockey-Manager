@@ -42,14 +42,14 @@ test('enriches an existing season row instead of appending a duplicate', () => {
     "1": {
       position: "forward",
       seasons: [
-        { season: "99/00", league: "NHL", gp: 10, team: "Detroit Red Wings", stage: "regular" }
+        { season: "99/00", league: "NHL", gp: 10, team: "St. John's, NY", stage: "regular" }
       ]
     }
   }
 };`;
   const merged = mergePlayerSeasons(existing, '1', [{
     season: '99/00', league: 'NHL', gp: 10, goals: 4, assists: 3, points: 7,
-    team: 'Detroit Red Wings', stage: 'regular', source: 'Hockey Databank v13.0'
+    team: "St. John's, NY", stage: 'regular', source: 'Hockey Databank v13.0'
   }], 'forward', { nameEn: 'Smith John', birthDate: '1980-01-02' });
   const history = readHistory(merged.text);
   assert.equal(history.players['1'].seasons.length, 1);
