@@ -74,4 +74,34 @@ window.INTERNATIONAL_LEAGUES = [
     minOvr:67,maxOvr:81,nationalities:['Словакия','Чехия','Россия','Канада'],
     clubs:[{id:'kosice',name:'HC Košice',city:'Кошице',strength:1.06},{id:'slovan-bratislava',name:'Slovan Bratislava',city:'Братислава',strength:1.08}]
   }
+  ,
+  {
+    id:'khl', region:'russia', country:'Россия', countryCode:'RUS',
+    leagueName:'Континентальная хоккейная лига (КХЛ)', transferMultiplier:1.55, salaryMultiplier:1.55,
+    minOvr:76, maxOvr:90, nationalities:['Россия','Беларусь','Казахстан','Канада','США','Финляндия','Швеция','Чехия','Словакия'],
+    clubs:[
+      {id:'khl-cska',name:'ЦСКА',city:'Москва',strength:1.04},
+      {id:'khl-lokomotiv',name:'Локомотив',city:'Ярославль',strength:1.04},
+      {id:'khl-torpedo',name:'Торпедо',city:'Нижний Новгород',strength:1.02},
+      {id:'khl-severstal',name:'Северсталь',city:'Череповец',strength:1.00},
+      {id:'khl-spartak',name:'Спартак',city:'Москва',strength:1.00},
+      {id:'khl-shanghai',name:'Шанхай Дрэгонс',city:'Шанхай',strength:1.00},
+      {id:'khl-dynamo-minsk',name:'Динамо Минск',city:'Минск',strength:1.00},
+      {id:'khl-dynamo-moscow',name:'Динамо Москва',city:'Москва',strength:1.00},
+      {id:'khl-ska',name:'СКА',city:'Санкт-Петербург',strength:1.00},
+      {id:'khl-sochi',name:'ХК Сочи',city:'Сочи',strength:0.96},
+      {id:'khl-lada',name:'Лада',city:'Тольятти',strength:0.96},
+      {id:'khl-metallurg',name:'Металлург Магнитогорск',city:'Магнитогорск',strength:1.04},
+      {id:'khl-neftekhimik',name:'Нефтехимик',city:'Нижнекамск',strength:1.00},
+      {id:'khl-ak-bars',name:'Ак Барс',city:'Казань',strength:1.02},
+      {id:'khl-avangard',name:'Авангард',city:'Омск',strength:1.02},
+      {id:'khl-amur',name:'Амур',city:'Хабаровск',strength:0.98},
+      {id:'khl-barys',name:'Барыс',city:'Астана',strength:0.98},
+      {id:'khl-avtomobilist',name:'Автомобилист',city:'Екатеринбург',strength:1.02},
+      {id:'khl-traktor',name:'Трактор',city:'Челябинск',strength:1.02},
+      {id:'khl-salavat',name:'Салават Юлаев',city:'Уфа',strength:1.00},
+      {id:'khl-admiral',name:'Адмирал',city:'Владивосток',strength:0.96},
+      {id:'khl-sibir',name:'Сибирь',city:'Новосибирск',strength:0.96}
+    ]
+  }
 ];
