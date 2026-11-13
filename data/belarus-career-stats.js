@@ -13,7 +13,171 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 206,
     "from": "2018/19",
     "to": "2026/27",
-    "seasons": 8
+    "seasons": 8,
+    "otherLeagueSeasons": [
+      {
+        "season": "2010/11",
+        "league": "MHL",
+        "team": "MHK Spartak Moskva",
+        "stage": "regular",
+        "gp": 19,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 16,
+        "pm": -4
+      },
+      {
+        "season": "2011/12",
+        "league": "MHL",
+        "team": "Kapitan Stupino",
+        "stage": "regular",
+        "gp": 59,
+        "g": 15,
+        "a": 19,
+        "p": 34,
+        "pim": 22,
+        "pm": 1,
+        "playoffs": {
+          "gp": 12,
+          "g": 6,
+          "a": 7,
+          "p": 13,
+          "pim": 2,
+          "pm": 2
+        }
+      },
+      {
+        "season": "2012/13",
+        "league": "MHL",
+        "team": "Kapitan Stupino",
+        "stage": "regular",
+        "gp": 58,
+        "g": 21,
+        "a": 21,
+        "p": 42,
+        "pim": 28,
+        "pm": 16
+      },
+      {
+        "season": "2013/14",
+        "league": "MHL",
+        "team": "Kapitan Stupino",
+        "stage": "regular",
+        "gp": 32,
+        "g": 6,
+        "a": 22,
+        "p": 28,
+        "pim": 40,
+        "pm": 2
+      },
+      {
+        "season": "2014/15",
+        "league": "MHL",
+        "team": "Kapitan Stupino",
+        "stage": "regular",
+        "gp": 49,
+        "g": 20,
+        "a": 22,
+        "p": 42,
+        "pim": 56,
+        "pm": -13,
+        "playoffs": {
+          "gp": 7,
+          "g": 3,
+          "a": 7,
+          "p": 10,
+          "pim": 6,
+          "pm": 1
+        }
+      },
+      {
+        "season": "2015/16",
+        "league": "VHL",
+        "team": "Buran Voronezh",
+        "stage": "regular",
+        "gp": 5,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": -1
+      },
+      {
+        "season": "2015/16",
+        "league": "VHL",
+        "team": "Dizel Penza",
+        "stage": "regular",
+        "gp": 12,
+        "g": 4,
+        "a": 4,
+        "p": 8,
+        "pim": 2,
+        "pm": 4
+      },
+      {
+        "season": "2016/17",
+        "league": "VHL",
+        "team": "Buran Voronezh",
+        "stage": "regular",
+        "gp": 44,
+        "g": 6,
+        "a": 18,
+        "p": 24,
+        "pim": 20,
+        "pm": -27
+      },
+      {
+        "season": "2017/18",
+        "league": "VHL",
+        "team": "Izhstal Izhevsk",
+        "stage": "regular",
+        "gp": 12,
+        "g": 2,
+        "a": 2,
+        "p": 4,
+        "pim": 2,
+        "pm": 0
+      },
+      {
+        "season": "2016/17",
+        "league": "Slovakia Extraliga",
+        "team": "HC Nové Zámky",
+        "stage": "regular",
+        "gp": 10,
+        "g": 7,
+        "a": 5,
+        "p": 12,
+        "pim": 2,
+        "pm": 3,
+        "playoffs": {
+          "gp": 5,
+          "g": 0,
+          "a": 1,
+          "p": 1,
+          "pim": 2,
+          "pm": 0
+        }
+      },
+      {
+        "season": "2017/18",
+        "league": "Slovakia Extraliga",
+        "team": "MsHK Žilina",
+        "stage": "regular",
+        "gp": 13,
+        "g": 2,
+        "a": 3,
+        "p": 5,
+        "pim": 4,
+        "pm": 0
+      }
+    ],
+    "otherLeagueSeasonCount": 11,
+    "otherLeagueIds": [
+      "MHL",
+      "VHL",
+      "Slovakia Extraliga"
+    ]
   },
   "by-nesterov": {
     "gp": 314,
@@ -233,7 +397,83 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 583,
     "from": "2006/07",
     "to": "2026/27",
-    "seasons": 19
+    "seasons": 19,
+    "otherLeagueSeasons": [
+      {
+        "season": "2008/09",
+        "league": "KHL",
+        "team": "Dynamo Minsk",
+        "stage": "regular",
+        "gp": 4,
+        "g": 2,
+        "a": 0,
+        "p": 2,
+        "pim": 0,
+        "pm": 0
+      },
+      {
+        "season": "2009/10",
+        "league": "KHL",
+        "team": "Dynamo Minsk",
+        "stage": "regular",
+        "gp": 10,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 2,
+        "pm": 4
+      },
+      {
+        "season": "2012/13",
+        "league": "VHL",
+        "team": "Yunost Minsk",
+        "stage": "regular",
+        "gp": 40,
+        "g": 4,
+        "a": 9,
+        "p": 13,
+        "pim": 18,
+        "pm": -6
+      },
+      {
+        "season": "2014/15",
+        "league": "KHL",
+        "team": "Dinamo Minsk",
+        "stage": "regular",
+        "gp": 53,
+        "g": 2,
+        "a": 4,
+        "p": 6,
+        "pim": 4,
+        "pm": -5,
+        "playoffs": {
+          "gp": 1,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": -2
+        }
+      },
+      {
+        "season": "2019/20",
+        "league": "Kazakhstan",
+        "team": "Ertis Pavlodar",
+        "stage": "regular",
+        "gp": 60,
+        "g": 23,
+        "a": 33,
+        "p": 56,
+        "pim": 84,
+        "pm": 36
+      }
+    ],
+    "otherLeagueSeasonCount": 5,
+    "otherLeagueIds": [
+      "KHL",
+      "VHL",
+      "Kazakhstan"
+    ]
   },
   "by-melnikov": {
     "gp": 280,
@@ -283,7 +523,38 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 595,
     "from": "2007/08",
     "to": "2026/27",
-    "seasons": 20
+    "seasons": 20,
+    "otherLeagueSeasons": [
+      {
+        "season": "2009/10",
+        "league": "QMJHL",
+        "team": "Montréal Juniors",
+        "stage": "regular",
+        "gp": 7,
+        "g": 3,
+        "a": 0,
+        "p": 3,
+        "pim": 4,
+        "pm": 5
+      },
+      {
+        "season": "2014/15",
+        "league": "KHL",
+        "team": "Avtomobilist Yekaterinburg",
+        "stage": "regular",
+        "gp": 12,
+        "g": 1,
+        "a": 0,
+        "p": 1,
+        "pim": 6,
+        "pm": 1
+      }
+    ],
+    "otherLeagueSeasonCount": 2,
+    "otherLeagueIds": [
+      "QMJHL",
+      "KHL"
+    ]
   },
   "byg-bobariko": {
     "gp": 286,
@@ -392,7 +663,211 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 276,
     "from": "2008/09",
     "to": "2026/27",
-    "seasons": 11
+    "seasons": 11,
+    "otherLeagueSeasons": [
+      {
+        "season": "2005/06",
+        "league": "Russia3",
+        "team": "Lokomotiv Yaroslavl-2",
+        "stage": "regular",
+        "gp": 1,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 2,
+        "pm": 0
+      },
+      {
+        "season": "2006/07",
+        "league": "Russia3",
+        "team": "Lokomotiv Yaroslavl-2",
+        "stage": "regular",
+        "gp": 50,
+        "g": 9,
+        "a": 11,
+        "p": 20,
+        "pim": 26,
+        "pm": 27
+      },
+      {
+        "season": "2007/08",
+        "league": "Russia3",
+        "team": "Lokomotiv Yaroslavl-2",
+        "stage": "regular",
+        "gp": 46,
+        "g": 6,
+        "a": 22,
+        "p": 28,
+        "pim": 20,
+        "pm": 0
+      },
+      {
+        "season": "2009/10",
+        "league": "WHL",
+        "team": "Tri-City Americans",
+        "stage": "regular",
+        "gp": 61,
+        "g": 11,
+        "a": 25,
+        "p": 36,
+        "pim": 16,
+        "pm": 1,
+        "playoffs": {
+          "gp": 22,
+          "g": 8,
+          "a": 6,
+          "p": 14,
+          "pim": 7,
+          "pm": 9
+        }
+      },
+      {
+        "season": "2008/09",
+        "league": "KHL",
+        "team": "Dynamo Minsk",
+        "stage": "regular",
+        "gp": 11,
+        "g": 1,
+        "a": 0,
+        "p": 1,
+        "pim": 2,
+        "pm": -5
+      },
+      {
+        "season": "2010/11",
+        "league": "KHL",
+        "team": "Dynamo Minsk",
+        "stage": "regular",
+        "gp": 28,
+        "g": 1,
+        "a": 2,
+        "p": 3,
+        "pim": 6,
+        "pm": 0,
+        "playoffs": {
+          "gp": 6,
+          "g": 2,
+          "a": 0,
+          "p": 2,
+          "pim": 2,
+          "pm": 3
+        }
+      },
+      {
+        "season": "2011/12",
+        "league": "KHL",
+        "team": "Dynamo Minsk",
+        "stage": "regular",
+        "gp": 34,
+        "g": 3,
+        "a": 5,
+        "p": 8,
+        "pim": 2,
+        "pm": -5,
+        "playoffs": {
+          "gp": 4,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": -1
+        }
+      },
+      {
+        "season": "2012/13",
+        "league": "KHL",
+        "team": "Dynamo Minsk",
+        "stage": "regular",
+        "gp": 50,
+        "g": 3,
+        "a": 2,
+        "p": 5,
+        "pim": 6,
+        "pm": -3
+      },
+      {
+        "season": "2013/14",
+        "league": "KHL",
+        "team": "Dynamo Minsk",
+        "stage": "regular",
+        "gp": 23,
+        "g": 1,
+        "a": 0,
+        "p": 1,
+        "pim": 8,
+        "pm": -8
+      },
+      {
+        "season": "2014/15",
+        "league": "KHL",
+        "team": "Dinamo Minsk",
+        "stage": "regular",
+        "gp": 57,
+        "g": 2,
+        "a": 1,
+        "p": 3,
+        "pim": 10,
+        "pm": -7,
+        "playoffs": {
+          "gp": 5,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 2,
+          "pm": -3
+        }
+      },
+      {
+        "season": "2015/16",
+        "league": "KHL",
+        "team": "Dinamo Minsk",
+        "stage": "regular",
+        "gp": 57,
+        "g": 6,
+        "a": 7,
+        "p": 13,
+        "pim": 16,
+        "pm": -7
+      },
+      {
+        "season": "2016/17",
+        "league": "KHL",
+        "team": "Dinamo Minsk",
+        "stage": "regular",
+        "gp": 46,
+        "g": 1,
+        "a": 6,
+        "p": 7,
+        "pim": 20,
+        "pm": -2,
+        "playoffs": {
+          "gp": 5,
+          "g": 0,
+          "a": 1,
+          "p": 1,
+          "pim": 0,
+          "pm": -2
+        }
+      },
+      {
+        "season": "2017/18",
+        "league": "KHL",
+        "team": "Dinamo Minsk",
+        "stage": "regular",
+        "gp": 45,
+        "g": 2,
+        "a": 4,
+        "p": 6,
+        "pim": 14,
+        "pm": 7
+      }
+    ],
+    "otherLeagueSeasonCount": 13,
+    "otherLeagueIds": [
+      "Russia3",
+      "WHL",
+      "KHL"
+    ]
   },
   "by-ep26-p3-207": {
     "gp": 785,
