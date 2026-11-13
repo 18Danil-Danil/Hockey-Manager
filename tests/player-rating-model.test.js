@@ -46,6 +46,11 @@ assert.ok(strongGoalie.ovr > weakGoalie.ovr, 'better save percentage and GAA sho
 assert.ok(strongGoalie.attrs.reflexes > weakGoalie.attrs.reflexes);
 assert.equal(sandbox.makeVhlRating('missing', { ratings: { att: 70, def: 70, gk: 70 } }, 20), null);
 const oneKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 45 }], 2026);
+const careerOnlyBonus = sandbox.calculateLeagueHistoryBonus([{ scope: 'career', league: 'KHL', gp: 123 }], 2026);
+const smallCareerBonus = sandbox.calculateLeagueHistoryBonus([{ scope: 'career', league: 'KHL', gp: 5 }], 2026);
+assert.ok(careerOnlyBonus > 0, 'career totals without season breakdown should contribute a league bonus');
+assert.ok(careerOnlyBonus < oneKhlSeason, 'undated career totals should be discounted versus a recent full season');
+assert.ok(smallCareerBonus > 0 && smallCareerBonus < careerOnlyBonus, 'small career samples should have a smaller bonus');
 const oldKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '14/15', league: 'KHL', gp: 45 }], 2026);
 assert.ok(oneKhlSeason > 0, 'a verified KHL season should add a league-strength bonus');
 assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'ВХЛ', gp: 45 }], 2026), 0, 'VHL experience should remain the baseline and not add a higher-league bonus');
