@@ -156,23 +156,25 @@
     const index = new Map();
     for (const item of players) {
       const id = item.id, m = metrics[item.position === 'goaltender' ? 'goalie' : item.position];
+      const reliability = item.summary.gamesSample / (item.summary.gamesSample + 20);
+      const rank = value => 0.5 + (value - 0.5) * reliability;
       let attrs;
       if (item.position === 'goaltender') {
         attrs = {
-          reflexes: blendPercentiles(id, [m.savePct, m.workload], [0.78, 0.22]),
-          positioning: blendPercentiles(id, [m.gaa, m.shutouts], [0.78, 0.22]),
-          glove: blendPercentiles(id, [m.savePct, m.gaa], [0.75, 0.25]),
-          stick: blendPercentiles(id, [m.wins, m.shutouts, m.savePct], [0.45, 0.25, 0.30]),
-          iq: blendPercentiles(id, [m.gaa, m.wins, m.savePct], [0.45, 0.25, 0.30])
+          reflexes: rank(blendPercentiles(id, [m.savePct, m.workload], [0.78, 0.22])),
+          positioning: rank(blendPercentiles(id, [m.gaa, m.shutouts], [0.78, 0.22])),
+          glove: rank(blendPercentiles(id, [m.savePct, m.gaa], [0.75, 0.25])),
+          stick: rank(blendPercentiles(id, [m.wins, m.shutouts, m.savePct], [0.45, 0.25, 0.30])),
+          iq: rank(blendPercentiles(id, [m.gaa, m.wins, m.savePct], [0.45, 0.25, 0.30]))
         };
       } else {
         attrs = {
-          skating: blendPercentiles(id, [m.toi, m.shifts], [0.65, 0.35]),
-          shooting: blendPercentiles(id, [m.goals, m.shots, m.shooting], [0.45, 0.35, 0.20]),
-          passing: blendPercentiles(id, [m.assists, m.points], [0.65, 0.35]),
-          defense: blendPercentiles(id, [m.blocks, m.plusMinus, m.hits, m.toi], [0.30, 0.25, 0.20, 0.25]),
-          physical: blendPercentiles(id, [m.hits, m.blocks, m.toi], [0.55, 0.25, 0.20]),
-          iq: blendPercentiles(id, [m.assists, m.plusMinus, m.toi, m.faceoffs], [0.25, 0.25, 0.30, 0.20])
+          skating: rank(blendPercentiles(id, [m.toi, m.shifts], [0.65, 0.35])),
+          shooting: rank(blendPercentiles(id, [m.goals, m.shots, m.shooting], [0.45, 0.35, 0.20])),
+          passing: rank(blendPercentiles(id, [m.assists, m.points], [0.65, 0.35])),
+          defense: rank(blendPercentiles(id, [m.blocks, m.plusMinus, m.hits, m.toi], [0.30, 0.25, 0.20, 0.25])),
+          physical: rank(blendPercentiles(id, [m.hits, m.blocks, m.toi], [0.55, 0.25, 0.20])),
+          iq: rank(blendPercentiles(id, [m.assists, m.plusMinus, m.toi, m.faceoffs], [0.25, 0.25, 0.30, 0.20]))
         };
       }
       index.set(id, { position: item.position, attrs, trend: item.summary.trend, gamesSample: item.summary.gamesSample, seasons: (data.players[id].seasons || []).map(row => row.season) });
