@@ -2260,5 +2260,45 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 330 }
       ]
     },
+    // Даниил Валитов — 232 матча ВХЛ (206 регулярных + 26 плей-офф).
+    // Источник: https://www.vhlru/players/25801/
+    "25801": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 232 }
+      ]
+    },
+    // Егор Манин — 242 матча ВХЛ (214 регулярных + 28 плей-офф).
+    // Источник: https://www.vhlru/players/26267/
+    "26267": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 242 }
+      ]
+    },
+    // Антон Малышев — 101 матч ВХЛ (90 регулярных + 11 плей-офф).
+    // Источник: https://www.vhlru/players/25402/
+    "25402": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 101 }
+      ]
+    },
+    // Семён Асташевский — 1 матч ВХЛ по официальной статистике.
+    // Источник: https://www.vhlru/players/26339/
+    "26339": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 1 }
+      ]
+    },
+    // Никита Долгопятов — 130 матчей ВХЛ (125 регулярных + 5 плей-офф).
+    // Источник: https://www.vhlru/players/27244/
+    "27244": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 130 }
+      ]
+    },
   }
 };
