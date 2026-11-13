@@ -82,6 +82,60 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       career: [
         { scope: "career", league: "KHL", gp: 70 }
       ]
+    },
+    // Источник: https://www.vhlru.ru/lenta/542659/ — 545 матчей в КХЛ.
+    "16502": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 545 }
+      ]
+    },
+    // Источник: https://sportmail.ru/news/hockey/72077591/ — 540 матчей с плей-офф, 2026.
+    "16386": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 540 }
+      ]
+    },
+    // Источник: https://www.sports.ru/hockey/person/nikita-lisov/career/
+    // 156 матчей регулярного чемпионата + 6 матчей Кубка Гагарина.
+    "17625": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 162 }
+      ]
+    },
+    // Источник: https://www.sports.ru/hockey/person/ziyat-paygin/career/
+    // 386 матчей регулярного чемпионата + 36 матчей Кубка Гагарина.
+    "18686": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 422 }
+      ]
+    },
+    // Источник: https://www.dynamo-spb.com/news/aleksandr-komaristyy-stal-igrokom-dinamo/
+    // 378 матчей; опубликованный итог до завершения его выступлений в КХЛ.
+    "15450": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 378 }
+      ]
+    },
+    // Источник: https://spartak.ru/news/transfers/spartak-poluchil-prava-na-eduarda-gimatova/
+    // Проверка актуальной разбивки: 174 регулярных + 22 матча плей-офф.
+    "17632": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 196 }
+      ]
+    },
+    // Источник: https://www.sports.ru/hockey/person/maxim-kazakov/career/
+    // 242 матча регулярного чемпионата + 9 матчей Кубка Гагарина.
+    "16458": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 251 }
+      ]
     }
   }
 };
