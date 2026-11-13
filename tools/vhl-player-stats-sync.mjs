@@ -71,15 +71,26 @@ function robotsAllowsPath(robotsText, targetPath) {
 }
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function getText(url) {
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': USER_AGENT,
-      'Accept': 'text/html, text/plain;q=0.9, */*;q=0.8'
-    },
-    signal: AbortSignal.timeout(25000)
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
-  return response.text();
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': USER_AGENT,
+          'Accept': 'text/html, text/plain;q=0.9, */*;q=0.8'
+        },
+        signal: AbortSignal.timeout(60000)
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
+      return await response.text();
+    } catch (error) {
+      lastError = error;
+      if (attempt === 3) throw error;
+      console.warn(`Повтор запроса ${attempt}/3 после ошибки источника: ${url}`);
+      await sleep(2000 * attempt);
+    }
+  }
+  throw lastError;
 }
 
 const sourceText = await fs.readFile(INPUT_FILE, 'utf8');
