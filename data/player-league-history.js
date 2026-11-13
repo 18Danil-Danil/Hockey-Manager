@@ -1890,5 +1890,39 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 285 }
       ]
     },
+    // Богдан Денисевич — 244 матча ВХЛ (224 регулярных + 20 плей-офф).
+    // Источник: https://www.vhlru/players/25014/
+    "25014": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 244 }
+      ]
+    },
+    // Андрей Грищенко — 74 матча ВХЛ по суммарной статистике официальной карточки.
+    // Источник: https://www.vhlru/players/44175/
+    "44175": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 74 }
+      ]
+    },
+    // Макар Ваулин — 65 матчей ВХЛ и 194 матча МХЛ.
+    // Источники: https://www.vhlru/players/25041/
+    // https://mhl.khl.ru/players/25041/
+    "25041": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 65 },
+        { scope: "career", league: "MHL", gp: 194 }
+      ]
+    },
+    // Игорь Зенчиков — 378 матчей ВХЛ (347 регулярных + 31 плей-офф).
+    // Источник: https://vhlru.ru/players/24394/
+    "24394": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 378 }
+      ]
+    },
   }
 };
