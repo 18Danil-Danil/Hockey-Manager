@@ -191,5 +191,93 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "KHL", gp: 121 }
       ]
     }
+    // Максим Кицын: сезонная статистика Sport-Express; регулярные чемпионаты.
+    // Охвачены КХЛ, МХЛ, ВХЛ, OHL, AHL и ECHL; плей-офф не смешан с регуляркой.
+    // Источник: https://www.sport-express.net/hockey/nhl/reviews/1010345/
+    "15277": {
+      position: "forward",
+      seasons: [
+        { season: "08/09", league: "KHL", gp: 31, team: "Металлург Новокузнецк" },
+        { season: "09/10", league: "KHL", gp: 21, team: "Металлург Новокузнецк" },
+        { season: "09/10", league: "MHL", gp: 11, team: "Кузнецкие Медведи" },
+        { season: "10/11", league: "KHL", gp: 18, team: "Металлург Новокузнецк" },
+        { season: "10/11", league: "MHL", gp: 3, team: "Кузнецкие Медведи" },
+        { season: "10/11", league: "OHL", gp: 32, team: "Mississauga" },
+        { season: "11/12", league: "KHL", gp: 32, team: "Металлург Новокузнецк" },
+        { season: "11/12", league: "VHL", gp: 6, team: "Ермак" },
+        { season: "11/12", league: "MHL", gp: 10, team: "Кузнецкие Медведи" },
+        { season: "12/13", league: "KHL", gp: 8, team: "Торпедо" },
+        { season: "12/13", league: "VHL", gp: 29, team: "ХК Саров" },
+        { season: "13/14", league: "AHL", gp: 20, team: "Manchester Monarchs" },
+        { season: "13/14", league: "ECHL", gp: 33, team: "Ontario Reign" },
+        { season: "14/15", league: "AHL", gp: 7, team: "Manchester Monarchs" },
+        { season: "14/15", league: "ECHL", gp: 57, team: "Ontario Reign" },
+        { season: "15/16", league: "AHL", gp: 2, team: "Ontario Reign" },
+        { season: "15/16", league: "ECHL", gp: 65, team: "Manchester Monarchs" }
+      ]
+    },
+    // Даниил Апальков: МХЛ — официальная суммарная статистика; КХЛ — 516 матчей
+    // с плей-офф по сообщению клуба (2023); сезонные ВХЛ — Forchecking.
+    // Источники: https://mhl.khl.ru/news/1/763883/
+    // https://www.championat.com/hockey/news-5261158-eks-forvard-lokomotiva-apalkov-podpisal-kontrakt-s-karagandinskoj-sary-arkoj.html
+    // https://www.forchecking.ru/player.php?id=7475
+    "16003": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "MHL", gp: 146 },
+        { scope: "career", league: "KHL", gp: 516 }
+      ],
+      seasons: [
+        { season: "11/12", league: "VHL", gp: 17, team: "Локомотив" },
+        { season: "12/13", league: "VHL", gp: 5, team: "Локомотив" },
+        { season: "21/22", league: "VHL", gp: 41, team: "Ермак" },
+        { season: "24/25", league: "VHL", gp: 35, team: "Металлург Новокузнецк" },
+        { season: "25/26", league: "VHL", gp: 56, team: "Металлург Новокузнецк" },
+        { season: "26/27", league: "VHL", gp: 11, team: "Металлург Новокузнецк" }
+      ]
+    },
+    // Святослав Гребенщиков: КХЛ — 262 матча по сообщению клуба в 2025 году;
+    // ВХЛ — суммарная статистика официальной карточки игрока, обновлённая в 2026 году.
+    // Также 9 матчей в HockeyAllsvenskan за Västerås в сезоне 2021/22.
+    // Источники: https://www.vhlru.ru/lenta/542540/
+    // https://www.vhlru.ru/players/17829/
+    // https://www.eliteprospects.com/player/160625/svyatoslav-grebenshchikov
+    "17829": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 262 },
+        { scope: "career", league: "VHL", gp: 359 },
+        { scope: "career", league: "ALLSVENSKAN", gp: 9 }
+      ]
+    },
+    // Денис Баранцев — 635 матчей в КХЛ по сообщению ВХЛ от 01.06.2026.
+    // Источник: https://www.vhlru.ru/lenta/603866/
+    "16082": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 635 }
+      ]
+    },
+    // Динар Хамидуллин: 142 матча регулярного чемпионата + 8 матчей плей-офф.
+    // Источник: https://www.sports.ru/hockey/person/dinar-khamidullin/career/
+    "16411": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 150 }
+      ]
+    },
+    // Павел Махановский: сезонные матчи регулярного чемпионата КХЛ.
+    // Кубок Надежды 2014 не включён; плей-офф не добавлен без отдельной разбивки.
+    // Источник: https://static.sportbox.ru/Vidy_sporta/Hokkej/Pavel-Mahanovskiy-Hokkey-02091993/turnir_19041
+    "16457": {
+      position: "forward",
+      seasons: [
+        { season: "13/14", league: "KHL", gp: 12, team: "Авангард" },
+        { season: "16/17", league: "KHL", gp: 15, team: "Авангард" },
+        { season: "17/18", league: "KHL", gp: 45, team: "Адмирал" },
+        { season: "22/23", league: "KHL", gp: 68, team: "Амур" },
+        { season: "23/24", league: "KHL", gp: 35, team: "Адмирал" }
+      ]
+    },
   }
 };
