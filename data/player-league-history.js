@@ -2357,5 +2357,13 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "KHL", gp: 24 }
       ]
     },
+    // Руслан Галимзянов — 212 матчей ВХЛ (201 регулярный + 11 плей-офф).
+    // Источник: https://www.vhlru.ru/players/32351/
+    "32351": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 212 }
+      ]
+    },
   }
 };
