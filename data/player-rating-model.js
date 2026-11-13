@@ -9,12 +9,16 @@
   const numberOrNull = value => value === null || value === undefined || value === '' || !Number.isFinite(Number(value)) ? null : Number(value);
 
   const LEAGUE_STRENGTH = {
-    NHL: 1.65, KHL: 1.38, SHL: 1.30, LIIGA: 1.27, NL: 1.27,
+    NHL: 1.65, NHA: 1.50, WHA: 1.42, PCHA: 1.32, WCHL: 1.25, KHL: 1.38, SHL: 1.30, LIIGA: 1.27, NL: 1.27,
     AHL: 1.25, KHL2: 1.16, DEL: 1.18, CZECH: 1.17, EXTRALIGA: 1.17, ECHL: 0.95, ALLSVENSKAN: 1.0, RHL: 0.8, RUSSIAN_FIRST: 0.8, MHLB: 0.78, BELARUS: 0.95, BELARUS2: 0.75,
     NCAA: 1.10, VHL: 1, MHL: 0.86, OHL: 0.94, WHL: 0.94, QMJHL: 0.94
   };
   const LEAGUE_ALIASES = {
     NHL: 'NHL', 'NATIONAL HOCKEY LEAGUE': 'NHL',
+    NHA: 'NHA', 'NATIONAL HOCKEY ASSOCIATION': 'NHA',
+    WHA: 'WHA', 'WORLD HOCKEY ASSOCIATION': 'WHA',
+    PCHA: 'PCHA', 'PACIFIC COAST HOCKEY ASSOCIATION': 'PCHA',
+    WCHL: 'WCHL', 'WESTERN CANADA HOCKEY LEAGUE': 'WCHL',
     KHL: 'KHL', 'КХЛ': 'KHL', 'КОНТИНЕНТАЛЬНАЯ ХОККЕЙНАЯ ЛИГА': 'KHL',
     AHL: 'AHL', 'AMERICAN HOCKEY LEAGUE': 'AHL',
     SHL: 'SHL', 'SWEDISH HOCKEY LEAGUE': 'SHL',
@@ -29,11 +33,16 @@
     const name = String(value || '').trim().toUpperCase().replace(/[._-]+/g, ' ').replace(/\s+/g, ' ');
     return LEAGUE_ALIASES[name] || name;
   }
-  function seasonEndYear(season) {
+  function seasonEndYear(season, currentYear = new Date().getFullYear()) {
     const match = /(?:^|\D)(\d{2})\/(\d{2})(?:$|\D)/.exec(String(season || ''));
     if (!match) return null;
-    const start = 2000 + Number(match[1]);
-    let end = 2000 + Number(match[2]);
+    const century = Math.floor(currentYear / 100) * 100;
+    let start = century + Number(match[1]);
+    let end = century + Number(match[2]);
+    // For active players, two-digit seasons far in the future belong to the
+    // previous century (e.g. 85/86 = 1985/86, not 2085/86).
+    if (start > currentYear + 20) start -= 100;
+    if (end > currentYear + 20) end -= 100;
     if (end < start) end += 100;
     return end;
   }
@@ -56,7 +65,7 @@
         grouped.set(key, previous);
         continue;
       }
-      const endYear = seasonEndYear(row?.season);
+      const endYear = seasonEndYear(row?.season, currentYear);
       if (endYear === null || endYear > currentYear) continue;
       const key = String(row.season) + ':' + league;
       const previous = grouped.get(key) || { league, season: row.season, gp: 0, strength, endYear, entries: new Map() };
