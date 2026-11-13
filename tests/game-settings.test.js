@@ -20,7 +20,7 @@ assert.strictEqual(document.body.dataset.accent, 'blue');
 assert(classes.has('compact-navigation'));
 assert(classes.has('reduce-motion'));
 const title = api.renderTitleScreen();
-assert(title.includes('Хоккейный') && title.includes('Начать карьеру') && title.includes('Настройки'));
+assert(title.includes('HOCKEY') && title.includes('Новая карьера') && title.includes('Настройки'));
 const settings = api.renderSettings(true);
 assert(settings.includes('Настройки игры') && settings.includes('Холодный синий') && settings.includes('Подтверждение новой карьеры'));
 api.updateGameSetting('accent', 'red');
