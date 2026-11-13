@@ -609,7 +609,9 @@ function renderInternationalMarket(region) {
     </tr>`;
   }).join('');
   const title = region === 'kazakhstan' ? 'Клубы Казахстана' : region === 'belarus' ? 'Клубы Беларуси' : 'Европейские клубы';
+  const clubList = clubs.map(club => club.name).join(' · ');
   return `<div class="market-intro"><div><h2>${title} (${filtered.length})</h2><p>Проверка зарплатного потолка, трансферной суммы и лимита легионеров действует при каждом подписании.</p></div><span class="market-data-note">${realCount} игроков с реальной статистикой · ${generatedCount} игровых дополнений</span></div>
+    <p class="market-club-list">Команды лиги (${clubs.length}): ${clubList}</p>
     ${filters}
     <div class="market-table-wrap"><table><thead><tr><th>Поз.</th><th>Игрок</th><th>Клуб</th><th>Лига</th><th>OVR</th><th>Статистика сезона</th><th>ЗП</th><th>Трансфер</th><th>Действие</th></tr></thead><tbody>${rows || '<tr><td colspan="9" class="market-empty">В этой лиге пока нет доступных игроков</td></tr>'}</tbody></table></div>
     <p class="market-footnote">Статистика — регулярный чемпионат сезона 2026/27. Возраст игроков без подтверждённого профиля пока временный. Все суммы указаны в млн ₽.</p>`;
