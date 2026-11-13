@@ -458,7 +458,6 @@ window.INTERNATIONAL_PLAYER_STATS_DATA = {
     {"key":"czech-robert-leino","league":"czech-extraliga","club":"kometa-brno","name":"Robert Leino","position":"C","nationality":"Финляндия","gp":15,"g":7,"a":8,"pim":6,"pm":15,"statsSource":"Elite Prospects Czechia 2026/27, 14.11.2026"},
     {"key":"czech-michael-spacek","league":"czech-extraliga","club":"sparta-prague","name":"Michael Špaček","position":"C","nationality":"Чехия","gp":17,"g":8,"a":9,"pim":6,"pm":11,"statsSource":"Elite Prospects Czechia 2026/27, 14.11.2026"},
     {"key":"czech-matej-stransky","league":"czech-extraliga","club":"pardubice","name":"Matěj Stránský","position":"RW","nationality":"Чехия","gp":17,"g":7,"a":10,"pim":8,"pm":4,"statsSource":"Elite Prospects Czechia 2026/27, 14.11.2026"},
-,
     {"key":"by-ep26-kireyenko","league":"belarus","club":"mogilev","name":"Владислав Киреенко","position":"F","nationality":"Беларусь","gp":3,"g":0,"a":0,"pim":0,"pm":0,"statsSource":"Elite Prospects Belarus 2026/27, 14.11.2026"},
     {"key":"by-ep26-stankevich","league":"belarus","club":"mogilev","name":"Иван Станкевич","position":"F","nationality":"Беларусь","gp":3,"g":0,"a":0,"pim":2,"pm":-1,"statsSource":"Elite Prospects Belarus 2026/27, 14.11.2026"},
     {"key":"by-ep26-frolov","league":"belarus","club":"yunost-minsk","name":"Станислав Фролов","position":"D","nationality":"Беларусь","gp":3,"g":0,"a":0,"pim":2,"pm":-4,"statsSource":"Elite Prospects Belarus 2026/27, 14.11.2026"},
