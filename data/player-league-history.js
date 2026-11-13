@@ -2235,5 +2235,30 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 71 }
       ]
     },
+    // Владислав Михайлов — 50 матчей регулярных чемпионатов ВХЛ
+    // (40 в сезоне 2025/26 и 10 в сезоне 2026/27).
+    // Источник: https://www.vhlru/players/4491/
+    "4491": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 50 }
+      ]
+    },
+    // Эмиль Галиаскаров — 330 матчей ВХЛ (295 регулярных + 35 плей-офф).
+    // Источник: https://www.vhlru/players/31706/
+    "31706": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 330 }
+      ]
+    },
+    // Илья Аввакумов — 330 матчей ВХЛ (295 регулярных + 35 плей-офф).
+    // Источник: https://www.vhlru/players/30342/
+    "30342": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 330 }
+      ]
+    },
   }
 };
