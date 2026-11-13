@@ -245,7 +245,271 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 158,
     "from": "2017/18",
     "to": "2026/27",
-    "seasons": 8
+    "seasons": 8,
+    "otherLeagueSeasons": [
+      {
+        "season": "2008/09",
+        "league": "Russia3",
+        "team": "Neftekhimik Nizhnekamsk-2",
+        "stage": "regular",
+        "gp": 25,
+        "g": 3,
+        "a": 2,
+        "p": 5,
+        "pim": 10
+      },
+      {
+        "season": "2009/10",
+        "league": "MHL",
+        "team": "Reaktor Nizhnekamsk",
+        "stage": "regular",
+        "gp": 42,
+        "g": 1,
+        "a": 2,
+        "p": 3,
+        "pim": 6,
+        "pm": -7
+      },
+      {
+        "season": "2010/11",
+        "league": "MHL",
+        "team": "Reaktor Nizhnekamsk",
+        "stage": "regular",
+        "gp": 39,
+        "g": 3,
+        "a": 3,
+        "p": 6,
+        "pim": 12,
+        "pm": -2
+      },
+      {
+        "season": "2011/12",
+        "league": "MHL",
+        "team": "Reaktor Nizhnekamsk",
+        "stage": "regular",
+        "gp": 49,
+        "g": 6,
+        "a": 12,
+        "p": 18,
+        "pim": 26,
+        "pm": -8,
+        "playoffs": {
+          "gp": 1,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "season": "2012/13",
+        "league": "VHL",
+        "team": "Saryarka Karaganda",
+        "stage": "regular",
+        "gp": 10,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 2,
+        "pm": -1
+      },
+      {
+        "season": "2012/13",
+        "league": "Kazakhstan",
+        "team": "Saryarka Karaganda-2",
+        "stage": "regular",
+        "gp": 40,
+        "g": 4,
+        "a": 14,
+        "p": 18,
+        "pim": 55,
+        "pm": -22
+      },
+      {
+        "season": "2013/14",
+        "league": "Kazakhstan",
+        "team": "Berkut Karaganda",
+        "stage": "regular",
+        "gp": 50,
+        "g": 6,
+        "a": 19,
+        "p": 25,
+        "pim": 20,
+        "pm": -3,
+        "playoffs": {
+          "gp": 5,
+          "g": 1,
+          "a": 2,
+          "p": 3,
+          "pim": 8,
+          "pm": 2
+        }
+      },
+      {
+        "season": "2014/15",
+        "league": "Kazakhstan",
+        "team": "Berkut Karaganda",
+        "stage": "regular",
+        "gp": 50,
+        "g": 6,
+        "a": 19,
+        "p": 25,
+        "pim": 20,
+        "pm": -11
+      },
+      {
+        "season": "2015/16",
+        "league": "VHL",
+        "team": "Kristall Saratov",
+        "stage": "regular",
+        "gp": 32,
+        "g": 8,
+        "a": 5,
+        "p": 13,
+        "pim": 10,
+        "pm": -10
+      },
+      {
+        "season": "2016/17",
+        "league": "VHL",
+        "team": "Ariada Volzhsk",
+        "stage": "regular",
+        "gp": 47,
+        "g": 5,
+        "a": 7,
+        "p": 12,
+        "pim": 28,
+        "pm": -19
+      },
+      {
+        "season": "2021/22",
+        "league": "KHL",
+        "team": "Vityaz Podolsk",
+        "stage": "regular",
+        "gp": 29,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 8,
+        "pm": -5
+      },
+      {
+        "season": "2022/23",
+        "league": "VHL",
+        "team": "Rubin Tyumen",
+        "stage": "regular",
+        "gp": 50,
+        "g": 11,
+        "a": 17,
+        "p": 28,
+        "pim": 18,
+        "pm": 10,
+        "playoffs": {
+          "gp": 16,
+          "g": 4,
+          "a": 6,
+          "p": 10,
+          "pim": 4,
+          "pm": 2
+        }
+      }
+    ],
+    "otherLeagueTotals": [
+      {
+        "league": "Russia3",
+        "seasons": 1,
+        "gp": 25,
+        "g": 3,
+        "a": 2,
+        "p": 5,
+        "pim": 10,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "MHL",
+        "seasons": 3,
+        "gp": 130,
+        "g": 10,
+        "a": 17,
+        "p": 27,
+        "pim": 44,
+        "pm": -17,
+        "playoffs": {
+          "gp": 1,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "VHL",
+        "seasons": 4,
+        "gp": 139,
+        "g": 24,
+        "a": 29,
+        "p": 53,
+        "pim": 58,
+        "pm": -20,
+        "playoffs": {
+          "gp": 16,
+          "g": 4,
+          "a": 6,
+          "p": 10,
+          "pim": 4,
+          "pm": 2
+        }
+      },
+      {
+        "league": "Kazakhstan",
+        "seasons": 3,
+        "gp": 140,
+        "g": 16,
+        "a": 52,
+        "p": 68,
+        "pim": 95,
+        "pm": -36,
+        "playoffs": {
+          "gp": 5,
+          "g": 1,
+          "a": 2,
+          "p": 3,
+          "pim": 8,
+          "pm": 2
+        }
+      },
+      {
+        "league": "KHL",
+        "seasons": 1,
+        "gp": 29,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 8,
+        "pm": -5,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      }
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/100707/german-nesterov",
+    "otherLeagueStatsSource": "Elite Prospects — Career Statistics и Career Totals; regular season и postseason разделены"
+
   },
   "by-veremeyenko": {
     "gp": 206,
@@ -1588,7 +1852,87 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 259,
     "from": "2011/12",
     "to": "2026/27",
-    "seasons": 15
+    "seasons": 15,
+    "otherLeagueSeasons": [
+      {
+        "season": "2007/08",
+        "league": "Belarus Vysshaya",
+        "team": "Neman Grodno-2",
+        "stage": "regular",
+        "gp": 46,
+        "g": 12,
+        "a": 11,
+        "p": 23,
+        "pim": 20
+      },
+      {
+        "season": "2008/09",
+        "league": "Belarus Vysshaya",
+        "team": "Neman Grodno-2",
+        "stage": "regular",
+        "gp": 53,
+        "g": 19,
+        "a": 8,
+        "p": 27,
+        "pim": 26
+      },
+      {
+        "season": "2009/10",
+        "league": "Belarus Vysshaya",
+        "team": "Neman Grodno-2",
+        "stage": "regular",
+        "gp": 49,
+        "g": 25,
+        "a": 32,
+        "p": 57,
+        "pim": 71
+      },
+      {
+        "season": "2010/11",
+        "league": "Belarus Vysshaya",
+        "team": "Neman Grodno-2",
+        "stage": "regular",
+        "gp": 42,
+        "g": 19,
+        "a": 30,
+        "p": 49,
+        "pim": 34
+      },
+      {
+        "season": "2011/12",
+        "league": "Belarus Vysshaya",
+        "team": "Neman Grodno-2",
+        "stage": "regular",
+        "gp": 5,
+        "g": 4,
+        "a": 2,
+        "p": 6,
+        "pim": 4
+      }
+    ],
+    "otherLeagueTotals": [
+      {
+        "league": "Belarus Vysshaya",
+        "seasons": 5,
+        "gp": 195,
+        "g": 79,
+        "a": 83,
+        "p": 162,
+        "pim": 155,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      }
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/86619/pavel-boyarchuk",
+    "otherLeagueStatsSource": "Elite Prospects — Career Statistics и Career Totals; сезоны Belarus Vysshaya"
+
   },
   "by-sergei-drozd": {
     "gp": 466,
