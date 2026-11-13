@@ -22,5 +22,10 @@ assert.deepEqual(
   [{ endYear: 2026, stage: 'regular', tn: 1374, label: '2025/2026 | Regular Season' }]
 );
 
+assert.equal(
+  parseVhlTournamentOptions('<select name=tournament><option value=/en/calendar/1374/0/>2025/2026 | Regular Season</option></select>')[0].tn,
+  1374
+);
+
 assert.throws(() => parseVhlTournamentOptions('<html></html>'));
 console.log('VHL tournament mapping checks passed.');
