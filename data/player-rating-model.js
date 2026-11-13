@@ -13,6 +13,22 @@
     AHL: 1.25, KHL2: 1.16, DEL: 1.18, CZECH: 1.17, EXTRALIGA: 1.17,
     NCAA: 1.10, VHL: 1, MHL: 0.86, OHL: 0.94, WHL: 0.94, QMJHL: 0.94
   };
+  const LEAGUE_ALIASES = {
+    NHL: 'NHL', 'NATIONAL HOCKEY LEAGUE': 'NHL',
+    KHL: 'KHL', 'КХЛ': 'KHL', 'КОНТИНЕНТАЛЬНАЯ ХОККЕЙНАЯ ЛИГА': 'KHL',
+    AHL: 'AHL', 'AMERICAN HOCKEY LEAGUE': 'AHL',
+    SHL: 'SHL', 'SWEDISH HOCKEY LEAGUE': 'SHL',
+    LIIGA: 'LIIGA', 'SM LIIGA': 'LIIGA', 'FINNISH LIIGA': 'LIIGA',
+    NL: 'NL', 'SWISS NL': 'NL', 'SWISS NATIONAL LEAGUE': 'NL', 'NATIONAL LEAGUE': 'NL',
+    DEL: 'DEL', 'DEUTSCHE EISHOCKEY LIGA': 'DEL',
+    CZECH: 'CZECH', 'CZECH EXTRALIGA': 'CZECH', 'ЧЕШСКАЯ ЭКСТРАЛИГА': 'CZECH',
+    NCAA: 'NCAA', VHL: 'VHL', 'ВХЛ': 'VHL', MHL: 'MHL', 'МХЛ': 'MHL',
+    OHL: 'OHL', WHL: 'WHL', QMJHL: 'QMJHL'
+  };
+  function normalizeLeagueCode(value) {
+    const name = String(value || '').trim().toUpperCase().replace(/[._-]+/g, ' ').replace(/\\s+/g, ' ');
+    return LEAGUE_ALIASES[name] || name;
+  }
   function seasonEndYear(season) {
     const match = /(?:^|\D)(\d{2})\/(\d{2})(?:$|\D)/.exec(String(season || ''));
     if (!match) return null;
@@ -24,7 +40,7 @@
   function calculateLeagueHistoryBonus(history, currentYear = new Date().getFullYear()) {
     const grouped = new Map();
     for (const row of Array.isArray(history) ? history : []) {
-      const league = String(row?.league || '').trim().toUpperCase();
+      const league = normalizeLeagueCode(row?.league);
       const strength = LEAGUE_STRENGTH[league];
       const gp = Math.max(0, Number(row?.gp) || 0);
       const endYear = seasonEndYear(row?.season);
@@ -163,11 +179,19 @@
     const seasonWeights = Object.fromEntries((data?.seasons || []).map((season, index) => [
       season, DEFAULT_SEASON_WEIGHTS[index] || 0.4
     ]));
-    const players = Object.entries(data?.players || {}).map(([id, value]) => {
-      const summary = summarizePlayerStats(value, seasonWeights);
-      const leagueHistory = Array.isArray(value?.leagueHistory) ? value.leagueHistory : [];
-      return { id: String(id), position: value.position, summary, leagueHistory };
-    }).filter(item => item.summary || item.leagueHistory.length);
+    const vhlPlayers = data?.players || {};
+    const careerPlayers = window.VHL_PLAYER_LEAGUE_HISTORY?.players || {};
+    const playerIds = new Set([...Object.keys(vhlPlayers), ...Object.keys(careerPlayers)]);
+    const players = [...playerIds].map(id => {
+      const value = vhlPlayers[id] || {};
+      const career = careerPlayers[id] || {};
+      const summary = value.position ? summarizePlayerStats(value, seasonWeights) : null;
+      const leagueHistory = [
+        ...(Array.isArray(value.leagueHistory) ? value.leagueHistory : []),
+        ...(Array.isArray(career.seasons) ? career.seasons : [])
+      ];
+      return { id: String(id), position: value.position || career.position, summary, leagueHistory };
+    }).filter(item => item.position && (item.summary || item.leagueHistory.length));
     const makeSkaterMetrics = position => ({
       goals: percentileMap(players, position, 'goalsPerGame'),
       assists: percentileMap(players, position, 'assistsPerGame'),
@@ -217,7 +241,7 @@
           iq: rank(blendPercentiles(id, [m.assists, m.plusMinus, m.toi, m.faceoffs], [0.25, 0.25, 0.30, 0.20]))
         };
       }
-      index.set(id, { position: item.position, attrs, trend: summary.trend, gamesSample: summary.gamesSample, seasons: (data.players[id].seasons || []).map(row => row.season), leagueHistory: item.leagueHistory });
+      index.set(id, { position: item.position, attrs, trend: summary.trend, gamesSample: summary.gamesSample, seasons: (data.players[id]?.seasons || []).map(row => row.season), leagueHistory: item.leagueHistory });
     }
     return index;
   }
