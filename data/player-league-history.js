@@ -1095,5 +1095,31 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 330 }
       ]
     },
+    // Максим Минеев — 222 матча ВХЛ (182 регулярных + 40 плей-офф).
+    // Источник: https://www.vhlru/players/22129/
+    "22129": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 222 }
+      ]
+    },
+    // Олег Попов — 364 матча ВХЛ (328 регулярных + 36 плей-офф).
+    // Источник: https://www.vhlru/players/22469/
+    "22469": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 364 }
+      ]
+    },
+    // Владимир Бобылёв — 477 матчей ВХЛ и 58 матчей МХЛ.
+    // Источники: https://www.vhlru/players/21313/
+    // https://mhl.khl.ru/players/21313/
+    "21313": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 477 },
+        { scope: "career", league: "MHL", gp: 58 }
+      ]
+    },
   }
 };
