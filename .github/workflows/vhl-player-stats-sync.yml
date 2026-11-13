@@ -35,13 +35,14 @@ jobs:
         with:
           node-version: 20
 
-      - name: Загрузить сезонную статистику
-        run: node tools/vhl-player-stats-sync.mjs
-
       - name: Проверить статистическую модель
         run: node tests/player-rating-model.test.js
+
       - name: Проверить качество сезонной статистики
         run: node tests/player-stats-quality.test.mjs
+
+      - name: Загрузить сезонную статистику
+        run: node tools/vhl-player-stats-sync.mjs
 
       - name: Обновить базу статистики в ветке refactoring
         if: success()
