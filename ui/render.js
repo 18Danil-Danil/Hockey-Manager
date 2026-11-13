@@ -540,7 +540,17 @@ function setTicketPrice(v) { const team = G.league.teams.find(t => t.id === G.pl
 function renderFreeAgentMarket() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId); const hasScout = !!team.staff.scout;
   const filtered = (G.league.freeAgents || []).filter(p => { if (G.marketFilter === 'all') return true; if (G.marketFilter === 'F') return p.position !== 'D' && p.position !== 'G'; if (G.marketFilter === 'D') return p.position === 'D'; if (G.marketFilter === 'G') return p.position === 'G'; return true; });
-  const sorted = filtered.slice().sort((a, b) => b.ovr - a.ovr);
+  const sortMode = G.marketSort || 'ovr-desc';
+  const sortValues = { 'age-asc': p => p.age, 'age-desc': p => -p.age, 'ovr-desc': p => p.ovr, 'ovr-asc': p => -p.ovr, 'pot-desc': p => p.pot || p.ovr, 'pot-asc': p => -(p.pot || p.ovr) };
+  const sorted = filtered.slice().sort((a, b) => (sortValues[sortMode](b) - sortValues[sortMode](a)) || b.ovr - a.ovr || a.name.localeCompare(b.name, 'ru'));
+  const sortControl = `<label class="market-sort-label">Сортировка <select class="market-sort-select" value="${sortMode}" onchange="G.marketSort=this.value; render();">
+    <option value="ovr-desc" ${sortMode === 'ovr-desc' ? 'selected' : ''}>Рейтинг: сначала лучшие</option>
+    <option value="ovr-asc" ${sortMode === 'ovr-asc' ? 'selected' : ''}>Рейтинг: сначала ниже</option>
+    <option value="age-asc" ${sortMode === 'age-asc' ? 'selected' : ''}>Возраст: сначала моложе</option>
+    <option value="age-desc" ${sortMode === 'age-desc' ? 'selected' : ''}>Возраст: сначала старше</option>
+    <option value="pot-desc" ${hasScout ? '' : 'disabled'} ${sortMode === 'pot-desc' ? 'selected' : ''}>Потенциал: сначала выше</option>
+    <option value="pot-asc" ${hasScout ? '' : 'disabled'} ${sortMode === 'pot-asc' ? 'selected' : ''}>Потенциал: сначала ниже</option>
+  </select></label>`;
   const rows = sorted.map(p => {
     const cls = p.ovr >= 85 ? 'hi' : p.ovr >= 75 ? 'mid' : 'lo'; const foreign = p.nationality !== 'Россия';
     const char = CHARACTERS[p.character] || CHARACTERS.calm;
@@ -548,7 +558,7 @@ function renderFreeAgentMarket() {
     const graduateTag = p.youthGraduated ? '<span class="tag" title="Выпускник молодёжной лиги">🎓 Выпускник</span>' : '';
     return `<tr><td><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span></td><td><a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a> <span class="char-badge ${char.cls}">${char.label}</span> ${graduateTag} ${foreign ? '🌍' : ''}</td><td>${p.age}</td><td class="ovr ${cls}">${p.ovr}${potTag}</td><td class="salary">${p.contract.salary.toFixed(1)}M</td><td><button class="btn small" onclick="signFreeAgent(G.league.teams.find(t=>t.id===G.playerTeamId), G.league.freeAgents.find(x=>x.id===${p.id})); render();">Подписать</button><button class="btn small secondary" onclick="offerTryout(G.league.teams.find(t=>t.id===G.playerTeamId), G.league.freeAgents.find(x=>x.id===${p.id})); render();">Просмотр</button></td></tr>`;
   }).join('');
-  return `<div class="market-filters"><button class="${G.marketFilter === 'all' ? 'active' : ''}" onclick="G.marketFilter='all'; render();">Все</button><button class="${G.marketFilter === 'F' ? 'active' : ''}" onclick="G.marketFilter='F'; render();">Форварды</button><button class="${G.marketFilter === 'D' ? 'active' : ''}" onclick="G.marketFilter='D'; render();">Защитники</button><button class="${G.marketFilter === 'G' ? 'active' : ''}" onclick="G.marketFilter='G'; render();">Вратари</button></div><h2>Свободные агенты (${sorted.length})</h2><table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>ЗП</th><th>Действия</th></tr></thead><tbody>${rows}</tbody></table>`;
+  return `<div class="market-toolbar"><div class="market-filters"><button class="${G.marketFilter === 'all' ? 'active' : ''}" onclick="G.marketFilter='all'; render();">Все</button><button class="${G.marketFilter === 'F' ? 'active' : ''}" onclick="G.marketFilter='F'; render();">Форварды</button><button class="${G.marketFilter === 'D' ? 'active' : ''}" onclick="G.marketFilter='D'; render();">Защитники</button><button class="${G.marketFilter === 'G' ? 'active' : ''}" onclick="G.marketFilter='G'; render();">Вратари</button></div>${sortControl}</div><h2>Свободные агенты (${sorted.length})</h2><table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>ЗП</th><th>Действия</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 function renderMarket() {
@@ -570,18 +580,35 @@ function renderInternationalMarket(region) {
   const team = G.league.teams.find(item => item.id === G.playerTeamId);
   const clubs = (G.league.internationalMarket?.clubs || []).filter(club => club.region === region);
   const allPlayers = clubs.flatMap(club => club.roster.map(player => ({ player, club })));
-  const filtered = allPlayers.filter(({ player }) => {
+  const filteredByPosition = allPlayers.filter(({ player }) => {
     if (G.marketFilter === 'F') return player.position !== 'D' && player.position !== 'G';
     if (G.marketFilter === 'D') return player.position === 'D';
     if (G.marketFilter === 'G') return player.position === 'G';
     return true;
-  }).sort((a, b) => b.player.ovr - a.player.ovr);
-  const filters = `<div class="market-filters">
+  });
+  const sortMode = G.marketSort || 'ovr-desc';
+  const sortValues = {
+    'age-asc': p => p.age, 'age-desc': p => -p.age,
+    'ovr-desc': p => p.ovr, 'ovr-asc': p => -p.ovr,
+    'pot-desc': p => p.pot || p.ovr, 'pot-asc': p => -(p.pot || p.ovr)
+  };
+  const filtered = filteredByPosition.slice().sort((a, b) =>
+    sortValues[sortMode](b.player) - sortValues[sortMode](a.player) ||
+    b.player.ovr - a.player.ovr || a.player.name.localeCompare(b.player.name, 'ru'));
+  const sortControl = `<label class="market-sort-label">Сортировка <select class="market-sort-select" value="${sortMode}" onchange="G.marketSort=this.value; render();">
+    <option value="ovr-desc" ${sortMode === 'ovr-desc' ? 'selected' : ''}>Рейтинг: сначала лучшие</option>
+    <option value="ovr-asc" ${sortMode === 'ovr-asc' ? 'selected' : ''}>Рейтинг: сначала ниже</option>
+    <option value="age-asc" ${sortMode === 'age-asc' ? 'selected' : ''}>Возраст: сначала моложе</option>
+    <option value="age-desc" ${sortMode === 'age-desc' ? 'selected' : ''}>Возраст: сначала старше</option>
+    <option value="pot-desc" ${sortMode === 'pot-desc' ? 'selected' : ''}>Потенциал: сначала выше</option>
+    <option value="pot-asc" ${sortMode === 'pot-asc' ? 'selected' : ''}>Потенциал: сначала ниже</option>
+  </select></label>`;
+  const filters = `<div class="market-toolbar"><div class="market-filters">
     <button class="${G.marketFilter === 'all' ? 'active' : ''}" onclick="G.marketFilter='all'; render();">Все</button>
     <button class="${G.marketFilter === 'F' ? 'active' : ''}" onclick="G.marketFilter='F'; render();">Форварды</button>
     <button class="${G.marketFilter === 'D' ? 'active' : ''}" onclick="G.marketFilter='D'; render();">Защитники</button>
     <button class="${G.marketFilter === 'G' ? 'active' : ''}" onclick="G.marketFilter='G'; render();">Вратари</button>
-  </div>`;
+  </div>${sortControl}</div>`;
   const realCount = allPlayers.filter(({player}) => player.internationalRealPlayer).length;
   const generatedCount = allPlayers.length - realCount;
   const rows = filtered.map(({ player, club }) => {
@@ -601,7 +628,9 @@ function renderInternationalMarket(region) {
       <td><b>${player.name}</b> ${tag} ${listed}<small class="market-player-meta">${player.age} лет · ${player.nationality}</small></td>
       <td>${club.name}<small class="market-player-meta">${club.city}, ${club.country}</small></td>
       <td>${club.leagueName}</td>
+      <td>${player.age}</td>
       <td class="ovr ${cls}">${player.ovr}</td>
+      <td class="market-potential">${player.pot || player.ovr}</td>
       <td class="market-player-stats">${stats}</td>
       <td class="salary">${quote.salary.toFixed(1)}M</td>
       <td class="salary">${quote.price.toFixed(1)}M</td>
@@ -613,7 +642,7 @@ function renderInternationalMarket(region) {
   return `<div class="market-intro"><div><h2>${title} (${filtered.length})</h2><p>Проверка зарплатного потолка, трансферной суммы и лимита легионеров действует при каждом подписании.</p></div><span class="market-data-note">${realCount} игроков с реальной статистикой · ${generatedCount} игровых дополнений</span></div>
     <p class="market-club-list">Команды лиги (${clubs.length}): ${clubList}</p>
     ${filters}
-    <div class="market-table-wrap"><table><thead><tr><th>Поз.</th><th>Игрок</th><th>Клуб</th><th>Лига</th><th>OVR</th><th>Статистика сезона</th><th>ЗП</th><th>Трансфер</th><th>Действие</th></tr></thead><tbody>${rows || '<tr><td colspan="9" class="market-empty">В этой лиге пока нет доступных игроков</td></tr>'}</tbody></table></div>
+    <div class="market-table-wrap"><table><thead><tr><th>Поз.</th><th>Игрок</th><th>Клуб</th><th>Лига</th><th>OVR</th><th>Статистика сезона</th><th>ЗП</th><th>Трансфер</th><th>Действие</th></tr></thead><tbody>${rows || '<tr><td colspan="11" class="market-empty">В этой лиге пока нет доступных игроков</td></tr>'}</tbody></table></div>
     <p class="market-footnote">Статистика — регулярный чемпионат сезона 2026/27. Возраст игроков без подтверждённого профиля пока временный. Все суммы указаны в млн ₽.</p>`;
 }
 function renderTrades() {
