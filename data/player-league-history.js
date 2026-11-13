@@ -1641,5 +1641,46 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 321 }
       ]
     },
+    // Дмитрий Соколов — ВХЛ 164, КХЛ 115, МХЛ 35, OHL 214,
+    // АХЛ 118 и ECHL 2 матча.
+    // Источник: https://forchecking.ru/player.php?id=12296
+    "21013": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 164 },
+        { scope: "career", league: "KHL", gp: 115 },
+        { scope: "career", league: "MHL", gp: 35 },
+        { scope: "career", league: "OHL", gp: 214 },
+        { scope: "career", league: "AHL", gp: 118 },
+        { scope: "career", league: "ECHL", gp: 2 }
+      ]
+    },
+    // Никита Соколов — ВХЛ 359, КХЛ 114, МХЛ 117 и NAHL 48 матчей.
+    // Источник: https://forchecking.ru/player.php?id=17979
+    "23884": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 359 },
+        { scope: "career", league: "KHL", gp: 114 },
+        { scope: "career", league: "MHL", gp: 117 },
+        { scope: "career", league: "NAHL", gp: 48 }
+      ]
+    },
+    // Игорь Швырёв — 98 матчей ВХЛ (73 регулярных + 25 плей-офф).
+    // Источник: https://www.vhlru/players/23300/
+    "23300": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 98 }
+      ]
+    },
+    // Марсель Шолохов — 252 матча ВХЛ (235 регулярных + 17 плей-офф).
+    // Источник: https://www.vhlru/players/23452/
+    "23452": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 252 }
+      ]
+    },
   }
 };
