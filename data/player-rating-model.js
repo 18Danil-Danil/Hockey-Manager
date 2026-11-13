@@ -164,11 +164,11 @@
       let attrs;
       if (item.position === 'goaltender') {
         attrs = {
-          reflexes: rank(blendPercentiles(id, [m.savePct, m.workload], [0.78, 0.22])),
+          reflexes: rank(blendPercentiles(id, [m.savePct, m.gaa], [0.82, 0.18])),
           positioning: rank(blendPercentiles(id, [m.gaa, m.shutouts], [0.78, 0.22])),
-          glove: rank(blendPercentiles(id, [m.savePct, m.gaa], [0.75, 0.25])),
-          stick: rank(blendPercentiles(id, [m.wins, m.shutouts, m.savePct], [0.45, 0.25, 0.30])),
-          iq: rank(blendPercentiles(id, [m.gaa, m.wins, m.savePct], [0.45, 0.25, 0.30]))
+          glove: rank(blendPercentiles(id, [m.savePct, m.gaa], [0.78, 0.22])),
+          stick: rank(blendPercentiles(id, [m.savePct, m.shutouts], [0.65, 0.35])),
+          iq: rank(blendPercentiles(id, [m.gaa, m.wins, m.shutouts], [0.50, 0.20, 0.30]))
         };
       } else {
         attrs = {
