@@ -992,5 +992,41 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 378 }
       ]
     },
+    // Максим Кориневский — 535 матчей ВХЛ (512 регулярных + 23 плей-офф).
+    // Источник: https://www.vhlru/players/20846/
+    "20846": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 535 }
+      ]
+    },
+    // Сергей Лапин — 243 матча ВХЛ и 175 матчей МХЛ.
+    // Источники: https://www.vhlru/players/21180/
+    // https://mhl.khl.ru/players/21180/
+    "21180": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 243 },
+        { scope: "career", league: "MHL", gp: 175 }
+      ]
+    },
+    // Александр Локтев — 548 матчей ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru/players/20003/
+    "20003": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 548 }
+      ]
+    },
+    // Данил Кудашев — 282 матча ВХЛ и 67 матчей МХЛ.
+    // Источники: https://www.vhlru/players/20695/
+    // https://mhl.khl.ru/players/20695/
+    "20695": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 282 },
+        { scope: "career", league: "MHL", gp: 67 }
+      ]
+    },
   }
 };
