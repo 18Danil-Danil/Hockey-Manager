@@ -261,9 +261,11 @@ export function mergePlayerSeasons(historyText, playerId, rows, position, identi
     const properties = ['position: ' + JSON.stringify(safePosition)];
     if (identityProperty) properties.push(identityProperty);
     if (rows.length) properties.push('seasons: [\n' + formatRows(rows).join(',\n') + '\n      ]');
+    const prefix = historyText.slice(0, finalObject.index).trimEnd();
+    const separator = !prefix || prefix.endsWith('{') || prefix.endsWith(',') ? '\n' : ',\n';
     const insertion = '    "' + playerId + '": {\n      ' + properties.join(',\n      ') + '\n    },\n';
     return {
-      text: historyText.slice(0, finalObject.index + 1) + insertion + historyText.slice(finalObject.index + 1),
+      text: prefix + separator + insertion + historyText.slice(finalObject.index),
       added: rows.length,
       enriched: 0,
       identityAdded: identityProperty ? 1 : 0
