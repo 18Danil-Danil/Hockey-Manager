@@ -131,7 +131,7 @@ const rosterPlayers = new Map();
 for (const team of rosterData.teams || []) {
   for (const player of team.players || []) {
     if (player.playerId && player.position) rosterPlayers.set(String(player.playerId), {
-      playerId: Number(player.playerId), position: player.position
+      playerId: Number(player.playerId), position: player.position, name: player.name
     });
   }
 }
