@@ -2075,5 +2075,38 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "RUSSIAN_FIRST", gp: 2 }
       ]
     },
+    // Юрий Кожухов — 298 матчей ВХЛ (254 регулярных + 44 плей-офф).
+    // Источники: https://www.vhlru/players/25604/
+    // https://xn----8sbarradgag9a4bclbc2b.xn--p1ai/игроки/вхл/к/11885-кожухов-юрий.html
+    "25604": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 298 }
+      ]
+    },
+    // Андрей Гришаков — 299 матчей ВХЛ (275 регулярных + 24 плей-офф).
+    // Источник: https://www.vhlru/players/24800/
+    "24800": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 299 }
+      ]
+    },
+    // Данил Мокрушев — 245 матчей ВХЛ (211 регулярных + 34 плей-офф).
+    // Источник: https://www.vhlru/players/25018/
+    "25018": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 245 }
+      ]
+    },
+    // Иван Васин — 20 матчей ВХЛ в сезоне 2026/27 на 13.11.2026.
+    // Источник: https://silasporta.ru/athletes/ivan-vasin/
+    "24825": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 20 }
+      ]
+    },
   }
 };
