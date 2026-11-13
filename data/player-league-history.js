@@ -2300,5 +2300,17 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 130 }
       ]
     },
+    // Тамирлан Гайтамиров — КХЛ 167, чемпионат Казахстана 109,
+    // USHL 78 и ВХЛ 8 матчей. Данные сверены по дате рождения 23.08.2000.
+    // Источник: https://www.eliteprospects.com/player/404025/tamirlan-gaitamirov
+    "39216": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 167 },
+        { scope: "career", league: "KAZAKHSTAN", gp: 109 },
+        { scope: "career", league: "USHL", gp: 78 },
+        { scope: "career", league: "VHL", gp: 8 }
+      ]
+    },
   }
 };
