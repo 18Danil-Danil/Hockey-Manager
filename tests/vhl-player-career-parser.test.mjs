@@ -30,7 +30,8 @@ const goalieHtml = `
 <a href="/en/players/12345/games/">Games</a>
 <h2 class="player-card__subtitle">Goalkeeper</h2>
 <table><tr><td>25/26 | Regular Season</td></tr>${goalieRow}</table>`;
-const goalie = parseVhlPlayerCareer(goalieHtml, 12345, 'goaltender');
+const russianGoalieHtml = goalieHtml.replace('25/26 | Regular Season','25/26 | Регулярный чемпионат').replace('Goalkeeper','Вратарь');
+const goalie = parseVhlPlayerCareer(russianGoalieHtml, 12345, 'goaltender');
 assert.equal(goalie.position, 'goaltender');
 assert.equal(goalie.seasons[0].wins, 15);
 assert.equal(goalie.seasons[0].savePct, 93.8);
