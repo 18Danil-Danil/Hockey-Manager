@@ -129,20 +129,22 @@
       id: String(id), position: value.position,
       summary: summarizePlayerStats(value)
     })).filter(item => item.summary);
+    const makeSkaterMetrics = position => ({
+      goals: percentileMap(players, position, 'goalsPerGame'),
+      assists: percentileMap(players, position, 'assistsPerGame'),
+      points: percentileMap(players, position, 'pointsPerGame'),
+      shots: percentileMap(players, position, 'shotsPerGame'),
+      shooting: percentileMap(players, position, 'shootingPct'),
+      plusMinus: percentileMap(players, position, 'plusMinusPerGame'),
+      hits: percentileMap(players, position, 'hitsPerGame'),
+      blocks: percentileMap(players, position, 'blocksPerGame'),
+      toi: percentileMap(players, position, 'toiPerGame'),
+      shifts: percentileMap(players, position, 'shiftsPerGame'),
+      faceoffs: percentileMap(players, position, 'faceoffPct')
+    });
     const metrics = {
-      skater: {
-        goals: percentileMap(players, 'skater', 'goalsPerGame'),
-        assists: percentileMap(players, 'skater', 'assistsPerGame'),
-        points: percentileMap(players, 'skater', 'pointsPerGame'),
-        shots: percentileMap(players, 'skater', 'shotsPerGame'),
-        shooting: percentileMap(players, 'skater', 'shootingPct'),
-        plusMinus: percentileMap(players, 'skater', 'plusMinusPerGame'),
-        hits: percentileMap(players, 'skater', 'hitsPerGame'),
-        blocks: percentileMap(players, 'skater', 'blocksPerGame'),
-        toi: percentileMap(players, 'skater', 'toiPerGame'),
-        shifts: percentileMap(players, 'skater', 'shiftsPerGame'),
-        faceoffs: percentileMap(players, 'skater', 'faceoffPct')
-      },
+      forward: makeSkaterMetrics('forward'),
+      defense: makeSkaterMetrics('defense'),
       goalie: {
         savePct: percentileMap(players, 'goaltender', 'savePct'),
         gaa: percentileMap(players, 'goaltender', 'gaa', true),
@@ -153,7 +155,7 @@
     };
     const index = new Map();
     for (const item of players) {
-      const id = item.id, m = metrics[item.position === 'goaltender' ? 'goalie' : 'skater'];
+      const id = item.id, m = metrics[item.position === 'goaltender' ? 'goalie' : item.position];
       let attrs;
       if (item.position === 'goaltender') {
         attrs = {
@@ -173,7 +175,7 @@
           iq: blendPercentiles(id, [m.assists, m.plusMinus, m.toi, m.faceoffs], [0.25, 0.25, 0.30, 0.20])
         };
       }
-      index.set(id, { attrs, trend: item.summary.trend, gamesSample: item.summary.gamesSample, seasons: (data.players[id].seasons || []).map(row => row.season) });
+      index.set(id, { position: item.position, attrs, trend: item.summary.trend, gamesSample: item.summary.gamesSample, seasons: (data.players[id].seasons || []).map(row => row.season) });
     }
     return index;
   }
@@ -193,16 +195,12 @@
   function makeVhlRating(playerId, teamMeta, age) {
     const entry = getVhlRatingIndex().get(String(playerId));
     if (!entry) return null;
-    const isGoalie = teamMeta && teamMeta.ratings;
-    const target = isGoalie
-      ? (teamMeta.ratings.gk)
-      : null;
     const base = entry.attrs;
     const attrs = {};
     const keys = Object.keys(base);
-    const teamTarget = teamMeta.ratings[entry.attrs.reflexes !== undefined ? 'gk'
-      : (teamMeta.ratings.def !== undefined && false ? 'def' : 'att')];
-    const fallbackTarget = Number.isFinite(teamTarget) ? teamTarget : Number(target) || 70;
+    const ratingKey = entry.position === 'goaltender' ? 'gk' : entry.position === 'defense' ? 'def' : 'att';
+    const teamTarget = Number(teamMeta?.ratings?.[ratingKey]);
+    const fallbackTarget = Number.isFinite(teamTarget) ? teamTarget : 70;
     for (const key of keys) attrs[key] = clampValue(Math.round(fallbackTarget + (base[key] - 0.5) * 24), 45, 96);
 
     const list = entry.attrs.reflexes !== undefined ? GOALIE_ATTRS : SKATER_ATTRS;
