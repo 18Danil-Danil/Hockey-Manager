@@ -1592,5 +1592,30 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 66 }
       ]
     },
+    // Владислав Кара — 191 матч ВХЛ и 336 матчей КХЛ.
+    // Источник: https://xn----8sbarradgag9a4bclbc2b.xn--p1ai/игроки/вхл/к/11154-кара-владислав.html
+    "22888": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 191 },
+        { scope: "career", league: "KHL", gp: 336 }
+      ]
+    },
+    // Максим Рассейкин — 263 матча ВХЛ по актуальной суммарной статистике.
+    // Источник: https://www.vhlru/players/22987/
+    "22987": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 263 }
+      ]
+    },
+    // Кирилл Кошурников — 66 матчей ВХЛ (60 регулярных + 6 плей-офф).
+    // Источник: https://www.vhlru/players/23455/
+    "23455": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 66 }
+      ]
+    },
   }
 };
