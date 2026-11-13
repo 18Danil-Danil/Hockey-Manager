@@ -22,7 +22,7 @@ function minutes(value) {
   return match ? Number(match[1]) + Number(match[2]) / 60 : null;
 }
 function normalizeStage(value) {
-  return /playoffs?/i.test(value) ? 'playoff' : /regular/i.test(value) ? 'regular' : null;
+  return /playoffs?|плей.?офф/i.test(value) ? 'playoff' : /regular|регуляр/i.test(value) ? 'regular' : null;
 }
 
 export function parseVhlPlayerCareer(html, playerId, fallbackPosition) {
@@ -45,7 +45,7 @@ export function parseVhlPlayerCareer(html, playerId, fallbackPosition) {
     const rowHtml = match[1];
     const cells = cellsOf(rowHtml);
     if (!cells.length) continue;
-    const label = /^(\d{2,4}\/\d{2,4})\s*\|\s*(Regular Season|Playoffs?)$/i.exec(cells[0]);
+    const label = /^(\d{2,4}\/\d{2,4})\s*\|\s*(Regular Season|Playoffs?|Регулярный чемпионат|Плей-офф)$/i.exec(cells[0]);
     if (label) {
       scope = { season: label[1], stage: normalizeStage(label[2]) };
       continue;
