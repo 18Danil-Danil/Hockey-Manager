@@ -257,20 +257,6 @@ if (unresolvedEmptyPages.length) {
     unresolvedEmptyPages.map(gap => `${gap.season} ${gap.stage}`).join(', '));
 }
 
-
-    '# Отчёт проверки качества сезонной статистики ВХЛ',
-    '',
-    '- Импорт остановлен: одна или несколько существующих турнирных таблиц вернули ноль строк источника.',
-    '- Пустые сезонные страницы, восстановленные по карточкам: ' + (emptyPages.length ? emptyPages.map(gap => `${gap.season} (${gap.stage}, tn=${gap.tn})`).join(', ') : 'нет'),
-    '- Сезонные таблицы:',
-    ...pageReports,
-    '',
-    'Новые данные не опубликованы. Проверьте параметры выбора сезона и этапа на сайте-источнике.'
-  ].join('\n');
-  await fs.writeFile(REPORT_FILE, diagnostic + '\n', 'utf8');
-  throw new Error('Статистический импорт остановлен: пустые таблицы — ' + emptyPages.join(', '));
-}
-
 const suspiciousDuplicates = findSuspiciousCrossSeasonDuplicates(outputPlayers);
 const duplicateLimit = Math.max(10, Math.ceil(Object.keys(outputPlayers).length * 0.05));
 if (suspiciousDuplicates.length > duplicateLimit) {
