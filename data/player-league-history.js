@@ -457,5 +457,40 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 15, stage: "playoffs" }
       ]
     },
+    // Максим Мальцев — 387 матчей регулярных чемпионатов + 96 плей-офф ВХЛ.
+    // Источник: https://www.vhlru.ru/players/19509/
+    "19509": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 387, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 96, stage: "playoffs" }
+      ]
+    },
+    // Алексей Князев — 678 матчей регулярных чемпионатов + 113 плей-офф ВХЛ.
+    // Источник: https://www.vhlru.ru/players/19426/
+    "19426": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 678, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 113, stage: "playoffs" }
+      ]
+    },
+    // Михаил Тихонов: 375 матчей регулярных чемпионатов и 51 матч плей-офф ВХЛ.
+    // Источник: https://silasporta.ru/athletes/mikhail-tikhonov/
+    "18985": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 375, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 51, stage: "playoffs" }
+      ]
+    },
+    // Денис Александров — 143 матча в КХЛ по полной таблице карьеры.
+    // Источник: https://hawk.ru/match-center/15290/player/18972/
+    "18972": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 143 }
+      ]
+    },
   }
 };
