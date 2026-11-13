@@ -1848,5 +1848,47 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 243 }
       ]
     },
+    // Кирилл Спиценко — 272 матча ВХЛ и 10 матчей КХЛ.
+    // Источники: https://www.vhlru/players/24781/
+    // https://ru.wikipedia.org/wiki/Спиценко,_Кирилл_Максимович
+    "24781": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 272 },
+        { scope: "career", league: "KHL", gp: 10 }
+      ]
+    },
+    // Иван Ширяев — 195 матчей ВХЛ (172 регулярных + 23 плей-офф).
+    // Источник: https://www.vhlru/players/25175/
+    "25175": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 195 }
+      ]
+    },
+    // Константин Кузмаул — 26 матчей ВХЛ в сезоне 2026/27 на 13.11.2026.
+    // Источник: https://www.vhlru/stats/players/1230/all/13653/
+    "24874": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 26 }
+      ]
+    },
+    // Егор Жданов — 63 матча ВХЛ (58 регулярных + 5 плей-офф).
+    // Источник: https://www.vhlru/players/25274/
+    "25274": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 63 }
+      ]
+    },
+    // Илья Кожухов — 285 матчей ВХЛ (249 регулярных + 36 плей-офф).
+    // Источник: https://www.vhlru/players/25605/
+    "25605": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 285 }
+      ]
+    },
   }
 };
