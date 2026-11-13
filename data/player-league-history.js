@@ -1956,5 +1956,49 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 391 }
       ]
     },
+    // Михаил Шалагин — 209 матчей ВХЛ и 149 матчей МХЛ.
+    // Источники: https://www.vhlru/players/24806/
+    // https://mhl.khl.ru/players/24806/
+    "24806": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 209 },
+        { scope: "career", league: "MHL", gp: 149 }
+      ]
+    },
+    // Тимур Шарифьянов — 225 матчей регулярных чемпионатов ВХЛ.
+    // Источник: https://www.vhlru/players/24008/
+    "24008": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 225 }
+      ]
+    },
+    // Александр Ляхов — 367 матчей ВХЛ (341 регулярный + 26 плей-офф).
+    // Источник: https://www.vhlru/players/24836/
+    "24836": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 367 }
+      ]
+    },
+    // Кирилл Кожевников — 219 матчей ВХЛ (196 регулярных + 23 плей-офф).
+    // Источник: https://www.vhlru/players/24261/
+    "24261": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 219 }
+      ]
+    },
+    // Марк Павликов — 417 матчей ВХЛ и 176 матчей МХЛ.
+    // Источники: https://www.vhlru/players/24649/
+    // https://mhl.khl.ru/players/24649/
+    "24649": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 417 },
+        { scope: "career", league: "MHL", gp: 176 }
+      ]
+    },
   }
 };
