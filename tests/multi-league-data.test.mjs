@@ -18,19 +18,19 @@ const stats = window.INTERNATIONAL_PLAYER_STATS_DATA;
 assert.ok(Array.isArray(leagues), 'international leagues must be an array');
 assert.ok(Array.isArray(stats.players), 'international player data must be an array');
 assert.equal(registry.schemaVersion, 1);
-assert.equal(stats.players.length, 303, 'all verified international player records must be loaded');
+assert.equal(stats.players.length, 357, 'all verified international player records must be loaded');
 assert.equal(new Set(stats.players.map(item => item.key)).size, stats.players.length, 'player keys must be unique');
 
 const expectedCounts = {
   kazakhstan: 83,
   belarus: 101,
   khl: 65,
-  'finland-liiga': 12,
-  'sweden-shl': 12,
-  'czech-extraliga': 5,
-  'germany-del': 1,
-  'switzerland-nl': 12,
-  'slovakia-extraliga': 12
+  'finland-liiga': 22,
+  'sweden-shl': 22,
+  'czech-extraliga': 9,
+  'germany-del': 11,
+  'switzerland-nl': 22,
+  'slovakia-extraliga': 22
 };
 for (const [leagueId, count] of Object.entries(expectedCounts)) {
   assert.equal(stats.players.filter(item => item.league === leagueId).length, count,
@@ -58,6 +58,12 @@ assert.ok(khl, 'KHL must be present');
 assert.equal(khl.clubs.length, 22, 'KHL should include all 22 current clubs');
 const khlPlayers = stats.players.filter(item => item.league === 'khl');
 assert.equal(khlPlayers.length, 65, 'KHL should contain 65 verified player records');
+assert.equal(stats.players.filter(item => item.league === 'finland-liiga' && item.position === 'G').length, 10);
+assert.equal(stats.players.filter(item => item.league === 'sweden-shl' && item.position === 'G').length, 10);
+assert.equal(stats.players.filter(item => item.league === 'czech-extraliga' && item.position === 'G').length, 4);
+assert.equal(stats.players.filter(item => item.league === 'germany-del' && item.position === 'G').length, 10);
+assert.equal(stats.players.filter(item => item.league === 'switzerland-nl' && item.position === 'G').length, 10);
+assert.equal(stats.players.filter(item => item.league === 'slovakia-extraliga' && item.position === 'G').length, 10);
 for (const player of khlPlayers) {
   assert.ok(player.statsSource, player.name + ' needs a traceable source');
 }
@@ -78,6 +84,6 @@ const vhlImporter = fs.readFileSync('tools/vhl-player-stats-sync.mjs', 'utf8');
 assert.ok(vhlImporter.includes('const missingRosterHistory = [...rosterPlayers.keys()]'),
   'VHL importer must verify career-history coverage for every current roster player');
 
-console.log('OK: ' + stats.players.length + ' real international player records across ' +
+console.log('OK: ' + stats.players.length + ' real international player records across '
   new Set(stats.players.map(item => item.league)).size + ' leagues; KHL ' + khl.clubs.length +
   ' clubs / ' + khlPlayers.length + ' players; all club references valid.');
