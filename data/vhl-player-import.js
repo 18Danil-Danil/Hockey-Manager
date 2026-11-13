@@ -165,6 +165,19 @@
       player.age = age;
       player.contract = contractFor(player.ovr, age);
     }
+    if (typeof makeVhlRating === 'function') {
+      const statisticalRating = makeVhlRating(source.playerId, teamMeta, age !== null ? age : player.age);
+      if (statisticalRating) {
+        player.attrs = statisticalRating.attrs;
+        player.attrPot = statisticalRating.attrPot;
+        player.ovr = statisticalRating.ovr;
+        player.pot = statisticalRating.pot;
+        player.ratingSource = statisticalRating.source;
+        player.ratingSampleGames = statisticalRating.sampleGames;
+        player.ratingSeasons = statisticalRating.seasons;
+        player.contract = contractFor(player.ovr, player.age);
+      }
+    }
     player.source = 'vhlru';
     player.sourcePlayerId = source.playerId;
     player.sourcePlayerUrl = source.playerUrl;
