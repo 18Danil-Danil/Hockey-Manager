@@ -177,7 +177,9 @@ window.BELARUS_CAREER_STATS_DATA = {
       "MHL",
       "VHL",
       "Slovakia Extraliga"
-    ]
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/106999/stanislav-kuchkin",
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed"
   },
   "by-nesterov": {
     "gp": 314,
@@ -197,7 +199,87 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 48,
     "from": "2020/21",
     "to": "2026/27",
-    "seasons": 7
+    "seasons": 7,
+    "otherLeagueSeasons": [
+      {
+        "season": "2016/17",
+        "league": "Belarus Vysshaya",
+        "team": "COR Zhlobin / youth",
+        "stage": "regular",
+        "gp": 24,
+        "g": 10,
+        "a": 8,
+        "p": 18,
+        "pim": 0,
+        "pm": null
+      },
+      {
+        "season": "2017/18",
+        "league": "Belarus Vysshaya",
+        "team": "COR Zhlobin / youth",
+        "stage": "regular",
+        "gp": 38,
+        "g": 25,
+        "a": 19,
+        "p": 44,
+        "pim": 0,
+        "pm": null
+      },
+      {
+        "season": "2018/19",
+        "league": "Belarus Vysshaya",
+        "team": "COR Zhlobin / youth",
+        "stage": "regular",
+        "gp": 30,
+        "g": 35,
+        "a": 21,
+        "p": 56,
+        "pim": 0,
+        "pm": null
+      },
+      {
+        "season": "2019/20",
+        "league": "Belarus Vysshaya",
+        "team": "COR Zhlobin / youth",
+        "stage": "regular",
+        "gp": 26,
+        "g": 33,
+        "a": 24,
+        "p": 57,
+        "pim": 0,
+        "pm": null
+      },
+      {
+        "season": "2020/21",
+        "league": "Belarus Vysshaya",
+        "team": "COR Zhlobin / youth",
+        "stage": "regular",
+        "gp": 21,
+        "g": 29,
+        "a": 19,
+        "p": 48,
+        "pim": 0,
+        "pm": null
+      },
+      {
+        "season": "2021/22",
+        "league": "Belarus Vysshaya",
+        "team": "COR Zhlobin / youth",
+        "stage": "regular",
+        "gp": 14,
+        "g": 24,
+        "a": 17,
+        "p": 41,
+        "pim": 0,
+        "pm": null
+      }
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/707553/yuri-veremeyenko",
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed",
+    "otherLeagueSeasonCount": 6,
+    "otherLeagueIds": [
+      "Belarus Vysshaya"
+    ]
   },
   "by-verenich": {
     "gp": 128,
@@ -227,7 +309,162 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 271,
     "from": "2008/09",
     "to": "2026/27",
-    "seasons": 16
+    "seasons": 16,
+    "otherLeagueSeasons": [
+      {
+        "season": "2013/14",
+        "league": "VHL",
+        "team": "Rubin Tyumen",
+        "stage": "regular",
+        "gp": 11,
+        "g": 1,
+        "a": 2,
+        "p": 3,
+        "pim": 6,
+        "pm": 3
+      },
+      {
+        "season": "2013/14",
+        "league": "Russia3",
+        "team": "Rubin Tyumen-2",
+        "stage": "regular",
+        "gp": 1,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 0,
+        "pm": null
+      },
+      {
+        "season": "2013/14",
+        "league": "VHL",
+        "team": "Yuzhny Ural Orsk",
+        "stage": "regular",
+        "gp": 16,
+        "g": 6,
+        "a": 5,
+        "p": 11,
+        "pim": 0,
+        "pm": 7,
+        "playoffs": {
+          "gp": 11,
+          "g": 2,
+          "a": 6,
+          "p": 8,
+          "pim": 0,
+          "pm": 2
+        }
+      },
+      {
+        "season": "2014/15",
+        "league": "VHL",
+        "team": "Buran Voronezh",
+        "stage": "regular",
+        "gp": 6,
+        "g": 0,
+        "a": 2,
+        "p": 2,
+        "pim": 2,
+        "pm": 0
+      },
+      {
+        "season": "2014/15",
+        "league": "VHL",
+        "team": "Molot-Prikamie Perm",
+        "stage": "regular",
+        "gp": 29,
+        "g": 5,
+        "a": 10,
+        "p": 15,
+        "pim": 10,
+        "pm": 3,
+        "playoffs": {
+          "gp": 12,
+          "g": 2,
+          "a": 5,
+          "p": 7,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "season": "2015/16",
+        "league": "VHL",
+        "team": "Molot-Prikamie Perm",
+        "stage": "regular",
+        "gp": 43,
+        "g": 4,
+        "a": 16,
+        "p": 20,
+        "pim": 22,
+        "pm": 3,
+        "playoffs": {
+          "gp": 6,
+          "g": 1,
+          "a": 2,
+          "p": 3,
+          "pim": 6,
+          "pm": 2
+        }
+      },
+      {
+        "season": "2016/17",
+        "league": "Champions HL",
+        "team": "Neman Grodno",
+        "stage": "regular",
+        "gp": 6,
+        "g": 0,
+        "a": 2,
+        "p": 2,
+        "pim": 0,
+        "pm": null
+      },
+      {
+        "season": "2017/18",
+        "league": "Champions HL",
+        "team": "Neman Grodno",
+        "stage": "regular",
+        "gp": 6,
+        "g": 0,
+        "a": 2,
+        "p": 2,
+        "pim": 2,
+        "pm": -1
+      },
+      {
+        "season": "2017/18",
+        "league": "Continental Cup",
+        "team": "Neman Grodno",
+        "stage": "regular",
+        "gp": 6,
+        "g": 2,
+        "a": 3,
+        "p": 5,
+        "pim": 2,
+        "pm": 2
+      },
+      {
+        "season": "2018/19",
+        "league": "Continental Cup",
+        "team": "Neman Grodno",
+        "stage": "regular",
+        "gp": 6,
+        "g": 1,
+        "a": 4,
+        "p": 5,
+        "pim": 0,
+        "pm": null
+      }
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/56391/nikita-remezov",
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed",
+    "otherLeagueSeasonCount": 10,
+    "otherLeagueIds": [
+      "VHL",
+      "Russia3",
+      "Champions HL",
+      "Continental Cup"
+    ]
   },
   "by-krein": {
     "gp": 144,
@@ -277,7 +514,230 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 62,
     "from": "2023/24",
     "to": "2026/27",
-    "seasons": 4
+    "seasons": 4,
+    "otherLeagueSeasons": [
+      {
+        "season": "2014/15",
+        "league": "Russia U17",
+        "team": "Traktor Chelyabinsk U17",
+        "stage": "regular",
+        "gp": 34,
+        "g": 23,
+        "a": 30,
+        "p": 53,
+        "pim": 8,
+        "pm": null
+      },
+      {
+        "season": "2015/16",
+        "league": "MHL",
+        "team": "Belye Medvedi Chelyabinsk",
+        "stage": "regular",
+        "gp": 40,
+        "g": 11,
+        "a": 15,
+        "p": 26,
+        "pim": 6,
+        "pm": 6
+      },
+      {
+        "season": "2016/17",
+        "league": "VHL",
+        "team": "Chelmet Chelyabinsk",
+        "stage": "regular",
+        "gp": 3,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 2,
+        "pm": -2
+      },
+      {
+        "season": "2016/17",
+        "league": "MHL",
+        "team": "Belye Medvedi Chelyabinsk",
+        "stage": "regular",
+        "gp": 49,
+        "g": 13,
+        "a": 18,
+        "p": 31,
+        "pim": 28,
+        "pm": 5,
+        "playoffs": {
+          "gp": 5,
+          "g": 1,
+          "a": 0,
+          "p": 1,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "season": "2017/18",
+        "league": "VHL",
+        "team": "Chelmet Chelyabinsk",
+        "stage": "regular",
+        "gp": 23,
+        "g": 1,
+        "a": 6,
+        "p": 7,
+        "pim": 2,
+        "pm": -3
+      },
+      {
+        "season": "2017/18",
+        "league": "MHL",
+        "team": "Belye Medvedi Chelyabinsk",
+        "stage": "regular",
+        "gp": 27,
+        "g": 7,
+        "a": 18,
+        "p": 25,
+        "pim": 30,
+        "pm": 19,
+        "playoffs": {
+          "gp": 10,
+          "g": 1,
+          "a": 4,
+          "p": 5,
+          "pim": 12,
+          "pm": 3
+        }
+      },
+      {
+        "season": "2018/19",
+        "league": "MHL",
+        "team": "Belye Medvedi Chelyabinsk",
+        "stage": "regular",
+        "gp": 59,
+        "g": 26,
+        "a": 39,
+        "p": 65,
+        "pim": 20,
+        "pm": 30,
+        "playoffs": {
+          "gp": 5,
+          "g": 2,
+          "a": 0,
+          "p": 2,
+          "pim": 2,
+          "pm": 0
+        }
+      },
+      {
+        "season": "2019/20",
+        "league": "VHL",
+        "team": "Chelmet Chelyabinsk",
+        "stage": "regular",
+        "gp": 36,
+        "g": 5,
+        "a": 15,
+        "p": 20,
+        "pim": 10,
+        "pm": 8
+      },
+      {
+        "season": "2019/20",
+        "league": "VHL",
+        "team": "Yugra Khanty-Mansiysk",
+        "stage": "regular",
+        "gp": 5,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 0,
+        "pm": 0
+      },
+      {
+        "season": "2020/21",
+        "league": "Kazakhstan",
+        "team": "Saryarka Karaganda",
+        "stage": "regular",
+        "gp": 7,
+        "g": 0,
+        "a": 2,
+        "p": 2,
+        "pim": 2,
+        "pm": 1
+      },
+      {
+        "season": "2020/21",
+        "league": "Kazakhstan",
+        "team": "HK Temirtau",
+        "stage": "regular",
+        "gp": 38,
+        "g": 18,
+        "a": 23,
+        "p": 41,
+        "pim": 8,
+        "pm": 11,
+        "playoffs": {
+          "gp": 3,
+          "g": 2,
+          "a": 1,
+          "p": 3,
+          "pim": 0,
+          "pm": 2
+        }
+      },
+      {
+        "season": "2021/22",
+        "league": "Kazakhstan",
+        "team": "Saryarka Karaganda",
+        "stage": "regular",
+        "gp": 41,
+        "g": 21,
+        "a": 41,
+        "p": 62,
+        "pim": 6,
+        "pm": 23
+      },
+      {
+        "season": "2022/23",
+        "league": "VHL",
+        "team": "Rubin Tyumen",
+        "stage": "regular",
+        "gp": 24,
+        "g": 2,
+        "a": 2,
+        "p": 4,
+        "pim": 8,
+        "pm": 2
+      },
+      {
+        "season": "2022/23",
+        "league": "VHL",
+        "team": "Yuzhny Ural Orsk",
+        "stage": "regular",
+        "gp": 18,
+        "g": 5,
+        "a": 5,
+        "p": 10,
+        "pim": 4,
+        "pm": -3
+      },
+      {
+        "season": "2023/24",
+        "league": "VHL",
+        "team": "Zauralie Kurgan",
+        "stage": "regular",
+        "gp": 2,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": 0
+      }
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/370829/vladislav-kuliyev",
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed",
+    "otherLeagueSeasonCount": 15,
+    "otherLeagueIds": [
+      "Russia U17",
+      "MHL",
+      "VHL",
+      "Kazakhstan"
+    ]
   },
   "by-borozna": {
     "gp": 192,
@@ -307,7 +767,181 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 55,
     "from": "2021/22",
     "to": "2026/27",
-    "seasons": 7
+    "seasons": 7,
+    "otherLeagueSeasons": [
+      {
+        "season": "2017/18",
+        "league": "Belarus Vysshaya",
+        "team": "Team Belarus U17",
+        "stage": "regular",
+        "gp": 47,
+        "g": 15,
+        "a": 10,
+        "p": 25,
+        "pim": 8,
+        "pm": null,
+        "playoffs": {
+          "gp": 2,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": null
+        }
+      },
+      {
+        "season": "2018/19",
+        "league": "Belarus Vysshaya",
+        "team": "Team Belarus U17",
+        "stage": "regular",
+        "gp": 17,
+        "g": 3,
+        "a": 1,
+        "p": 4,
+        "pim": 2,
+        "pm": null,
+        "playoffs": {
+          "gp": 4,
+          "g": 0,
+          "a": 1,
+          "p": 1,
+          "pim": 0,
+          "pm": null
+        }
+      },
+      {
+        "season": "2018/19",
+        "league": "Belarus2",
+        "team": "Team Belarus U18",
+        "stage": "regular",
+        "gp": 21,
+        "g": 1,
+        "a": 0,
+        "p": 1,
+        "pim": 6,
+        "pm": -12
+      },
+      {
+        "season": "2019/20",
+        "league": "Belarus Vysshaya",
+        "team": "Yunior Minsk",
+        "stage": "regular",
+        "gp": 47,
+        "g": 14,
+        "a": 12,
+        "p": 26,
+        "pim": 10,
+        "pm": null,
+        "playoffs": {
+          "gp": 6,
+          "g": 1,
+          "a": 1,
+          "p": 2,
+          "pim": 0,
+          "pm": null
+        }
+      },
+      {
+        "season": "2020/21",
+        "league": "Belarus2",
+        "team": "HK Vitebsk",
+        "stage": "regular",
+        "gp": 38,
+        "g": 18,
+        "a": 11,
+        "p": 29,
+        "pim": 18,
+        "pm": -12
+      },
+      {
+        "season": "2020/21",
+        "league": "Belarus Vysshaya",
+        "team": "HK Vitebsk-2",
+        "stage": "regular",
+        "gp": 2,
+        "g": 6,
+        "a": 3,
+        "p": 9,
+        "pim": 0,
+        "pm": null
+      },
+      {
+        "season": "2021/22",
+        "league": "Belarus Vysshaya",
+        "team": "HK Vitebsk-2",
+        "stage": "regular",
+        "gp": 8,
+        "g": 3,
+        "a": 2,
+        "p": 5,
+        "pim": 0,
+        "pm": 1
+      },
+      {
+        "season": "2022/23",
+        "league": "Belarus Vysshaya",
+        "team": "Yunior Minsk",
+        "stage": "regular",
+        "gp": 12,
+        "g": 7,
+        "a": 5,
+        "p": 12,
+        "pim": 4,
+        "pm": 9,
+        "playoffs": {
+          "gp": 4,
+          "g": 3,
+          "a": 3,
+          "p": 6,
+          "pim": 4,
+          "pm": 3
+        }
+      },
+      {
+        "season": "2023/24",
+        "league": "Belarus Vysshaya",
+        "team": "Belstal Zhlobin",
+        "stage": "regular",
+        "gp": 1,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": -2
+      },
+      {
+        "season": "2024/25",
+        "league": "Belarus Vysshaya",
+        "team": "Medvedi Vitebsk",
+        "stage": "regular",
+        "gp": 3,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": -2
+      },
+      {
+        "season": "2018/19",
+        "league": "EYOF",
+        "team": "Belarus U17",
+        "stage": "regular",
+        "gp": 3,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": 0
+      }
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/567521/maxim-lemeshevsky",
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed",
+    "otherLeagueSeasonCount": 11,
+    "otherLeagueIds": [
+      "Belarus Vysshaya",
+      "Belarus2",
+      "EYOF"
+    ]
   },
   "by-ryadchenko": {
     "gp": 407,
@@ -473,7 +1107,9 @@ window.BELARUS_CAREER_STATS_DATA = {
       "KHL",
       "VHL",
       "Kazakhstan"
-    ]
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/16756/pavel-razvadovsky",
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed"
   },
   "by-melnikov": {
     "gp": 280,
@@ -554,7 +1190,9 @@ window.BELARUS_CAREER_STATS_DATA = {
     "otherLeagueIds": [
       "QMJHL",
       "KHL"
-    ]
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/17671/yevgeni-solomonov",
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed"
   },
   "byg-bobariko": {
     "gp": 286,
@@ -867,7 +1505,9 @@ window.BELARUS_CAREER_STATS_DATA = {
       "Russia3",
       "WHL",
       "KHL"
-    ]
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/17659/sergei-drozd",
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed"
   },
   "by-ep26-p3-207": {
     "gp": 785,
