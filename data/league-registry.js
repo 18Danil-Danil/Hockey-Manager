@@ -12,6 +12,7 @@ window.HOCKEY_LEAGUE_REGISTRY = {
     {id:'nhl',name:'NHL',country:'США / Канада',status:'planned',source:'https://www.nhl.com/stats/'},
     {id:'ahl',name:'AHL',country:'США / Канада',status:'planned',source:'https://theahl.com/stats/'},
     {id:'mhl',name:'МХЛ',country:'Россия',status:'planned',source:'https://mhl.ru/'},
+    {id:'rhl',name:'РХЛ',country:'Россия',status:'planned',source:'https://rhl.fhr.ru/'},
     {id:'shl',name:'SHL',country:'Швеция',status:'active',source:'https://www.shl.se/'},
     {id:'liiga',name:'Liiga',country:'Финляндия',status:'active',source:'https://www.liiga.fi/'},
     {id:'del',name:'DEL',country:'Германия',status:'active',source:'https://www.penny-del.org/'},
