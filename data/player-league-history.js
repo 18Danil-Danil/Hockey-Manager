@@ -1762,5 +1762,51 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 385 }
       ]
     },
+    // Ярослав Алексеев — 17 матчей ВХЛ в сезоне 2026/27 на 13.11.2026.
+    // Источник: https://silasporta.ru/athletes/yaroslav-alekseev/
+    "24571": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 17 }
+      ]
+    },
+    // Никита Гончаров — 215 матчей МХЛ и 1 матч ВХЛ.
+    // Источники: https://mhl.khl.ru/players/24857/
+    // https://www.vhlru/players/24857/
+    "24857": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "MHL", gp: 215 },
+        { scope: "career", league: "VHL", gp: 1 }
+      ]
+    },
+    // Кирилл Максимов — 117 матчей ВХЛ (101 регулярный + 16 плей-офф).
+    // Источник: https://www.vhlru/players/24890/
+    "24890": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 117 }
+      ]
+    },
+    // Кирилл Устименко — 102 матча ВХЛ и 145 матчей МХЛ.
+    // Источники: https://www.vhlru/players/24830/
+    // https://mhl.khl.ru/players/24830/
+    "24830": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 102 },
+        { scope: "career", league: "MHL", gp: 145 }
+      ]
+    },
+    // Никита Аноховский — 202 матча ВХЛ и 56 матчей НМХЛ.
+    // Источники: https://www.vhlru/players/24389/
+    // https://nmhl.fhr.ru/players/24389/
+    "24389": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 202 },
+        { scope: "career", league: "NMHL", gp: 56 }
+      ]
+    },
   }
 };
