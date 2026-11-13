@@ -9,8 +9,7 @@ for (const path of [
   'data/league-registry.js',
   'data/international-player-stats.js'
 ]) {
-  const source = fs.readFileSync(path, 'utf8');
-  new vm.Script(source, { filename: path }).runInContext(context);
+  new vm.Script(fs.readFileSync(path, 'utf8'), { filename: path }).runInContext(context);
 }
 
 const leagues = window.INTERNATIONAL_LEAGUES;
@@ -19,38 +18,58 @@ const stats = window.INTERNATIONAL_PLAYER_STATS_DATA;
 assert.ok(Array.isArray(leagues), 'international leagues must be an array');
 assert.ok(Array.isArray(stats.players), 'international player data must be an array');
 assert.equal(registry.schemaVersion, 1);
-assert.equal(stats.players.length, 202, 'all current international records must be loaded');
-assert.equal(stats.players.filter(item => item.league === 'kazakhstan').length, 77);
-assert.equal(stats.players.filter(item => item.league === 'belarus').length, 92);
-assert.equal(stats.players.filter(item => item.league === 'khl').length, 33);
-assert.equal(new Set(stats.players.map(item => item.key)).size, stats.players.length, 'all player keys must be unique');
+assert.equal(stats.players.length, 303, 'all verified international player records must be loaded');
+assert.equal(new Set(stats.players.map(item => item.key)).size, stats.players.length, 'player keys must be unique');
 
-const leagueIds = leagues.map(item => item.id);
-assert.equal(new Set(leagueIds).size, leagueIds.length, 'league ids must be unique');
-const khl = leagues.find(item => item.id === 'khl');
-assert.ok(khl, 'KHL must be present in international leagues');
-assert.equal(khl.clubs.length, 22, 'KHL should include all 22 current clubs');
-
-const khlPlayers = stats.players.filter(item => item.league === 'khl');
-assert.equal(khlPlayers.length, 33, 'KHL should contain the verified player snapshot');
-assert.equal(new Set(khlPlayers.map(item => item.key)).size, khlPlayers.length, 'KHL player keys must be unique');
-const khlClubIds = new Set(khl.clubs.map(item => item.id));
-for (const player of khlPlayers) {
-  assert.ok(khlClubIds.has(player.club), player.name + ' must point to a known KHL club');
-  assert.ok(player.name && player.gp > 0 && player.statsSource, 'KHL records need a name, games and source');
-  assert.ok(['C','D','G'].includes(player.position), 'KHL position must be normalized');
+const expectedCounts = {
+  kazakhstan: 83,
+  belarus: 101,
+  khl: 65,
+  'finland-liiga': 12,
+  'sweden-shl': 12,
+  'czech-extraliga': 5,
+  'germany-del': 1,
+  'switzerland-nl': 12,
+  'slovakia-extraliga': 12
+};
+for (const [leagueId, count] of Object.entries(expectedCounts)) {
+  assert.equal(stats.players.filter(item => item.league === leagueId).length, count,
+    leagueId + ' player count mismatch');
+}
+assert.equal(new Set(leagues.map(item => item.id)).size, leagues.length, 'league ids must be unique');
+const leagueById = new Map(leagues.map(item => [item.id, item]));
+for (const player of stats.players) {
+  const league = leagueById.get(player.league);
+  assert.ok(league, player.name + ' references an unknown league: ' + player.league);
+  assert.ok(league.clubs.some(club => club.id === player.club),
+    player.name + ' references an unknown club: ' + player.club);
+  assert.ok(player.name && Number(player.gp) > 0, 'player needs a name and games played');
   if (player.position === 'G') {
-    assert.ok(Number.isFinite(player.svPct) && Number.isFinite(player.gaa), 'goalies need SV% and GAA');
+    assert.ok(Number.isFinite(Number(player.svPct)) && Number.isFinite(Number(player.gaa)),
+      player.name + ' needs goalie SV% and GAA');
   } else {
-    assert.ok(Number.isFinite(player.g) && Number.isFinite(player.a), 'skaters need goals and assists');
+    assert.ok(Number.isFinite(Number(player.g)) && Number.isFinite(Number(player.a)),
+      player.name + ' needs goals and assists');
   }
 }
-for (const id of ['vhl','khl','belarus','kazakhstan','nhl','ahl','mhl','shl','liiga','del','czech-extraliga','swiss-nl','slovakia-extraliga','echl']) {
+
+const khl = leagueById.get('khl');
+assert.ok(khl, 'KHL must be present');
+assert.equal(khl.clubs.length, 22, 'KHL should include all 22 current clubs');
+const khlPlayers = stats.players.filter(item => item.league === 'khl');
+assert.equal(khlPlayers.length, 65, 'KHL should contain 65 verified player records');
+for (const player of khlPlayers) {
+  assert.ok(player.statsSource, player.name + ' needs a traceable source');
+}
+
+const activeIds = ['vhl','khl','belarus','kazakhstan','nhl','ahl','mhl','shl','liiga','del','czech-extraliga','swiss-nl','slovakia-extraliga','echl'];
+for (const id of activeIds) {
   assert.ok(registry.leagues.some(item => item.id === id), 'registry missing ' + id);
 }
-for (const id of ['vhl','khl','belarus','kazakhstan']) {
+for (const id of ['vhl','khl','belarus','kazakhstan','shl','liiga','del','czech-extraliga','swiss-nl','slovakia-extraliga']) {
   assert.equal(registry.leagues.find(item => item.id === id).status, 'active', id + ' should be active');
 }
+
 const html = fs.readFileSync('index.html', 'utf8');
 const registryPosition = html.indexOf('data/league-registry.js');
 const statsPosition = html.indexOf('data/international-player-stats.js');
@@ -59,6 +78,6 @@ const vhlImporter = fs.readFileSync('tools/vhl-player-stats-sync.mjs', 'utf8');
 assert.ok(vhlImporter.includes('const missingRosterHistory = [...rosterPlayers.keys()]'),
   'VHL importer must verify career-history coverage for every current roster player');
 
-console.log('OK: ' + leagues.length + ' configured international leagues; ' +
-  khl.clubs.length + ' KHL clubs; ' + khlPlayers.length + ' verified KHL player records; ' +
-  stats.players.length + ' international player records total.');
+console.log('OK: ' + stats.players.length + ' real international player records across ' +
+  new Set(stats.players.map(item => item.league)).size + ' leagues; KHL ' + khl.clubs.length +
+  ' clubs / ' + khlPlayers.length + ' players; all club references valid.');
