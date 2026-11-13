@@ -230,7 +230,7 @@ for (const id of careerCandidateIds) {
 }
 seasons.sort((a, b) => {
   const endYear = value => {
-    const match = /^(\\d{2})\\/(\\d{2})$/.exec(value);
+    const match = /^(\d{2})\/(\d{2})$/.exec(value);
     return match ? 2000 + Number(match[2]) : 0;
   };
   return endYear(b) - endYear(a);
@@ -251,8 +251,8 @@ if (unresolvedEmptyPages.length) {
     ...pageReports,
     '',
     'Новые данные не опубликованы.'
-  ].join('\\n');
-  await fs.writeFile(REPORT_FILE, diagnostic + '\\n', 'utf8');
+  ].join('\n');
+  await fs.writeFile(REPORT_FILE, diagnostic + '\n', 'utf8');
   throw new Error('Не удалось восстановить статистику из карточек игроков для: ' +
     unresolvedEmptyPages.map(gap => `${gap.season} ${gap.stage}`).join(', '));
 }
