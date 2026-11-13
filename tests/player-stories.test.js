@@ -12,7 +12,7 @@ teams[0].roster.push(young,veteran,goalie); teams[1].roster.push(player(20,'Иг
 const news=[],inbox=[]; const G={playerTeamId:1,league:{season:'2026/27',teams,news:[],playerStoryFlags:{}}};
 const context={G,addNews:(type,text,importance)=>news.push({type,text,importance}),addInboxMessage:(...args)=>inbox.push(args)};
 vm.runInNewContext(source+'\nthis.runStories=generatePlayerStories;',context); context.runStories();
-assert(news.some(n=>n.text.includes('Иван Молодой')&&n.text.includes('прорыв')),'young breakout');
+assert(news.some(n=>n.text.includes('Иван Молодой')&&n.text.toLowerCase().includes('прорыв')),'young breakout');
 assert(news.some(n=>n.text.includes('Пётр Ветеран')&&n.text.includes('100')),'career milestone');
 assert(news.some(n=>n.text.includes('Сергей Вратарь')&&n.type==='player_story'),'goalie story');
 assert(inbox.some(message=>message[2].includes('Сергей Вратарь')&&message[3].includes('93.8%')),'goalie story details');
