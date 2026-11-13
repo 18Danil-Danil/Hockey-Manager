@@ -1355,5 +1355,47 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 176 }
       ]
     },
+    // Андрей Сковронский — 175 матчей ВХЛ (157 регулярных + 18 плей-офф).
+    // Источник: https://www.vhlru/players/23786/
+    "23786": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 175 }
+      ]
+    },
+    // Никита Лысенков — 194 матча ВХЛ и 157 матчей МХЛ.
+    // Источники: https://www.vhlru/players/23358/
+    // https://mhl.khl.ru/players/23358/
+    "23358": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 194 },
+        { scope: "career", league: "MHL", gp: 157 }
+      ]
+    },
+    // Владислав Сухачёв — 268 матчей ВХЛ (226 регулярных + 42 плей-офф).
+    // Источник: https://www.vhlru/players/21097/
+    "21097": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 268 }
+      ]
+    },
+    // Павел Воронков — 371 матч ВХЛ (336 регулярных + 35 плей-офф).
+    // Источник: https://www.vhlru/players/23521/
+    "23521": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 371 }
+      ]
+    },
+    // Георгий Кузнецов — 171 матч ВХЛ (158 регулярных + 13 плей-офф).
+    // Источник: https://www.vhlru/players/23337/
+    "23337": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 171 }
+      ]
+    },
   }
 };
