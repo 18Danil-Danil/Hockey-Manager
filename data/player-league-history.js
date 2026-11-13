@@ -1722,5 +1722,45 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 165 }
       ]
     },
+    // Евгений Калабушкин — 301 матч ВХЛ (263 регулярных + 38 плей-офф).
+    // Источник: https://www.vhlru/players/23835/
+    "23835": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 301 }
+      ]
+    },
+    // Булат Мотыгуллин — 218 матчей регулярных чемпионатов ВХЛ.
+    // Источник: https://www.vhlru/players/27140/
+    "27140": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 218 }
+      ]
+    },
+    // Аким Тришин — 55 матчей ВХЛ по актуальной суммарной статистике.
+    // Источник: https://www.vhlru/stats/players/1374/all/15024/
+    "24805": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 55 }
+      ]
+    },
+    // Владислав Червоненко — 228 матчей ВХЛ (205 регулярных + 23 плей-офф).
+    // Источник: https://www.vhlru/players/24650/
+    "24650": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 228 }
+      ]
+    },
+    // Ислам Хасанов — 385 матчей ВХЛ (343 регулярных + 42 плей-офф).
+    // Источник: https://www.vhlru/players/24904/
+    "24904": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 385 }
+      ]
+    },
   }
 };
