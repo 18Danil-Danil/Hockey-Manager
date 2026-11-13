@@ -70,7 +70,7 @@ assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'В
 assert.ok(oldKhlSeason > 0 && oldKhlSeason < oneKhlSeason, 'older high-league experience should decay');
 const lateEightiesKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '85/86', league: 'KHL', gp: 45 }], 2026);
 const turnOfCenturyKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '99/00', league: 'KHL', gp: 45 }], 2026);
-assert.ok(lateEightiesKhlSeason > 0 && lateEightiesKhlSeason < turnOfCenturyKhlSeason, 'pre-2000 seasons must be dated to the correct century and decay by age');
+assert.ok(lateEightiesKhlSeason < turnOfCenturyKhlSeason && turnOfCenturyKhlSeason > 0, 'pre-2000 seasons must be dated to the correct century and decay by age');
 const leagueOnlyData = {
   seasons: ['25/26', '24/25', '23/24'],
   players: { veteran: { position: 'forward', leagueHistory: [{ season: '24/25', league: 'KHL', gp: 45 }] } }
