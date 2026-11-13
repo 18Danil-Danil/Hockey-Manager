@@ -1082,7 +1082,8 @@ function renderModal() {
       if (row[key] === undefined || row[key] === null) return;
       const value = Number(row[key]);
       if (!Number.isFinite(value)) return;
-      target[key] = (target[key] || 0) + value;
+      if (['savePercentage', 'goalsAgainstAverage', 'shotsPerGame', 'faceoffPercentage'].includes(key)) target[key] = value;
+      else target[key] = (target[key] || 0) + value;
     });
     ['timeOnIce', 'timeOnIcePerGame'].forEach(key => {
       if (row[key] !== undefined && row[key] !== null) target[key] = row[key];
