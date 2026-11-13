@@ -84,6 +84,6 @@ const vhlImporter = fs.readFileSync('tools/vhl-player-stats-sync.mjs', 'utf8');
 assert.ok(vhlImporter.includes('const missingRosterHistory = [...rosterPlayers.keys()]'),
   'VHL importer must verify career-history coverage for every current roster player');
 
-console.log('OK: ' + stats.players.length + ' real international player records across '
+console.log('OK: ' + stats.players.length + ' real international player records across ' +
   new Set(stats.players.map(item => item.league)).size + ' leagues; KHL ' + khl.clubs.length +
   ' clubs / ' + khlPlayers.length + ' players; all club references valid.');
