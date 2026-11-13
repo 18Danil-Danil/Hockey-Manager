@@ -288,6 +288,7 @@
     };
   }
 
-  window.calculateLeagueHistoryBonus = calculateLeagueHistoryBonus;\n  window.buildVhlRatingIndex = buildVhlRatingIndex;
+  window.calculateLeagueHistoryBonus = calculateLeagueHistoryBonus;
+  window.buildVhlRatingIndex = buildVhlRatingIndex;
   window.makeVhlRating = makeVhlRating;
 })();
