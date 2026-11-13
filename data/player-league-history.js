@@ -355,5 +355,54 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 944 }
       ]
     },
+    // Александр Суворов: ВХЛ — 111 матчей регулярного чемпионата и 9 плей-офф
+    // с учётом 15 игр сезона 26/27; КХЛ — 87 регулярных + 8 плей-офф.
+    // Беларусь — 53 регулярных + 23 плей-офф; Belarus2 — 51 матч.
+    // Источники: https://www.vhlru.ru/en/players/39993/
+    // https://www.eliteprospects.com/player/595483/alexander-suvorov
+    "39993": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 111, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 9, stage: "playoffs" },
+        { scope: "career", league: "KHL", gp: 87, stage: "regular" },
+        { scope: "career", league: "KHL", gp: 8, stage: "playoffs" },
+        { scope: "career", league: "BELARUS", gp: 53, stage: "regular" },
+        { scope: "career", league: "BELARUS", gp: 23, stage: "playoffs" },
+        { scope: "career", league: "BELARUS2", gp: 51, stage: "regular" }
+      ]
+    },
+    // Ю Сато: 117 матчей регулярного чемпионата ВХЛ за АКМ, Дизель,
+    // Динамо-Алтай и Буран по официальной карточке лиги.
+    // Источник: https://www.vhlru.ru/en/players/41532/
+    "41532": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 117, stage: "regular" }
+      ]
+    },
+    // Доминик Миканович: МХЛ — 81 матч (66 регулярных + 15 плей-офф);
+    // ВХЛ — 55 матчей (49 регулярных + 6 плей-офф).
+    // Источники: https://engmhl.khl.ru/players/43307/
+    // https://www.vhlru.ru/players/43307/
+    "43307": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "MHL", gp: 81 },
+        { scope: "career", league: "VHL", gp: 55 }
+      ]
+    },
+    // Илья Литвинов: ВХЛ — 252 регулярных + 7 плей-офф;
+    // белорусская Экстралига — 71 регулярный + 18 матчей плей-офф.
+    // Источник: https://www.hockeyledger.com/en/player/9212353-ilya-litvinov/
+    "24612": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 252, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 7, stage: "playoffs" },
+        { scope: "career", league: "BELARUS", gp: 71, stage: "regular" },
+        { scope: "career", league: "BELARUS", gp: 18, stage: "playoffs" }
+      ]
+    },
   }
 };
