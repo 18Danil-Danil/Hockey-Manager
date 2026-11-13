@@ -80,7 +80,13 @@ window.INTERNATIONAL_PLAYER_STATS_DATA = {
     {key:'kz-stulov',league:'kazakhstan',club:'gornyak-rudny',name:'Дмитрий Стулов',position:'D',nationality:'Россия',gp:22,g:3,a:13,pim:18,pm:19,statsSource:'Pro Hokei Ligasy'},
     {key:'kz-shulga',league:'kazakhstan',club:'nomad-astana',name:'Николай Шульга',position:'C',nationality:'Казахстан',gp:24,g:3,a:13,pim:8,pm:16,statsSource:'Pro Hokei Ligasy'},
 
-    // Беларусь: первые 50 полевых игроков по результативности
+        // Дополнительные реальные игроки для глубины ростеров и клубов вне первой десятки бомбардиров
+    {key:'kz-musa-guseinov',league:'kazakhstan',club:'beibarys-atyrau',name:'Муса Гусейнов',position:'C',nationality:'Казахстан',gp:25,g:4,a:10,pim:16,pm:-2},
+    {key:'kz-shishov',league:'kazakhstan',club:'beibarys-atyrau',name:'Анатолий Шишов',position:'C',nationality:'Казахстан',gp:25,g:9,a:4,pim:17,pm:-3},
+    {key:'kz-asukhanov',league:'kazakhstan',club:'beibarys-atyrau',name:'Юсуп Асуханов',position:'C',nationality:'Казахстан',gp:23,g:4,a:9,pim:0,pm:-3},
+    {key:'kz-gasnikov',league:'kazakhstan',club:'beibarys-atyrau',name:'Евгений Гасников',position:'C',nationality:'Казахстан',gp:22,g:6,a:6,pim:12,pm:0},
+
+// Беларусь: первые 50 полевых игроков по результативности
     {key:'by-chizhikov',league:'belarus',club:'shakhtyor-soligorsk',name:'Егор Чижиков',position:'C',nationality:'Россия',gp:20,g:9,a:12,pim:8,pm:7,statsSource:'ScanGoal 2026-11-11 + Elite Prospects'},
     {key:'by-kuchkin',league:'belarus',club:'brest',name:'Станислав Кучкин',position:'C',nationality:'Россия',gp:22,g:9,a:16,pim:2,pm:10,statsSource:'ScanGoal 2026-11-11 + Elite Prospects'},
     {key:'by-sergeev',league:'belarus',club:'shakhtyor-soligorsk',name:'Алексей Сергеев',position:'C',nationality:'Россия',gp:22,g:10,a:9,pim:2,pm:13,statsSource:'ScanGoal 2026-11-11 + Elite Prospects'},
@@ -133,7 +139,29 @@ window.INTERNATIONAL_PLAYER_STATS_DATA = {
     {key:'by-savchenko',league:'belarus',club:'lokomotiv-orsha',name:'Никита Савченко',position:'C',nationality:'Россия',gp:14,g:1,a:8,pim:10,pm:-5},
     {key:'by-korobov',league:'belarus',club:'shakhtyor-soligorsk',name:'Дмитрий Коробов',position:'D',nationality:'Беларусь',gp:15,g:0,a:9,pim:6,pm:11},
 
-    // Беларусь: вратари, 2026/27
+        {key:'by-chubukov',league:'belarus',club:'lida',name:'Максим Чубуков',position:'C',nationality:'Беларусь',gp:14,g:7,a:1,pim:6,pm:8},
+    {key:'by-khobyan',league:'belarus',club:'yunost-minsk',name:'Дмитрий Хобян',position:'LW',nationality:'Беларусь',gp:14,g:6,a:2,pim:2,pm:-7},
+    {key:'by-razvadovsky',league:'belarus',club:'lokomotiv-orsha',name:'Павел Развадовский',position:'C',nationality:'Беларусь',gp:15,g:6,a:2,pim:10,pm:-6},
+    {key:'by-melnikov',league:'belarus',club:'brest',name:'Максим Мельников',position:'C',nationality:'Россия',gp:15,g:5,a:3,pim:10,pm:-3},
+    {key:'by-kravchenko',league:'belarus',club:'gomel',name:'Вадим Кравченко',position:'LW',nationality:'Узбекистан',gp:12,g:4,a:4,pim:2,pm:3},
+    {key:'by-vasyutovich',league:'belarus',club:'vitebsk',name:'Павел Васютович',position:'RW',nationality:'Беларусь',gp:14,g:4,a:4,pim:26,pm:0},
+    {key:'by-kurdin',league:'belarus',club:'slavutich-smolensk',name:'Иван Курдин',position:'C',nationality:'Россия',gp:13,g:3,a:5,pim:6,pm:1},
+    {key:'by-malyuchenko',league:'belarus',club:'mogilev',name:'Арсений Малюченко',position:'C',nationality:'Беларусь',gp:15,g:3,a:5,pim:2,pm:-4},
+    {key:'by-azhgirei',league:'belarus',club:'shakhtyor-soligorsk',name:'Павел Ажгирей',position:'LW',nationality:'Беларусь',gp:13,g:2,a:6,pim:0,pm:2},
+    {key:'by-grigorkevich',league:'belarus',club:'shakhtyor-soligorsk',name:'Денис Григоркевич',position:'D',nationality:'Россия',gp:14,g:1,a:7,pim:2,pm:9},
+    {key:'by-anoshko',league:'belarus',club:'dinamo-molodechno',name:'Иван Аношко',position:'C',nationality:'Беларусь',gp:15,g:1,a:7,pim:0,pm:4},
+    {key:'by-uskov',league:'belarus',club:'neman-grodno',name:'Максим Усков',position:'C',nationality:'Россия',gp:15,g:6,a:1,pim:2,pm:0},
+    {key:'by-rogovsky',league:'belarus',club:'dinamo-molodechno',name:'Илья Роговский',position:'C',nationality:'Россия',gp:12,g:5,a:2,pim:4,pm:2},
+    {key:'by-gaidamak',league:'belarus',club:'gomel',name:'Всеволод Гайдамак',position:'C',nationality:'Россия',gp:14,g:5,a:2,pim:2,pm:1},
+    {key:'by-kurkov',league:'belarus',club:'slavutich-smolensk',name:'Данила Курков',position:'C',nationality:'Россия',gp:15,g:5,a:2,pim:2,pm:9},
+    {key:'by-ladutko',league:'belarus',club:'shakhtyor-soligorsk',name:'Матвей Ладутько',position:'LW',nationality:'Беларусь',gp:15,g:5,a:2,pim:9,pm:4},
+    {key:'by-sobko',league:'belarus',club:'lokomotiv-orsha',name:'Даниил Собко',position:'C',nationality:'Беларусь',gp:11,g:4,a:3,pim:2,pm:-1},
+    {key:'by-solomonov',league:'belarus',club:'mogilev',name:'Евгений Соломонов',position:'RW',nationality:'Беларусь',gp:13,g:4,a:3,pim:33,pm:-6},
+    {key:'by-bodilovsky',league:'belarus',club:'metallurg-zhlobin',name:'Ростислав Бодиловский',position:'C',nationality:'Беларусь',gp:14,g:4,a:3,pim:0,pm:-2},
+    {key:'by-bourosh',league:'belarus',club:'aviator-baranovichi',name:'Даниил Боурош',position:'RW',nationality:'Беларусь',gp:14,g:4,a:3,pim:2,pm:-10},
+    {key:'by-kormilov',league:'belarus',club:'khimik-novopolotsk',name:'Дмитрий Кормилов',position:'C',nationality:'Россия',gp:14,g:2,a:4,pim:8,pm:-1},
+
+// Беларусь: вратари, 2026/27
     {key:'byg-makarov',league:'belarus',club:'dinamo-molodechno',name:'Андрей Макаров',position:'G',nationality:'Россия',gp:10,gaa:1.28,svPct:95.7,w:7,l:1,so:0,toi:611,saves:289,ga:13},
     {key:'byg-bratushkin',league:'belarus',club:'lida',name:'Илья Братушкин',position:'G',nationality:'Беларусь',gp:11,gaa:1.91,svPct:93.7,w:6,l:4,so:0,toi:537,saves:252,ga:17},
     {key:'byg-lubsky',league:'belarus',club:'gomel',name:'Максим Лубский',position:'G',nationality:'Беларусь',gp:19,gaa:1.81,svPct:92.8,w:13,l:4,so:0,toi:1096,saves:424,ga:33},
