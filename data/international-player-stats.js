@@ -6,7 +6,8 @@
 window.INTERNATIONAL_PLAYER_STATS_DATA = {
   season:'26/27',
   snapshot:'2026-11-13',
-  source:'Pro Hokei Ligasy (Kazakhstan, current official stats); ScanGoal (Belarus top scorers through 2026-11-11); Elite Prospects (remaining Belarus roster/stat rows)',
+  source:'Pro Hokei Ligasy (Kazakhstan top-50 current official stats); ScanGoal (Belarus top scorers through 2026-11-11); Elite Prospects (additional player depth and Belarus season stats)',
+  sources:{kazakhstanOfficial:'https://pro.ligasy.kz/ru/stats',kazakhstanDepth:'https://www.eliteprospects.com/league/kazakhstan/stats/2026-2027',belarusScoring:'https://scangoal.com/hockey/league/belarus-extraleague',belarusStats:'https://www.eliteprospects.com/league/belarus/stats/2026-2027'},
   players:[
     // Казахстан: первые 30 полевых игроков по результативности
     {key:'kz-sannikov',league:'kazakhstan',club:'arlan-kokshetau',name:'Степан Санников',position:'LW',nationality:'Россия',gp:25,g:22,a:22,pim:60,pm:27,statsSource:'Pro Hokei Ligasy'},
@@ -81,10 +82,10 @@ window.INTERNATIONAL_PLAYER_STATS_DATA = {
     {key:'kz-shulga',league:'kazakhstan',club:'nomad-astana',name:'Николай Шульга',position:'C',nationality:'Казахстан',gp:24,g:3,a:13,pim:8,pm:16,statsSource:'Pro Hokei Ligasy'},
 
         // Дополнительные реальные игроки для глубины ростеров и клубов вне первой десятки бомбардиров
-    {key:'kz-musa-guseinov',league:'kazakhstan',club:'beibarys-atyrau',name:'Муса Гусейнов',position:'C',nationality:'Казахстан',gp:25,g:4,a:10,pim:16,pm:-2},
-    {key:'kz-shishov',league:'kazakhstan',club:'beibarys-atyrau',name:'Анатолий Шишов',position:'C',nationality:'Казахстан',gp:25,g:9,a:4,pim:17,pm:-3},
-    {key:'kz-asukhanov',league:'kazakhstan',club:'beibarys-atyrau',name:'Юсуп Асуханов',position:'C',nationality:'Казахстан',gp:23,g:4,a:9,pim:0,pm:-3},
-    {key:'kz-gasnikov',league:'kazakhstan',club:'beibarys-atyrau',name:'Евгений Гасников',position:'C',nationality:'Казахстан',gp:22,g:6,a:6,pim:12,pm:0},
+    {key:'kz-musa-guseinov',league:'kazakhstan',club:'beibarys-atyrau',name:'Муса Гусейнов',position:'C',nationality:'Казахстан',gp:25,g:4,a:10,pim:16,pm:-2,statsSource:'Elite Prospects 2026-27'},
+    {key:'kz-shishov',league:'kazakhstan',club:'beibarys-atyrau',name:'Анатолий Шишов',position:'C',nationality:'Казахстан',gp:25,g:9,a:4,pim:17,pm:-3,statsSource:'Elite Prospects 2026-27'},
+    {key:'kz-asukhanov',league:'kazakhstan',club:'beibarys-atyrau',name:'Юсуп Асуханов',position:'C',nationality:'Казахстан',gp:23,g:4,a:9,pim:0,pm:-3,statsSource:'Elite Prospects 2026-27'},
+    {key:'kz-gasnikov',league:'kazakhstan',club:'beibarys-atyrau',name:'Евгений Гасников',position:'C',nationality:'Казахстан',gp:22,g:6,a:6,pim:12,pm:0,statsSource:'Elite Prospects 2026-27'},
 
 // Беларусь: первые 50 полевых игроков по результативности
     {key:'by-chizhikov',league:'belarus',club:'shakhtyor-soligorsk',name:'Егор Чижиков',position:'C',nationality:'Россия',gp:20,g:9,a:12,pim:8,pm:7,statsSource:'ScanGoal 2026-11-11 + Elite Prospects'},
