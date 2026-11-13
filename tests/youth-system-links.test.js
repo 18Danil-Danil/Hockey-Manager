@@ -82,6 +82,7 @@ const omskYouth = {
   name: omskMeta.name,
   leagueId: 'MHL',
   roster: [],
+  roster: [],
   seniorLinks: omskMeta.senior,
   seniorTeamSlug: omskMeta.seniorTeamSlug,
 };
