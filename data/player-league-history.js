@@ -2312,5 +2312,50 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 8 }
       ]
     },
+    // Илья Захаров — ВХЛ 134, МХЛ 37 и РХЛ 3 матча.
+    // Сверено по ФИО и дате рождения 18.09.2000.
+    // Источники: https://www.hckaluga.ru/player-statistics/169
+    // https://www.liveresult.ru/hockey/players/Ilya-Zakharov
+    "27096": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 134 },
+        { scope: "career", league: "MHL", gp: 37 },
+        { scope: "career", league: "RHL", gp: 3 }
+      ]
+    },
+    // Иван Смолёв — 252 матча регулярных чемпионатов ВХЛ.
+    // Источник: https://www.hckaluga.ru/players/smolev-ivan
+    "25287": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 252 }
+      ]
+    },
+    // Михаил Семенеко — 303 матча ВХЛ (295 регулярных + 8 плей-офф).
+    // Источник: https://www.vhlru/players/26414/
+    "26414": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 303 }
+      ]
+    },
+    // Владислав Котков — 198 матчей ВХЛ по официальной статистике.
+    // Источник: https://www.vhlru/players/25119/
+    "25119": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 198 }
+      ]
+    },
+    // Руслан Алиев — 214 матчей ВХЛ и 24 матча КХЛ.
+    // Источник: https://www.vhlru/lenta/604662/
+    "26678": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 214 },
+        { scope: "career", league: "KHL", gp: 24 }
+      ]
+    },
   }
 };
