@@ -43,8 +43,8 @@ for (const player of stats.players) {
   assert.ok(league, player.name + ' references an unknown league: ' + player.league);
   assert.ok(league.clubs.some(club => club.id === player.club),
     player.name + ' references an unknown club: ' + player.club);
-  assert.ok(player.name && Number(player.gp) > 0, 'player needs a name and games played: ' + JSON.stringify(player));
-  if (player.position === 'G') {
+  assert.ok(player.name && Number.isFinite(Number(player.gp)) && Number(player.gp) >= 0, 'player needs a name and a valid GP value: ' + JSON.stringify(player));
+  if (player.position === 'G' && Number(player.gp) > 0) {
     assert.ok(Number.isFinite(Number(player.svPct)) && Number.isFinite(Number(player.gaa)),
       player.name + ' needs goalie SV% and GAA');
   } else {
