@@ -1153,5 +1153,29 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 360 }
       ]
     },
+    // Антон Ковалёв — 365 матчей ВХЛ (350 регулярных + 15 плей-офф).
+    // Источник: https://www.vhlru/players/21981/
+    "21981": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 365 }
+      ]
+    },
+    // Владислав Лукин — 390 матчей ВХЛ (333 регулярных + 57 плей-офф).
+    // Источник: https://www.vhlru/players/22196/
+    "22196": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 390 }
+      ]
+    },
+    // Игорь Мясищев — 553 матча ВХЛ (463 регулярных + 90 плей-офф).
+    // Источник: https://www.vhlru/players/22187/
+    "22187": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 553 }
+      ]
+    },
   }
 };
