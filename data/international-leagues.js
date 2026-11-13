@@ -73,8 +73,7 @@ window.INTERNATIONAL_LEAGUES = [
     leagueName:'Словакия · Extraliga',transferMultiplier:1.02,salaryMultiplier:0.96,
     minOvr:67,maxOvr:81,nationalities:['Словакия','Чехия','Россия','Канада'],
     clubs:[{id:'kosice',name:'HC Košice',city:'Кошице',strength:1.06},{id:'slovan-bratislava',name:'Slovan Bratislava',city:'Братислава',strength:1.08}]
-  }
-  ,
+  },
   {
     id:'khl', region:'russia', country:'Россия', countryCode:'RUS',
     leagueName:'Континентальная хоккейная лига (КХЛ)', transferMultiplier:1.55, salaryMultiplier:1.55,
