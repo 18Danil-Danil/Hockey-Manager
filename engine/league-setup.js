@@ -244,12 +244,10 @@ function makeScheduleMeta(season, roundCount, teams = null) {
       segment.items.push({ ...item, index }); segment.span = Math.max(segment.span, item.segmentOffset || 0);
     });
     const boundaries = Math.max(0, segments.length - 1);
-    let cursor = new Date(startDate);
     const specialBoundaries = [];
     segments.forEach((segment, index) => {
       if (index < boundaries && segment.items.some(item => item.specialRoute)) specialBoundaries.push(index);
     });
-    specialBoundaries.forEach(index => { gaps[index] = 3; });
     const longCandidates = [];
     for (let i = 0; i < boundaries; i++) if (!specialBoundaries.includes(i)) longCandidates.push(i);
     const shortBoundaries = [];
