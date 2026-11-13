@@ -12,12 +12,12 @@ window.HOCKEY_LEAGUE_REGISTRY = {
     {id:'nhl',name:'NHL',country:'США / Канада',status:'planned',source:'https://www.nhl.com/stats/'},
     {id:'ahl',name:'AHL',country:'США / Канада',status:'planned',source:'https://theahl.com/stats/'},
     {id:'mhl',name:'МХЛ',country:'Россия',status:'planned',source:'https://mhl.ru/'},
-    {id:'shl',name:'SHL',country:'Швеция',status:'planned',source:'https://www.shl.se/'},
-    {id:'liiga',name:'Liiga',country:'Финляндия',status:'planned',source:'https://www.liiga.fi/'},
-    {id:'del',name:'DEL',country:'Германия',status:'planned',source:'https://www.penny-del.org/'},
-    {id:'czech-extraliga',name:'Чешская Экстралига',country:'Чехия',status:'planned',source:'https://www.hokej.cz/'},
-    {id:'swiss-nl',name:'National League',country:'Швейцария',status:'planned',source:'https://www.nationalleague.ch/'},
-    {id:'slovakia-extraliga',name:'Extraliga',country:'Словакия',status:'planned',source:'https://www.hockeyslovakia.sk/'},
+    {id:'shl',name:'SHL',country:'Швеция',status:'active',source:'https://www.shl.se/'},
+    {id:'liiga',name:'Liiga',country:'Финляндия',status:'active',source:'https://www.liiga.fi/'},
+    {id:'del',name:'DEL',country:'Германия',status:'active',source:'https://www.penny-del.org/'},
+    {id:'czech-extraliga',name:'Чешская Экстралига',country:'Чехия',status:'active',source:'https://www.hokej.cz/'},
+    {id:'swiss-nl',name:'National League',country:'Швейцария',status:'active',source:'https://www.nationalleague.ch/'},
+    {id:'slovakia-extraliga',name:'Extraliga',country:'Словакия',status:'active',source:'https://www.hockeyslovakia.sk/'},
     {id:'echl',name:'ECHL',country:'США / Канада',status:'planned',source:'https://echl.com/stats'}
   ]
 };
