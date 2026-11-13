@@ -18,7 +18,7 @@ const stats = window.INTERNATIONAL_PLAYER_STATS_DATA;
 assert.ok(Array.isArray(leagues), 'international leagues must be an array');
 assert.ok(Array.isArray(stats.players), 'international player data must be an array');
 assert.equal(registry.schemaVersion, 1);
-assert.equal(stats.players.length >= 570, 'all verified international player records must be loaded');
+assert.ok(stats.players.length >= 570, 'all current international player records must be loaded');
 assert.equal(new Set(stats.players.map(item => item.key)).size, stats.players.length, 'player keys must be unique');
 
 const expectedCounts = {
