@@ -40,6 +40,8 @@ jobs:
 
       - name: Проверить статистическую модель
         run: node tests/player-rating-model.test.js
+      - name: Проверить качество сезонной статистики
+        run: node tests/player-stats-quality.test.mjs
 
       - name: Обновить базу статистики в ветке refactoring
         if: success()
