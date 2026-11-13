@@ -65,8 +65,10 @@ function getInternationalTransferPrice(player, club) {
 }
 function getInternationalTransferQuote(player, club, team) {
   const price = getInternationalTransferPrice(player, club);
+  const ageFactor = player.age <= 23 ? 0.55 : player.age >= 30 ? 0.9 : 1;
+  const salaryBase = Math.pow(Math.max(0, player.ovr - 60) / 30, 2) * 22 * ageFactor;
   const salary = Math.max(player.contract?.salary || 0.5,
-    Math.round(contractFor(player.ovr, player.age).salary * 0.82 * 10) / 10);
+    Math.round(salaryBase * 0.82 * 10) / 10);
   const currentSalary = team ? team.roster.reduce((sum, item) => sum + (item.contract?.salary || 0), 0) : 0;
   const foreigners = team ? team.roster.filter(item => item.nationality !== 'Россия').length : 0;
   let reason = '';
