@@ -176,10 +176,14 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "KHL", gp: 57 }
       ]
     },
-    // Источник: https://www.vhlru.ru/lenta/290243/ — 28 матчей за «Амур».
+    // Дмитрий Лютов — 871 матч ВХЛ по актуальной суммарной статистике;
+    // отдельно 28 матчей КХЛ по клубной публикации.
+    // Источники: https://www.vhlru/stats/players/all/
+    // https://www.vhlru/lenta/290243/
     "15399": {
       position: "defense",
       career: [
+        { scope: "career", league: "VHL", gp: 871 },
         { scope: "career", league: "KHL", gp: 28 }
       ]
     },
@@ -283,33 +287,32 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "KHL", gp: 10 }
       ]
     },
-    // Илья Бочков: 870 матчей в ВХЛ по сообщению клуба от 01.06.2026.
-    // Отдельно 108 матчей в Первой лиге/Первенстве ВХЛ по сообщению ВХЛ 2021 года.
-    // Источники: https://www.vhlru.ru/lenta/603852/
+    // Илья Бочков — 891 матч ВХЛ; 108 матчей Первой лиги сохранены отдельно.
+    // Источники: https://www.vhlru/stats/players/all/
     // https://vhlru.ru/lenta/403623/
     "14585": {
       position: "defense",
       career: [
-        { scope: "career", league: "VHL", gp: 887 },
+        { scope: "career", league: "VHL", gp: 891 },
         { scope: "career", league: "RUSSIAN_FIRST", gp: 108 }
       ]
     },
-    // Александр Угольников — 544 матча в ВХЛ с плей-офф, данные клуба 2026 года.
-    // Источник: https://www.hcda.ru/press_center/news/sostav-dinamo-altay-popolnil-zashchitnik-aleksandr-ugolnikov/
+    // Александр Угольников — 549 матчей ВХЛ по актуальной суммарной статистике лиги.
+    // Источник: https://www.vhlru/stats/players/all/
     "15644": {
       position: "defense",
       career: [
-        { scope: "career", league: "VHL", gp: 544 }
+        { scope: "career", league: "VHL", gp: 549 }
       ]
     },
-    // Григорий Глебов: 823 матча ВХЛ по актуальной суммарной карточке;
+    // Григорий Глебов: 826 матчей ВХЛ по актуальной суммарной статистике;
     // также 42 КХЛ, 81 Первая лига и 3 МХЛ-Б по юбилейной новости ВХЛ (2024).
-    // Источники: https://www.vhlru.ru/players/17229/
-    // https://www.vhlru.ru/lenta/506696/
+    // Источники: https://www.vhlru/stats/players/all/
+    // https://www.vhlru/lenta/506696/
     "17229": {
       position: "defense",
       career: [
-        { scope: "career", league: "VHL", gp: 823 },
+        { scope: "career", league: "VHL", gp: 826 },
         { scope: "career", league: "KHL", gp: 42 },
         { scope: "career", league: "RUSSIAN_FIRST", gp: 81 },
         { scope: "career", league: "MHLB", gp: 3 }
@@ -326,13 +329,13 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 256 }
       ]
     },
-    // Максим Салахов: ВХЛ — 631 матч; РХЛ — 88 матчей по официальной карточке.
-    // Источники: https://www.vhlru.ru/players/13184/
+    // Максим Салахов: ВХЛ — 640 матчей по актуальной статистике; РХЛ — 88.
+    // Источники: https://www.vhlru/stats/players/all/
     // https://rhl.fhr.ru/players/13184/183/
     "13184": {
       position: "defense",
       career: [
-        { scope: "career", league: "VHL", gp: 631 },
+        { scope: "career", league: "VHL", gp: 640 },
         { scope: "career", league: "RHL", gp: 88 }
       ]
     },
@@ -432,13 +435,12 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 49, stage: "playoffs" }
       ]
     },
-    // Александр Сумин — 746 матчей регулярных чемпионатов + 144 плей-офф ВХЛ.
-    // Источник: https://vhlru.ru/players/15605/
+    // Александр Сумин — 892 матча ВХЛ по актуальной суммарной статистике лиги.
+    // Источник: https://www.vhlru/stats/players/all/
     "15605": {
       position: "defense",
       career: [
-        { scope: "career", league: "VHL", gp: 746, stage: "regular" },
-        { scope: "career", league: "VHL", gp: 144, stage: "playoffs" }
+        { scope: "career", league: "VHL", gp: 892 }
       ]
     },
     // Павел Куликов: 561 матч в КХЛ, 69 матчей в чемпионате Беларуси;
@@ -543,13 +545,12 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "KHL", gp: 50 }
       ]
     },
-    // Максим Верёвкин — 564 матча регулярных чемпионатов + 144 плей-офф ВХЛ.
-    // Источник: https://www.vhlru.ru/players/15128/
+    // Максим Верёвкин — 721 матч ВХЛ по актуальной суммарной статистике лиги.
+    // Источник: https://www.vhlru.ru/stats/players/all/
     "15128": {
       position: "defense",
       career: [
-        { scope: "career", league: "VHL", gp: 564, stage: "regular" },
-        { scope: "career", league: "VHL", gp: 144, stage: "playoffs" }
+        { scope: "career", league: "VHL", gp: 721 }
       ]
     },
     // Денис Давыдов — 789 матчей ВХЛ по официальной таблице статистики лиги.
@@ -670,6 +671,47 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "defense",
       career: [
         { scope: "career", league: "VHL", gp: 646 }
+      ]
+    },
+    // Валерий Поляков — 567 матчей ВХЛ, 213 МХЛ и 43 в чемпионате Беларуси;
+    // также 12 матчей чемпионата Казахстана по карьерной статистике Elite Prospects.
+    // Источники: https://www.vhlru/stats/players/all/
+    // https://www.eliteprospects.com/player/107755/valeri-polyakov
+    "16757": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 567 },
+        { scope: "career", league: "MHL", gp: 213 },
+        { scope: "career", league: "BELARUS", gp: 43 },
+        { scope: "career", league: "KAZAKHSTAN", gp: 12 }
+      ]
+    },
+    // Евгений Ярославлев — ВХЛ 495, МХЛ 86 и НМХЛ 39 матчей.
+    // Источники: https://www.vhlru/players/17714/
+    // https://mhl.khl.ru/players/17714/
+    // https://nmhl.fhr.ru/players/17714/
+    "17714": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 495 },
+        { scope: "career", league: "MHL", gp: 86 },
+        { scope: "career", league: "NMHL", gp: 39 }
+      ]
+    },
+    // Сергей Теряев — 630 матчей ВХЛ по актуальной суммарной статистике лиги.
+    // Источник: https://www.vhlru/stats/players/all/
+    "19083": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 630 }
+      ]
+    },
+    // Денис Горбунов — 477 матчей ВХЛ по актуальной суммарной статистике лиги.
+    // Источник: https://www.vhlru/stats/players/all/
+    "19201": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 477 }
       ]
     },
   }
