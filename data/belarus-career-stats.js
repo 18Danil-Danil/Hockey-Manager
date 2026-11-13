@@ -285,7 +285,7 @@ window.BELARUS_CAREER_STATS_DATA = {
     "to": "2026/27",
     "seasons": 20
   },
-  "by-bobariko": {
+  "byg-bobariko": {
     "gp": 286,
     "position": "G",
     "from": "2010/11",
