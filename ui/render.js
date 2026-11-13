@@ -1094,7 +1094,8 @@ function renderModal() {
   })[char]);
   const careerLeagueLabels = {
     NHL: 'НХЛ', AHL: 'АХЛ', KHL: 'КХЛ', VHL: 'ВХЛ', MHL: 'МХЛ',
-    RHL: 'РХЛ', SHL: 'SHL', LIIGA: 'Liiga', DEL: 'DEL', ECHL: 'ECHL'
+    RHL: 'РХЛ', SHL: 'SHL', LIIGA: 'Liiga', DEL: 'DEL', ECHL: 'ECHL',
+    WHA: 'WHA', NHA: 'NHA', PCHA: 'PCHA', WCHL: 'WCHL'
   };
   const sourceCareerRows = [...sourceCareerGroups.values()].sort((a,b) =>
     String(b.season).localeCompare(String(a.season), 'en', { numeric: true }) ||
