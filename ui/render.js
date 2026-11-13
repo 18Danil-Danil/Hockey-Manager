@@ -1143,6 +1143,38 @@ function renderModal() {
         '</div></article>';
     }).join('') + '</div>'
     : '';
+  const sourceSeasonalGpByLeague = new Map();
+  for (const row of sourceCareerRowsByKey.values()) {
+    sourceSeasonalGpByLeague.set(
+      row.league,
+      (sourceSeasonalGpByLeague.get(row.league) || 0) + Number(row.gp || 0)
+    );
+  }
+  const sourceCareerTotalsByLeague = new Map();
+  (sourceCareer?.career || []).forEach(row => {
+    const league = String(row.league || '');
+    if (!league) return;
+    if (!sourceCareerTotalsByLeague.has(league)) sourceCareerTotalsByLeague.set(league, { gp: 0 });
+    const total = sourceCareerTotalsByLeague.get(league);
+    total.gp += Number(row.gp || 0);
+  });
+  const matchWord = value => {
+    const n = Math.abs(Number(value) || 0) % 100;
+    const last = n % 10;
+    return n > 10 && n < 20 ? 'матчей' : last === 1 ? 'матч' : last >= 2 && last <= 4 ? 'матча' : 'матчей';
+  };
+  const sourceCareerSummary = [...sourceCareerTotalsByLeague.entries()].map(([league, total]) => {
+    const seasonalGp = sourceSeasonalGpByLeague.get(league) || 0;
+    const extraGp = Math.max(0, total.gp - seasonalGp);
+    if (!extraGp) return '';
+    const detail = seasonalGp
+      ? extraGp + ' ' + matchWord(extraGp) + ' сверх показанных сезонов'
+      : total.gp + ' ' + matchWord(total.gp) + ' — сезонная разбивка пока недоступна';
+    return '<article class="profile-season-row"><div class="profile-season-main">' +
+      '<div class="profile-season-heading"><b>' +
+      escapeCareerText(careerLeagueLabels[league] || league) +
+      '</b><span>' + escapeCareerText(detail) + '</span></div></div></article>';
+  }).filter(Boolean).join('');
   const transfers=(G.league.transferLog||[]).flatMap(e=>(e.transfers||[]).filter(t=>t.player===p.name).map(t=>({season:e.season,from:t.from,to:t.to})));
   const transferHtml=transfers.length?'<div class="profile-transfer-list">'+transfers.slice().reverse().map(t=>'<div><span>'+t.season+'</span><b>'+t.from+' → '+t.to+'</b></div>').join('')+'</div>':'<div class="profile-empty">Зафиксированных переходов между клубами пока нет.</div>';
   const canExtend=isMyTeam&&contract.years<=1&&p.status==='contract', canRelease=isMyTeam&&p.status==='contract';
@@ -1161,7 +1193,8 @@ function renderModal() {
     '<section class="profile-section"><span class="profile-eyebrow">НАВЫКИ</span><h2>Игровые атрибуты</h2><div class="profile-attributes">'+attrRows+'</div></section>'+
     '<section class="profile-section"><span class="profile-eyebrow">ТЕКУЩИЙ СЕЗОН</span><h2>Регулярный чемпионат</h2>'+tileGrid(statTiles)+'<h2 class="profile-subheading">Плей-офф</h2>'+tileGrid(playoffTiles)+'</section>'+
     '<section class="profile-section"><span class="profile-eyebrow">КАРЬЕРА</span><h2>Суммарная статистика</h2>'+tileGrid(totals)+'</section>'+
-    (sourceCareerTimeline ? '<section class="profile-section"><span class="profile-eyebrow">РЕАЛЬНАЯ КАРЬЕРА</span><h2>Сезоны до начала игры</h2>'+sourceCareerTimeline+'</section>' : '')+    '<section class="profile-section"><span class="profile-eyebrow">ПУТЬ ИГРОКА</span><h2>История сезонов</h2>'+timeline+'</section>'+
+    (sourceCareerTimeline ? '<section class="profile-section"><span class="profile-eyebrow">РЕАЛЬНАЯ КАРЬЕРА</span><h2>Сезоны до начала игры</h2>'+sourceCareerTimeline+'</section>' : '')+
+    (sourceCareerSummary ? '<section class="profile-section"><span class="profile-eyebrow">ДРУГИЕ ЛИГИ</span><h2>Карьерные итоги без разбивки по сезонам</h2><p class="profile-note">Это подтверждённые общие итоги; сезонные строки для этих матчей пока не найдены.</p>'+sourceCareerSummary+'</section>' : '')+    '<section class="profile-section"><span class="profile-eyebrow">ПУТЬ ИГРОКА</span><h2>История сезонов</h2>'+timeline+'</section>'+
     '<section class="profile-section"><span class="profile-eyebrow">ПЕРЕМЕЩЕНИЯ</span><h2>История переходов</h2>'+transferHtml+'</section>'+
     '<section class="profile-section"><span class="profile-eyebrow">ДОСТИЖЕНИЯ</span><h2>Индивидуальные награды</h2>'+awardHtml+'</section></div>'+
     '<aside class="profile-side-column"><section class="profile-section profile-contract"><span class="profile-eyebrow">СОГЛАШЕНИЕ</span><h2>Контракт</h2><div class="profile-contract-value"><b>'+Number(contract.salary||0).toFixed(1)+'</b><span>млн ₽ / сезон</span></div><div class="profile-contract-row"><span>Срок</span><b>'+(contract.years||0)+' лет</b></div><div class="profile-contract-row"><span>Статус</span><b>'+(p.status==='contract'?'Действует':p.status==='ufa'?'Свободный агент':p.status)+'</b></div>'+
