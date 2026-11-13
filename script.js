@@ -63,7 +63,7 @@ function newGame() {
   G.difficulty = DIFFICULTIES[G.selectedDifficulty || 'normal'];
   G.career = { reputation: G.difficulty.startReputation, history: [], noFireMode: G.noFireMode || false };
   G.league = genLeague(); resetAllStats(G.league);
-  G.league.freeAgents = generateFreeAgents(30); G.league.staffPool = generateStaffCandidates(12);
+  G.league.freeAgents = generateFreeAgents(30); G.league.staffPool = generateStaffCandidates(12); ensureInternationalMarket();
   ensureAllLines();
   G.playerTeamId = null; G.activeTab = 'overview'; G.screen = 'select';
   G.selectedGamePbp = null; G.popupPlayerId = null; G.viewTeamId = null; G.tradeTargetTeamId = null;
@@ -76,12 +76,12 @@ function newGame() {
   saveGame({ immediate: true });
 }
 async function start() {
-  if (await loadGame()) { ensureAllLines(); initAISponsors(); if (G.activeTab === 'standings') G.activeTab = 'overview'; render(); return; }
+  if (await loadGame()) { ensureInternationalMarket(); ensureAllLines(); initAISponsors(); if (G.activeTab === 'standings') G.activeTab = 'overview'; render(); return; }
   setSeed(20241111);
   G.difficulty = DIFFICULTIES.normal;
   G.career = { reputation: 50, history: [], noFireMode: false };
   G.league = genLeague(); resetAllStats(G.league);
-  G.league.freeAgents = generateFreeAgents(30); G.league.staffPool = generateStaffCandidates(12);
+  G.league.freeAgents = generateFreeAgents(30); G.league.staffPool = generateStaffCandidates(12); ensureInternationalMarket();
   ensureAllLines();
   G.playerTeamId = null; G.activeTab = 'overview'; G.screen = 'title';
   G.settings = normalizeGameSettings(G.settings); applyGameSettings();
