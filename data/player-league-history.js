@@ -958,5 +958,39 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 180 }
       ]
     },
+    // Николай Аверин — 370 матчей ВХЛ (329 регулярных + 41 плей-офф).
+    // Источник: https://www.vhlru/players/20958/
+    "20958": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 370 }
+      ]
+    },
+    // Роман Опалев — 445 матчей ВХЛ: 434 по суммарной карточке
+    // плюс 11 дополнительных матчей сезона 2026/27 по текущей статистике лиги.
+    // Источники: https://www.vhlru/players/19302/
+    // https://www.vhlru/stats/players/1103/forwards/
+    "19302": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 445 }
+      ]
+    },
+    // Павел Щербаков — 255 матчей ВХЛ по актуальной суммарной статистике.
+    // Источник: https://www.vhlru/players/23169/
+    "23169": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 255 }
+      ]
+    },
+    // Алексей Краснов — 378 матчей ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru/players/21174/
+    "21174": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 378 }
+      ]
+    },
   }
 };
