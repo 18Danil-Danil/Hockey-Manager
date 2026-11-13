@@ -120,7 +120,7 @@ try {
       '- Календарь: ' + calendarError.message,
       '- Страница статистики: ' + statsError.message,
       '- Фрагмент ответа: ' + String(tournamentHtml).slice(0, 500).replace(/</g, '&lt;')
-    ].join('\\n') + '\\n', 'utf8');
+    ].join('\n') + '\n', 'utf8');
     throw new Error('Не удалось прочитать список турниров ни из календаря, ни из статистики ВХЛ.');
   }
 }
