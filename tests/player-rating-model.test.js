@@ -68,6 +68,9 @@ const oldKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '14/15', lea
 assert.ok(oneKhlSeason > 0, 'a verified KHL season should add a league-strength bonus');
 assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'ВХЛ', gp: 45 }], 2026), 0, 'VHL experience should remain the baseline and not add a higher-league bonus');
 assert.ok(oldKhlSeason > 0 && oldKhlSeason < oneKhlSeason, 'older high-league experience should decay');
+const lateEightiesKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '85/86', league: 'KHL', gp: 45 }], 2026);
+const turnOfCenturyKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '99/00', league: 'KHL', gp: 45 }], 2026);
+assert.ok(lateEightiesKhlSeason > 0 && lateEightiesKhlSeason < turnOfCenturyKhlSeason, 'pre-2000 seasons must be dated to the correct century and decay by age');
 const leagueOnlyData = {
   seasons: ['25/26', '24/25', '23/24'],
   players: { veteran: { position: 'forward', leagueHistory: [{ season: '24/25', league: 'KHL', gp: 45 }] } }
