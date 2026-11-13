@@ -6,6 +6,8 @@ on:
       - refactoring
     paths:
       - 'tools/vhl-player-stats-sync.mjs'
+      - 'tools/vhl-tournament-map.mjs'
+      - 'tests/vhl-tournament-map.test.mjs'
       - 'data/vhl-rosters.js'
       - '.github/workflows/vhl-player-stats-sync.yml'
   workflow_dispatch:
