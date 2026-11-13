@@ -222,8 +222,12 @@ function findObjectEnd(source, openIndex) {
   throw new Error('Не удалось определить конец объекта игрока в истории.');
 }
 function readField(body, key) {
-  const match = body.match(new RegExp('\\b' + key + '\\s*:\\s*["\\']([^"\\']*)["\\']'));
-  return match ? match[1] : null;
+  const doubleQuoted = body.match(new RegExp('\\b' + key + '\\s*:\\s*("(?:\\\\.|[^"\\\\])*")'));
+  if (doubleQuoted) {
+    try { return JSON.parse(doubleQuoted[1]); } catch { return null; }
+  }
+  const singleQuoted = body.match(new RegExp("\\\\b" + key + "\\\\s*:\\\\s*'((?:\\\\\\\\.|[^'\\\\\\\\])*)'"));
+  return singleQuoted ? singleQuoted[1].replace(/\\\\'/g, "'").replace(/\\\\\\\\/g, "\\\\") : null;
 }
 function formatRows(rows) {
   const keys = [
