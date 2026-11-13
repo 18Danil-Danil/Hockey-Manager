@@ -45,4 +45,18 @@ const weakGoalie = sandbox.makeVhlRating('g2', { ratings: { att: 70, def: 70, gk
 assert.ok(strongGoalie.ovr > weakGoalie.ovr, 'better save percentage and GAA should raise goalie OVR');
 assert.ok(strongGoalie.attrs.reflexes > weakGoalie.attrs.reflexes);
 assert.equal(sandbox.makeVhlRating('missing', { ratings: { att: 70, def: 70, gk: 70 } }, 20), null);
+const oneKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 45 }], 2026);
+const oldKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '14/15', league: 'KHL', gp: 45 }], 2026);
+assert.ok(oneKhlSeason > 0, 'a verified KHL season should add a league-strength bonus');
+assert.ok(oldKhlSeason > 0 && oldKhlSeason < oneKhlSeason, 'older high-league experience should decay');
+const leagueOnlyData = {
+  seasons: ['25/26', '24/25', '23/24'],
+  players: { veteran: { position: 'forward', leagueHistory: [{ season: '24/25', league: 'KHL', gp: 45 }] } }
+};
+sandbox.VHL_PLAYER_STATS_DATA = leagueOnlyData;
+const veteranRating = sandbox.makeVhlRating('veteran', { ratings: { att: 70, def: 70, gk: 70 } }, 31);
+const baselineRating = sandbox.makeVhlRating('veteran', { ratings: { att: 70, def: 70, gk: 70 } }, 31);
+assert.ok(veteranRating && veteranRating.leagueBonus > 0, 'league history alone should create a usable rating entry');
+assert.equal(veteranRating.source, 'vhl-statistics+league-history');
+assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 45 }, { season: '24/25', league: 'KHL', gp: 45 }], 2026), oneKhlSeason * 2 > 5 ? 5 : oneKhlSeason * 2, 'same-season rows should be combined and capped rather than ignored');
 console.log('VHL player rating model checks passed.');
