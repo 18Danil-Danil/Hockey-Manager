@@ -796,5 +796,32 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 458 }
       ]
     },
+    // Алексей Митрофанов — 655 матчей ВХЛ, 55 МХЛ и 2 КХЛ.
+    // Источники: https://www.vhlru/stats/players/all/
+    // https://hc-kaluga.ru/players/mitrofanov-aleksei-14
+    "18342": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 655 },
+        { scope: "career", league: "MHL", gp: 55 },
+        { scope: "career", league: "KHL", gp: 2 }
+      ]
+    },
+    // Виктор Пластинин — 475 матчей ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru/players/18824/
+    "18824": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 475 }
+      ]
+    },
+    // Никита Мокин — 654 матча ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru/players/19113/
+    "19113": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 654 }
+      ]
+    },
   }
 };
