@@ -239,8 +239,8 @@ for (const [id, playerStats] of Object.entries(outputPlayers)) {
   );
 }
 const historyTotal = existingHistoryIds.size + historyAdditions.length;
-if (failures.length === targets.length) {
-  throw new Error(`Не удалось загрузить ни одну сезонную таблицу: ${failures.join(' | ')}`);
+if (failures.length) {
+  throw new Error(`Не удалось полностью загрузить все выбранные турнирные таблицы. Публикация отменена: ${failures.join(' | ')}`);
 }
 if (historyTotal < historyTarget) {
   throw new Error(`Недостаточно подтверждённых игроков для цели ${historyTarget}: собрано ${historyTotal}, новых ${historyAdditions.length}. История не перезаписывается.`);
