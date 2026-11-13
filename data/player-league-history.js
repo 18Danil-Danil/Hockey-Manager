@@ -1283,5 +1283,45 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 318 }
       ]
     },
+    // Юрий Крамаренко — 245 матчей ВХЛ (228 регулярных + 17 плей-офф).
+    // Источник: https://www.vhlru/players/23757/
+    "23757": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 245 }
+      ]
+    },
+    // Николай Богатов — 388 матчей ВХЛ (364 регулярных + 24 плей-офф).
+    // Источник: https://www.vhlru/players/22837/
+    "22837": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 388 }
+      ]
+    },
+    // Максим Баин — 432 матча ВХЛ (381 регулярный + 51 плей-офф).
+    // Источник: https://www.vhlru/players/23192/
+    "23192": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 432 }
+      ]
+    },
+    // Михаил Мещеряков — 403 матча ВХЛ (375 регулярных + 28 плей-офф).
+    // Источник: https://www.vhlru/players/22687/
+    "22687": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 403 }
+      ]
+    },
+    // Владислав Джиошвили — 206 матчей ВХЛ (170 регулярных + 36 плей-офф).
+    // Источник: https://www.vhlru/players/23508/
+    "23508": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 206 }
+      ]
+    },
   }
 };
