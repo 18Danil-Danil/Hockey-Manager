@@ -109,6 +109,7 @@ function createInternationalMarket() {
         player.internationalRealPlayer = true;
         player.internationalStats = {...record, season:window.INTERNATIONAL_PLAYER_STATS_DATA.season};
         player.internationalSource = window.INTERNATIONAL_PLAYER_STATS_DATA.source;
+        player.contract.salary = Math.max(0.5, Math.round(player.contract.salary * club.salaryMultiplier * 10) / 10);
         player.internationalClubId = club.id;
         player.internationalClubName = club.name;
         player.internationalLeague = club.leagueName;
