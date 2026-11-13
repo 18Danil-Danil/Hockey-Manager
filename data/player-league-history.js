@@ -886,5 +886,49 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 135 }
       ]
     },
+    // Антон Угольников — 441 матч ВХЛ и 164 матча МХЛ.
+    // Источники: https://www.vhlru/players/20650/
+    // https://mhl.khl.ru/players/20650/
+    "20650": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 441 },
+        { scope: "career", league: "MHL", gp: 164 }
+      ]
+    },
+    // Павел Пищальников — 199 матчей ВХЛ: 193 по клубной сводке июня 2026
+    // плюс 6 матчей текущего сезона по официальной статистике лиги.
+    // Источники: https://www.vhlru/lenta/603931/
+    // https://www.vhlru/stats/players/1307/forwards/
+    "21327": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 199 }
+      ]
+    },
+    // Егор Яковлев — 276 матчей ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru/players/20652/
+    "20652": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 276 }
+      ]
+    },
+    // Иван Силаев — 515 матчей ВХЛ (489 регулярных + 26 плей-офф).
+    // Источник: https://www.vhlru/players/20594/
+    "20594": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 515 }
+      ]
+    },
+    // Максим Рыжков — 481 матч ВХЛ (438 регулярных + 43 плей-офф).
+    // Источник: https://www.vhlru/players/20627/
+    "20627": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 481 }
+      ]
+    },
   }
 };
