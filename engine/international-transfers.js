@@ -140,12 +140,12 @@ function createInternationalMarket() {
       clubs.push(club);
     }
   }
-  return {version:3,clubs,transferLog:[]};
+  return {version:4,clubs,transferLog:[]};
 }
 function ensureInternationalMarket() {
   if (!G.league) return;
   const previous = G.league.internationalMarket;
-  if (previous && previous.version >= 3 && Array.isArray(previous.clubs)) return;
+  if (previous && previous.version >= 4 && Array.isArray(previous.clubs)) return;
   const rebuilt = createInternationalMarket();
   if (previous && Array.isArray(previous.transferLog)) {
     rebuilt.transferLog = previous.transferLog.slice();
