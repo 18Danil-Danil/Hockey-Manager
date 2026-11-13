@@ -1323,5 +1323,37 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 206 }
       ]
     },
+    // Семён Сухов — 388 матчей ВХЛ (372 регулярных + 16 плей-офф).
+    // Источник: https://www.vhlru/players/23717/
+    "23717": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 388 }
+      ]
+    },
+    // Степан Грымзин — 317 матчей ВХЛ (305 регулярных + 12 плей-офф).
+    // Источник: https://www.vhlru/players/23743/
+    "23743": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 317 }
+      ]
+    },
+    // Никита Громов — 337 матчей ВХЛ (326 регулярных + 11 плей-офф).
+    // Источник: https://www.vhlru/players/22615/
+    "22615": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 337 }
+      ]
+    },
+    // Константин Колмагоров — 176 матчей ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru/players/29696/
+    "29696": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 176 }
+      ]
+    },
   }
 };
