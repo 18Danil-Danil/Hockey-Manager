@@ -66,11 +66,22 @@
       grouped.set(key, previous);
     }
     let impact = 0;
+    const seasonalGamesByLeague = new Map();
+    for (const row of grouped.values()) {
+      if (row.career) continue;
+      seasonalGamesByLeague.set(
+        row.league,
+        (seasonalGamesByLeague.get(row.league) || 0) + row.gp
+      );
+    }
     for (const row of grouped.values()) {
       if (row.career) {
-        // Карьерный итог без разбивки по сезонам: не выдумываем давность.
-        // Учитываем накопленный опыт с консервативным коэффициентом доверия.
-        const experience = Math.min(1, row.gp / 120);
+        // Карьерный итог дополняет сезонные строки только недостающими матчами.
+        // Так одна и та же карьера не получает бонус дважды.
+        const coveredGames = seasonalGamesByLeague.get(row.league) || 0;
+        const extraGames = Math.max(0, row.gp - coveredGames);
+        if (!extraGames) continue;
+        const experience = Math.min(1, extraGames / 120);
         impact += (row.strength - 1) * experience * 0.65;
       } else {
         const recency = Math.pow(0.88, Math.max(0, currentYear - row.endYear));
