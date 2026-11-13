@@ -31,6 +31,18 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       career: [
         { scope: "career", league: "KHL", gp: 352 }
       ]
+    },
+    "17704": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 374 }
+      ]
+    },
+    "25138": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 87 }
+      ]
     }
   }
 };
