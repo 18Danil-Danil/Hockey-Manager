@@ -47,6 +47,11 @@ assert.ok(strongGoalie.attrs.reflexes > weakGoalie.attrs.reflexes);
 assert.equal(sandbox.makeVhlRating('missing', { ratings: { att: 70, def: 70, gk: 70 } }, 20), null);
 const oneKhlSeason = sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 45 }], 2026);
 const careerOnlyBonus = sandbox.calculateLeagueHistoryBonus([{ scope: 'career', league: 'KHL', gp: 123 }], 2026);
+const seasonAndCareerBonus = sandbox.calculateLeagueHistoryBonus([
+  { season: '24/25', league: 'KHL', gp: 45 },
+  { scope: 'career', league: 'KHL', gp: 45 }
+], 2026);
+assert.equal(seasonAndCareerBonus, oneKhlSeason, 'career totals already represented by season rows must not be counted twice');
 const smallCareerBonus = sandbox.calculateLeagueHistoryBonus([{ scope: 'career', league: 'KHL', gp: 5 }], 2026);
 assert.ok(careerOnlyBonus > 0, 'career totals without season breakdown should contribute a league bonus');
 assert.ok(careerOnlyBonus < oneKhlSeason, 'undated career totals should be discounted versus a recent full season');
