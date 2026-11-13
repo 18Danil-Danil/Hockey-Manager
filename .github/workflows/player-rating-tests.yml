@@ -1,0 +1,38 @@
+name: Проверка рейтингов игроков
+
+on:
+  push:
+    branches:
+      - refactoring
+    paths:
+      - 'data/player-rating-model.js'
+      - 'data/player-league-history.js'
+      - 'tests/player-rating-model.test.js'
+      - 'tests/player-league-history-merge.test.mjs'
+      - 'tools/vhl-career-history-sync.mjs'
+      - 'ui/render.js'
+      - 'ui/game-settings.js'
+      - '.github/workflows/player-rating-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-player-ratings:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить код проекта
+        uses: actions/checkout@v4
+        with:
+          ref: refactoring
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Проверить модель рейтингов
+        run: node tests/player-rating-model.test.js
+      - name: Проверить объединение карьерных сезонов
+        run: node --test tests/player-league-history-merge.test.mjs
+      - name: Проверить синтаксис профиля и настроек
+        run: node --check ui/render.js && node --check ui/game-settings.js

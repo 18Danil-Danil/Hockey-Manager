@@ -1,0 +1,89 @@
+name: Импорт статистики игроков ВХЛ
+
+on:
+  push:
+    branches:
+      - refactoring
+    paths:
+      - 'tools/vhl-player-stats-sync.mjs'
+      - 'tools/vhl-tournament-map.mjs'
+      - 'tools/vhl-player-career-parser.mjs'
+      - 'tests/vhl-player-career-parser.test.mjs'
+      - 'tests/vhl-tournament-map.test.mjs'
+      - 'data/vhl-rosters.js'
+      - '.github/workflows/vhl-player-stats-sync.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: "23 5 1 * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vhl-player-stats-sync
+  cancel-in-progress: true
+
+# Импорт сезонной статистики запускается после изменения парсера или источника данных.
+jobs:
+  sync-player-stats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Получить код проекта
+        uses: actions/checkout@v4
+        with:
+          ref: refactoring
+
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Проверить статистическую модель
+        run: node tests/player-rating-model.test.js
+
+      - name: Проверить качество сезонной статистики
+        run: node tests/player-stats-quality.test.mjs
+
+      - name: Проверить карту турниров ВХЛ
+        run: node tests/vhl-tournament-map.test.mjs
+
+      - name: Проверить синтаксис импортёра статистики
+        run: node --check tools/vhl-player-stats-sync.mjs
+
+      - name: Проверить парсер карьеры игроков ВХЛ
+        run: node tests/vhl-player-career-parser.test.mjs
+
+      - name: Загрузить сезонную статистику
+        run: node tools/vhl-player-stats-sync.mjs
+
+      - name: Обновить базу статистики в ветке refactoring
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/vhl-player-stats.js data/player-league-history.js
+          if git diff --cached --quiet; then
+            echo "Статистика не изменилась — новый коммит не требуется."
+          else
+            git commit -m "data: update VHL player statistics"
+            git pull --rebase origin refactoring
+            git push origin HEAD:refactoring
+          fi
+
+      - name: Добавить отчёт в сводку запуска
+        if: always()
+        run: |
+          if [ -f vhl-player-stats-report.md ]; then
+            cat vhl-player-stats-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Отчёт не создан. Проверьте журнал шага импорта." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Сохранить отчёт как артефакт
+        if: always() && hashFiles('vhl-player-stats-report.md') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: vhl-player-stats-${{ github.run_number }}
+          path: vhl-player-stats-report.md
+          retention-days: 30
