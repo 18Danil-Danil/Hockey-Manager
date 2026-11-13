@@ -290,7 +290,7 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
     "14585": {
       position: "defense",
       career: [
-        { scope: "career", league: "VHL", gp: 870 },
+        { scope: "career", league: "VHL", gp: 887 },
         { scope: "career", league: "RUSSIAN_FIRST", gp: 108 }
       ]
     },
@@ -490,6 +490,52 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "defense",
       career: [
         { scope: "career", league: "KHL", gp: 143 }
+      ]
+    },
+    // Вадим Хлопотов — 512 матчей регулярных чемпионатов + 71 плей-офф ВХЛ
+    // по суммарной карточке после сезона 2025/26.
+    // Источник: https://www.vhlru.ru/players/17362/
+    "17362": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 512, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 71, stage: "playoffs" }
+      ]
+    },
+    // Фёдор Беляков — 303 матча регулярных чемпионатов + 50 плей-офф ВХЛ.
+    // Источник: https://vhlru.ru/players/16672/
+    "16672": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 303, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 50, stage: "playoffs" }
+      ]
+    },
+    // Илья Коренев — 548 матчей регулярных чемпионатов + 69 плей-офф ВХЛ.
+    // Источник: https://vhlru.ru/players/17953/
+    "17953": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 548, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 69, stage: "playoffs" }
+      ]
+    },
+    // Даниил Ильин: 294 матча регулярных чемпионатов + 34 плей-офф ВХЛ.
+    // Источник: https://silasporta.ru/athletes/daniil-ilin/
+    "17708": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 294, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 34, stage: "playoffs" }
+      ]
+    },
+    // Артём Прохоров: 521 матч регулярных чемпионатов + 19 плей-офф ВХЛ.
+    // Источник: https://silasporta.ru/athletes/artem-prokhorov/
+    "19038": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 521, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 19, stage: "playoffs" }
       ]
     },
   }
