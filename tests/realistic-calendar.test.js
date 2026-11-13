@@ -57,7 +57,7 @@ for (const stat of teamStats.values()) {
 }
 assert.ok(minGamesPerDate >= 3 && maxGamesPerDate <= 8);
 
-let maxTeamRest = 0, maxVenueStreak = 0;
+let maxTeamRest = 0, maxVenueStreak = 0, maxTeamRestDetail = null;
 for (const team of teams) {
   const appearances = [];
   schedule.forEach((round, roundIndex) => {
@@ -69,10 +69,16 @@ for (const team of teams) {
     streak = game.side === lastSide ? streak + 1 : 1;
     lastSide = game.side;
     maxVenueStreak = Math.max(maxVenueStreak, streak);
-    if (index) maxTeamRest = Math.max(maxTeamRest, (Date.parse(game.date) - Date.parse(appearances[index - 1].date)) / 86400000);
+    if (index) {
+      const restDays = (Date.parse(game.date) - Date.parse(appearances[index - 1].date)) / 86400000;
+      if (restDays > maxTeamRest) {
+        maxTeamRest = restDays;
+        maxTeamRestDetail = { team: team.name, from: appearances[index - 1].date, to: game.date };
+      }
+    }
   });
 }
-assert.ok(maxTeamRest <= 14, 'team rest interval does not exceed 14 days: ' + maxTeamRest);
+assert.ok(maxTeamRest <= 14, 'team rest interval does not exceed 14 days: ' + JSON.stringify(maxTeamRestDetail));
 assert.ok(maxVenueStreak <= 10, 'home or away run remains a bounded series');
 assert.ok(meta.some(item => item.travelNote && item.travelNote.includes('Норильск — Красноярск')));
 assert.ok(meta.some(item => item.phase === 'local-derby'));
