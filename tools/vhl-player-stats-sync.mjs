@@ -97,8 +97,9 @@ if (!rosterPlayers.size) throw new Error('В текущей базе соста�
 
 const robotsText = await getText(`${BASE}/robots.txt`);
 if (!robotsAllowsPath(robotsText, '/en/stats/players/') ||
-    !robotsAllowsPath(robotsText, '/en/calendar/')) {
-  throw new Error('robots.txt не разрешает автоматическое обращение к календарю или сезонной статистике. Сбор остановлен.');
+    !robotsAllowsPath(robotsText, '/en/calendar/') ||
+    !robotsAllowsPath(robotsText, '/players/')) {
+  throw new Error('robots.txt не разрешает автоматическое обращение к календарю, статистике или карточкам игроков. Сбор остановлен.');
 }
 
 // В URL статистики нужен не год сезона, а внутренний tournament ID (tn).
