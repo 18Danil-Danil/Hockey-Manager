@@ -25,6 +25,7 @@ concurrency:
   group: vhl-player-stats-sync
   cancel-in-progress: true
 
+# Повторная сверка статистики по актуальным составам ВХЛ: 13.11.2026.
 # Импорт сезонной статистики запускается после изменения парсера или источника данных.
 jobs:
   sync-player-stats:
