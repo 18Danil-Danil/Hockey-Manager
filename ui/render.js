@@ -1059,8 +1059,20 @@ function renderModal() {
   const sourceCareer = p.source === 'vhlru' && p.sourcePlayerId
     ? window.VHL_PLAYER_LEAGUE_HISTORY?.players?.[String(p.sourcePlayerId)]
     : null;
-  const sourceCareerGroups = new Map();
+  const sourceCareerRowsByKey = new Map();
   (sourceCareer?.seasons || []).forEach(row => {
+    const stage = row.stage === 'playoffs' ? 'playoffs' : 'regular';
+    const key = [row.season, row.league, row.team, stage].join('|');
+    const previous = sourceCareerRowsByKey.get(key);
+    const rowScore = Object.keys(row).length;
+    const previousScore = previous ? Object.keys(previous).length : -1;
+    if (!previous || rowScore > previousScore ||
+      (rowScore === previousScore && Number(row.gp || 0) > Number(previous.gp || 0))) {
+      sourceCareerRowsByKey.set(key, row);
+    }
+  });
+  const sourceCareerGroups = new Map();
+  [...sourceCareerRowsByKey.values()].forEach(row => {
     const season = String(row.season || '');
     const league = String(row.league || '');
     const teamName = String(row.team || 'Клуб не указан');
