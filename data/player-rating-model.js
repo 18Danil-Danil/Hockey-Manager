@@ -6,7 +6,7 @@
 (function () {
   const SEASON_WEIGHTS = { '25/26': 1, '24/25': 0.76, '23/24': 0.56 };
   const clampValue = (value, min, max) => Math.max(min, Math.min(max, value));
-  const numberOrNull = value => Number.isFinite(Number(value)) ? Number(value) : null;
+  const numberOrNull = value => value === null || value === undefined || value === '' || !Number.isFinite(Number(value)) ? null : Number(value);
 
   function averageWeighted(items, key) {
     let total = 0, weight = 0;
