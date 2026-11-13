@@ -7,6 +7,7 @@ on:
     paths:
       - 'data/player-rating-model.js'
       - 'tests/player-rating-model.test.js'
+      - 'tests/player-league-history-merge.test.mjs'
       - 'ui/render.js'
       - 'ui/game-settings.js'
       - '.github/workflows/player-rating-tests.yml'
@@ -29,5 +30,7 @@ jobs:
           node-version: 20
       - name: Проверить модель рейтингов
         run: node tests/player-rating-model.test.js
+      - name: Проверить объединение карьерных сезонов
+        run: node --test tests/player-league-history-merge.test.mjs
       - name: Проверить синтаксис профиля и настроек
         run: node --check ui/render.js && node --check ui/game-settings.js
