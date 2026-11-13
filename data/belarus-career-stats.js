@@ -1458,7 +1458,566 @@ window.BELARUS_CAREER_STATS_DATA = {
     "pim": 326,
     "from": "2010/11",
     "to": "2026/27",
-    "seasons": 14
+    "seasons": 14,
+    "otherLeagueSeasons": [
+      {
+        "season": "2004/05",
+        "league": "Belarus Vysshaya",
+        "team": "Neman Grodno-2",
+        "stage": "regular",
+        "gp": 2,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0
+      },
+      {
+        "season": "2005/06",
+        "league": "Russia3",
+        "team": "Traktor Chelyabinsk-2",
+        "stage": "regular",
+        "gp": 12,
+        "g": 2,
+        "a": 1,
+        "p": 3,
+        "pim": 0
+      },
+      {
+        "season": "2006/07",
+        "league": "Russia3",
+        "team": "Traktor Chelyabinsk-2",
+        "stage": "regular",
+        "gp": 50,
+        "g": 10,
+        "a": 32,
+        "p": 42,
+        "pim": 32
+      },
+      {
+        "season": "2007/08",
+        "league": "Russia3",
+        "team": "Traktor Chelyabinsk-2",
+        "stage": "regular",
+        "gp": 41,
+        "g": 18,
+        "a": 38,
+        "p": 56,
+        "pim": 48
+      },
+      {
+        "season": "2008/09",
+        "league": "KHL",
+        "team": "Traktor Chelyabinsk",
+        "stage": "regular",
+        "gp": 42,
+        "g": 1,
+        "a": 0,
+        "p": 1,
+        "pim": 8,
+        "pm": -2
+      },
+      {
+        "season": "2008/09",
+        "league": "Russia3",
+        "team": "Traktor Chelyabinsk-2",
+        "stage": "regular",
+        "gp": 17,
+        "g": 5,
+        "a": 13,
+        "p": 18,
+        "pim": 10
+      },
+      {
+        "season": "2008/09",
+        "league": "WJC-20 D1",
+        "team": "Belarus U20",
+        "stage": "regular",
+        "gp": 5,
+        "g": 4,
+        "a": 4,
+        "p": 8,
+        "pim": 2,
+        "pm": 12
+      },
+      {
+        "season": "2009/10",
+        "league": "MHL",
+        "team": "Belye Medvedi Chelyabinsk",
+        "stage": "regular",
+        "gp": 15,
+        "g": 3,
+        "a": 3,
+        "p": 6,
+        "pim": 22,
+        "pm": -1
+      },
+      {
+        "season": "2009/10",
+        "league": "Russia2",
+        "team": "Yuzhny Ural Orsk",
+        "stage": "regular",
+        "gp": 27,
+        "g": 3,
+        "a": 7,
+        "p": 10,
+        "pim": 20,
+        "pm": 0,
+        "playoffs": {
+          "gp": 8,
+          "g": 2,
+          "a": 3,
+          "p": 5,
+          "pim": 12,
+          "pm": 0
+        }
+      },
+      {
+        "season": "2009/10",
+        "league": "International",
+        "team": "Belarus (all)",
+        "stage": "regular",
+        "gp": 1,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 4
+      },
+      {
+        "season": "2012/13",
+        "league": "WC",
+        "team": "Belarus",
+        "stage": "regular",
+        "gp": 7,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 12,
+        "pm": 0
+      },
+      {
+        "season": "2012/13",
+        "league": "International",
+        "team": "Belarus (all)",
+        "stage": "regular",
+        "gp": 14,
+        "g": 2,
+        "a": 2,
+        "p": 4,
+        "pim": 16
+      },
+      {
+        "season": "2013/14",
+        "league": "VHL",
+        "team": "Toros Neftekamsk",
+        "stage": "regular",
+        "gp": 50,
+        "g": 12,
+        "a": 13,
+        "p": 25,
+        "pim": 12,
+        "pm": 6,
+        "playoffs": {
+          "gp": 15,
+          "g": 1,
+          "a": 3,
+          "p": 4,
+          "pim": 10,
+          "pm": -1
+        }
+      },
+      {
+        "season": "2013/14",
+        "league": "International",
+        "team": "Belarus (all)",
+        "stage": "regular",
+        "gp": 12,
+        "g": 1,
+        "a": 1,
+        "p": 2,
+        "pim": 4,
+        "pm": 0
+      },
+      {
+        "season": "2014/15",
+        "league": "VHL",
+        "team": "Toros Neftekamsk",
+        "stage": "regular",
+        "gp": 47,
+        "g": 9,
+        "a": 14,
+        "p": 23,
+        "pim": 24,
+        "pm": 7,
+        "playoffs": {
+          "gp": 20,
+          "g": 3,
+          "a": 7,
+          "p": 10,
+          "pim": 31,
+          "pm": 7
+        }
+      },
+      {
+        "season": "2014/15",
+        "league": "International",
+        "team": "Belarus (all)",
+        "stage": "regular",
+        "gp": 3,
+        "g": 1,
+        "a": 1,
+        "p": 2,
+        "pim": 0,
+        "pm": -1
+      },
+      {
+        "season": "2015/16",
+        "league": "VHL",
+        "team": "Toros Neftekamsk",
+        "stage": "regular",
+        "gp": 49,
+        "g": 11,
+        "a": 19,
+        "p": 30,
+        "pim": 32,
+        "pm": 26,
+        "playoffs": {
+          "gp": 13,
+          "g": 2,
+          "a": 8,
+          "p": 10,
+          "pim": 12,
+          "pm": 3
+        }
+      },
+      {
+        "season": "2016/17",
+        "league": "KHL",
+        "team": "Traktor Chelyabinsk",
+        "stage": "regular",
+        "gp": 2,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": 0
+      },
+      {
+        "season": "2017/18",
+        "league": "WC",
+        "team": "Belarus",
+        "stage": "regular",
+        "gp": 5,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": -1
+      },
+      {
+        "season": "2017/18",
+        "league": "International",
+        "team": "Belarus (all)",
+        "stage": "regular",
+        "gp": 10,
+        "g": 1,
+        "a": 0,
+        "p": 1,
+        "pim": 0,
+        "pm": -1
+      },
+      {
+        "season": "2018/19",
+        "league": "WC D1A",
+        "team": "Belarus",
+        "stage": "regular",
+        "gp": 5,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 0,
+        "pm": -1
+      },
+      {
+        "season": "2018/19",
+        "league": "International",
+        "team": "Belarus (all)",
+        "stage": "regular",
+        "gp": 11,
+        "g": 2,
+        "a": 3,
+        "p": 5,
+        "pim": 2
+      },
+      {
+        "season": "2019/20",
+        "league": "International",
+        "team": "Belarus (all)",
+        "stage": "regular",
+        "gp": 3,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": 0
+      }
+    ],
+    "otherLeagueTotals": [
+      {
+        "league": "Belarus Vysshaya",
+        "seasons": 1,
+        "gp": 2,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Champions HL",
+        "seasons": 2,
+        "gp": 11,
+        "g": 4,
+        "a": 0,
+        "p": 4,
+        "pim": 2,
+        "pm": -2,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Continental Cup",
+        "seasons": 2,
+        "gp": 8,
+        "g": 9,
+        "a": 2,
+        "p": 11,
+        "pim": 0,
+        "pm": 6,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Districts Cup U15",
+        "seasons": 1,
+        "gp": 4,
+        "g": 3,
+        "a": 1,
+        "p": 4,
+        "pim": 4,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "International",
+        "seasons": 7,
+        "gp": 54,
+        "g": 7,
+        "a": 8,
+        "p": 15,
+        "pim": 26,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "KHL",
+        "seasons": 2,
+        "gp": 44,
+        "g": 1,
+        "a": 0,
+        "p": 1,
+        "pim": 8,
+        "pm": -2,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "MHL",
+        "seasons": 1,
+        "gp": 15,
+        "g": 3,
+        "a": 3,
+        "p": 6,
+        "pim": 22,
+        "pm": -1,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Russia U16 Finals",
+        "seasons": 1,
+        "gp": 6,
+        "g": 2,
+        "a": 7,
+        "p": 9,
+        "pim": 0,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Russia2",
+        "seasons": 1,
+        "gp": 27,
+        "g": 3,
+        "a": 7,
+        "p": 10,
+        "pim": 20,
+        "pm": 0,
+        "playoffs": {
+          "gp": 8,
+          "g": 2,
+          "a": 3,
+          "p": 5,
+          "pim": 12,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Russia3",
+        "seasons": 4,
+        "gp": 120,
+        "g": 35,
+        "a": 84,
+        "p": 119,
+        "pim": 90,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "VHL",
+        "seasons": 3,
+        "gp": 146,
+        "g": 32,
+        "a": 46,
+        "p": 78,
+        "pim": 68,
+        "pm": 39,
+        "playoffs": {
+          "gp": 48,
+          "g": 6,
+          "a": 18,
+          "p": 24,
+          "pim": 53,
+          "pm": 9
+        }
+      },
+      {
+        "league": "WC",
+        "seasons": 2,
+        "gp": 12,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 12,
+        "pm": -1,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "WC D1A",
+        "seasons": 1,
+        "gp": 5,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 0,
+        "pm": -1,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "WJC-20 D1",
+        "seasons": 1,
+        "gp": 5,
+        "g": 4,
+        "a": 4,
+        "p": 8,
+        "pim": 2,
+        "pm": 12,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      }
+    ],
+    "otherLeagueSource": "https://www.eliteprospects.com/player/24174/artyom-kisly",
+    "otherLeagueStatsSource": "Elite Prospects — Career Statistics, Tournament Statistics и Career Totals; regular season и postseason разделены"
+
   },
   "by-letov": {
     "gp": 514,
