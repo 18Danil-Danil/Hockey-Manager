@@ -104,8 +104,8 @@ assert.strictEqual(api.getOwnYouthTeam(krylya).team.id, 'mhl-omsk-hawks',
 const spartak = { id: 50, slug: 'khimik', name: 'Химик' };
 context.G.league.youth.leagues = {
   MHL: { id: 'MHL', teams: [
-    { id: 'mhl-spartak', name: 'МХК Спартак', seniorLinks: ['Спартак (КХЛ)'], seniorTeamSlug: 'khimik' },
-    { id: 'mhl-spartak-max', name: 'МХК Спартак МАХ', seniorLinks: ['Спартак (КХЛ)'], seniorTeamSlug: 'khimik' },
+    { id: 'mhl-spartak', name: 'МХК Спартак', roster: [], seniorLinks: ['Спартак (КХЛ)'], seniorTeamSlug: 'khimik' },
+    { id: 'mhl-spartak-max', name: 'МХК Спартак МАХ', roster: [], seniorLinks: ['Спартак (КХЛ)'], seniorTeamSlug: 'khimik' },
   ] },
   RHL: { id: 'RHL', teams: [] },
 };
