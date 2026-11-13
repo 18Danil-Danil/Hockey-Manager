@@ -7,7 +7,7 @@ assert.match(source, /p\.jerseyNumber\s*\?\?\s*p\.number/, 'supports explicit je
 assert.match(source, /p\.playerId\s*\|\|\s*p\.playerName/, 'stable fallback number is based on player identity');
 assert.match(source, /usedNumbers\.has\(jerseyNumber\)/, 'prevents duplicate numbers within one on-ice unit');
 assert.match(source, /ctx\.fillText\(String\(jerseyNumber\)/, 'draws the number on the jersey');
-assert.match(source, /const surname = fullName \? fullName\.split/, 'extracts the player surname');
+assert.match(source, /function getLivePlayerSurname\(player\)/, 'extracts the player surname with a shared helper');
 assert.match(source, /const labelText = `\$\{numberText\} \$\{surnameText\}`/, 'builds number and surname nameplate');
 assert.match(source, /drawPlayer\(p, 'home', homeNumbers\)/, 'tracks home team numbers separately');
 assert.match(source, /drawPlayer\(p, 'away', awayNumbers\)/, 'tracks away team numbers separately');
