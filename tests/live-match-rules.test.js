@@ -407,9 +407,9 @@ assert.ok(tiredState.playerStamina.home.tired < 65, 'pre-match fatigue did not r
 const manpowerStart = source.indexOf('function getLiveManpowerState(');
 const manpowerEnd = source.indexOf('function updateLiveShifts(', manpowerStart);
 assert.ok(manpowerStart >= 0 && manpowerEnd > manpowerStart, 'manpower helpers were not found');
-const manpowerHelpers = new Function('clamp',
+const manpowerHelpers = new Function('clamp', 'getLivePlayerSurname',
   `${source.slice(manpowerStart, manpowerEnd)}; return { getLiveManpowerState, liveGetOnIceSkaters, reconcileLiveManpower };`
-)((v, min, max) => Math.max(min, Math.min(max, v)));
+ )((v, min, max) => Math.max(min, Math.min(max, v)), player => player?.surname || String(player?.name || '').split(/\\s+/)[0] || '');
 const specialSkaters = [
   { id: 'sd1', name: 'D1', position: 'D' }, { id: 'sd2', name: 'D2', position: 'D' },
   { id: 'sf1', name: 'F1', position: 'F' }, { id: 'sf2', name: 'F2', position: 'F' },
