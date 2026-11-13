@@ -175,13 +175,14 @@ function formatRows(rows) {
     ', league: "VHL", gp: ' + row.gp + ', team: ' + JSON.stringify(row.team) +
     ', stage: ' + JSON.stringify(row.stage) + ' }');
 }
-function mergePlayerSeasons(historyText, playerId, rows) {
+function mergePlayerSeasons(historyText, playerId, rows, position) {
   const marker = new RegExp('(^[ \\t]*)"' + playerId + '"\\s*:\\s*\\{', 'm');
   const match = marker.exec(historyText);
   if (!match) {
     const finalObject = /\n  }\n};\s*$/.exec(historyText);
     if (!finalObject) throw new Error('Не найден конец объекта players в player-league-history.js');
-    const insertion = '    "' + playerId + '": { position: "forward", seasons: [\n' +
+    const safePosition = ['forward', 'defense', 'goaltender'].includes(position) ? position : 'forward';
+    const insertion = '    "' + playerId + '": { position: ' + JSON.stringify(safePosition) + ', seasons: [\n' +
       formatRows(rows).join(',\n') + '\n    ] },\n';
     return { text: historyText.slice(0, finalObject.index + 1) + insertion +
       historyText.slice(finalObject.index + 1), added: rows.length };
@@ -218,7 +219,13 @@ async function main() {
   const rosterText = await fs.readFile(ROSTER_FILE, 'utf8');
   const rosterMatch = rosterText.match(/window\.VHL_ROSTER_DATA\s*=\s*(\{[\s\S]*\})\s*;?\s*$/);
   if (!rosterMatch) throw new Error('Не удалось прочитать data/vhl-rosters.js');
-  JSON.parse(rosterMatch[1]);
+  const rosterData = JSON.parse(rosterMatch[1]);
+  const rosterPositions = new Map();
+  for (const team of rosterData.teams || []) {
+    for (const player of team.players || []) {
+      if (player.playerId && player.position) rosterPositions.set(String(player.playerId), player.position);
+    }
+  }
   const rosterIds = extractIds(rosterText, /"playerId"\s*:\s*(\d+)/g);
 
   let historyText = await fs.readFile(HISTORY_FILE, 'utf8');
@@ -255,7 +262,7 @@ async function main() {
           empty++;
           reportRows.push('- ' + id + ': страница доступна, сезонные строки не обнаружены');
         } else {
-          const merged = mergePlayerSeasons(historyText, id, rows);
+          const merged = mergePlayerSeasons(historyText, id, rows, rosterPositions.get(id));
           historyText = merged.text;
           addedSeasons += merged.added;
           reportRows.push('- ' + id + ': найдено ' + rows.length + ' сезонных строк, добавлено ' + merged.added);
