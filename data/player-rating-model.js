@@ -8,6 +8,41 @@
   const clampValue = (value, min, max) => Math.max(min, Math.min(max, value));
   const numberOrNull = value => value === null || value === undefined || value === '' || !Number.isFinite(Number(value)) ? null : Number(value);
 
+  const LEAGUE_STRENGTH = {
+    NHL: 1.65, KHL: 1.38, SHL: 1.30, LIIGA: 1.27, NL: 1.27,
+    AHL: 1.25, KHL2: 1.16, DEL: 1.18, CZECH: 1.17, EXTRALIGA: 1.17,
+    NCAA: 1.10, VHL: 1, MHL: 0.86, OHL: 0.94, WHL: 0.94, QMJHL: 0.94
+  };
+  function seasonEndYear(season) {
+    const match = /(?:^|\\D)(\\d{2})\\/(\\d{2})(?:$|\\D)/.exec(String(season || ''));
+    if (!match) return null;
+    const start = 2000 + Number(match[1]);
+    let end = 2000 + Number(match[2]);
+    if (end < start) end += 100;
+    return end;
+  }
+  function calculateLeagueHistoryBonus(history, currentYear = new Date().getFullYear()) {
+    const grouped = new Map();
+    for (const row of Array.isArray(history) ? history : []) {
+      const league = String(row?.league || '').trim().toUpperCase();
+      const strength = LEAGUE_STRENGTH[league];
+      const gp = Math.max(0, Number(row?.gp) || 0);
+      const endYear = seasonEndYear(row?.season);
+      if (!strength || strength <= 1 || !gp || endYear === null || endYear > currentYear) continue;
+      const key = String(row.season) + ':' + league;
+      const previous = grouped.get(key) || { league, season: row.season, gp: 0, strength, endYear };
+      previous.gp += gp;
+      grouped.set(key, previous);
+    }
+    let impact = 0;
+    for (const row of grouped.values()) {
+      const recency = Math.pow(0.88, Math.max(0, currentYear - row.endYear));
+      const experience = Math.min(1, row.gp / 45);
+      impact += (row.strength - 1) * experience * recency;
+    }
+    return Math.round(clampValue(impact * 5.5, 0, 5) * 10) / 10;
+  }
+
   function averageWeighted(items, key) {
     let total = 0, weight = 0;
     for (const item of items) {
@@ -128,10 +163,11 @@
     const seasonWeights = Object.fromEntries((data?.seasons || []).map((season, index) => [
       season, DEFAULT_SEASON_WEIGHTS[index] || 0.4
     ]));
-    const players = Object.entries(data?.players || {}).map(([id, value]) => ({
-      id: String(id), position: value.position,
-      summary: summarizePlayerStats(value, seasonWeights)
-    })).filter(item => item.summary);
+    const players = Object.entries(data?.players || {}).map(([id, value]) => {
+      const summary = summarizePlayerStats(value, seasonWeights);
+      const leagueHistory = Array.isArray(value?.leagueHistory) ? value.leagueHistory : [];
+      return { id: String(id), position: value.position, summary, leagueHistory };
+    }).filter(item => item.summary || item.leagueHistory.length);
     const makeSkaterMetrics = position => ({
       goals: percentileMap(players, position, 'goalsPerGame'),
       assists: percentileMap(players, position, 'assistsPerGame'),
@@ -159,7 +195,8 @@
     const index = new Map();
     for (const item of players) {
       const id = item.id, m = metrics[item.position === 'goaltender' ? 'goalie' : item.position];
-      const reliability = item.summary.gamesSample / (item.summary.gamesSample + 20);
+      const summary = item.summary || { gamesSample: 0, trend: 0 };
+      const reliability = summary.gamesSample / (summary.gamesSample + 20);
       const rank = value => 0.5 + (value - 0.5) * reliability;
       let attrs;
       if (item.position === 'goaltender') {
@@ -180,7 +217,7 @@
           iq: rank(blendPercentiles(id, [m.assists, m.plusMinus, m.toi, m.faceoffs], [0.25, 0.25, 0.30, 0.20]))
         };
       }
-      index.set(id, { position: item.position, attrs, trend: item.summary.trend, gamesSample: item.summary.gamesSample, seasons: (data.players[id].seasons || []).map(row => row.season) });
+      index.set(id, { position: item.position, attrs, trend: summary.trend, gamesSample: summary.gamesSample, seasons: (data.players[id].seasons || []).map(row => row.season), leagueHistory: item.leagueHistory });
     }
     return index;
   }
@@ -206,7 +243,8 @@
     const ratingKey = entry.position === 'goaltender' ? 'gk' : entry.position === 'defense' ? 'def' : 'att';
     const teamTarget = Number(teamMeta?.ratings?.[ratingKey]);
     const fallbackTarget = Number.isFinite(teamTarget) ? teamTarget : 70;
-    for (const key of keys) attrs[key] = clampValue(Math.round(fallbackTarget + (base[key] - 0.5) * 24), 45, 96);
+    const leagueBonus = calculateLeagueHistoryBonus(entry.leagueHistory);
+    for (const key of keys) attrs[key] = clampValue(Math.round(fallbackTarget + (base[key] - 0.5) * 24 + leagueBonus), 45, 96);
 
     const list = entry.attrs.reflexes !== undefined ? GOALIE_ATTRS : SKATER_ATTRS;
     const ageBonus = age <= 18 ? 16 : age <= 20 ? 13 : age <= 22 ? 10 : age <= 24 ? 7 : age <= 26 ? 4 : age <= 28 ? 2 : 0;
@@ -225,6 +263,6 @@
     };
   }
 
-  window.buildVhlRatingIndex = buildVhlRatingIndex;
+  window.calculateLeagueHistoryBonus = calculateLeagueHistoryBonus;\n  window.buildVhlRatingIndex = buildVhlRatingIndex;
   window.makeVhlRating = makeVhlRating;
 })();
