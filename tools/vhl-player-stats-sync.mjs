@@ -7,6 +7,7 @@
 import fs from 'node:fs/promises';
 import { findSuspiciousCrossSeasonDuplicates } from './player-stats-quality.mjs';
 import { parseVhlTournamentOptions } from './vhl-tournament-map.mjs';
+import { parseVhlPlayerCareer } from './vhl-player-career-parser.mjs';
 
 const BASE = 'https://www.vhlru.ru';
 const USER_AGENT = 'HockeyManagerVHLStatsBot/1.0 (low-frequency statistics import)';
@@ -180,7 +181,7 @@ for (const target of targets) {
     }
     pageReports.push(`- ${label} (${target.stage}, tn=${target.tn}): ${sourcePlayerRows} строк источника, ${seasonPlayers.size} игроков из текущих составов, ${rowsAdded} строк статистики`);
     // Пустой источник — ошибка. Ноль совпадений с текущими составами допустим для старых сезонов.
-    if (!sourcePlayerRows) emptyPages.push(`${label} (${target.stage}, tn=${target.tn})`);
+    if (!sourcePlayerRows) emptyPages.push({ season: label, stage: target.stage, tn: target.tn });
     console.log(`Загружен ${label} / ${target.stage} (tn=${target.tn}): ${seasonPlayers.size} игроков текущих составов из ${sourcePlayerRows} строк`);
   } catch (error) {
     failures.push(`${label} ${target.stage} (tn=${target.tn}): ${error.message}`);
@@ -188,12 +189,79 @@ for (const target of targets) {
   await sleep(DELAY_MS);
 }
 
-if (emptyPages.length) {
+// Для игроков с пробелами в сезонных таблицах используем их официальные карточки:
+// в них есть полная разбивка ВХЛ по сезонам, этапам и клубам.
+const careerCandidateIds = new Set(
+  rosterPlayers
+    .filter(player => {
+      const rows = outputPlayers[String(player.playerId)]?.seasons || [];
+      return !rows.length || rows.some(row => row.season === '21/22' || row.season === '23/24');
+    })
+    .map(player => String(player.playerId))
+);
+const careerReports = [];
+const careerFailures = [];
+let careerRowsAdded = 0;
+for (const id of careerCandidateIds) {
+  const player = rosterPlayers.find(item => String(item.playerId) === id);
+  if (!player) continue;
+  try {
+    const html = await getText(`${BASE}/en/players/${id}/`);
+    const career = parseVhlPlayerCareer(html, id, player.position);
+    if (!outputPlayers[id]) outputPlayers[id] = { position: career.position || player.position, seasons: [] };
+    const existing = new Set(outputPlayers[id].seasons.map(row =>
+      [row.season, row.stage, row.team].join('|')
+    ));
+    let added = 0;
+    for (const row of career.seasons) {
+      const key = [row.season, row.stage, row.team].join('|');
+      if (existing.has(key)) continue;
+      outputPlayers[id].seasons.push(row);
+      existing.add(key);
+      added++;
+      careerRowsAdded++;
+      if (!seasons.includes(row.season)) seasons.push(row.season);
+    }
+    careerReports.push(`- ${id} ${player.name}: ${career.seasons.length} строк в карточке, добавлено ${added}`);
+  } catch (error) {
+    careerFailures.push(`${id} ${player.name}: ${error.message}`);
+  }
+  await sleep(DELAY_MS);
+}
+seasons.sort((a, b) => {
+  const endYear = value => {
+    const match = /^(\\d{2})\\/(\\d{2})$/.exec(value);
+    return match ? 2000 + Number(match[2]) : 0;
+  };
+  return endYear(b) - endYear(a);
+});
+const unresolvedEmptyPages = emptyPages.filter(gap =>
+  !Object.values(outputPlayers).some(player =>
+    (player.seasons || []).some(row => row.season === gap.season && row.stage === gap.stage)
+  )
+);
+if (unresolvedEmptyPages.length) {
   const diagnostic = [
     '# Отчёт проверки качества сезонной статистики ВХЛ',
     '',
+    '- Импорт остановлен: для пустых сезонных таблиц не удалось восстановить статистику из карточек игроков.',
+    '- Невосстановленные выборки: ' + unresolvedEmptyPages.map(gap => `${gap.season} (${gap.stage}, tn=${gap.tn})`).join(', '),
+    `- Карточек игроков проверено: ${careerCandidateIds.size}`,
+    `- Строк добавлено из карточек: ${careerRowsAdded}`,
+    ...pageReports,
+    '',
+    'Новые данные не опубликованы.'
+  ].join('\\n');
+  await fs.writeFile(REPORT_FILE, diagnostic + '\\n', 'utf8');
+  throw new Error('Не удалось восстановить статистику из карточек игроков для: ' +
+    unresolvedEmptyPages.map(gap => `${gap.season} ${gap.stage}`).join(', '));
+}
+
+
+    '# Отчёт проверки качества сезонной статистики ВХЛ',
+    '',
     '- Импорт остановлен: одна или несколько существующих турнирных таблиц вернули ноль строк источника.',
-    '- Пустые выборки: ' + emptyPages.join(', '),
+    '- Пустые сезонные страницы, восстановленные по карточкам: ' + (emptyPages.length ? emptyPages.map(gap => `${gap.season} (${gap.stage}, tn=${gap.tn})`).join(', ') : 'нет'),
     '- Сезонные таблицы:',
     ...pageReports,
     '',
