@@ -180,7 +180,6 @@ async function main() {
     [row.year, row.lgID, row.tmID].join('|'),
     row.name || row.tmID
   ]));
-  const masterById = new Map(masterRows.map(row => [row.playerID, row]));
   const matched = new Map();
   const ambiguous = [];
   for (const [playerId, player] of Object.entries(history.players)) {
@@ -210,7 +209,7 @@ async function main() {
     addRow(vhlId, buildGoalieRow(row, 'playoffs', teamMap));
   }
 
-  let added = 0, enriched = 0, playersWithNhlHistory = 0;
+  let added = 0, enriched = 0, playersWithDatabankHistory = 0;
   let historyText = historyTextOriginal;
   for (const [vhlId, rows] of rowsByPlayer) {
     const player = history.players[vhlId];
@@ -218,7 +217,7 @@ async function main() {
     historyText = merged.text;
     added += merged.added;
     enriched += merged.enriched;
-    if (rows.length) playersWithNhlHistory++;
+    if (rows.length) playersWithDatabankHistory++;
   }
 
   await fs.writeFile(HISTORY_FILE, historyText, 'utf8');
@@ -230,7 +229,7 @@ async function main() {
     '- Игроков с найденными историческими сезонами: ' + playersWithNhlHistory,
     '- Сезонных строк добавлено: ' + added,
     '- Существующих строк обогащено: ' + enriched,
-    '- Неоднозначных/не найденных совпадений при наличии identity: ' + ambiguous.length,
+    '- Игроков с identity без точного совпадения: ' + ambiguous.length,
     '- Строк в Hockey Databank Scoring.csv: ' + scoringRows.length,
     '- Строк в Hockey Databank Goalies.csv: ' + goalieRows.length,
     '- Дата импорта: ' + new Date().toISOString(),
