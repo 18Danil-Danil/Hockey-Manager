@@ -10,6 +10,10 @@
  * R-Hockey, документ от 2024 года с перепечаткой материала о переходе Ивана Емеца:
  * https://doc.r-hockey.ru/protocols/2024_2025/24745/61b44a7ab0f1394afff9ad3e29b0aeca.pdf
  * В тексте прямо указано: 18 матчей за Ак Барс в КХЛ в сезоне 2020/21.
+ * R-Hockey, документ от сентября 2024 года:
+ * https://doc.r-hockey.ru/protocols/2024_2025/24745/a73b7816d20250c0e317e7d973286a3d.pdf
+ * В тексте указано: Эмиль Галимов в сезоне 2023/24 провёл 20 матчей регулярки
+ * и 8 матчей плей-офф за СКА. В базу внесена только регулярка.
  */
 window.VHL_PLAYER_LEAGUE_HISTORY = {
   schemaVersion: 1,
@@ -18,6 +22,12 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "forward",
       seasons: [
         { season: "20/21", league: "KHL", gp: 18, team: "Ак Барс" }
+      ]
+    },
+    "15997": {
+      position: "forward",
+      seasons: [
+        { season: "23/24", league: "KHL", gp: 20, team: "СКА" }
       ]
     }
   }
