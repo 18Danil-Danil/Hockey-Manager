@@ -136,6 +136,22 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       career: [
         { scope: "career", league: "KHL", gp: 251 }
       ]
+    },
+    // Источник: https://www.sports.ru/hockey/person/denis-golubev/career/
+    // 478 матчей регулярного чемпионата + 45 матчей Кубка Гагрина.
+    "15649": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 523 }
+      ]
+    },
+    // Источник: https://s-cdn.sportbox.ru/Vidy_sporta/Hokkej/Stanislav-Vladimirovich-Alishevskiy-Hokkey-09051991
+    // 161 матч регулярного чемпионата + 2 матча плей-офф; Кубок Надежды исключён.
+    "15778": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 163 }
+      ]
     }
   }
 };
