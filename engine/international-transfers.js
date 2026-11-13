@@ -16,11 +16,10 @@ function getInternationalRatingIndex() {
   for (const league of leagues) {
     const rows = data.players.filter(player => player.league === league);
     for (const player of rows) {
-      const sameRole = rows.filter(item => (item.position === 'G') === (player.position === 'G') &&
+      const sameRole = rows.filter(item => item.gp > 0 && (item.position === 'G') === (player.position === 'G') &&
         (item.position === 'G' || (item.position === 'D') === (player.position === 'D')));
-      const careerFallback = league === 'belarus' ? window.BELARUS_CAREER_STATS_DATA?.players?.[player.key] : null;
-      if (!(player.gp > 0) && !(careerFallback?.gp > 0)) continue;
-      const sourceStats = player.gp > 0 ? player : { ...player, gp: careerFallback.gp, g: careerFallback.g || 0, a: careerFallback.a || 0, pim: careerFallback.pim || 0, pm: player.pm || 0 };
+      if (!(player.gp > 0)) continue;
+      const sourceStats = player;
       const gp = Math.max(1, sourceStats.gp || 0);
       const sample = Math.min(1, gp / 20);
       let attrs, rating;
