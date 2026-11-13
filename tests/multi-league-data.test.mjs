@@ -18,13 +18,13 @@ const stats = window.INTERNATIONAL_PLAYER_STATS_DATA;
 assert.ok(Array.isArray(leagues), 'international leagues must be an array');
 assert.ok(Array.isArray(stats.players), 'international player data must be an array');
 assert.equal(registry.schemaVersion, 1);
-assert.equal(stats.players.length, 357, 'all verified international player records must be loaded');
+assert.equal(stats.players.length, 363, 'all verified international player records must be loaded');
 assert.equal(new Set(stats.players.map(item => item.key)).size, stats.players.length, 'player keys must be unique');
 
 const expectedCounts = {
   kazakhstan: 83,
   belarus: 101,
-  khl: 65,
+  khl: 71,
   'finland-liiga': 22,
   'sweden-shl': 22,
   'czech-extraliga': 9,
@@ -57,7 +57,8 @@ const khl = leagueById.get('khl');
 assert.ok(khl, 'KHL must be present');
 assert.equal(khl.clubs.length, 22, 'KHL should include all 22 current clubs');
 const khlPlayers = stats.players.filter(item => item.league === 'khl');
-assert.equal(khlPlayers.length, 65, 'KHL should contain 65 verified player records');
+assert.equal(khlPlayers.length, 71, 'KHL should contain 71 verified player records');
+assert.equal(khlPlayers.filter(item => item.position === 'G').length, 16, 'KHL should include 16 verified goalies');
 assert.equal(stats.players.filter(item => item.league === 'finland-liiga' && item.position === 'G').length, 10);
 assert.equal(stats.players.filter(item => item.league === 'sweden-shl' && item.position === 'G').length, 10);
 assert.equal(stats.players.filter(item => item.league === 'czech-extraliga' && item.position === 'G').length, 4);
