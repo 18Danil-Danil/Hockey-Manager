@@ -11,9 +11,9 @@ const reconcileStart = source.indexOf('function reconcileLiveManpower(');
 const reconcileEnd = source.indexOf('function updateLiveShifts(', reconcileStart);
 assert.ok(reconcileStart >= 0 && reconcileEnd > reconcileStart, 'Could not locate manpower reconciliation');
 const getLiveManpowerState = () => ({ home: { skaters: 5 }, away: { skaters: 5 } });
-const reconcileLiveManpower = new Function('getLiveManpowerState', 'clamp',
+const reconcileLiveManpower = new Function('getLiveManpowerState', 'clamp', 'getLivePlayerSurname',
   source.slice(reconcileStart, reconcileEnd) + '; return reconcileLiveManpower;'
-)(getLiveManpowerState, clamp);
+)(getLiveManpowerState, clamp, player => player?.surname || String(player?.name || '').split(/\\s+/)[0] || '');
 
 const start = source.indexOf('function getLiveContactRating(');
 const end = source.indexOf('function resolveLiveShotBlock(', start);
