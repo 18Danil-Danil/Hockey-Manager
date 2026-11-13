@@ -254,7 +254,8 @@ function mergePlayerSeasons(historyText, playerId, rows, position) {
     });
 
     if (!itemMatch) {
-      arrayContent += (arrayContent.trim() ? ',\n' : '\n') + formatRows([row])[0] + '\n      ';
+      const trimmedArray = arrayContent.trimEnd();
+      arrayContent = trimmedArray + (trimmedArray ? (trimmedArray.endsWith(',') ? '\n' : ',\n') : '\n') + formatRows([row])[0] + '\n      ';
       added++;
       continue;
     }
