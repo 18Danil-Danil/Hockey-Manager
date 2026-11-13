@@ -1,0 +1,34 @@
+name: Полная проверка проекта
+
+on:
+  push:
+    branches:
+      - refactoring
+    paths:
+      - '**.js'
+      - '**.mjs'
+      - 'index.html'
+      - 'tests/**'
+      - '.github/workflows/project-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить код проекта
+        uses: actions/checkout@v4
+        with:
+          ref: refactoring
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Проверить синтаксис всех JavaScript-файлов
+        run: |
+          find . -type f \( -name '*.js' -o -name '*.mjs' \) -not -path './.git/*' -print0 | xargs -0 -n1 node --check
+      - name: Запустить весь набор тестов
+        run: node --test tests/*.test.js tests/*.test.mjs
