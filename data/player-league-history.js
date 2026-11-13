@@ -1808,5 +1808,45 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "NMHL", gp: 56 }
       ]
     },
+    // Иван Козлов — 298 матчей ВХЛ (257 регулярных + 41 плей-офф).
+    // Источник: https://www.vhlru/players/24382/
+    "24382": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 298 }
+      ]
+    },
+    // Даниил Огирчук — 352 матча ВХЛ (309 регулярных + 43 плей-офф).
+    // Источник: https://www.vhlru/players/24651/
+    "24651": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 352 }
+      ]
+    },
+    // Егор Круженков — 301 матч ВХЛ (280 регулярных + 21 плей-офф).
+    // Источник: https://www.vhlru/players/24995/
+    "24995": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 301 }
+      ]
+    },
+    // Даниил Скориков — 342 матча ВХЛ (312 регулярных + 30 плей-офф).
+    // Источник: https://www.vhlru/players/24539/
+    "24539": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 342 }
+      ]
+    },
+    // Владислав Рыбаков — 243 матча ВХЛ (213 регулярных + 30 плей-офф).
+    // Источник: https://www.vhlru/players/24386/
+    "24386": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 243 }
+      ]
+    },
   }
 };
