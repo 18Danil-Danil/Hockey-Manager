@@ -1556,5 +1556,41 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 477 }
       ]
     },
+    // Александр Федотов — ВХЛ 517, МХЛ 109 и МХЛ-Б 53 матча.
+    // Совпадают ФИО и дата рождения 22.08.1994.
+    // Источники: https://forchecking.ru/player.php?id=10252
+    // https://www.vhlru/stats/players/1306/all/14251/
+    "20396": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 517 },
+        { scope: "career", league: "MHL", gp: 109 },
+        { scope: "career", league: "MHLB", gp: 53 }
+      ]
+    },
+    // Артём Мальцев — ВХЛ 147, КХЛ 5, МХЛ 53, QMJHL 82 и Беларусь 44.
+    // Совпадают ФИО и дата рождения 27.03.1998.
+    // Источник: https://forchecking.ru/player.php?id=9314
+    "22293": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 147 },
+        { scope: "career", league: "KHL", gp: 5 },
+        { scope: "career", league: "MHL", gp: 53 },
+        { scope: "career", league: "QMJHL", gp: 82 },
+        { scope: "career", league: "BELARUS", gp: 44 }
+      ]
+    },
+    // Камиль Фазылзянов — КХЛ 121 матч; ВХЛ 66 (56 регулярных 25/26,
+    // 2 регулярных 26/27 и 8 матчей плей-офф).
+    // Источники: https://news.sportbox.ru/Vidy_sporta/Hokkej/Kamil_Fazylzanov_Khokkej_31101997
+    // https://www.vhlru/stats/players/1306/skaters/
+    "21133": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 121 },
+        { scope: "career", league: "VHL", gp: 66 }
+      ]
+    },
   }
 };
