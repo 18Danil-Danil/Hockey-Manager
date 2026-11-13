@@ -48,6 +48,9 @@ jobs:
       - name: Проверить карту турниров ВХЛ
         run: node tests/vhl-tournament-map.test.mjs
 
+      - name: Проверить синтаксис импортёра статистики
+        run: node --check tools/vhl-player-stats-sync.mjs
+
       - name: Проверить парсер карьеры игроков ВХЛ
         run: node tests/vhl-player-career-parser.test.mjs
 
