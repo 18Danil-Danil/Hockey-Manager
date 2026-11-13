@@ -16,6 +16,8 @@ test('matches VHL profile identity by exact birth date and reversed name order',
   ];
   assert.equal(matchMasterPlayer({ nameEn: 'Borodkin Artyom', birthDate: '1991-10-11' }, master).playerID, 'borod01');
   assert.equal(matchMasterPlayer({ nameEn: 'Borodkin Artyom', birthDate: '1992-10-11' }, master), null);
+const transliterated = [{ playerID: 'sergey01', firstName: 'Sergei', lastName: 'Ivanov', birthYear: '1990', birthMon: '1', birthDay: '2' }];
+assert.equal(matchMasterPlayer({ nameEn: 'Ivanov Sergey', birthDate: '1990-01-02' }, transliterated).playerID, 'sergey01');
 });
 
 test('normalizes accented Latin names', () => {
