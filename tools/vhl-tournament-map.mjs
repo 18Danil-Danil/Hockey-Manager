@@ -11,22 +11,22 @@ function decodeHtml(value) {
 
 function plainText(value) {
   return decodeHtml(String(value).replace(/<[^>]*>/g, ' '))
-    .replace(/\\s+/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
 export function parseVhlTournamentOptions(html) {
-  const selects = [...String(html).matchAll(/<select\\b([^>]*)>([\\s\\S]*?)<\\/select>/gi)];
-  const select = selects.find(match => /\\bname\\s*=\\s*["']tournament["']/i.test(match[1]));
+  const selects = [...String(html).matchAll(/<select\b([^>]*)>([\s\S]*?)<\/select>/gi)];
+  const select = selects.find(match => /\bname\s*=\s*["']tournament["']/i.test(match[1]));
   if (!select) throw new Error('В календаре ВХЛ не найден select[name="tournament"].');
 
   const tournaments = [];
   const seen = new Set();
-  for (const option of select[2].matchAll(/<option\\b([^>]*)>([\\s\\S]*?)<\\/option>/gi)) {
-    const value = /\\bvalue\\s*=\\s*["']([^"']+)["']/i.exec(option[1])?.[1] || '';
-    const tnMatch = /\\/calendar\\/(\\d+)\\//i.exec(decodeHtml(value));
+  for (const option of select[2].matchAll(/<option\b([^>]*)>([\s\S]*?)<\/option>/gi)) {
+    const value = /\bvalue\s*=\s*["']([^"']+)["']/i.exec(option[1])?.[1] || '';
+    const tnMatch = /\/calendar\/(\d+)\//i.exec(decodeHtml(value));
     const label = plainText(option[2]);
-    const seasonMatch = /(\\d{2,4})\\s*\\/\\s*(\\d{2,4})/.exec(label);
+    const seasonMatch = /(\d{2,4})\s*\/\s*(\d{2,4})/.exec(label);
     if (!tnMatch || !seasonMatch) continue;
 
     const stageText = label.toLowerCase();
