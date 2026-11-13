@@ -21,7 +21,7 @@ permissions:
 
 concurrency:
   group: vhl-player-stats-sync
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 # Импорт сезонной статистики запускается после изменения парсера или источника данных.
 jobs:
