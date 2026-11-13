@@ -1,0 +1,38 @@
+name: Проверка базы нескольких хоккейных лиг
+
+on:
+  push:
+    branches:
+      - refactoring
+    paths:
+      - 'data/international-leagues.js'
+      - 'data/league-registry.js'
+      - 'data/international-player-stats.js'
+      - 'engine/international-transfers.js'
+      - 'tests/multi-league-data.test.mjs'
+      - '.github/workflows/multi-league-data-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить код проекта
+        uses: actions/checkout@v4
+        with:
+          ref: refactoring
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Проверить синтаксис баз данных
+        run: |
+          node --check data/international-leagues.js
+          node --check data/league-registry.js
+          node --check data/international-player-stats.js
+          node --check engine/international-transfers.js
+      - name: Проверить структуру лиг и игроков
+        run: node tests/multi-league-data.test.mjs
