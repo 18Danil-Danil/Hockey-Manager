@@ -180,7 +180,7 @@ window.INTERNATIONAL_PLAYER_STATS_DATA = {
     {key:'byg-stepanov',league:'belarus',club:'mogilev',name:'Сергей Степанов',position:'G',nationality:'Беларусь',gp:12,gaa:3.84,svPct:89.6,w:2,l:10,so:0,toi:614,saves:337,ga:39},
     {key:'byg-kozlovsky',league:'belarus',club:'brest',name:'Константин Козловский',position:'G',nationality:'Беларусь',gp:10,gaa:2.23,svPct:89.6,w:5,l:5,so:0,toi:515,saves:163,ga:19},
     {key:'byg-sementsov',league:'belarus',club:'aviator-baranovichi',name:'Никита Семенцов',position:'G',nationality:'Беларусь',gp:20,gaa:3.75,svPct:89.2,w:8,l:11,so:0,toi:1047,saves:534,ga:65},
-    {key:'byg-zinovenko',league:'belarus',club:'yunost-minsk',name:'Ростислав Зиновенко',position:'G',nationality:'Беларусь',gp:10,gaa:3.43,svPct:89.2,w:2,l:7,so:0,toi:494,saves:232,ga:28}
+    {key:'byg-zinovenko',league:'belarus',club:'yunost-minsk',name:'Ростислав Зиновенко',position:'G',nationality:'Беларусь',gp:10,gaa:3.43,svPct:89.2,w:2,l:7,so:0,toi:494,saves:232,ga:28},
 
     // Дополнительно сверено по Elite Prospects: статистика регулярного сезона 2026/27.
     {key:'kz-beisembayev',league:'kazakhstan',club:'nomad-astana',name:'Адил Бейсембаев',position:'C',nationality:'Казахстан',gp:22,g:6,a:9,pim:6,pm:8,statsSource:'Elite Prospects 2026-27'},
