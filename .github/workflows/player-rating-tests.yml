@@ -1,0 +1,28 @@
+name: Проверка рейтингов игроков
+
+on:
+  push:
+    branches:
+      - refactoring
+    paths:
+      - 'data/player-rating-model.js'
+      - 'tests/player-rating-model.test.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-player-ratings:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить код проекта
+        uses: actions/checkout@v4
+        with:
+          ref: refactoring
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Проверить модель рейтингов
+        run: node tests/player-rating-model.test.js
