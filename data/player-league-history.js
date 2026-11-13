@@ -1028,5 +1028,47 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 67 }
       ]
     },
+    // Иван Крылов — 481 матч ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru/players/21214/
+    "21214": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 481 }
+      ]
+    },
+    // Илья Скворцов — 411 матчей ВХЛ и 70 матчей МХЛ.
+    // Источники: https://www.vhlru/players/20309/
+    // https://mhl.khl.ru/players/20309/
+    "20309": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 411 },
+        { scope: "career", league: "MHL", gp: 70 }
+      ]
+    },
+    // Максим Лазарев — 441 матч ВХЛ (406 регулярных + 35 плей-офф).
+    // Источник: https://vhlru.ru/players/20358/
+    "20358": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 441 }
+      ]
+    },
+    // Илья Зиновьев — 404 матча ВХЛ (384 регулярных + 20 плей-офф).
+    // Источник: https://www.vhlru.ru/players/20335/
+    "20335": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 404 }
+      ]
+    },
+    // Марк Марин — 256 матчей ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru.ru/players/20359/
+    "20359": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 256 }
+      ]
+    },
   }
 };
