@@ -47,10 +47,29 @@ export function parseVhlCareer(html) {
   const result = [];
   let currentSeason = null;
   let currentStage = null;
+  let headers = [];
+
+  const aliases = {
+    'GP': 'gp', 'G': 'goals', 'A': 'assists', 'PTS': 'points',
+    '+/-': 'plusMinus', 'PIM': 'pim', 'W': 'wins', 'L': 'losses',
+    'SOP': 'shootoutsPlayed', 'GA': 'goalsAgainst', 'SV': 'saves',
+    '%SV': 'savePercentage', 'GAA': 'goalsAgainstAverage', 'SO': 'shutouts',
+    'ESG': 'evenStrengthGoals', 'PPG': 'powerPlayGoals', 'SHG': 'shortHandedGoals',
+    'OTG': 'overtimeGoals', 'GWG': 'gameWinningGoals', 'SDS': 'shootoutDecidingShots',
+    'S/G': 'shotsPerGame', 'FO': 'faceoffs', 'FOW': 'faceoffsWon',
+    '%FO': 'faceoffPercentage', 'TOI/G': 'timeOnIcePerGame',
+    'SFT/G': 'shiftsPerGame', 'HITS': 'hits', 'BLS': 'blockedShots'
+  };
 
   for (const match of rows) {
     const cells = cellsOf(match[1]);
-    if (cells.length < 2) continue;
+    if (!cells.length) continue;
+
+    if (/^season\s*\/\s*team$/i.test(cells[0].text)) {
+      headers = cells.map(cell => cell.text.trim());
+      continue;
+    }
+
     const rowText = cells.map(cell => cell.text).join(' ');
     const seasonMatch = /\b(\d{2}\/\d{2})\b/.exec(rowText);
     if (seasonMatch && /regular|play[\s-]?offs?/i.test(rowText)) {
@@ -59,15 +78,38 @@ export function parseVhlCareer(html) {
       continue;
     }
     if (!currentSeason || !currentStage || cells.length < 4) continue;
+
     const teamLink = cells[0].html.match(/<a\b[^>]*>([\s\S]*?)<\/a>/i);
     if (!teamLink) continue;
     const team = textOf(teamLink[1]);
-    const gp = numeric(cells[2].text);
-    if (!team || gp === null || gp <= 0) continue;
+    if (!team) continue;
+
+    const goalieTable = headers.some(header => header.trim().toUpperCase() === 'SV') ||
+      headers.some(header => header.trim().toUpperCase() === 'GAA');
+    const stats = {};
+    for (let index = 2; index < headers.length && index < cells.length; index++) {
+      const header = headers[index].trim();
+      const normalized = header.toUpperCase();
+      let key = aliases[normalized];
+      if (normalized === 'SOG') key = goalieTable ? 'shotsAgainst' : 'shotsOnGoal';
+      if (normalized === 'SV') key = 'saves';
+      if (normalized === 'TOI' || normalized === 'TOI/G') {
+        const value = cells[index].text.trim();
+        if (value && value !== '-' && value !== '—') {
+          stats[normalized === 'TOI' ? 'timeOnIce' : 'timeOnIcePerGame'] = value;
+        }
+        continue;
+      }
+      if (!key) continue;
+      const value = numeric(cells[index].text);
+      if (value !== null) stats[key] = value;
+    }
+
+    if (!stats.gp || stats.gp <= 0) continue;
     result.push({
       season: currentSeason,
       league: 'VHL',
-      gp: Math.round(gp),
+      ...stats,
       team,
       stage: currentStage
     });
@@ -154,27 +196,24 @@ function findObjectEnd(source, openIndex) {
   }
   throw new Error('Не удалось определить конец объекта игрока в истории.');
 }
-function seasonSignature(row) {
-  return [row.season, row.league, row.team || '', row.stage || ''].join('|');
-}
-function readSeasonSignatures(block) {
-  const match = block.match(/\bseasons\s*:\s*\[([\s\S]*?)\]/);
-  if (!match) return new Set();
-  const signatures = new Set();
-  for (const item of match[1].matchAll(/\{([^{}]*)\}/g)) {
-    const body = item[1];
-    const season = body.match(/\bseason\s*:\s*["']([^"']+)["']/)?.[1];
-    const league = body.match(/\bleague\s*:\s*["']([^"']+)["']/)?.[1];
-    const team = body.match(/\bteam\s*:\s*["']([^"']+)["']/)?.[1] || '';
-    const stage = body.match(/\bstage\s*:\s*["']([^"']+)["']/)?.[1] || '';
-    if (season && league) signatures.add([season, league, team, stage].join('|'));
-  }
-  return signatures;
+function readField(body, key) {
+  const match = body.match(new RegExp('\\b' + key + '\\s*:\\s*["\\']([^"\\']*)["\\']'));
+  return match ? match[1] : null;
 }
 function formatRows(rows) {
-  return rows.map(row => '        { season: ' + JSON.stringify(row.season) +
-    ', league: "VHL", gp: ' + row.gp + ', team: ' + JSON.stringify(row.team) +
-    ', stage: ' + JSON.stringify(row.stage) + ' }');
+  const keys = [
+    'season', 'league', 'gp', 'goals', 'assists', 'points', 'plusMinus', 'pim',
+    'wins', 'losses', 'shootoutsPlayed', 'shotsOnGoal', 'shotsAgainst',
+    'goalsAgainst', 'saves', 'savePercentage', 'goalsAgainstAverage', 'shutouts',
+    'evenStrengthGoals', 'powerPlayGoals', 'shortHandedGoals', 'overtimeGoals',
+    'gameWinningGoals', 'shootoutDecidingShots', 'shotsPerGame', 'faceoffs',
+    'faceoffsWon', 'faceoffPercentage', 'timeOnIce', 'timeOnIcePerGame',
+    'shiftsPerGame', 'hits', 'blockedShots', 'team', 'stage'
+  ];
+  return rows.map(row => '        { ' + keys
+    .filter(key => row[key] !== undefined && row[key] !== null)
+    .map(key => key + ': ' + JSON.stringify(row[key]))
+    .join(', ') + ' }');
 }
 function mergePlayerSeasons(historyText, playerId, rows, position) {
   const marker = new RegExp('(^[ \\t]*)"' + playerId + '"\\s*:\\s*\\{', 'm');
@@ -186,33 +225,75 @@ function mergePlayerSeasons(historyText, playerId, rows, position) {
     const insertion = '    "' + playerId + '": { position: ' + JSON.stringify(safePosition) + ', seasons: [\n' +
       formatRows(rows).join(',\n') + '\n    ] },\n';
     return { text: historyText.slice(0, finalObject.index + 1) + insertion +
-      historyText.slice(finalObject.index + 1), added: rows.length };
+      historyText.slice(finalObject.index + 1), added: rows.length, enriched: 0 };
   }
 
   const openIndex = historyText.indexOf('{', match.index);
   const endIndex = findObjectEnd(historyText, openIndex);
   const block = historyText.slice(openIndex, endIndex);
-  const existing = readSeasonSignatures(block);
-  const additions = rows.filter(row => !existing.has(seasonSignature(row)));
-  if (!additions.length) return { text: historyText, added: 0 };
-
   const seasonsMatch = /\bseasons\s*:\s*\[([\s\S]*?)\]/.exec(block);
-  if (seasonsMatch) {
-    const arrayClose = openIndex + seasonsMatch.index + seasonsMatch[0].lastIndexOf(']');
-    const existingItems = seasonsMatch[1].trim();
-    const prefix = existingItems ? ',\n' : '\n';
-    const insertion = prefix + formatRows(additions).join(',\n') + '\n      ';
+  if (!seasonsMatch) {
+    const objectClose = endIndex - 1;
+    const insertion = ',\n      seasons: [\n' + formatRows(rows).join(',\n') + '\n      ]\n    ';
     return {
-      text: historyText.slice(0, arrayClose) + insertion + historyText.slice(arrayClose),
-      added: additions.length
+      text: historyText.slice(0, objectClose) + insertion + historyText.slice(objectClose),
+      added: rows.length,
+      enriched: 0
     };
   }
 
-  const objectClose = endIndex - 1;
-  const insertion = ',\n      seasons: [\n' + formatRows(additions).join(',\n') + '\n      ]\n    ';
+  let arrayContent = seasonsMatch[1];
+  let added = 0, enriched = 0;
+  for (const row of rows) {
+    const itemMatch = [...arrayContent.matchAll(/\{([^{}]*)\}/g)].find(item => {
+      const body = item[1];
+      return readField(body, 'season') === row.season &&
+        readField(body, 'league') === row.league &&
+        readField(body, 'team') === row.team &&
+        readField(body, 'stage') === row.stage;
+    });
+
+    if (!itemMatch) {
+      arrayContent += (arrayContent.trim() ? ',\n' : '\n') + formatRows([row])[0] + '\n      ';
+      added++;
+      continue;
+    }
+
+    let body = itemMatch[1];
+    let changed = false;
+    const missing = [];
+    for (const [key, value] of Object.entries(row)) {
+      if (['season', 'league', 'team', 'stage'].includes(key)) continue;
+      const property = new RegExp('\\b' + key + '\\s*:');
+      if (!property.test(body)) {
+        missing.push(key + ': ' + JSON.stringify(value));
+        continue;
+      }
+      const nullValue = new RegExp('(\\b' + key + '\\s*:\\s*)null\\b');
+      if (nullValue.test(body)) {
+        body = body.replace(nullValue, (_, prefix) => prefix + JSON.stringify(value));
+        changed = true;
+      }
+    }
+    if (missing.length) {
+      body = body.trimEnd() + (body.trimEnd().endsWith(',') ? '' : ',') + ' ' + missing.join(', ');
+      changed = true;
+    }
+    if (changed) {
+      const replacement = '{' + body + '}';
+      arrayContent = arrayContent.slice(0, itemMatch.index) + replacement +
+        arrayContent.slice(itemMatch.index + itemMatch[0].length);
+      enriched++;
+    }
+  }
+
+  if (!added && !enriched) return { text: historyText, added: 0, enriched: 0 };
+  const replacementArray = 'seasons: [' + arrayContent + ']';
+  const updatedBlock = block.replace(seasonsMatch[0], replacementArray);
   return {
-    text: historyText.slice(0, objectClose) + insertion + historyText.slice(objectClose),
-    added: additions.length
+    text: historyText.slice(0, openIndex) + updatedBlock + historyText.slice(endIndex),
+    added,
+    enriched
   };
 }
 
@@ -244,7 +325,7 @@ async function main() {
     throw new Error('robots.txt не разрешает автоматическое обращение к карточкам игроков. Сбор остановлен.');
   }
 
-  let successful = 0, notFound = 0, empty = 0, addedSeasons = 0;
+  let successful = 0, notFound = 0, empty = 0, addedSeasons = 0, enrichedSeasons = 0;
   const failures = [];
   const reportRows = [];
 
@@ -266,7 +347,8 @@ async function main() {
           const merged = mergePlayerSeasons(historyText, id, rows, rosterPositions.get(id));
           historyText = merged.text;
           addedSeasons += merged.added;
-          reportRows.push('- ' + id + ': найдено ' + rows.length + ' сезонных строк, добавлено ' + merged.added);
+          enrichedSeasons += merged.enriched;
+          reportRows.push('- ' + id + ': найдено ' + rows.length + ' сезонных строк, добавлено ' + merged.added + ', обогащено ' + merged.enriched);
         }
       }
     } catch (error) {
@@ -292,6 +374,7 @@ async function main() {
     '- Страниц без распознанной сезонной таблицы: ' + empty,
     '- Ошибок после повторных попыток: ' + failures.length,
     '- Новых сезонных записей добавлено: ' + addedSeasons,
+    '- Существующих сезонных записей обогащено статистикой: ' + enrichedSeasons,
     '- Всего сезонных записей в файле истории: ' + totalSeasonRows,
     '- Дата обновления: ' + new Date().toISOString(), '',
     '## Результат по игрокам',
