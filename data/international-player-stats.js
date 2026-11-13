@@ -181,5 +181,17 @@ window.INTERNATIONAL_PLAYER_STATS_DATA = {
     {key:'byg-kozlovsky',league:'belarus',club:'brest',name:'Константин Козловский',position:'G',nationality:'Беларусь',gp:10,gaa:2.23,svPct:89.6,w:5,l:5,so:0,toi:515,saves:163,ga:19},
     {key:'byg-sementsov',league:'belarus',club:'aviator-baranovichi',name:'Никита Семенцов',position:'G',nationality:'Беларусь',gp:20,gaa:3.75,svPct:89.2,w:8,l:11,so:0,toi:1047,saves:534,ga:65},
     {key:'byg-zinovenko',league:'belarus',club:'yunost-minsk',name:'Ростислав Зиновенко',position:'G',nationality:'Беларусь',gp:10,gaa:3.43,svPct:89.2,w:2,l:7,so:0,toi:494,saves:232,ga:28}
+
+    // Дополнительно сверено по Elite Prospects: статистика регулярного сезона 2026/27.
+    {key:'kz-beisembayev',league:'kazakhstan',club:'nomad-astana',name:'Адил Бейсембаев',position:'C',nationality:'Казахстан',gp:22,g:6,a:9,pim:6,pm:8,statsSource:'Elite Prospects 2026-27'},
+    {key:'kz-basov',league:'kazakhstan',club:'arlan-kokshetau',name:'Кирилл Басов',position:'D',nationality:'Россия',gp:23,g:3,a:12,pim:4,pm:17,statsSource:'Elite Prospects 2026-27'},
+    {key:'kz-kitarov',league:'kazakhstan',club:'nomad-astana',name:'Темирлан Китаров',position:'RW',nationality:'Казахстан',gp:22,g:6,a:8,pim:10,pm:9,statsSource:'Elite Prospects 2026-27'},
+    {key:'kz-migunov',league:'kazakhstan',club:'nomad-astana',name:'Александр Мигунов',position:'C',nationality:'Казахстан',gp:24,g:6,a:8,pim:31,pm:8,statsSource:'Elite Prospects 2026-27'},
+    {key:'kz-glukhikh',league:'kazakhstan',club:'torpedo-oskemen',name:'Артур Глухих',position:'C',nationality:'Казахстан',gp:24,g:10,a:5,pim:17,pm:17,statsSource:'Elite Prospects 2026-27'},
+    {key:'kz-grebenshchikov',league:'kazakhstan',club:'kulager-petropavlovsk',name:'Владимир Гребенщиков',position:'D',nationality:'Казахстан',gp:24,g:4,a:10,pim:8,pm:4,statsSource:'Elite Prospects 2026-27'},
+    {key:'by-shikut',league:'belarus',club:'brest',name:'Андрей Шикуть',position:'D',nationality:'Беларусь',gp:19,g:2,a:9,pim:6,pm:7,statsSource:'Elite Prospects 2026-27'},
+    {key:'by-guskov',league:'belarus',club:'khimik-novopolotsk',name:'Иван Гуськов',position:'C',nationality:'Россия',gp:21,g:8,a:2,pim:4,pm:-14,statsSource:'Elite Prospects 2026-27'},
+    {key:'by-kachelovsky',league:'belarus',club:'gomel',name:'Олег Качеловский',position:'LW',nationality:'Беларусь',gp:17,g:2,a:8,pim:10,pm:-3,statsSource:'Elite Prospects 2026-27'}
+
   ]
 };
