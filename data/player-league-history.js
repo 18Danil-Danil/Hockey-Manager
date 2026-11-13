@@ -858,5 +858,33 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 604 }
       ]
     },
+    // Дмитрий Шевченко — ВХЛ 104, МХЛ 85, КХЛ 291 и чемпионат Казахстана 13.
+    // Сверено по ФИО и дате рождения 15.12.1995; источник содержит сезонные итоги.
+    // Источник: https://ru.wikipedia.org/wiki/Шевченко,_Дмитрий_Эдуардович
+    "21241": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 104 },
+        { scope: "career", league: "MHL", gp: 85 },
+        { scope: "career", league: "KHL", gp: 291 },
+        { scope: "career", league: "KAZAKHSTAN", gp: 13 }
+      ]
+    },
+    // Михаил Назаров — 322 матча ВХЛ по официальной суммарной статистике.
+    // Источник: https://www.vhlru/players/20841/
+    "20841": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 322 }
+      ]
+    },
+    // Эмиль Нургалиев — 135 матчей ВХЛ (117 регулярных + 18 плей-офф).
+    // Источник: https://www.vhlru/players/21124/
+    "21124": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 135 }
+      ]
+    },
   }
 };
