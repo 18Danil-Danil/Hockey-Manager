@@ -754,5 +754,47 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 498 }
       ]
     },
+    // Илья Балаболкин — 142 матча ВХЛ и 155 матчей МХЛ (143 регулярных + 12 плей-офф).
+    // Источники: https://www.vhlru/players/19850/
+    // https://mhl.khl.ru/players/19850/
+    "19850": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 142 },
+        { scope: "career", league: "MHL", gp: 155 }
+      ]
+    },
+    // Иван Ларичев — 364 матча ВХЛ по официальной карточке лиги.
+    // Источник: https://www.vhlru/players/21258/
+    "21258": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 364 }
+      ]
+    },
+    // Никита Жлоба — 437 матчей ВХЛ по суммарной статистике официальной карточки.
+    // Источник: https://www.vhlru/players/19185/
+    "19185": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 437 }
+      ]
+    },
+    // Павел Медведев — 568 матчей ВХЛ по актуальной суммарной статистике лиги.
+    // Источник: https://www.vhlru/stats/players/all/
+    "18698": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 568 }
+      ]
+    },
+    // Николай Глухов — 458 матчей ВХЛ (410 регулярных + 48 плей-офф).
+    // Источник: https://www.vhlru/players/19007/
+    "19007": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 458 }
+      ]
+    },
   }
 };
