@@ -352,7 +352,7 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
     "15796": {
       position: "forward",
       career: [
-        { scope: "career", league: "VHL", gp: 944 }
+        { scope: "career", league: "VHL", gp: 955 }
       ]
     },
     // Александр Суворов: ВХЛ — 111 матчей регулярного чемпионата и 9 плей-офф
@@ -471,8 +471,7 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
     "19426": {
       position: "forward",
       career: [
-        { scope: "career", league: "VHL", gp: 678, stage: "regular" },
-        { scope: "career", league: "VHL", gp: 113, stage: "playoffs" }
+        { scope: "career", league: "VHL", gp: 795 }
       ]
     },
     // Михаил Тихонов: 375 матчей регулярных чемпионатов и 51 матч плей-офф ВХЛ.
@@ -536,6 +535,58 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       career: [
         { scope: "career", league: "VHL", gp: 521, stage: "regular" },
         { scope: "career", league: "VHL", gp: 19, stage: "playoffs" }
+      ]
+    },
+    // Георгий Бусаров: 741 матч ВХЛ и 50 матчей КХЛ с плей-офф.
+    // Источник: https://vmf.ska.ru/news/view/485609-ska-podpisal-kontrakt-s-georgiem-busarovym/
+    "17519": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 741 },
+        { scope: "career", league: "KHL", gp: 50 }
+      ]
+    },
+    // Максим Верёвкин — 564 матча регулярных чемпионатов + 144 плей-офф ВХЛ.
+    // Источник: https://www.vhlru.ru/players/15128/
+    "15128": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 564, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 144, stage: "playoffs" }
+      ]
+    },
+    // Денис Давыдов — 789 матчей ВХЛ по официальной таблице статистики лиги.
+    // Источник: https://www.vhlru.ru/stats/players/all/
+    "16359": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 789 }
+      ]
+    },
+    // Игорь Исаев — 302 матча регулярных чемпионатов + 38 плей-офф ВХЛ.
+    // Источник: https://www.vhlru.ru/players/19407/
+    "19407": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 302, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 38, stage: "playoffs" }
+      ]
+    },
+    // Илья Павлюков — 508 матчей регулярных чемпионатов + 40 плей-офф ВХЛ.
+    // Источник: https://vhlru.ru/players/20147/
+    "20147": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 508, stage: "regular" },
+        { scope: "career", league: "VHL", gp: 40, stage: "playoffs" }
+      ]
+    },
+    // Александр Тарасов — 633 матча ВХЛ по сообщению клуба от 03.11.2026.
+    // Источник: https://www.vhlru.ru/lenta/620961/
+    "17522": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 633 }
       ]
     },
   }
