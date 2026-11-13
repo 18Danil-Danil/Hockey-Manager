@@ -14,7 +14,7 @@
     NCAA: 1.10, VHL: 1, MHL: 0.86, OHL: 0.94, WHL: 0.94, QMJHL: 0.94
   };
   function seasonEndYear(season) {
-    const match = /(?:^|\\D)(\\d{2})\\/(\\d{2})(?:$|\\D)/.exec(String(season || ''));
+    const match = /(?:^|\D)(\d{2})\/(\d{2})(?:$|\D)/.exec(String(season || ''));
     if (!match) return null;
     const start = 2000 + Number(match[1]);
     let end = 2000 + Number(match[2]);
@@ -257,7 +257,8 @@
       attrPot,
       ovr: overallFromAttrs(attrs, entry.attrs.reflexes !== undefined),
       pot: overallFromAttrs(attrPot, entry.attrs.reflexes !== undefined),
-      source: 'vhl-statistics',
+      source: leagueBonus > 0 ? 'vhl-statistics+league-history' : 'vhl-statistics',
+      leagueBonus,
       sampleGames: Math.round(entry.gamesSample),
       seasons: [...new Set(entry.seasons)]
     };
