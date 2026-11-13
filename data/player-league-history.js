@@ -190,7 +190,7 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       career: [
         { scope: "career", league: "KHL", gp: 121 }
       ]
-    }
+    },
     // Максим Кицын: сезонная статистика Sport-Express; регулярные чемпионаты.
     // Охвачены КХЛ, МХЛ, ВХЛ, OHL, AHL и ECHL; плей-офф не смешан с регуляркой.
     // Источник: https://www.sport-express.net/hockey/nhl/reviews/1010345/
@@ -626,6 +626,50 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "forward",
       career: [
         { scope: "career", league: "KHL", gp: 8, stage: "regular" }
+      ]
+    },
+    // Георгий Бердюков — 558 матчей ВХЛ с учётом 19 матчей сезона 2026/27
+    // на 12.11.2026; предыдущий итог 539 (455 регулярных + 84 плей-офф).
+    // Источники: https://www.vhlru.ru/stats/players/all/
+    // https://www.vhlru.ru/players/15836/
+    "15836": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 558 }
+      ]
+    },
+    // Максим Березин — ВХЛ 63 матча; МХЛ 64 (57 регулярных + 7 плей-офф).
+    // Источники: https://www.vhlru.ru/players/15567/
+    // https://engmhl.khl.ru/players/15567/
+    "15567": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 63 },
+        { scope: "career", league: "MHL", gp: 64 }
+      ]
+    },
+    // Роман Абросимов — 104 матча ВХЛ по официальной карточке лиги.
+    // Источник: https://www.vhlru.ru/players/17968/
+    "17968": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 104 }
+      ]
+    },
+    // Олег Погоришный — 248 матчей ВХЛ (223 регулярных + 25 плей-офф).
+    // Источник: https://vhlru.ru/players/17803/
+    "17803": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 248 }
+      ]
+    },
+    // Арсений Ерохин — 646 матчей ВХЛ (574 регулярных + 72 плей-офф).
+    // Источник: https://www.vhlru.ru/players/17636/
+    "17636": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 646 }
       ]
     },
   }
