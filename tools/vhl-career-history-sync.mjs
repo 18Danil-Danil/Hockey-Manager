@@ -162,14 +162,26 @@ async function getText(url) {
     try {
       const response = await fetch(url, {
         headers: { 'User-Agent': USER_AGENT, 'Accept': 'text/html, text/plain;q=0.9, */*;q=0.8' },
-        signal: AbortSignal.timeout(25000)
+        signal: AbortSignal.timeout(15000)
       });
       if (response.status === 404) return null;
+      if (response.status === 401 || response.status === 403) {
+        const error = new Error('Доступ к официальному источнику запрещён: HTTP ' + response.status);
+        error.fatal = true;
+        throw error;
+      }
+      if (response.status === 429) {
+        const retryAfter = Number(response.headers.get('retry-after')) || 0;
+        const error = new Error('Источник ограничил частоту запросов: HTTP 429');
+        if (attempt === MAX_ATTEMPTS) error.fatal = true;
+        throw Object.assign(error, { retryAfter });
+      }
       if (!response.ok) throw new Error('HTTP ' + response.status);
       return await response.text();
     } catch (error) {
       lastError = error;
-      if (attempt < MAX_ATTEMPTS) await sleep(1200 * attempt);
+      if (error.fatal) throw error;
+      if (attempt < MAX_ATTEMPTS) await sleep(Math.max(1200 * attempt, Number(error.retryAfter || 0) * 1000));
     }
   }
   throw lastError;
@@ -353,6 +365,7 @@ async function main() {
         }
       }
     } catch (error) {
+      if (error.fatal) throw error;
       failures.push(id + ': ' + error.message);
       reportRows.push('- ' + id + ': ошибка — ' + error.message);
     }
