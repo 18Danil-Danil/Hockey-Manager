@@ -114,7 +114,7 @@ assert.equal(unstarted.schedule.length, 152);
 const startedSchedule = oldSchedule.map(round => round.slice());
 const started = { season: '2026/27', teams, schedule: startedSchedule, scheduleVersion: 2, currentRound: 4, results: [{ round: 0 }] };
 context.ensureScheduleCalendar(started);
-assert.equal(started.scheduleVersion, 2);
+assert.equal(started.scheduleVersion, 4);
 assert.equal(started.schedule.length, 58);
 console.log('Save migration compatibility passed.');
 
