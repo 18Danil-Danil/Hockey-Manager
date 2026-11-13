@@ -326,17 +326,14 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 256 }
       ]
     },
-    // Максим Салахов: ВХЛ — 631 матч; МХЛ — 51 матч регулярного чемпионата
-    // в сезоне 2014/15 (подтверждённая строка сезонной статистики).
+    // Максим Салахов: ВХЛ — 631 матч; РХЛ — 88 матчей по официальной карточке.
     // Источники: https://www.vhlru.ru/players/13184/
-    // https://mhl.khl.ru/stat/players/272/all/183/
+    // https://rhl.fhr.ru/players/13184/183/
     "13184": {
       position: "defense",
       career: [
-        { scope: "career", league: "VHL", gp: 631 }
-      ],
-      seasons: [
-        { season: "14/15", league: "MHL", gp: 51, team: "Капитан", stage: "regular" }
+        { scope: "career", league: "VHL", gp: 631 },
+        { scope: "career", league: "RHL", gp: 88 }
       ]
     },
     // Дмитрий Бойчук — 542 матча ВХЛ по официальной карточке лиги.
@@ -578,7 +575,10 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "forward",
       career: [
         { scope: "career", league: "VHL", gp: 508, stage: "regular" },
-        { scope: "career", league: "VHL", gp: 40, stage: "playoffs" }
+        { scope: "career", league: "VHL", gp: 40, stage: "playoffs" },
+        { scope: "career", league: "KHL", gp: 16 },
+        { scope: "career", league: "MHL", gp: 156, stage: "regular" },
+        { scope: "career", league: "MHL", gp: 54, stage: "playoffs" }
       ]
     },
     // Александр Тарасов — 633 матча ВХЛ по сообщению клуба от 03.11.2026.
@@ -587,6 +587,21 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
       position: "forward",
       career: [
         { scope: "career", league: "VHL", gp: 633 }
+      ]
+    },
+    // Александр Сорокин: ВХЛ — 610 матчей; МХЛ — 148;
+    // РХЛ — 44; КХЛ — 7 (5 регулярных + 2 плей-офф).
+    // Источники: https://www.vhlru.ru/stats/players/all/
+    // https://mhl.khl.ru/players/17097/
+    // https://rhl.fhr.ru/players/17097/
+    // https://forchecking.ru/player.php?id=9997
+    "17097": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 610 },
+        { scope: "career", league: "MHL", gp: 148 },
+        { scope: "career", league: "RHL", gp: 44 },
+        { scope: "career", league: "KHL", gp: 7 }
       ]
     },
   }
