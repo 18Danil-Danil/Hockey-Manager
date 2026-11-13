@@ -179,7 +179,63 @@ window.BELARUS_CAREER_STATS_DATA = {
       "Slovakia Extraliga"
     ],
     "otherLeagueSource": "https://www.eliteprospects.com/player/106999/stanislav-kuchkin",
-    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed"
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed",
+    "otherLeagueTotals": [
+      {
+        "league": "MHL",
+        "seasons": 5,
+        "gp": 217,
+        "g": 62,
+        "a": 85,
+        "p": 147,
+        "pim": 162,
+        "pm": 2,
+        "playoffs": {
+          "gp": 19,
+          "g": 9,
+          "a": 14,
+          "p": 23,
+          "pim": 8,
+          "pm": 3
+        }
+      },
+      {
+        "league": "VHL",
+        "seasons": 4,
+        "gp": 73,
+        "g": 12,
+        "a": 24,
+        "p": 36,
+        "pim": 24,
+        "pm": -24,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Slovakia Extraliga",
+        "seasons": 2,
+        "gp": 23,
+        "g": 9,
+        "a": 8,
+        "p": 17,
+        "pim": 6,
+        "pm": 3,
+        "playoffs": {
+          "gp": 5,
+          "g": 0,
+          "a": 1,
+          "p": 1,
+          "pim": 2,
+          "pm": 0
+        }
+      }
+    ]
   },
   "by-nesterov": {
     "gp": 314,
@@ -200,85 +256,28 @@ window.BELARUS_CAREER_STATS_DATA = {
     "from": "2020/21",
     "to": "2026/27",
     "seasons": 7,
-    "otherLeagueSeasons": [
-      {
-        "season": "2016/17",
-        "league": "Belarus Vysshaya",
-        "team": "COR Zhlobin / youth",
-        "stage": "regular",
-        "gp": 24,
-        "g": 10,
-        "a": 8,
-        "p": 18,
-        "pim": 0,
-        "pm": null
-      },
-      {
-        "season": "2017/18",
-        "league": "Belarus Vysshaya",
-        "team": "COR Zhlobin / youth",
-        "stage": "regular",
-        "gp": 38,
-        "g": 25,
-        "a": 19,
-        "p": 44,
-        "pim": 0,
-        "pm": null
-      },
-      {
-        "season": "2018/19",
-        "league": "Belarus Vysshaya",
-        "team": "COR Zhlobin / youth",
-        "stage": "regular",
-        "gp": 30,
-        "g": 35,
-        "a": 21,
-        "p": 56,
-        "pim": 0,
-        "pm": null
-      },
-      {
-        "season": "2019/20",
-        "league": "Belarus Vysshaya",
-        "team": "COR Zhlobin / youth",
-        "stage": "regular",
-        "gp": 26,
-        "g": 33,
-        "a": 24,
-        "p": 57,
-        "pim": 0,
-        "pm": null
-      },
-      {
-        "season": "2020/21",
-        "league": "Belarus Vysshaya",
-        "team": "COR Zhlobin / youth",
-        "stage": "regular",
-        "gp": 21,
-        "g": 29,
-        "a": 19,
-        "p": 48,
-        "pim": 0,
-        "pm": null
-      },
-      {
-        "season": "2021/22",
-        "league": "Belarus Vysshaya",
-        "team": "COR Zhlobin / youth",
-        "stage": "regular",
-        "gp": 14,
-        "g": 24,
-        "a": 17,
-        "p": 41,
-        "pim": 0,
-        "pm": null
-      }
-    ],
     "otherLeagueSource": "https://www.eliteprospects.com/player/707553/yuri-veremeyenko",
-    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed",
-    "otherLeagueSeasonCount": 6,
-    "otherLeagueIds": [
-      "Belarus Vysshaya"
+    "otherLeagueStatsSource": "Elite Prospects career totals by league; season-by-season split not published in the retrieved profile",
+    "otherLeagueTotals": [
+      {
+        "league": "Belarus Vysshaya",
+        "seasons": 6,
+        "gp": 153,
+        "g": 172,
+        "a": 121,
+        "p": 293,
+        "pim": 62,
+        "pm": 85,
+        "playoffs": {
+          "seasons": 3,
+          "gp": 14,
+          "g": 10,
+          "a": 7,
+          "p": 17,
+          "pim": 12,
+          "pm": 0
+        }
+      }
     ]
   },
   "by-verenich": {
@@ -464,6 +463,80 @@ window.BELARUS_CAREER_STATS_DATA = {
       "Russia3",
       "Champions HL",
       "Continental Cup"
+    ],
+    "otherLeagueTotals": [
+      {
+        "league": "VHL",
+        "seasons": 5,
+        "gp": 105,
+        "g": 16,
+        "a": 35,
+        "p": 51,
+        "pim": 40,
+        "pm": 16,
+        "playoffs": {
+          "gp": 29,
+          "g": 5,
+          "a": 13,
+          "p": 18,
+          "pim": 6,
+          "pm": 4
+        }
+      },
+      {
+        "league": "Russia3",
+        "seasons": 1,
+        "gp": 1,
+        "g": 0,
+        "a": 1,
+        "p": 1,
+        "pim": 0,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Champions HL",
+        "seasons": 2,
+        "gp": 12,
+        "g": 0,
+        "a": 4,
+        "p": 4,
+        "pim": 2,
+        "pm": -1,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Continental Cup",
+        "seasons": 2,
+        "gp": 12,
+        "g": 3,
+        "a": 7,
+        "p": 10,
+        "pim": 2,
+        "pm": 2,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      }
     ]
   },
   "by-krein": {
@@ -737,6 +810,80 @@ window.BELARUS_CAREER_STATS_DATA = {
       "MHL",
       "VHL",
       "Kazakhstan"
+    ],
+    "otherLeagueTotals": [
+      {
+        "league": "Russia U17",
+        "seasons": 1,
+        "gp": 34,
+        "g": 23,
+        "a": 30,
+        "p": 53,
+        "pim": 8,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "MHL",
+        "seasons": 4,
+        "gp": 175,
+        "g": 57,
+        "a": 90,
+        "p": 147,
+        "pim": 84,
+        "pm": 60,
+        "playoffs": {
+          "gp": 20,
+          "g": 4,
+          "a": 4,
+          "p": 8,
+          "pim": 14,
+          "pm": 3
+        }
+      },
+      {
+        "league": "VHL",
+        "seasons": 7,
+        "gp": 111,
+        "g": 13,
+        "a": 30,
+        "p": 43,
+        "pim": 26,
+        "pm": 2,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Kazakhstan",
+        "seasons": 3,
+        "gp": 86,
+        "g": 39,
+        "a": 66,
+        "p": 105,
+        "pim": 16,
+        "pm": 35,
+        "playoffs": {
+          "gp": 3,
+          "g": 2,
+          "a": 1,
+          "p": 3,
+          "pim": 0,
+          "pm": 2
+        }
+      }
     ]
   },
   "by-borozna": {
@@ -941,6 +1088,62 @@ window.BELARUS_CAREER_STATS_DATA = {
       "Belarus Vysshaya",
       "Belarus2",
       "EYOF"
+    ],
+    "otherLeagueTotals": [
+      {
+        "league": "Belarus Vysshaya",
+        "seasons": 8,
+        "gp": 137,
+        "g": 48,
+        "a": 33,
+        "p": 81,
+        "pim": 24,
+        "pm": 6,
+        "playoffs": {
+          "gp": 16,
+          "g": 4,
+          "a": 5,
+          "p": 9,
+          "pim": 4,
+          "pm": 3
+        }
+      },
+      {
+        "league": "Belarus2",
+        "seasons": 2,
+        "gp": 59,
+        "g": 19,
+        "a": 11,
+        "p": 30,
+        "pim": 24,
+        "pm": -24,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "EYOF",
+        "seasons": 1,
+        "gp": 3,
+        "g": 0,
+        "a": 0,
+        "p": 0,
+        "pim": 0,
+        "pm": 0,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      }
     ]
   },
   "by-ryadchenko": {
@@ -1109,7 +1312,63 @@ window.BELARUS_CAREER_STATS_DATA = {
       "Kazakhstan"
     ],
     "otherLeagueSource": "https://www.eliteprospects.com/player/16756/pavel-razvadovsky",
-    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed"
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed",
+    "otherLeagueTotals": [
+      {
+        "league": "KHL",
+        "seasons": 3,
+        "gp": 67,
+        "g": 4,
+        "a": 4,
+        "p": 8,
+        "pim": 6,
+        "pm": -1,
+        "playoffs": {
+          "gp": 1,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": -2
+        }
+      },
+      {
+        "league": "VHL",
+        "seasons": 1,
+        "gp": 40,
+        "g": 4,
+        "a": 9,
+        "p": 13,
+        "pim": 18,
+        "pm": -6,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "Kazakhstan",
+        "seasons": 1,
+        "gp": 60,
+        "g": 23,
+        "a": 33,
+        "p": 56,
+        "pim": 84,
+        "pm": 36,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      }
+    ]
   },
   "by-melnikov": {
     "gp": 280,
@@ -1192,7 +1451,45 @@ window.BELARUS_CAREER_STATS_DATA = {
       "KHL"
     ],
     "otherLeagueSource": "https://www.eliteprospects.com/player/17671/yevgeni-solomonov",
-    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed"
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed",
+    "otherLeagueTotals": [
+      {
+        "league": "QMJHL",
+        "seasons": 1,
+        "gp": 7,
+        "g": 3,
+        "a": 0,
+        "p": 3,
+        "pim": 4,
+        "pm": 5,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "KHL",
+        "seasons": 1,
+        "gp": 12,
+        "g": 1,
+        "a": 0,
+        "p": 1,
+        "pim": 6,
+        "pm": 1,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      }
+    ]
   },
   "byg-bobariko": {
     "gp": 286,
@@ -1507,7 +1804,63 @@ window.BELARUS_CAREER_STATS_DATA = {
       "KHL"
     ],
     "otherLeagueSource": "https://www.eliteprospects.com/player/17659/sergei-drozd",
-    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed"
+    "otherLeagueStatsSource": "Elite Prospects career statistics, regular season and postseason when listed",
+    "otherLeagueTotals": [
+      {
+        "league": "Russia3",
+        "seasons": 3,
+        "gp": 97,
+        "g": 15,
+        "a": 33,
+        "p": 48,
+        "pim": 48,
+        "pm": 27,
+        "playoffs": {
+          "gp": 0,
+          "g": 0,
+          "a": 0,
+          "p": 0,
+          "pim": 0,
+          "pm": 0
+        }
+      },
+      {
+        "league": "WHL",
+        "seasons": 1,
+        "gp": 61,
+        "g": 11,
+        "a": 25,
+        "p": 36,
+        "pim": 16,
+        "pm": 1,
+        "playoffs": {
+          "gp": 22,
+          "g": 8,
+          "a": 6,
+          "p": 14,
+          "pim": 7,
+          "pm": 9
+        }
+      },
+      {
+        "league": "KHL",
+        "seasons": 9,
+        "gp": 351,
+        "g": 20,
+        "a": 27,
+        "p": 47,
+        "pim": 84,
+        "pm": -30,
+        "playoffs": {
+          "gp": 20,
+          "g": 2,
+          "a": 1,
+          "p": 3,
+          "pim": 4,
+          "pm": -3
+        }
+      }
+    ]
   },
   "by-ep26-p3-207": {
     "gp": 785,
