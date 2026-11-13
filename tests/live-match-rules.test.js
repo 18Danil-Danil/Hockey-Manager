@@ -324,8 +324,8 @@ const shiftSource = source.slice(
   source.indexOf('function buildLiveShiftPlan('),
   source.indexOf('function buildFormation(')
 );
-const shiftHelpers = new Function('clamp', `${shiftSource}; return { buildLiveShiftPlan, applyLiveShift, updateLiveShifts };`)(
-  (v, min, max) => Math.max(min, Math.min(max, v))
+const shiftHelpers = new Function('clamp', 'getLivePlayerSurname', `${shiftSource}; return { buildLiveShiftPlan, applyLiveShift, updateLiveShifts };`)(
+  (v, min, max) => Math.max(min, Math.min(max, v)), player => player?.surname || String(player?.name || '').split(/\\s+/)[0] || ''
 );
 const allForwards = Array.from({ length: 12 }, (_, i) => ({ id: `f${i + 1}`, name: `F${i + 1}`, position: 'F', fatigue: 0 }));
 const allDefense = Array.from({ length: 6 }, (_, i) => ({ id: `d${i + 1}`, name: `D${i + 1}`, position: 'D', fatigue: 0 }));
