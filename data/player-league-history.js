@@ -1070,5 +1070,30 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 256 }
       ]
     },
+    // Владислав Наумов — 374 матча ВХЛ по актуальной суммарной статистике лиги.
+    // Источник: https://www.vhlru/stats/players/all/defenses/
+    "20642": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 374 }
+      ]
+    },
+    // Илья Колганов — 332 матча регулярных чемпионатов ВХЛ;
+    // плей-офф в доступной сводке отдельно не указан.
+    // Источник: https://silasporta.ru/athletes/ilya-kolganov/
+    "21265": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 332 }
+      ]
+    },
+    // Вадим Никитин — 330 матчей ВХЛ: 314 регулярных + 16 плей-офф.
+    // Источник: https://silasporta.ru/athletes/vadim-nikitin/
+    "20672": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 330 }
+      ]
+    },
   }
 };
