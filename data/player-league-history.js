@@ -1415,5 +1415,37 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 410 }
       ]
     },
+    // Илья Талалуев — 143 матча ВХЛ (97 регулярных + 46 плей-офф).
+    // Источник: https://www.vhlru/players/24027/
+    "24027": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 143 }
+      ]
+    },
+    // Максим Афанасьев — 380 матчей ВХЛ по актуальной суммарной статистике лиги.
+    // Источник: https://www.vhlru/stats/players/all/defenses/
+    "22616": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 380 }
+      ]
+    },
+    // Дмитрий Лозебников — 194 матча ВХЛ (158 регулярных + 36 плей-офф).
+    // Источник: https://www.vhlru/players/23157/
+    "23157": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 194 }
+      ]
+    },
+    // Артём Манукян — 152 матча ВХЛ (148 регулярных + 4 плей-офф).
+    // Источник: https://www.vhlru/players/23242/
+    "23242": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 152 }
+      ]
+    },
   }
 };
