@@ -45,7 +45,10 @@
       const gp = Math.max(0, Number(row?.gp) || 0);
       if (!strength || strength <= 1 || !gp) continue;
       if (row?.scope === 'career' || row?.career === true) {
-        const key = 'career:' + league + ':' + String(row.stage || 'all');
+        // Суммируем регулярный чемпионат и плей-офф внутри одной лиги.
+        // Этап остаётся частью ключа строки, чтобы не дублировать одну выборку,
+        // но не создаёт отдельный бонус за тот же карьерный опыт.
+        const key = 'career:' + league;
         const previous = grouped.get(key) || { league, gp: 0, strength, career: true, entries: new Map() };
         const entryKey = String(row.team || 'career-total') + ':' + String(row.stage || 'all');
         previous.entries.set(entryKey, Math.max(previous.entries.get(entryKey) || 0, gp));
