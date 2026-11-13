@@ -1682,5 +1682,33 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 252 }
       ]
     },
+    // Егор Фатеев — 226 матчей КХЛ по турнирной истории Sportbox.
+    // Источник: https://s-cdn.sportbox.ru/Vidy_sporta/Hokkej/Jegor_Fatejev_Khokkej_03111997/turnir_16236
+    "22746": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 226 }
+      ]
+    },
+    // Егор Баранов — ВХЛ 274, КХЛ 41 и чемпионат Словакии 3 матча.
+    // Совпадают ФИО и дата рождения 27.12.1998.
+    // Источник: https://forchecking.ru/player.php?id=14959
+    "25529": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 274 },
+        { scope: "career", league: "KHL", gp: 41 },
+        { scope: "career", league: "SLOVAK", gp: 3 }
+      ]
+    },
+    // Дмитрий Алексеев — 43 матча КХЛ и 3 матча плей-офф ВХЛ.
+    // Источник: https://s-cdn.sportbox.ru/Vidy_sporta/Hokkej/Dmitrij_Vitaljevich_Aleksejev_Khokkej_17021998/turnir_19795
+    "23249": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 43 },
+        { scope: "career", league: "VHL", gp: 3 }
+      ]
+    },
   }
 };
