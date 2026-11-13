@@ -207,7 +207,7 @@ for (const id of careerCandidateIds) {
   const player = rosterPlayers.get(id);
   if (!player) continue;
   try {
-    const html = await getText(`${BASE}/en/players/${id}/`);
+    const html = await getText(`${BASE}/players/${id}/`);
     const career = parseVhlPlayerCareer(html, id, player.position);
     if (!outputPlayers[id]) outputPlayers[id] = { position: career.position || player.position, seasons: [] };
     const existing = new Set(outputPlayers[id].seasons.map(row =>
