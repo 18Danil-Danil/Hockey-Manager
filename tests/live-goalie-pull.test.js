@@ -15,12 +15,12 @@ function extract(name, nextName) {
 }
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 const getLiveManpowerState = new Function('clamp', extract('getLiveManpowerState', 'liveGetOnIceSkaters') + '; return getLiveManpowerState;')(clamp);
-const buildFormation = new Function('getLivePlayerSurname', extract('buildFormation', 'livePushEvent') + '; return buildFormation;')(player => player?.surname || String(player?.name || '').split(/\\s+/)[0] || '');
+const buildFormation = new Function('getLivePlayerSurname', extract('buildFormation', 'livePushEvent') + '; return buildFormation;')(player => player?.surname || String(player?.name || '').split(/\s+/)[0] || '');
 const updateLiveGoaliePulls = new Function(
   'livePushEvent', 'liveFmtTime',
   extract('updateLiveGoaliePulls', 'liveAdvance') + '; return updateLiveGoaliePulls;'
 )((event) => events.push(event), (time) => String(time));
-const reconcileLiveManpower = new Function('getLiveManpowerState', 'getLivePlayerSurname', extract('reconcileLiveManpower', 'updateLiveShifts') + '; return reconcileLiveManpower;')(getLiveManpowerState, player => player?.surname || String(player?.name || '').split(/\\s+/)[0] || '');
+const reconcileLiveManpower = new Function('getLiveManpowerState', 'getLivePlayerSurname', extract('reconcileLiveManpower', 'updateLiveShifts') + '; return reconcileLiveManpower;')(getLiveManpowerState, player => player?.surname || String(player?.name || '').split(/\s+/)[0] || '');
 
 const skaters = [
   { id: 'd1', name: 'D1', position: 'D' }, { id: 'd2', name: 'D2', position: 'D' },
