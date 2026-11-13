@@ -8,6 +8,7 @@ import fs from 'node:fs/promises';
 import { findSuspiciousCrossSeasonDuplicates } from './player-stats-quality.mjs';
 import { parseVhlTournamentOptions } from './vhl-tournament-map.mjs';
 import { parseVhlPlayerCareer } from './vhl-player-career-parser.mjs';
+import { parseVhlSeasonStats } from './vhl-season-stats-parser.mjs';
 
 const BASE = 'https://www.vhlru.ru';
 const USER_AGENT = 'HockeyManagerVHLStatsBot/1.0 (low-frequency statistics import)';
@@ -144,7 +145,7 @@ for (const target of targets) {
   try {
     const html = await getText(url);
     const sourcePlayerRows = [...html.matchAll(/href=["'][^"']*\/players\/(\d+)\/?(?:\?[^"']*)?["']/gi)].length;
-    const seasonPlayers = parseSeasonStats(html, label, target.stage, rosterPlayers);
+    const seasonPlayers = parseVhlSeasonStats(html, label, target.stage, rosterPlayers);
     let rowsAdded = 0;
     for (const [id, records] of seasonPlayers) {
       if (!outputPlayers[id]) outputPlayers[id] = { position: rosterPlayers.get(id).position, seasons: [] };
