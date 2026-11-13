@@ -5,6 +5,8 @@
  * сопоставляет игроков с текущими составами и дополняет карьерную историю.
  */
 import fs from 'node:fs/promises';
+import https from 'node:https';
+import dns from 'node:dns';
 import { findSuspiciousCrossSeasonDuplicates } from './player-stats-quality.mjs';
 import { parseVhlTournamentOptions } from './vhl-tournament-map.mjs';
 import { parseVhlPlayerCareer } from './vhl-player-career-parser.mjs';
@@ -69,13 +71,36 @@ function robotsAllowsPath(robotsText, targetPath) {
   return !rules.length || rules[0].type === 'allow';
 }
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-async function getText(url) {
-  const response = await fetch(url, {
-    headers: { 'User-Agent': USER_AGENT, 'Accept': 'text/html, text/plain;q=0.9, */*;q=0.8' },
-    signal: AbortSignal.timeout(25000)
+async function getText(url, redirects = 0) {
+  return new Promise((resolve, reject) => {
+    const parsed = new URL(url);
+    const request = https.request(parsed, {
+      headers: { 'User-Agent': USER_AGENT, 'Accept': 'text/html, text/plain;q=0.9, */*;q=0.8' },
+      // VHL has multiple A records; one of them intermittently stalls. Pin only this host
+      // to the working address documented by the independent fastRhockey client.
+      lookup(hostname, options, callback) {
+        if (hostname === 'www.vhlru.ru') callback(null, '188.128.49.29', 4);
+        else dns.lookup(hostname, options, callback);
+      }
+    }, response => {
+      const status = response.statusCode || 0;
+      if ([301, 302, 303, 307, 308].includes(status) && response.headers.location) {
+        response.resume();
+        if (redirects >= 5) return reject(new Error('Слишком много перенаправлений: ' + url));
+        return resolve(getText(new URL(response.headers.location, url).href, redirects + 1));
+      }
+      const chunks = [];
+      response.on('data', chunk => chunks.push(chunk));
+      response.on('end', () => {
+        const body = Buffer.concat(chunks).toString('utf8');
+        if (status < 200 || status >= 300) return reject(new Error(`HTTP ${status}: ${url}`));
+        resolve(body);
+      });
+    });
+    request.setTimeout(25000, () => request.destroy(new Error('Тайм-аут запроса: ' + url)));
+    request.on('error', reject);
+    request.end();
   });
-  if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
-  return response.text();
 }
 
 
@@ -137,12 +162,7 @@ for (const team of rosterData.teams || []) {
 }
 if (!rosterPlayers.size) throw new Error('В текущей базе составов не найдено игроков.');
 
-const robotsResponse = await fetch(`${BASE}/robots.txt`, {
-  headers: { 'User-Agent': USER_AGENT, 'Accept': 'text/plain' },
-  signal: AbortSignal.timeout(15000)
-});
-if (!robotsResponse.ok) throw new Error(`Не удалось проверить robots.txt: HTTP ${robotsResponse.status}`);
-const robotsText = await robotsResponse.text();
+const robotsText = await getText(`${BASE}/robots.txt`);
 if (!robotsAllowsPath(robotsText, '/en/stats/players/') ||
     !robotsAllowsPath(robotsText, '/en/calendar/')) {
   throw new Error('robots.txt не разрешает автоматическое обращение к календарю или сезонной статистике. Сбор остановлен.');
