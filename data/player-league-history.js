@@ -604,5 +604,29 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "KHL", gp: 7 }
       ]
     },
+    // Кирилл Маслов — 8 матчей регулярных чемпионатов КХЛ.
+    // Источник: https://www.sports.ru/hockey/person/kirill-maslov/career/
+    "17643": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "KHL", gp: 8, stage: "regular" }
+      ]
+    },
+    // Александр Шевченко — 311 матчей регулярных чемпионатов КХЛ.
+    // Источник: https://www.sports.ru/hockey/person/alexander-shevchenko/
+    "16036": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 311, stage: "regular" }
+      ]
+    },
+    // Николай Владимиров — 8 матчей регулярных чемпионатов КХЛ.
+    // Источник: https://www.sports.ru/hockey/person/nikolai-vladimirov/
+    "17644": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "KHL", gp: 8, stage: "regular" }
+      ]
+    },
   }
 };
