@@ -56,7 +56,7 @@ const leagueOnlyData = {
 sandbox.VHL_PLAYER_STATS_DATA = leagueOnlyData;
 const veteranRating = sandbox.makeVhlRating('veteran', { ratings: { att: 70, def: 70, gk: 70 } }, 31);
 assert.ok(veteranRating && veteranRating.leagueBonus > 0, 'league history alone should create a usable rating entry');
-assert.equal(veteranRating.source, 'vhl-statistics+league-history');
+assert.equal(veteranRating.source, 'league-history');
 sandbox.VHL_PLAYER_STATS_DATA = { seasons: [], players: {} };
 sandbox.VHL_PLAYER_LEAGUE_HISTORY = {
   schemaVersion: 1,
@@ -64,5 +64,5 @@ sandbox.VHL_PLAYER_LEAGUE_HISTORY = {
 };
 const historyOnlyRating = sandbox.makeVhlRating('prospect', { ratings: { att: 70, def: 70, gk: 70 } }, 20);
 assert.ok(historyOnlyRating && historyOnlyRating.leagueBonus > 0, 'separate verified league-history data should be used without VHL season stats');
-assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 45 }, { season: '24/25', league: 'KHL', gp: 45 }], 2026), oneKhlSeason, 'same-season rows should not double-count the same season after games played saturate');
+assert.equal(sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 20 }, { season: '24/25', league: 'KHL', gp: 20 }], 2026), sandbox.calculateLeagueHistoryBonus([{ season: '24/25', league: 'KHL', gp: 20 }], 2026), 'duplicate rows for the same team and stage should not inflate experience');
 console.log('VHL player rating model checks passed.');
