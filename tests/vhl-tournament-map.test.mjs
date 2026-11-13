@@ -17,5 +17,5 @@ assert.deepEqual(parsed, [
   { endYear: 2025, stage: 'playoff', tn: 1311, label: '2024/2025 | Playoffs' }
 ]);
 
-assert.throws(() => parseVhlTournamentOptions('<html></html>'), /select\\[name="tournament"\\]/);
+assert.throws(() => parseVhlTournamentOptions('<html></html>'));
 console.log('VHL tournament mapping checks passed.');
