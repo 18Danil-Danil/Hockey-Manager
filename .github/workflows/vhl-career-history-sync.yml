@@ -7,6 +7,8 @@ on:
     paths:
       - 'tools/vhl-career-history-sync.mjs'
       - 'tests/vhl-career-history-sync.test.mjs'
+      - 'tools/hockey-databank-career-sync.mjs'
+      - 'tests/hockey-databank-career-sync.test.mjs'
       - 'data/vhl-rosters.js'
       - '.github/workflows/vhl-career-history-sync.yml'
   workflow_dispatch:
@@ -36,13 +38,16 @@ jobs:
           node-version: 20
 
       - name: Проверить разбор сезонной истории
-        run: node --test tests/vhl-career-history-sync.test.mjs
+        run: node --test tests/vhl-career-history-sync.test.mjs tests/hockey-databank-career-sync.test.mjs
 
       - name: Проверить синтаксис интерфейса игрока
         run: node --check ui/render.js
 
       - name: Собрать карьерные сезоны ВХЛ
         run: node tools/vhl-career-history-sync.mjs
+
+      - name: Добавить подтверждённые исторические сезоны NHL и других лиг из Hockey Databank
+        run: node tools/hockey-databank-career-sync.mjs
 
       - name: Сохранить полную историю в ветке refactoring
         if: success()
@@ -63,14 +68,17 @@ jobs:
         run: |
           if [ -f vhl-career-history-report.md ]; then
             cat vhl-career-history-report.md >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "Отчёт не создан. Проверьте журнал шага импорта." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f hockey-databank-report.md ]; then
+            cat hockey-databank-report.md >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Сохранить отчёт как артефакт
-        if: always() && hashFiles('vhl-career-history-report.md') != ''
+        if: always() && (hashFiles('vhl-career-history-report.md') != '' || hashFiles('hockey-databank-report.md') != '')
         uses: actions/upload-artifact@v4
         with:
-          name: vhl-career-history
-          path: vhl-career-history-report.md
+          name: complete-career-history-reports
+          path: |
+            vhl-career-history-report.md
+            hockey-databank-report.md
           retention-days: 30
