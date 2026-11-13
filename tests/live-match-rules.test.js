@@ -305,7 +305,7 @@ const formationSource = source.slice(
   source.indexOf('function buildFormation('),
   source.indexOf('function livePushEvent(', source.indexOf('function buildFormation('))
 );
-const buildFormation = new Function('getLivePlayerSurname', `${formationSource}; return buildFormation;`)(player => player?.surname || String(player?.name || '').split(/\\s+/)[0] || '');
+const buildFormation = new Function('getLivePlayerSurname', `${formationSource}; return buildFormation;`)(player => player?.surname || String(player?.name || '').split(/\s+/)[0] || '');
 const goalie = { id: 'g1', name: 'Goalie', position: 'G' };
 const defenders = [{ id: 'd1', name: 'D1', position: 'D' }, { id: 'd2', name: 'D2', position: 'D' }];
 const forwards = [
