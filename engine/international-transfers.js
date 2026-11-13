@@ -70,8 +70,8 @@ function getInternationalRatingIndex() {
         }
         rating = overallFromAttrs(attrs, false);
       }
-      const leagueAdjustment = league === 'kazakhstan' ? -1 : 0;
-      rating = clamp(Math.round(rating + leagueAdjustment), 62, 84);
+      const leagueAdjustment = league === 'khl' ? 5 : league === 'kazakhstan' ? -1 : 0;
+      rating = clamp(Math.round(rating + leagueAdjustment), 62, league === 'khl' ? 90 : 84);
       index.set(player.key, {attrs, ovr:rating, sampleGames:gp, stats:player});
     }
   }
