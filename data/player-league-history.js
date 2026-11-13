@@ -2388,5 +2388,467 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "MHL", gp: 165 }
       ]
     },
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "13219": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Dynamo-Altai","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "13985": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Khimik","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Khimik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Khimik","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Khimik","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Khimik","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "14232": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":15,"team":"Ryazan-VDV","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "25398": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Olimpiya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "25399": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":13,"team":"SKA-VMF","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "25401": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"SKA-VMF","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"SKA-VMF","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"SKA-VMF","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"SKA-VMF","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"SKA-VMF","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "25558": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":4,"team":"Rubin","stage":"regular"},{"season":"25/26","league":"VHL","gp":4,"team":"Rubin","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":4,"team":"Rubin","stage":"regular"},{"season":"24/25","league":"VHL","gp":4,"team":"Rubin","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "25583": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Neftyanik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "25599": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Yuzhny Ural","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "25618": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":2,"team":"Molot","stage":"regular"},{"season":"25/26","league":"VHL","gp":2,"team":"Molot","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":2,"team":"Molot","stage":"regular"},{"season":"24/25","league":"VHL","gp":2,"team":"Molot","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "25896": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Sokol","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26207": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"Sokol","stage":"regular"},{"season":"25/26","league":"VHL","gp":12,"team":"Sokol","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":12,"team":"Sokol","stage":"regular"},{"season":"24/25","league":"VHL","gp":12,"team":"Sokol","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":12,"team":"Sokol","stage":"regular"},{"season":"23/24","league":"VHL","gp":12,"team":"Sokol","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26291": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"CSK VVS","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26336": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":6,"team":"Olimpiya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26394": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":10,"team":"SKA-VMF","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26434": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Neftyanik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26642": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Neftyanik","stage":"regular"},{"season":"25/26","league":"VHL","gp":11,"team":"Neftyanik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":11,"team":"Neftyanik","stage":"regular"},{"season":"24/25","league":"VHL","gp":11,"team":"Neftyanik","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":11,"team":"Neftyanik","stage":"regular"},{"season":"23/24","league":"VHL","gp":11,"team":"Neftyanik","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26702": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":9,"team":"Sokol","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26794": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":1,"team":"Olimpiya","stage":"regular"},{"season":"25/26","league":"VHL","gp":1,"team":"Olimpiya","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":1,"team":"Olimpiya","stage":"regular"},{"season":"24/25","league":"VHL","gp":1,"team":"Olimpiya","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26814": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Sokol","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"Sokol","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"Sokol","stage":"regular"},{"season":"24/25","league":"VHL","gp":20,"team":"Sokol","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":20,"team":"Sokol","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26874": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"SKA-VMF","stage":"regular"},{"season":"25/26","league":"VHL","gp":12,"team":"SKA-VMF","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":12,"team":"SKA-VMF","stage":"regular"},{"season":"24/25","league":"VHL","gp":12,"team":"SKA-VMF","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":12,"team":"SKA-VMF","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "26960": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Sokol","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "27080": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Yuzhny Ural","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "27208": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Ugra","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Ugra","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Ugra","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Ugra","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Ugra","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "27272": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Omskie Krylya","stage":"regular"},{"season":"25/26","league":"VHL","gp":22,"team":"Omskie Krylya","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "27408": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"CSK VVS","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"CSK VVS","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"CSK VVS","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "27596": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":9,"team":"Molot","stage":"regular"},{"season":"25/26","league":"VHL","gp":9,"team":"Molot","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":9,"team":"Molot","stage":"regular"},{"season":"24/25","league":"VHL","gp":9,"team":"Molot","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":9,"team":"Molot","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "27712": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":10,"team":"Zvezda","stage":"regular"},{"season":"25/26","league":"VHL","gp":10,"team":"Zvezda","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":10,"team":"Zvezda","stage":"regular"},{"season":"24/25","league":"VHL","gp":10,"team":"Zvezda","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":10,"team":"Zvezda","stage":"regular"},{"season":"23/24","league":"VHL","gp":10,"team":"Zvezda","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "29152": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Metallurg","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "29156": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":24,"team":"Metallurg","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "29524": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Metallurg","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "29656": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Bars","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "29900": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"Ugra","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "29908": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Gornyak-UGMK","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "29936": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"Ugra","stage":"regular"},{"season":"25/26","league":"VHL","gp":17,"team":"Ugra","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":17,"team":"Ugra","stage":"regular"},{"season":"24/25","league":"VHL","gp":17,"team":"Ugra","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "29952": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Buran","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Buran","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Buran","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Buran","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Buran","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30204": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Buran","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"Buran","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"Buran","stage":"regular"},{"season":"24/25","league":"VHL","gp":20,"team":"Buran","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30222": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":15,"team":"HC Kaluga","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30246": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"CSK VVS","stage":"regular"},{"season":"25/26","league":"VHL","gp":18,"team":"CSK VVS","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":18,"team":"CSK VVS","stage":"regular"},{"season":"24/25","league":"VHL","gp":18,"team":"CSK VVS","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":18,"team":"CSK VVS","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30300": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Izhstal","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30312": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"SKA-VMF","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"SKA-VMF","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"SKA-VMF","stage":"regular"},{"season":"24/25","league":"VHL","gp":20,"team":"SKA-VMF","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":20,"team":"SKA-VMF","stage":"regular"},{"season":"23/24","league":"VHL","gp":20,"team":"SKA-VMF","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30321": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Buran","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30390": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Sokol","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30405": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"Toros","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30408": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Sokol","stage":"regular"},{"season":"25/26","league":"VHL","gp":16,"team":"Sokol","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":16,"team":"Sokol","stage":"regular"},{"season":"24/25","league":"VHL","gp":16,"team":"Sokol","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":16,"team":"Sokol","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30420": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":14,"team":"CSK VVS","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30452": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Ugra","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30545": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":15,"team":"Ugra","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30554": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":8,"team":"Ryazan-VDV","stage":"regular"},{"season":"25/26","league":"VHL","gp":8,"team":"Ryazan-VDV","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":8,"team":"Ryazan-VDV","stage":"regular"},{"season":"24/25","league":"VHL","gp":8,"team":"Ryazan-VDV","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":8,"team":"Ryazan-VDV","stage":"regular"},{"season":"23/24","league":"VHL","gp":8,"team":"Ryazan-VDV","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30572": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Omskie Krylya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30575": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":4,"team":"Dynamo SPb","stage":"regular"},{"season":"25/26","league":"VHL","gp":4,"team":"Dynamo SPb","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":4,"team":"Dynamo SPb","stage":"regular"},{"season":"24/25","league":"VHL","gp":4,"team":"Dynamo SPb","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":4,"team":"Dynamo SPb","stage":"regular"},{"season":"23/24","league":"VHL","gp":4,"team":"Dynamo SPb","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30656": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":13,"team":"Omskie Krylya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30662": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Dizel","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30887": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Ugra","stage":"regular"},{"season":"25/26","league":"VHL","gp":23,"team":"Ugra","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":23,"team":"Ugra","stage":"regular"},{"season":"24/25","league":"VHL","gp":23,"team":"Ugra","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":23,"team":"Ugra","stage":"regular"},{"season":"23/24","league":"VHL","gp":23,"team":"Ugra","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30923": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Dynamo-Altai","stage":"regular"},{"season":"25/26","league":"VHL","gp":18,"team":"Dynamo-Altai","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":18,"team":"Dynamo-Altai","stage":"regular"},{"season":"24/25","league":"VHL","gp":18,"team":"Dynamo-Altai","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":18,"team":"Dynamo-Altai","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "30974": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Rubin","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"Rubin","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"Rubin","stage":"regular"},{"season":"24/25","league":"VHL","gp":20,"team":"Rubin","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":20,"team":"Rubin","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31097": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Buran","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Buran","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Buran","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Buran","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Buran","stage":"regular"},{"season":"23/24","league":"VHL","gp":21,"team":"Buran","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31118": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Molot","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"Molot","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"Molot","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31148": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":13,"team":"Ryazan-VDV","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31151": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Izhstal","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Izhstal","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Izhstal","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Izhstal","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31223": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"Buran","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31265": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":13,"team":"Neftyanik","stage":"regular"},{"season":"25/26","league":"VHL","gp":13,"team":"Neftyanik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":13,"team":"Neftyanik","stage":"regular"},{"season":"24/25","league":"VHL","gp":13,"team":"Neftyanik","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":13,"team":"Neftyanik","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31577": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":8,"team":"Neftyanik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31679": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Yuzhny Ural","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Yuzhny Ural","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Yuzhny Ural","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Yuzhny Ural","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Yuzhny Ural","stage":"regular"},{"season":"23/24","league":"VHL","gp":21,"team":"Yuzhny Ural","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31775": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"Dynamo-Altai","stage":"regular"},{"season":"25/26","league":"VHL","gp":12,"team":"Dynamo-Altai","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":12,"team":"Dynamo-Altai","stage":"regular"},{"season":"24/25","league":"VHL","gp":12,"team":"Dynamo-Altai","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":12,"team":"Dynamo-Altai","stage":"regular"},{"season":"23/24","league":"VHL","gp":12,"team":"Dynamo-Altai","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31781": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":1,"team":"CSK VVS","stage":"regular"},{"season":"25/26","league":"VHL","gp":1,"team":"CSK VVS","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":1,"team":"CSK VVS","stage":"regular"},{"season":"24/25","league":"VHL","gp":1,"team":"CSK VVS","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "31841": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Rubin","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "32009": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Gornyak-UGMK","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "32012": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Dynamo-Altai","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "32393": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":6,"team":"HC Norilsk","stage":"regular"},{"season":"25/26","league":"VHL","gp":6,"team":"HC Norilsk","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":6,"team":"HC Norilsk","stage":"regular"},{"season":"24/25","league":"VHL","gp":6,"team":"HC Norilsk","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":6,"team":"HC Norilsk","stage":"regular"},{"season":"23/24","league":"VHL","gp":6,"team":"HC Norilsk","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "32615": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"HC Norilsk","stage":"regular"},{"season":"25/26","league":"VHL","gp":12,"team":"HC Norilsk","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":12,"team":"HC Norilsk","stage":"regular"},{"season":"24/25","league":"VHL","gp":12,"team":"HC Norilsk","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "32624": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":24,"team":"HC Norilsk","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "32855": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":8,"team":"Metallurg","stage":"regular"},{"season":"25/26","league":"VHL","gp":8,"team":"Metallurg","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":8,"team":"Metallurg","stage":"regular"},{"season":"24/25","league":"VHL","gp":8,"team":"Metallurg","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":8,"team":"Metallurg","stage":"regular"},{"season":"23/24","league":"VHL","gp":8,"team":"Metallurg","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "32978": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":3,"team":"CSK VVS","stage":"regular"},{"season":"25/26","league":"VHL","gp":3,"team":"CSK VVS","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":3,"team":"CSK VVS","stage":"regular"},{"season":"24/25","league":"VHL","gp":3,"team":"CSK VVS","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33113": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Kristall","stage":"regular"},{"season":"25/26","league":"VHL","gp":11,"team":"Kristall","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":11,"team":"Kristall","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33119": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Gornyak-UGMK","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"Gornyak-UGMK","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33155": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":5,"team":"Kristall","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33167": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":24,"team":"HC Norilsk","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33404": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Ryazan-VDV","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33410": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":10,"team":"HC Tambov","stage":"regular"},{"season":"25/26","league":"VHL","gp":10,"team":"HC Tambov","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":10,"team":"HC Tambov","stage":"regular"},{"season":"24/25","league":"VHL","gp":10,"team":"HC Tambov","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":10,"team":"HC Tambov","stage":"regular"},{"season":"23/24","league":"VHL","gp":10,"team":"HC Tambov","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33512": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"CSK VVS","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33554": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":2,"team":"Zauralye","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33572": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"SKA-VMF","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33647": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Izhstal","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33686": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Gornyak-UGMK","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33689": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"SKA-VMF","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33878": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Yuzhny Ural","stage":"regular"},{"season":"25/26","league":"VHL","gp":11,"team":"Yuzhny Ural","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":11,"team":"Yuzhny Ural","stage":"regular"},{"season":"24/25","league":"VHL","gp":11,"team":"Yuzhny Ural","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":11,"team":"Yuzhny Ural","stage":"regular"},{"season":"23/24","league":"VHL","gp":11,"team":"Yuzhny Ural","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33908": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Molot","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"Molot","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"Molot","stage":"regular"},{"season":"24/25","league":"VHL","gp":20,"team":"Molot","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":20,"team":"Molot","stage":"regular"},{"season":"23/24","league":"VHL","gp":20,"team":"Molot","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "33995": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"Zauralye","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34022": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Toros","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34037": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":8,"team":"Yuzhny Ural","stage":"regular"},{"season":"25/26","league":"VHL","gp":8,"team":"Yuzhny Ural","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":8,"team":"Yuzhny Ural","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34043": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":15,"team":"Chelmet","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34052": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"HC Kaluga","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34055": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":24,"team":"HC Norilsk","stage":"regular"},{"season":"25/26","league":"VHL","gp":24,"team":"HC Norilsk","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":24,"team":"HC Norilsk","stage":"regular"},{"season":"24/25","league":"VHL","gp":24,"team":"HC Norilsk","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":24,"team":"HC Norilsk","stage":"regular"},{"season":"23/24","league":"VHL","gp":24,"team":"HC Norilsk","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34076": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Sokol","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34100": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Omskie Krylya","stage":"regular"},{"season":"25/26","league":"VHL","gp":16,"team":"Omskie Krylya","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":16,"team":"Omskie Krylya","stage":"regular"},{"season":"24/25","league":"VHL","gp":16,"team":"Omskie Krylya","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":16,"team":"Omskie Krylya","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34154": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Bars","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34334": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":14,"team":"Kristall","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34346": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Zvezda","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34352": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Neftyanik","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Neftyanik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Neftyanik","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Neftyanik","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Neftyanik","stage":"regular"},{"season":"23/24","league":"VHL","gp":21,"team":"Neftyanik","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34379": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Izhstal","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"Izhstal","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"Izhstal","stage":"regular"},{"season":"24/25","league":"VHL","gp":20,"team":"Izhstal","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34400": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Ryazan-VDV","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34403": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"Magnitka","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34418": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"Olimpiya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34436": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"HC Norilsk","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"HC Norilsk","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"HC Norilsk","stage":"regular"},{"season":"24/25","league":"VHL","gp":20,"team":"HC Norilsk","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":20,"team":"HC Norilsk","stage":"regular"},{"season":"23/24","league":"VHL","gp":20,"team":"HC Norilsk","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34523": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Buran","stage":"regular"},{"season":"25/26","league":"VHL","gp":11,"team":"Buran","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":11,"team":"Buran","stage":"regular"},{"season":"24/25","league":"VHL","gp":11,"team":"Buran","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34529": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":4,"team":"Gornyak-UGMK","stage":"regular"},{"season":"25/26","league":"VHL","gp":4,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":4,"team":"Gornyak-UGMK","stage":"regular"},{"season":"24/25","league":"VHL","gp":4,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":4,"team":"Gornyak-UGMK","stage":"regular"},{"season":"23/24","league":"VHL","gp":4,"team":"Gornyak-UGMK","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34535": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Sokol","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34574": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":8,"team":"Neftyanik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34628": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Dizel","stage":"regular"},{"season":"25/26","league":"VHL","gp":18,"team":"Dizel","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":18,"team":"Dizel","stage":"regular"},{"season":"24/25","league":"VHL","gp":18,"team":"Dizel","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34664": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Kristall","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Kristall","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Kristall","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Kristall","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Kristall","stage":"regular"},{"season":"23/24","league":"VHL","gp":21,"team":"Kristall","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34697": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"Magnitka","stage":"regular"},{"season":"25/26","league":"VHL","gp":12,"team":"Magnitka","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":12,"team":"Magnitka","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34712": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"HC Kaluga","stage":"regular"},{"season":"25/26","league":"VHL","gp":22,"team":"HC Kaluga","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":22,"team":"HC Kaluga","stage":"regular"},{"season":"24/25","league":"VHL","gp":22,"team":"HC Kaluga","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":22,"team":"HC Kaluga","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34751": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Gornyak-UGMK","stage":"regular"},{"season":"25/26","league":"VHL","gp":19,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":19,"team":"Gornyak-UGMK","stage":"regular"},{"season":"24/25","league":"VHL","gp":19,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":19,"team":"Gornyak-UGMK","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34757": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"SKA-VMF","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"SKA-VMF","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"SKA-VMF","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"SKA-VMF","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"SKA-VMF","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34775": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":6,"team":"HC Kaluga","stage":"regular"},{"season":"25/26","league":"VHL","gp":6,"team":"HC Kaluga","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":6,"team":"HC Kaluga","stage":"regular"},{"season":"24/25","league":"VHL","gp":6,"team":"HC Kaluga","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34808": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Magnitka","stage":"regular"},{"season":"25/26","league":"VHL","gp":19,"team":"Magnitka","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34892": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"Toros","stage":"regular"},{"season":"25/26","league":"VHL","gp":12,"team":"Toros","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":12,"team":"Toros","stage":"regular"},{"season":"24/25","league":"VHL","gp":12,"team":"Toros","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":12,"team":"Toros","stage":"regular"},{"season":"23/24","league":"VHL","gp":12,"team":"Toros","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34895": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Khimik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34910": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Kristall","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34916": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Khimik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34964": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Ryazan-VDV","stage":"regular"},{"season":"25/26","league":"VHL","gp":19,"team":"Ryazan-VDV","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":19,"team":"Ryazan-VDV","stage":"regular"},{"season":"24/25","league":"VHL","gp":19,"team":"Ryazan-VDV","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":19,"team":"Ryazan-VDV","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "34988": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Khimik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35034": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":13,"team":"Sokol","stage":"regular"},{"season":"25/26","league":"VHL","gp":13,"team":"Sokol","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":13,"team":"Sokol","stage":"regular"},{"season":"24/25","league":"VHL","gp":13,"team":"Sokol","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":13,"team":"Sokol","stage":"regular"},{"season":"23/24","league":"VHL","gp":13,"team":"Sokol","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35047": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"AKM","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"AKM","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"AKM","stage":"regular"},{"season":"24/25","league":"VHL","gp":20,"team":"AKM","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":20,"team":"AKM","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35065": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Zvezda","stage":"regular"},{"season":"25/26","league":"VHL","gp":19,"team":"Zvezda","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":19,"team":"Zvezda","stage":"regular"},{"season":"24/25","league":"VHL","gp":19,"team":"Zvezda","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":19,"team":"Zvezda","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35099": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Khimik","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"Khimik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"Khimik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35113": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":10,"team":"SKA-VMF","stage":"regular"},{"season":"25/26","league":"VHL","gp":10,"team":"SKA-VMF","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":10,"team":"SKA-VMF","stage":"regular"},{"season":"24/25","league":"VHL","gp":10,"team":"SKA-VMF","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":10,"team":"SKA-VMF","stage":"regular"},{"season":"23/24","league":"VHL","gp":10,"team":"SKA-VMF","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35117": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Zauralye","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35118": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"HC Kaluga","stage":"regular"},{"season":"25/26","league":"VHL","gp":12,"team":"HC Kaluga","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":12,"team":"HC Kaluga","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35166": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"HC Tambov","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35181": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":7,"team":"Khimik","stage":"regular"},{"season":"25/26","league":"VHL","gp":7,"team":"Khimik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":7,"team":"Khimik","stage":"regular"},{"season":"24/25","league":"VHL","gp":7,"team":"Khimik","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":7,"team":"Khimik","stage":"regular"},{"season":"23/24","league":"VHL","gp":7,"team":"Khimik","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35195": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Metallurg","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35196": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Sokol","stage":"regular"},{"season":"25/26","league":"VHL","gp":22,"team":"Sokol","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35284": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":8,"team":"Magnitka","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35308": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"Dizel","stage":"regular"},{"season":"25/26","league":"VHL","gp":17,"team":"Dizel","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":17,"team":"Dizel","stage":"regular"},{"season":"24/25","league":"VHL","gp":17,"team":"Dizel","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":17,"team":"Dizel","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35327": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Dynamo-Altai","stage":"regular"},{"season":"25/26","league":"VHL","gp":23,"team":"Dynamo-Altai","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":23,"team":"Dynamo-Altai","stage":"regular"},{"season":"24/25","league":"VHL","gp":23,"team":"Dynamo-Altai","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":23,"team":"Dynamo-Altai","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35328": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":10,"team":"Magnitka","stage":"regular"},{"season":"25/26","league":"VHL","gp":10,"team":"Magnitka","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":10,"team":"Magnitka","stage":"regular"},{"season":"24/25","league":"VHL","gp":10,"team":"Magnitka","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":10,"team":"Magnitka","stage":"regular"},{"season":"23/24","league":"VHL","gp":10,"team":"Magnitka","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35351": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Toros","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35392": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":5,"team":"Toros","stage":"regular"},{"season":"25/26","league":"VHL","gp":5,"team":"Toros","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":5,"team":"Toros","stage":"regular"},{"season":"24/25","league":"VHL","gp":5,"team":"Toros","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35416": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Neftyanik","stage":"regular"},{"season":"25/26","league":"VHL","gp":11,"team":"Neftyanik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":11,"team":"Neftyanik","stage":"regular"},{"season":"24/25","league":"VHL","gp":11,"team":"Neftyanik","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":11,"team":"Neftyanik","stage":"regular"},{"season":"23/24","league":"VHL","gp":11,"team":"Neftyanik","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35453": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Toros","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35575": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Dynamo-Altai","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35606": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"Rubin","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35608": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"CSK VVS","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"CSK VVS","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"CSK VVS","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"CSK VVS","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"CSK VVS","stage":"regular"},{"season":"23/24","league":"VHL","gp":21,"team":"CSK VVS","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35609": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Toros","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35611": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":14,"team":"Gornyak-UGMK","stage":"regular"},{"season":"25/26","league":"VHL","gp":14,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":14,"team":"Gornyak-UGMK","stage":"regular"},{"season":"24/25","league":"VHL","gp":14,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":14,"team":"Gornyak-UGMK","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35663": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":13,"team":"Buran","stage":"regular"},{"season":"25/26","league":"VHL","gp":13,"team":"Buran","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":13,"team":"Buran","stage":"regular"},{"season":"24/25","league":"VHL","gp":13,"team":"Buran","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":13,"team":"Buran","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35681": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":24,"team":"Metallurg","stage":"regular"},{"season":"25/26","league":"VHL","gp":24,"team":"Metallurg","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":24,"team":"Metallurg","stage":"regular"},{"season":"24/25","league":"VHL","gp":24,"team":"Metallurg","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35734": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"HC Tambov","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35746": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":7,"team":"Buran","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35793": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Kristall","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Kristall","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Kristall","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Kristall","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Kristall","stage":"regular"},{"season":"23/24","league":"VHL","gp":21,"team":"Kristall","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35824": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Ryazan-VDV","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35862": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Zvezda","stage":"regular"},{"season":"25/26","league":"VHL","gp":16,"team":"Zvezda","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":16,"team":"Zvezda","stage":"regular"},{"season":"24/25","league":"VHL","gp":16,"team":"Zvezda","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":16,"team":"Zvezda","stage":"regular"},{"season":"23/24","league":"VHL","gp":16,"team":"Zvezda","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35927": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":7,"team":"Buran","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35928": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":15,"team":"Bars","stage":"regular"},{"season":"25/26","league":"VHL","gp":15,"team":"Bars","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":15,"team":"Bars","stage":"regular"},{"season":"24/25","league":"VHL","gp":15,"team":"Bars","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":15,"team":"Bars","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "35943": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"Olimpiya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37450": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":14,"team":"Yuzhny Ural","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37743": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":4,"team":"Dynamo-Altai","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37753": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"HC Norilsk","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37756": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Olimpiya","stage":"regular"},{"season":"25/26","league":"VHL","gp":22,"team":"Olimpiya","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":22,"team":"Olimpiya","stage":"regular"},{"season":"24/25","league":"VHL","gp":22,"team":"Olimpiya","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":22,"team":"Olimpiya","stage":"regular"},{"season":"23/24","league":"VHL","gp":22,"team":"Olimpiya","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37787": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Gornyak-UGMK","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37789": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"Olimpiya","stage":"regular"},{"season":"25/26","league":"VHL","gp":17,"team":"Olimpiya","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":17,"team":"Olimpiya","stage":"regular"},{"season":"24/25","league":"VHL","gp":17,"team":"Olimpiya","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37795": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Yuzhny Ural","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37799": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Khimik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37829": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":8,"team":"Zauralye","stage":"regular"},{"season":"25/26","league":"VHL","gp":8,"team":"Zauralye","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":8,"team":"Zauralye","stage":"regular"},{"season":"24/25","league":"VHL","gp":8,"team":"Zauralye","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":8,"team":"Zauralye","stage":"regular"},{"season":"23/24","league":"VHL","gp":8,"team":"Zauralye","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37841": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Zvezda","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37842": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Ryazan-VDV","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37891": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Dynamo-Altai","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37894": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":15,"team":"Dynamo-Altai","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37897": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":14,"team":"Olimpiya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37906": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"HC Tambov","stage":"regular"},{"season":"25/26","league":"VHL","gp":17,"team":"HC Tambov","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":17,"team":"HC Tambov","stage":"regular"},{"season":"24/25","league":"VHL","gp":17,"team":"HC Tambov","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37910": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"HC Norilsk","stage":"regular"},{"season":"25/26","league":"VHL","gp":18,"team":"HC Norilsk","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":18,"team":"HC Norilsk","stage":"regular"},{"season":"24/25","league":"VHL","gp":18,"team":"HC Norilsk","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":18,"team":"HC Norilsk","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37918": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Molot","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "37926": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Rubin","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38000": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":9,"team":"Bars","stage":"regular"},{"season":"25/26","league":"VHL","gp":9,"team":"Bars","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":9,"team":"Bars","stage":"regular"},{"season":"24/25","league":"VHL","gp":9,"team":"Bars","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":9,"team":"Bars","stage":"regular"},{"season":"23/24","league":"VHL","gp":9,"team":"Bars","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38004": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Neftyanik","stage":"regular"},{"season":"25/26","league":"VHL","gp":18,"team":"Neftyanik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":18,"team":"Neftyanik","stage":"regular"},{"season":"24/25","league":"VHL","gp":18,"team":"Neftyanik","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38079": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Rubin","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38087": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":6,"team":"Gornyak-UGMK","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38168": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"HC Norilsk","stage":"regular"},{"season":"25/26","league":"VHL","gp":16,"team":"HC Norilsk","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":16,"team":"HC Norilsk","stage":"regular"},{"season":"24/25","league":"VHL","gp":16,"team":"HC Norilsk","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":16,"team":"HC Norilsk","stage":"regular"},{"season":"23/24","league":"VHL","gp":16,"team":"HC Norilsk","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38172": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Kristall","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38345": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"AKM","stage":"regular"},{"season":"25/26","league":"VHL","gp":20,"team":"AKM","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":20,"team":"AKM","stage":"regular"},{"season":"24/25","league":"VHL","gp":20,"team":"AKM","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":20,"team":"AKM","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38347": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":7,"team":"Khimik","stage":"regular"},{"season":"25/26","league":"VHL","gp":7,"team":"Khimik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":7,"team":"Khimik","stage":"regular"},{"season":"24/25","league":"VHL","gp":7,"team":"Khimik","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":7,"team":"Khimik","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38351": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Zauralye","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38354": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":7,"team":"Khimik","stage":"regular"},{"season":"25/26","league":"VHL","gp":7,"team":"Khimik","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":7,"team":"Khimik","stage":"regular"},{"season":"24/25","league":"VHL","gp":7,"team":"Khimik","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":7,"team":"Khimik","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38355": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Toros","stage":"regular"},{"season":"25/26","league":"VHL","gp":16,"team":"Toros","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":16,"team":"Toros","stage":"regular"},{"season":"24/25","league":"VHL","gp":16,"team":"Toros","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":16,"team":"Toros","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38376": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":7,"team":"Omskie Krylya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38378": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"Omskie Krylya","stage":"regular"},{"season":"25/26","league":"VHL","gp":12,"team":"Omskie Krylya","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":12,"team":"Omskie Krylya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38617": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Sokol","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38651": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":10,"team":"Rubin","stage":"regular"},{"season":"25/26","league":"VHL","gp":10,"team":"Rubin","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":10,"team":"Rubin","stage":"regular"},{"season":"24/25","league":"VHL","gp":10,"team":"Rubin","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":10,"team":"Rubin","stage":"regular"},{"season":"23/24","league":"VHL","gp":10,"team":"Rubin","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "38655": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":22,"team":"Toros","stage":"regular"},{"season":"25/26","league":"VHL","gp":22,"team":"Toros","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":22,"team":"Toros","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39063": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":1,"team":"HC Tambov","stage":"regular"},{"season":"25/26","league":"VHL","gp":1,"team":"HC Tambov","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":1,"team":"HC Tambov","stage":"regular"},{"season":"24/25","league":"VHL","gp":1,"team":"HC Tambov","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":1,"team":"HC Tambov","stage":"regular"},{"season":"23/24","league":"VHL","gp":1,"team":"HC Tambov","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39089": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Sokol","stage":"regular"},{"season":"25/26","league":"VHL","gp":19,"team":"Sokol","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":19,"team":"Sokol","stage":"regular"},{"season":"24/25","league":"VHL","gp":19,"team":"Sokol","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":19,"team":"Sokol","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39106": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Magnitka","stage":"regular"},{"season":"25/26","league":"VHL","gp":18,"team":"Magnitka","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":18,"team":"Magnitka","stage":"regular"},{"season":"24/25","league":"VHL","gp":18,"team":"Magnitka","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":18,"team":"Magnitka","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39109": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Magnitka","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39112": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Ugra","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39116": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Buran","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Buran","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Buran","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Buran","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Buran","stage":"regular"},{"season":"23/24","league":"VHL","gp":21,"team":"Buran","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39126": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"SKA-VMF","stage":"regular"},{"season":"25/26","league":"VHL","gp":11,"team":"SKA-VMF","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":11,"team":"SKA-VMF","stage":"regular"},{"season":"24/25","league":"VHL","gp":11,"team":"SKA-VMF","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":11,"team":"SKA-VMF","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39130": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":23,"team":"Ugra","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39156": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":15,"team":"Neftyanik","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39173": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Dizel","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39174": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Magnitka","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39185": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Gornyak-UGMK","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Gornyak-UGMK","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Gornyak-UGMK","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39187": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Ugra","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39208": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Chelmet","stage":"regular"},{"season":"25/26","league":"VHL","gp":16,"team":"Chelmet","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":16,"team":"Chelmet","stage":"regular"},{"season":"24/25","league":"VHL","gp":16,"team":"Chelmet","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39222": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":11,"team":"Izhstal","stage":"regular"},{"season":"25/26","league":"VHL","gp":11,"team":"Izhstal","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":11,"team":"Izhstal","stage":"regular"},{"season":"24/25","league":"VHL","gp":11,"team":"Izhstal","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":11,"team":"Izhstal","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39255": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Dizel","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39310": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":10,"team":"Gornyak-UGMK","stage":"regular"},{"season":"25/26","league":"VHL","gp":10,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":10,"team":"Gornyak-UGMK","stage":"regular"},{"season":"24/25","league":"VHL","gp":10,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":10,"team":"Gornyak-UGMK","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39317": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":9,"team":"Gornyak-UGMK","stage":"regular"},{"season":"25/26","league":"VHL","gp":9,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":9,"team":"Gornyak-UGMK","stage":"regular"},{"season":"24/25","league":"VHL","gp":9,"team":"Gornyak-UGMK","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":9,"team":"Gornyak-UGMK","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39318": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":17,"team":"Gornyak-UGMK","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39330": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":14,"team":"Omskie Krylya","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39340": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":9,"team":"Dizel","stage":"regular"},{"season":"25/26","league":"VHL","gp":9,"team":"Dizel","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":9,"team":"Dizel","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39397": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Izhstal","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39406": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Yuzhny Ural","stage":"regular"},{"season":"25/26","league":"VHL","gp":19,"team":"Yuzhny Ural","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":19,"team":"Yuzhny Ural","stage":"regular"},{"season":"24/25","league":"VHL","gp":19,"team":"Yuzhny Ural","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":19,"team":"Yuzhny Ural","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39432": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Buran","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39434": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"Bars","stage":"regular"},{"season":"25/26","league":"VHL","gp":21,"team":"Bars","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":21,"team":"Bars","stage":"regular"},{"season":"24/25","league":"VHL","gp":21,"team":"Bars","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":21,"team":"Bars","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39436": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Bars","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39442": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":16,"team":"Magnitka","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39449": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":12,"team":"SKA-VMF","stage":"regular"},{"season":"25/26","league":"VHL","gp":12,"team":"SKA-VMF","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":12,"team":"SKA-VMF","stage":"regular"},{"season":"24/25","league":"VHL","gp":12,"team":"SKA-VMF","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":12,"team":"SKA-VMF","stage":"regular"},{"season":"23/24","league":"VHL","gp":12,"team":"SKA-VMF","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39481": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":13,"team":"Toros","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39483": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":21,"team":"HC Norilsk","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39500": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":6,"team":"Ryazan-VDV","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39503": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Izhstal","stage":"regular"},{"season":"25/26","league":"VHL","gp":18,"team":"Izhstal","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":18,"team":"Izhstal","stage":"regular"},{"season":"24/25","league":"VHL","gp":18,"team":"Izhstal","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":18,"team":"Izhstal","stage":"regular"},{"season":"23/24","league":"VHL","gp":18,"team":"Izhstal","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39509": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"Zauralye","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39518": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":13,"team":"Zauralye","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39531": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":15,"team":"Dynamo-Altai","stage":"regular"},{"season":"25/26","league":"VHL","gp":15,"team":"Dynamo-Altai","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":15,"team":"Dynamo-Altai","stage":"regular"},{"season":"24/25","league":"VHL","gp":15,"team":"Dynamo-Altai","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":15,"team":"Dynamo-Altai","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39543": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":6,"team":"Gornyak-UGMK","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39569": {"position":"goaltender","seasons":[{"season":"25/26","league":"VHL","gp":4,"team":"HC Tambov","stage":"regular"},{"season":"25/26","league":"VHL","gp":4,"team":"HC Tambov","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":4,"team":"HC Tambov","stage":"regular"},{"season":"24/25","league":"VHL","gp":4,"team":"HC Tambov","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":4,"team":"HC Tambov","stage":"regular"},{"season":"23/24","league":"VHL","gp":4,"team":"HC Tambov","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39587": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":20,"team":"Dynamo SPb","stage":"regular"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39593": {"position":"defense","seasons":[{"season":"25/26","league":"VHL","gp":19,"team":"Dizel","stage":"regular"},{"season":"25/26","league":"VHL","gp":19,"team":"Dizel","stage":"playoffs"},{"season":"24/25","league":"VHL","gp":19,"team":"Dizel","stage":"regular"},{"season":"24/25","league":"VHL","gp":19,"team":"Dizel","stage":"playoffs"},{"season":"23/24","league":"VHL","gp":19,"team":"Dizel","stage":"playoffs"}]},
+    // Источник: https://www.vhlru.ru/en/stats/players/ — официальная сезонная статистика ВХЛ.
+    "39594": {"position":"forward","seasons":[{"season":"25/26","league":"VHL","gp":18,"team":"HC Norilsk","stage":"regular"}]},
   }
 };
