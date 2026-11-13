@@ -262,6 +262,7 @@ const existingHistoryIds = new Set(
 );
 // История должна покрывать всех игроков текущих составов, а не старый лимит в 500 записей.
 const historyAdditions = [];
+const playersWithoutConfirmedGames = [];
 const historyIdsAfterImport = new Set(existingHistoryIds);
 for (const [id, playerStats] of Object.entries(outputPlayers)) {
   if (existingHistoryIds.has(id)) continue;
@@ -272,10 +273,18 @@ for (const [id, playerStats] of Object.entries(outputPlayers)) {
     ...(row.team ? { team: row.team } : {}),
     stage: row.stage === 'playoff' ? 'playoffs' : 'regular'
   }));
-  if (!seasons.length) continue;
+  if (!seasons.length) {
+    // Профиль сохраняется для полноты текущего состава, но подтверждённых матчей в импортируемом периоде нет.
+    playersWithoutConfirmedGames.push({ id, name: rosterPlayers.get(id)?.name || id });
+  }
+  const historyEntry = {
+    position: playerStats.position,
+    seasons,
+    ...(!seasons.length ? { historyStatus: 'no-confirmed-games-in-imported-period' } : {})
+  };
   historyAdditions.push(
-    `    // Источник: ${BASE}/en/stats/players/ — официальная сезонная статистика ВХЛ.\n` +
-    `    "${id}": ${JSON.stringify({ position: playerStats.position, seasons })}`
+    `    // Источник: ${BASE}/en/stats/players/ — официальная сезонная статистика ВХЛ.\\n` +
+    `    "${id}": ${JSON.stringify(historyEntry)}`
   );
   historyIdsAfterImport.add(id);
 }
@@ -312,6 +321,7 @@ const report = [
   `- Игроков в текущих составах: ${rosterPlayers.size}`,
   `- Игроков с сезонной статистикой за выбранные сезоны: ${Object.keys(outputPlayers).length}`,
   `- Игроков текущих составов с карьерной историей: ${rosterPlayers.size - missingRosterHistory.length}/${rosterPlayers.size}`,
+  `- Игроков без подтверждённых матчей за импортируемые сезоны: ${playersWithoutConfirmedGames.length}`,
   `- Игроков в карьерной истории после импорта: ${historyTotal}`,
   `- Новых игроков добавлено в карьерную историю: ${historyAdditions.length}`,
   `- Сезоны: ${seasons.join(', ')}`,
