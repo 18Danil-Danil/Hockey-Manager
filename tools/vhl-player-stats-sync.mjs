@@ -6,6 +6,7 @@
  */
 import fs from 'node:fs/promises';
 import { findSuspiciousCrossSeasonDuplicates } from './player-stats-quality.mjs';
+import { parseVhlTournamentOptions } from './vhl-tournament-map.mjs';
 
 const BASE = 'https://www.vhlru.ru';
 const USER_AGENT = 'HockeyManagerVHLStatsBot/1.0 (low-frequency statistics import)';
@@ -13,18 +14,11 @@ const INPUT_FILE = 'data/vhl-rosters.js';
 const OUTPUT_FILE = 'data/vhl-player-stats.js';
 const HISTORY_FILE = 'data/player-league-history.js';
 const REPORT_FILE = 'vhl-player-stats-report.md';
-const DELAY_MS = 900;
-const SEASONS = lastCompletedSeasons();
+const DELAY_MS = 1100;
+const SEASONS_TO_IMPORT = 10;
 
-function lastCompletedSeasons(now = new Date()) {
-  const currentStartYear = now.getUTCMonth() >= 8 ? now.getUTCFullYear() : now.getUTCFullYear() - 1;
-  return [1, 2, 3].map(offset => {
-    const endYear = currentStartYear - offset + 1;
-    return {
-      endYear,
-      label: String(endYear - 1).slice(-2) + '/' + String(endYear).slice(-2)
-    };
-  });
+function seasonLabel(endYear) {
+  return String(endYear - 1).slice(-2) + '/' + String(endYear).slice(-2);
 }
 function decode(value) {
   return String(value)
@@ -148,41 +142,57 @@ const robotsResponse = await fetch(`${BASE}/robots.txt`, {
 });
 if (!robotsResponse.ok) throw new Error(`Не удалось проверить robots.txt: HTTP ${robotsResponse.status}`);
 const robotsText = await robotsResponse.text();
-if (!robotsAllowsPath(robotsText, '/en/stats/players/')) {
-  throw new Error('robots.txt не разрешает автоматическое обращение к сезонной статистике. Сбор остановлен.');
+if (!robotsAllowsPath(robotsText, '/en/stats/players/') ||
+    !robotsAllowsPath(robotsText, '/en/calendar/')) {
+  throw new Error('robots.txt не разрешает автоматическое обращение к календарю или сезонной статистике. Сбор остановлен.');
 }
+
+// В URL статистики нужен не год сезона, а внутренний tournament ID (tn).
+// Его нельзя вычислять арифметически: ВХЛ назначает отдельный ID каждому этапу.
+const calendarHtml = await getText(`${BASE}/en/calendar/`);
+const tournaments = parseVhlTournamentOptions(calendarHtml);
+if (!tournaments.length) throw new Error('В календаре ВХЛ не найдены сезоны и этапы.');
+const selectedYears = [...new Set(tournaments.map(item => item.endYear))]
+  .sort((a, b) => b - a).slice(0, SEASONS_TO_IMPORT);
+const selectedYearSet = new Set(selectedYears);
+const targets = tournaments
+  .filter(item => selectedYearSet.has(item.endYear))
+  .sort((a, b) => b.endYear - a.endYear || (a.stage === 'regular' ? -1 : 1));
+const seasons = [...selectedYears].sort((a, b) => b - a).map(seasonLabel);
+console.log(`Найдены турниры ВХЛ: ${targets.length}; сезоны: ${seasons.join(', ')}`);
 
 const outputPlayers = {};
 const failures = [];
 const pageReports = [];
 const emptyPages = [];
-for (const seasonInfo of SEASONS) {
-  for (const stage of ['regular', 'playoff']) {
-    const url = `${BASE}/en/stats/players/${seasonInfo.endYear}/?stage=${stage}`;
-    try {
-      const html = await getText(url);
-      const seasonPlayers = parseSeasonStats(html, seasonInfo.label, stage, rosterPlayers);
-      let rowsAdded = 0;
-      for (const [id, records] of seasonPlayers) {
-        if (!outputPlayers[id]) outputPlayers[id] = { position: rosterPlayers.get(id).position, seasons: [] };
-        outputPlayers[id].seasons.push(...records);
-        rowsAdded += records.length;
-      }
-      pageReports.push(`- ${seasonInfo.label} (${stage}): ${seasonPlayers.size} игроков, ${rowsAdded} строк статистики`);
-      if (!rowsAdded) emptyPages.push(`${seasonInfo.label} (${stage})`);
-      console.log(`Загружен сезон ${seasonInfo.label} / ${stage}: ${seasonPlayers.size} игроков`);
-    } catch (error) {
-      failures.push(`${seasonInfo.label} ${stage}: ${error.message}`);
+for (const target of targets) {
+  const label = seasonLabel(target.endYear);
+  const url = `${BASE}/en/stats/players/${target.tn}/`;
+  try {
+    const html = await getText(url);
+    const sourcePlayerRows = [...html.matchAll(/href=["'][^"']*\\/players\\/(\\d+)\\/?(?:\\?[^"']*)?["']/gi)].length;
+    const seasonPlayers = parseSeasonStats(html, label, target.stage, rosterPlayers);
+    let rowsAdded = 0;
+    for (const [id, records] of seasonPlayers) {
+      if (!outputPlayers[id]) outputPlayers[id] = { position: rosterPlayers.get(id).position, seasons: [] };
+      outputPlayers[id].seasons.push(...records);
+      rowsAdded += records.length;
     }
-    await sleep(DELAY_MS);
+    pageReports.push(`- ${label} (${target.stage}, tn=${target.tn}): ${sourcePlayerRows} строк источника, ${seasonPlayers.size} игроков из текущих составов, ${rowsAdded} строк статистики`);
+    // Пустой источник — ошибка. Ноль совпадений с текущими составами допустим для старых сезонов.
+    if (!sourcePlayerRows) emptyPages.push(`${label} (${target.stage}, tn=${target.tn})`);
+    console.log(`Загружен ${label} / ${target.stage} (tn=${target.tn}): ${seasonPlayers.size} игроков текущих составов из ${sourcePlayerRows} строк`);
+  } catch (error) {
+    failures.push(`${label} ${target.stage} (tn=${target.tn}): ${error.message}`);
   }
+  await sleep(DELAY_MS);
 }
 
 if (emptyPages.length) {
   const diagnostic = [
     '# Отчёт проверки качества сезонной статистики ВХЛ',
     '',
-    '- Импорт остановлен: одна или несколько ожидаемых таблиц вернули ноль строк.',
+    '- Импорт остановлен: одна или несколько существующих турнирных таблиц вернули ноль строк источника.',
     '- Пустые выборки: ' + emptyPages.join(', '),
     '- Сезонные таблицы:',
     ...pageReports,
@@ -248,9 +258,9 @@ if (historyAdditions.length) await fs.writeFile(HISTORY_FILE, updatedHistory, 'u
 const payload = {
   schemaVersion: 1,
   source: 'vhlru',
-  sourceUrl: `${BASE}/en/stats/players/{season}/?stage={regular|playoff}`,
+  sourceUrl: `${BASE}/en/stats/players/{tournamentId}/ (tournamentId resolved from the official calendar)`,
   importedAt: new Date().toISOString(),
-  seasons: SEASONS.map(item => item.label),
+  seasons,
   players: outputPlayers
 };
 await fs.writeFile(OUTPUT_FILE, '/* Сезонная статистика ВХЛ; формируется tools/vhl-player-stats-sync.mjs. */\nwindow.VHL_PLAYER_STATS_DATA = ' + JSON.stringify(payload) + ';\n', 'utf8');
@@ -261,7 +271,7 @@ const report = [
   `- Игроков с сезонной статистикой за выбранные сезоны: ${Object.keys(outputPlayers).length}`,
   `- Игроков в карьерной истории после импорта: ${historyTotal}`,
   `- Новых игроков добавлено в карьерную историю: ${historyAdditions.length}`,
-  `- Сезоны: ${SEASONS.map(item => item.label).join(', ')}`,
+  `- Сезоны: ${seasons.join(', ')}`,
   `- Дата импорта: ${payload.importedAt}`, '',
   '## Загруженные таблицы',
   ...pageReports,
