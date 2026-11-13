@@ -187,13 +187,13 @@ for (const [id, playerStats] of Object.entries(outputPlayers)) {
   }));
   if (!seasons.length) continue;
   historyAdditions.push(
-    \`    // Источник: https://www.vhlru.ru/players/\${id}/ — сезонная статистика по официальной карточке игрока.\n\` +
-    \`    "\${id}": \${JSON.stringify({ position: playerStats.position, seasons })}\`
+    `    // Источник: https://www.vhlru.ru/players/${id}/ — сезонная статистика по официальной карточке игрока.\n` +
+    `    "${id}": ${JSON.stringify({ position: playerStats.position, seasons })}`
   );
 }
 const historyTotal = existingHistoryIds.size + historyAdditions.length;
 if (historyTotal < historyTarget) {
-  throw new Error(\`Недостаточно подтверждённых профилей для цели \${historyTarget}: собрано \${historyTotal}. История не перезаписывается.\`);
+  throw new Error(`Недостаточно подтверждённых профилей для цели ${historyTarget}: собрано ${historyTotal}. История не перезаписывается.`);
 }
 if (historyAdditions.length) {
   const updatedHistory = historyText.replace(
@@ -211,13 +211,13 @@ const payload = {
 await fs.writeFile(OUTPUT_FILE, '/* Сезонная статистика ВХЛ; формируется tools/vhl-player-stats-sync.mjs. */\nwindow.VHL_PLAYER_STATS_DATA = ' + JSON.stringify(payload) + ';\n', 'utf8');
 const report = [
   '# Отчёт импорта статистики игроков ВХЛ', '',
-  \`- Игроков в текущих составах: \${players.size}\`,
-  \`- Профилей со статистикой за выбранные сезоны: \${withStats}\`,
-  \`- Игроков в карьерной истории после импорта: \${historyTotal}\`,
-  \`- Новых игроков добавлено в карьерную историю: \${historyAdditions.length}\`,
-  \`- Сезоны: \${SEASONS.join(', ')}\`,
-  \`- Дата импорта: \${payload.importedAt}\`,
-  \`- Ошибок загрузки: \${failures.length}\`, '',
+  `- Игроков в текущих составах: ${players.size}`,
+  `- Профилей со статистикой за выбранные сезоны: ${withStats}`,
+  `- Игроков в карьерной истории после импорта: ${historyTotal}`,
+  `- Новых игроков добавлено в карьерную историю: ${historyAdditions.length}`,
+  `- Сезоны: ${SEASONS.join(', ')}`,
+  `- Дата импорта: ${payload.importedAt}`,
+  `- Ошибок загрузки: ${failures.length}`, '',
   '## Ошибки',
   ...(failures.length ? failures.slice(0, 100).map(value => '- ' + value) : ['- Нет'])
 ].join('\n');
