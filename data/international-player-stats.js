@@ -1,4 +1,4 @@
-/* Срез реальных игроков Pro Hokei Ligasy и Betera-Экстралиги, сезон 2026/27.
+/* Срез реальных игроков Pro Hokei Ligasy и Betera-Экстралиги, сезон 2026/27 для Казахстана, Беларуси и КХЛ.
    Статистика регулярного чемпионата. Имена и гражданство сверены по Elite Prospects;
    данные Казахстана дополнительно сверялись с официальной Pro Hokei Ligasy.
    Возраст намеренно не подставляется из догадок: если он не подтверждён профилем,
@@ -6,8 +6,8 @@
 window.INTERNATIONAL_PLAYER_STATS_DATA = {
   season:'26/27',
   snapshot:'2026-11-13',
-  source:'Pro Hokei Ligasy (Kazakhstan top-50 current official stats); ScanGoal (Belarus top scorers through 2026-11-11); Elite Prospects (additional player depth and Belarus season stats)',
-  sources:{kazakhstanOfficial:'https://pro.ligasy.kz/ru/stats',kazakhstanDepth:'https://www.eliteprospects.com/league/kazakhstan/stats/2026-2027',belarusScoring:'https://scangoal.com/hockey/league/belarus-extraleague',belarusStats:'https://www.eliteprospects.com/league/belarus/stats/2026-2027'},
+  source:'Pro Hokei Ligasy (Kazakhstan official stats); ScanGoal and Elite Prospects (Belarus); Sport-Express (KHL 2026/27 player leaders, snapshot 2026-11-13)',
+  sources:{kazakhstanOfficial:'https://pro.ligasy.kz/ru/stats',kazakhstanDepth:'https://www.eliteprospects.com/league/kazakhstan/stats/2026-2027',belarusScoring:'https://scangoal.com/hockey/league/belarus-extraleague',belarusStats:'https://www.eliteprospects.com/league/belarus/stats/2026-2027',khl:'https://www.sport-express.net/hockey/L/khl/2026-2027/statistic/'},
   players:[
     // Казахстан: первые 30 полевых игроков по результативности
     {key:'kz-sannikov',league:'kazakhstan',club:'arlan-kokshetau',name:'Степан Санников',position:'LW',nationality:'Россия',gp:25,g:22,a:22,pim:60,pm:27,statsSource:'Pro Hokei Ligasy'},
@@ -192,6 +192,39 @@ window.INTERNATIONAL_PLAYER_STATS_DATA = {
     {key:'by-shikut',league:'belarus',club:'brest',name:'Андрей Шикуть',position:'D',nationality:'Беларусь',gp:19,g:2,a:9,pim:6,pm:7,statsSource:'Elite Prospects 2026-27'},
     {key:'by-guskov',league:'belarus',club:'khimik-novopolotsk',name:'Иван Гуськов',position:'C',nationality:'Россия',gp:21,g:8,a:2,pim:4,pm:-14,statsSource:'Elite Prospects 2026-27'},
     {key:'by-kachelovsky',league:'belarus',club:'gomel',name:'Олег Качеловский',position:'LW',nationality:'Беларусь',gp:17,g:2,a:8,pim:10,pm:-3,statsSource:'Elite Prospects 2026-27'}
-
+,
+    {"key":"khl-justin-bailey","league":"khl","club":"khl-barys","name":"Джастин Бэйли","position":"C","nationality":"Канада","gp":25,"g":13,"a":11,"pim":22,"pm":-2,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-chris-tierney","league":"khl","club":"khl-dynamo-minsk","name":"Крис Тирни","position":"C","nationality":"Канада","gp":25,"g":3,"a":21,"pim":2,"pm":-3,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-nathan-todd","league":"khl","club":"khl-metallurg","name":"Нэйтан Тодд","position":"C","nationality":"Канада","gp":26,"g":11,"a":12,"pim":14,"pm":12,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-sheldon-rempal","league":"khl","club":"khl-salavat","name":"Шелдон Ремпал","position":"C","nationality":"Канада","gp":26,"g":11,"a":12,"pim":22,"pm":-5,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-prokhor-poltapov","league":"khl","club":"khl-cska","name":"Прохор Полтапов","position":"C","nationality":"Россия","gp":24,"g":10,"a":11,"pim":6,"pm":14,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-andrey-belozerov","league":"khl","club":"khl-neftekhimik","name":"Андрей Белозёров","position":"C","nationality":"Россия","gp":26,"g":8,"a":13,"pim":10,"pm":-1,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-nikolay-goldobin","league":"khl","club":"khl-ska","name":"Николай Голдобин","position":"C","nationality":"Россия","gp":17,"g":3,"a":18,"pim":8,"pm":1,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-grigory-denisenko","league":"khl","club":"khl-ak-bars","name":"Григорий Денисенко","position":"C","nationality":"Россия","gp":27,"g":7,"a":13,"pim":12,"pm":-6,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-mason-morelli","league":"khl","club":"khl-barys","name":"Мэйсон Морелли","position":"C","nationality":"США","gp":25,"g":6,"a":14,"pim":16,"pm":-4,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-valery-orekhov","league":"khl","club":"khl-metallurg","name":"Валерий Орехов","position":"D","nationality":"Казахстан","gp":25,"g":5,"a":15,"pim":16,"pm":12,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-maxim-sorkin","league":"khl","club":"khl-cska","name":"Максим Соркин","position":"C","nationality":"Россия","gp":25,"g":13,"a":5,"pim":2,"pm":13,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-dmitry-yashkin","league":"khl","club":"khl-shanghai","name":"Дмитрий Яшкин","position":"C","nationality":"Чехия","gp":24,"g":12,"a":5,"pim":16,"pm":1,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-brett-murray","league":"khl","club":"khl-shanghai","name":"Бретт Мюррей","position":"C","nationality":"Канада","gp":24,"g":11,"a":7,"pim":2,"pm":12,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-thys-thompson","league":"khl","club":"khl-barys","name":"Тайс Томпсон","position":"C","nationality":"Канада","gp":25,"g":11,"a":3,"pim":10,"pm":1,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-denis-vengryzhanovsky","league":"khl","club":"khl-sochi","name":"Денис Венгрыжановский","position":"C","nationality":"Россия","gp":25,"g":11,"a":1,"pim":8,"pm":-15,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-alexander-belyaev","league":"khl","club":"khl-spartak","name":"Александр Беляев","position":"C","nationality":"Россия","gp":22,"g":10,"a":3,"pim":4,"pm":0,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-nikita-nesterov","league":"khl","club":"khl-cska","name":"Никита Нестеров","position":"D","nationality":"Россия","gp":24,"g":0,"a":16,"pim":2,"pm":14,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-brennan-menell","league":"khl","club":"khl-shanghai","name":"Бреннан Менелл","position":"D","nationality":"США","gp":24,"g":3,"a":16,"pim":4,"pm":9,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-rushan-rafikov","league":"khl","club":"khl-lokomotiv","name":"Рушан Рафиков","position":"D","nationality":"Россия","gp":24,"g":4,"a":16,"pim":4,"pm":3,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-egor-zamula","league":"khl","club":"khl-cska","name":"Егор Замула","position":"D","nationality":"Россия","gp":25,"g":1,"a":15,"pim":4,"pm":8,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-vladimir-tkachyov","league":"khl","club":"khl-torpedo","name":"Владимир Ткачёв","position":"C","nationality":"Россия","gp":25,"g":5,"a":15,"pim":4,"pm":7,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-chase-priskie","league":"khl","club":"khl-barys","name":"Чэйз Приски","position":"D","nationality":"США","gp":25,"g":4,"a":15,"pim":22,"pm":0,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-grigory-dronov","league":"khl","club":"khl-traktor","name":"Григорий Дронов","position":"D","nationality":"Россия","gp":26,"g":5,"a":15,"pim":8,"pm":-11,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-alexander-trushkov","league":"khl","club":"khl-amur","name":"Александр Трушков","position":"G","nationality":"Россия","gp":8,"w":6,"l":2,"svPct":95.71,"gaa":1.22,"so":4,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-daniil-isaev","league":"khl","club":"khl-lokomotiv","name":"Даниил Исаев","position":"G","nationality":"Россия","gp":19,"w":14,"l":5,"svPct":93.75,"gaa":1.42,"so":0,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-dmitry-gamzin","league":"khl","club":"khl-cska","name":"Дмитрий Гамзин","position":"G","nationality":"Россия","gp":14,"w":9,"l":5,"svPct":93.11,"gaa":1.49,"so":3,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-maxim-dorozhko","league":"khl","club":"khl-amur","name":"Максим Дорожко","position":"G","nationality":"Россия","gp":17,"w":7,"l":10,"svPct":94.07,"gaa":1.83,"so":3,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-egor-zavragin","league":"khl","club":"khl-metallurg","name":"Егор Заврагин","position":"G","nationality":"Россия","gp":9,"w":4,"l":5,"svPct":92.51,"gaa":1.88,"so":0,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-ivan-prosvetov","league":"khl","club":"khl-avangard","name":"Иван Просветов","position":"G","nationality":"США","gp":8,"w":4,"l":4,"svPct":93.36,"gaa":1.88,"so":0,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-alexander-samonov","league":"khl","club":"khl-cska","name":"Александр Самонов","position":"G","nationality":"Россия","gp":11,"w":10,"l":1,"svPct":91.92,"gaa":1.9,"so":2,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-alexey-melnichuk","league":"khl","club":"khl-lokomotiv","name":"Алексей Мельничук","position":"G","nationality":"Россия","gp":6,"w":3,"l":3,"svPct":91.54,"gaa":1.96,"so":0,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-artem-zagidulin","league":"khl","club":"khl-spartak","name":"Артём Загидулин","position":"G","nationality":"Россия","gp":13,"w":6,"l":7,"svPct":91.61,"gaa":2,"so":0,"statsSource":"Спорт-Экспресс, 13.11.2026"},
+    {"key":"khl-pavel-khomchenko","league":"khl","club":"khl-shanghai","name":"Павел Хомченко","position":"G","nationality":"Россия","gp":12,"w":7,"l":5,"svPct":93.84,"gaa":2,"so":0,"statsSource":"Спорт-Экспресс, 13.11.2026"}
   ]
 };
