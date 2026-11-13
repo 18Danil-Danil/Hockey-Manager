@@ -81,7 +81,8 @@ export function parseVhlCareer(html) {
   }
   return [...unique.values()].sort((a, b) =>
     b.season.localeCompare(a.season, 'en', { numeric: true }) ||
-    a.stage.localeCompare(b.stage) || a.team.localeCompare(b.team)
+    (a.stage === b.stage ? 0 : a.stage === 'regular' ? -1 : 1) ||
+    a.team.localeCompare(b.team)
   );
 }
 
