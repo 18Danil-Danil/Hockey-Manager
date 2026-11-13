@@ -1233,12 +1233,14 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 258 }
       ]
     },
-    // Владимир Барабанов — 442 матча ВХЛ по актуальной суммарной статистике.
-    // Источник: https://www.vhlru/stats/players/all/
+    // Владимир Барабанов — 442 матча ВХЛ и 208 матчей МХЛ.
+    // Источники: https://www.vhlru/stats/players/all/
+    // https://mhl.khl.ru/players/20973/
     "20973": {
       position: "forward",
       career: [
-        { scope: "career", league: "VHL", gp: 442 }
+        { scope: "career", league: "VHL", gp: 442 },
+        { scope: "career", league: "MHL", gp: 208 }
       ]
     },
     // Павел Ткаченко — 371 матч ВХЛ по актуальной суммарной статистике.
