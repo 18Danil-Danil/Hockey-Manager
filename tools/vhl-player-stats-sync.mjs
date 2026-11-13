@@ -170,7 +170,7 @@ for (const target of targets) {
   const url = `${BASE}/en/stats/players/${target.tn}/`;
   try {
     const html = await getText(url);
-    const sourcePlayerRows = [...html.matchAll(/href=["'][^"']*\\/players\\/(\\d+)\\/?(?:\\?[^"']*)?["']/gi)].length;
+    const sourcePlayerRows = [...html.matchAll(/href=["'][^"']*\/players\/(\d+)\/?(?:\?[^"']*)?["']/gi)].length;
     const seasonPlayers = parseSeasonStats(html, label, target.stage, rosterPlayers);
     let rowsAdded = 0;
     for (const [id, records] of seasonPlayers) {
@@ -198,8 +198,8 @@ if (emptyPages.length) {
     ...pageReports,
     '',
     'Новые данные не опубликованы. Проверьте параметры выбора сезона и этапа на сайте-источнике.'
-  ].join('\\n');
-  await fs.writeFile(REPORT_FILE, diagnostic + '\\n', 'utf8');
+  ].join('\n');
+  await fs.writeFile(REPORT_FILE, diagnostic + '\n', 'utf8');
   throw new Error('Статистический импорт остановлен: пустые таблицы — ' + emptyPages.join(', '));
 }
 
