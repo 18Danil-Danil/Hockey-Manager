@@ -338,7 +338,7 @@ async function main() {
     throw new Error('robots.txt не разрешает автоматическое обращение к карточкам игроков. Сбор остановлен.');
   }
 
-  let successful = 0, notFound = 0, empty = 0, addedSeasons = 0, enrichedSeasons = 0;
+  let successful = 0, notFound = 0, empty = 0, addedSeasons = 0, enrichedSeasons = 0, consecutiveFailures = 0;
   const failures = [];
   const reportRows = [];
 
@@ -348,9 +348,11 @@ async function main() {
     try {
       const html = await getText(url);
       if (html === null) {
+        consecutiveFailures = 0;
         notFound++;
         reportRows.push('- ' + id + ': карточка не найдена (404)');
       } else {
+        consecutiveFailures = 0;
         successful++;
         const rows = parseVhlCareer(html);
         if (!rows.length) {
@@ -367,7 +369,9 @@ async function main() {
     } catch (error) {
       if (error.fatal) throw error;
       failures.push(id + ': ' + error.message);
+      consecutiveFailures++;
       reportRows.push('- ' + id + ': ошибка — ' + error.message);
+      if (consecutiveFailures >= 5) throw new Error('Сбор остановлен после пяти последовательных ошибок источника: ' + error.message);
     }
     if ((index + 1) % 50 === 0) console.log('Обработано ' + (index + 1) + '/' + playerIds.length);
     if (index + 1 < playerIds.length) await sleep(DELAY_MS);
