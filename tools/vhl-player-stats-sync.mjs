@@ -5,8 +5,6 @@
  * сопоставляет игроков с текущими составами и дополняет карьерную историю.
  */
 import fs from 'node:fs/promises';
-import https from 'node:https';
-import dns from 'node:dns';
 import { findSuspiciousCrossSeasonDuplicates } from './player-stats-quality.mjs';
 import { parseVhlTournamentOptions } from './vhl-tournament-map.mjs';
 import { parseVhlPlayerCareer } from './vhl-player-career-parser.mjs';
@@ -71,87 +69,16 @@ function robotsAllowsPath(robotsText, targetPath) {
   return !rules.length || rules[0].type === 'allow';
 }
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-async function getText(url, redirects = 0) {
-  return new Promise((resolve, reject) => {
-    const parsed = new URL(url);
-    const request = https.request(parsed, {
-      headers: { 'User-Agent': USER_AGENT, 'Accept': 'text/html, text/plain;q=0.9, */*;q=0.8' },
-      // VHL has multiple A records; one of them intermittently stalls. Pin only this host
-      // to the working address documented by the independent fastRhockey client.
-      lookup(hostname, optionsOrCallback, maybeCallback) {
-        const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
-        const options = typeof optionsOrCallback === 'function' ? {} : (optionsOrCallback || {});
-        if (hostname === 'www.vhlru.ru') {
-          if (options.all) callback(null, [{ address: '188.128.49.29', family: 4 }]);
-          else callback(null, '188.128.49.29', 4);
-        } else {
-          dns.lookup(hostname, options, callback);
-        }
-      }
-    }, response => {
-      const status = response.statusCode || 0;
-      if ([301, 302, 303, 307, 308].includes(status) && response.headers.location) {
-        response.resume();
-        if (redirects >= 5) return reject(new Error('Слишком много перенаправлений: ' + url));
-        return resolve(getText(new URL(response.headers.location, url).href, redirects + 1));
-      }
-      const chunks = [];
-      response.on('data', chunk => chunks.push(chunk));
-      response.on('end', () => {
-        const body = Buffer.concat(chunks).toString('utf8');
-        if (status < 200 || status >= 300) return reject(new Error(`HTTP ${status}: ${url}`));
-        resolve(body);
-      });
-    });
-    request.setTimeout(25000, () => request.destroy(new Error('Тайм-аут запроса: ' + url)));
-    request.on('error', reject);
-    request.end();
+async function getText(url) {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': USER_AGENT,
+      'Accept': 'text/html, text/plain;q=0.9, */*;q=0.8'
+    },
+    signal: AbortSignal.timeout(25000)
   });
-}
-
-
-function parseSeasonStats(html, season, stage, rosterPlayers) {
-  const rows = [...html.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)];
-  const parsed = new Map();
-  for (const match of rows) {
-    const rowHtml = match[1];
-    const idMatch = rowHtml.match(/href=["'][^"']*\/players\/(\d+)\/?(?:\?[^"']*)?["']/i);
-    if (!idMatch) continue;
-    const id = idMatch[1];
-    const player = rosterPlayers.get(id);
-    if (!player) continue;
-    const c = cellsOf(rowHtml);
-    if (c.length < 4) continue;
-    const gp = numeric(c[3]);
-    if (!gp || gp <= 0) continue;
-
-    let record;
-    if (player.position === 'goaltender') {
-      if (c.length < 17) continue;
-      record = {
-        season, stage, gp, team: c[2],
-        wins: numeric(c[4]), losses: numeric(c[5]),
-        shotsAgainst: numeric(c[7]), goalsAgainst: numeric(c[8]),
-        saves: numeric(c[9]), savePct: numeric(c[10]), gaa: numeric(c[11]),
-        goals: numeric(c[12]), assists: numeric(c[13]), shutouts: numeric(c[14]),
-        pim: numeric(c[15]), minutes: minutes(c[16])
-      };
-    } else {
-      if (c.length < 27) continue;
-      record = {
-        season, stage, gp, team: c[2],
-        goals: numeric(c[4]), assists: numeric(c[5]), points: numeric(c[6]),
-        plusMinus: numeric(c[7]), pim: numeric(c[10]), ppGoals: numeric(c[12]),
-        shots: numeric(c[17]), shootingPct: numeric(c[18]),
-        faceoffs: numeric(c[20]), faceoffsWon: numeric(c[21]),
-        faceoffPct: numeric(c[22]), toiPerGame: minutes(c[23]),
-        shiftsPerGame: numeric(c[24]), hits: numeric(c[25]), blocks: numeric(c[26])
-      };
-    }
-    if (!parsed.has(id)) parsed.set(id, []);
-    parsed.get(id).push(record);
-  }
-  return parsed;
+  if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
+  return response.text();
 }
 
 const sourceText = await fs.readFile(INPUT_FILE, 'utf8');
@@ -176,9 +103,27 @@ if (!robotsAllowsPath(robotsText, '/en/stats/players/') ||
 
 // В URL статистики нужен не год сезона, а внутренний tournament ID (tn).
 // Его нельзя вычислять арифметически: ВХЛ назначает отдельный ID каждому этапу.
-const calendarHtml = await getText(`${BASE}/en/calendar/`);
-const tournaments = parseVhlTournamentOptions(calendarHtml);
-if (!tournaments.length) throw new Error('В календаре ВХЛ не найдены сезоны и этапы.');
+let tournamentHtml = await getText(`${BASE}/en/calendar/`);
+let tournaments;
+try {
+  tournaments = parseVhlTournamentOptions(tournamentHtml);
+} catch (calendarError) {
+  // The stats page exposes the same tournament selector; use it if the calendar
+  // response is an incomplete shell or is temporarily served without its options.
+  tournamentHtml = await getText(`${BASE}/en/stats/players/`);
+  try {
+    tournaments = parseVhlTournamentOptions(tournamentHtml);
+  } catch (statsError) {
+    await fs.writeFile(REPORT_FILE, [
+      '# Ошибка чтения списка турниров ВХЛ',
+      '',
+      '- Календарь: ' + calendarError.message,
+      '- Страница статистики: ' + statsError.message,
+      '- Фрагмент ответа: ' + String(tournamentHtml).slice(0, 500).replace(/</g, '&lt;')
+    ].join('\\n') + '\\n', 'utf8');
+    throw new Error('Не удалось прочитать список турниров ни из календаря, ни из статистики ВХЛ.');
+  }
+}
 const selectedYears = [...new Set(tournaments.map(item => item.endYear))]
   .sort((a, b) => b - a).slice(0, SEASONS_TO_IMPORT);
 const selectedYearSet = new Set(selectedYears);
