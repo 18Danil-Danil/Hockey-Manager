@@ -1924,5 +1924,37 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 378 }
       ]
     },
+    // Максим Марушев — 285 матчей ВХЛ (252 регулярных + 33 плей-офф).
+    // Источник: https://www.vhlru/players/24304/
+    "24304": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 285 }
+      ]
+    },
+    // Искандер Мулюков — 322 матча ВХЛ (280 регулярных + 42 плей-офф).
+    // Источник: https://www.vhlru/players/24557/
+    "24557": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 322 }
+      ]
+    },
+    // Алексей Липанов — 259 матчей ВХЛ (230 регулярных + 29 плей-офф).
+    // Источник: https://www.vhlru/players/24577/
+    "24577": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 259 }
+      ]
+    },
+    // Семён Переляев — 391 матч ВХЛ (348 регулярных + 43 плей-офф).
+    // Источник: https://www.vhlru/players/24838/
+    "24838": {
+      position: "defense",
+      career: [
+        { scope: "career", league: "VHL", gp: 391 }
+      ]
+    },
   }
 };
