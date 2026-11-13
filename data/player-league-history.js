@@ -1251,5 +1251,37 @@ window.VHL_PLAYER_LEAGUE_HISTORY = {
         { scope: "career", league: "VHL", gp: 371 }
       ]
     },
+    // Глеб Кузьмин — 309 матчей ВХЛ (160 регулярных + 21 плей-офф и другие сезоны).
+    // Источник: https://www.vhlru/players/22170/
+    "22170": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 309 }
+      ]
+    },
+    // Игорь Угольников — 329 матчей ВХЛ по актуальной суммарной статистике.
+    // Источник: https://www.vhlru/players/21132/
+    "21132": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 329 }
+      ]
+    },
+    // Евгений Киселёв — 246 матчей ВХЛ (240 регулярных + 6 плей-офф).
+    // Источник: https://www.vhlru/players/22131/
+    "22131": {
+      position: "goaltender",
+      career: [
+        { scope: "career", league: "VHL", gp: 246 }
+      ]
+    },
+    // Дамир Рахимуллин — 318 матчей ВХЛ (250 регулярных + 68 плей-офф).
+    // Источник: https://www.vhlru/players/23638/
+    "23638": {
+      position: "forward",
+      career: [
+        { scope: "career", league: "VHL", gp: 318 }
+      ]
+    },
   }
 };
