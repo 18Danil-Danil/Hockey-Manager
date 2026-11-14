@@ -711,7 +711,7 @@ function generateAIIncomingLoanOffer() {
   G.league.aiLoanOffers.push(offer);
   addInboxMessage('league', borrower.name, 'Предложение аренды',
     borrower.name + ' хочет взять ' + player.name + ' в аренду на ' + offer.rounds + ' туров. Клуб готов оплачивать ' + offer.wageShare + '% зарплаты и предложил ' + offer.fee.toFixed(1) + ' млн ₽.',
-    [{ label: 'Открыть аренды', action: 'open_loans', payload: {} }]);
+    []);
   addNews('signing', borrower.name + ' направил запрос на аренду хоккеиста ' + player.name + ' из ' + parent.name + '.', 1);
   return true;
 }
