@@ -113,7 +113,7 @@ const archiveBorrower = team(499, [], { balance: 20, salaryCap: 100 });
 archivePlayer.loan = { parentTeamId: 498, parentTeamName: 'Owner', borrowerTeamId: 499, borrowerTeamName: 'Borrower', startRound: 1, endRound: 8, wageShare: 50, fee: 1.2, role: 'rotation', roleLabel: 'Ротация', performance: { gp: 5, goals: 2, assists: 3, points: 5, wins: 0, saves: 0, shotsAgainst: 0, goalsAgainst: 0, shutouts: 0 } };
 context.G = { playerTeamId: 498, league: { currentRound: 7, teams: [archiveOwner, archiveBorrower], loanLog: [] } };
 context.showToast = () => {}; context.render = () => {}; context.saveGame = () => {}; context.syncLines = () => {};
-assert.equal(context.returnLoanPlayer(498), true);
+assert.equal(context.returnLoanPlayer(498, 'recall'), true);
 const archivedLoan = context.G.league.loanLog[0];
 assert.equal(archivedLoan.startRound, 1);
 assert.equal(archivedLoan.endRound, 8);
