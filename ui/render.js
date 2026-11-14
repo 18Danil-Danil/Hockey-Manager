@@ -1397,6 +1397,14 @@ function renderModal() {
     '<section class="profile-section"><span class="profile-eyebrow">ПЕРЕМЕЩЕНИЯ</span><h2>История переходов</h2>'+transferHtml+'</section>'+
     '<section class="profile-section"><span class="profile-eyebrow">ДОСТИЖЕНИЯ</span><h2>Индивидуальные награды</h2>'+awardHtml+'</section></div>'+
     '<aside class="profile-side-column"><section class="profile-section profile-contract"><span class="profile-eyebrow">СОГЛАШЕНИЕ</span><h2>Контракт</h2><div class="profile-contract-value"><b>'+Number(contract.salary||0).toFixed(1)+'</b><span>млн ₽ / сезон</span></div><div class="profile-contract-row"><span>Срок</span><b>'+(contract.years||0)+' лет</b></div><div class="profile-contract-row"><span>Статус</span><b>'+(p.status==='contract'?'Действует':p.status==='ufa'?'Свободный агент':p.status)+'</b></div>'+
+    ((contract.bonusGoal||contract.bonusAssist||contract.bonusGames||contract.bonusPlayoff||contract.bonusMvp||contract.bonusTopScorer)?'<div class="profile-contract-row"><span>Бонусы</span><b>'+[
+      contract.bonusGoal?'Гол '+Number(contract.bonusGoal).toFixed(2):'',
+      contract.bonusAssist?'Передача '+Number(contract.bonusAssist).toFixed(2):'',
+      contract.bonusGames?'10 матчей '+Number(contract.bonusGames).toFixed(2):'',
+      contract.bonusPlayoff?'Плей-офф '+Number(contract.bonusPlayoff).toFixed(1):'',
+      contract.bonusMvp?'MVP '+Number(contract.bonusMvp).toFixed(1):'',
+      contract.bonusTopScorer?'Бомбардир '+Number(contract.bonusTopScorer).toFixed(1):''
+    ].filter(Boolean).join(' · ')+' млн ₽</b></div>':'')+
     (canExtend?((p.contractRequest?.status==='pending'?'<p class="profile-muted">Хоккеист сам обратился с просьбой обсудить новый контракт. Ответьте до тура '+(Number(p.contractRequest.expiresRound)+1)+'.</p>':'')+'<div class="profile-action-group"><button class="btn" onclick="openPlayerContractNegotiation('+p.id+', \'renewal\')">'+(p.contractRequest?.status==='pending'?'Обсудить запрос игрока':'Начать переговоры о продлении')+'</button></div>'):'')+
     (isFreeAgent?'<div class="profile-action-group"><button class="btn" onclick="openPlayerContractNegotiation('+p.id+', \'signing\')">Предложить контракт</button></div>':'')+
     (canRelease?'<div class="profile-action-group"><button class="btn danger" onclick="handleRelease('+p.id+')">Расторгнуть · '+releaseCost.toFixed(1)+' млн ₽</button></div>':'')+'</section>'+
