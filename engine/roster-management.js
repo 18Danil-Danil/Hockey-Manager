@@ -511,7 +511,7 @@ function returnLoanPlayer(playerId, reason = 'early') {
   parent.roster.push(player);
   borrower.lines = null; parent.lines = null; syncLines(borrower); syncLines(parent);
   G.league.loanLog = Array.isArray(G.league.loanLog) ? G.league.loanLog : [];
-  G.league.loanLog.push({ playerId: player.id, playerName: player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, borrowerTeamName: borrower.name, returnedRound: G.league.currentRound, reason, performance, assessment, ...loanDetails });
+  G.league.loanLog.push({ playerId: player.id, playerName: player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, borrowerTeamName: borrower.name, returnedRound: G.league.currentRound, reason, performance, assessment, position: player.position, ...loanDetails });
   addNews('signing', player.name + ' вернулся из аренды в ' + parent.name, 2);
   showToast(player.name + ' возвращён из аренды', 'success');
   render(); saveGame({ immediate: true }); return true;
@@ -571,7 +571,7 @@ function processLoanExpirations() {
     parent.roster.push(item.player);
     item.team.lines = null; parent.lines = null; syncLines(item.team); syncLines(parent);
     G.league.loanLog = Array.isArray(G.league.loanLog) ? G.league.loanLog : [];
-    G.league.loanLog.push({ playerId: item.player.id, playerName: item.player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: item.team.id, borrowerTeamName: item.team.name, returnedRound: G.league.currentRound, reason: 'expired', performance, assessment, ...loanDetails });
+    G.league.loanLog.push({ playerId: item.player.id, playerName: item.player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: item.team.id, borrowerTeamName: item.team.name, returnedRound: G.league.currentRound, reason: 'expired', performance, assessment, position: item.player.position, ...loanDetails });
     addNews('signing', item.player.name + ' завершил аренду и вернулся в ' + parent.name, 2);
   }
 }
