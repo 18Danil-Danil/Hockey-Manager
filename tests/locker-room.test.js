@@ -68,7 +68,7 @@ assert.equal(team.lockerRoom.eventHistory.length, 2);
 
 context.G.league.currentRound = 20;
 team.staff.psychologist = null;
-assert.equal(context.holdLockerRoomEvent('psychologist').reason, undefined);
+assert.match(context.holdLockerRoomEvent('psychologist').message, /психолог/);
 assert.equal(context.holdLockerRoomEvent('psychologist').success, false, 'psychologist event requires a psychologist');
 
 console.log('Locker room talks, meetings and team events checks passed.');
