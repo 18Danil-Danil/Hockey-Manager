@@ -109,8 +109,9 @@ assert.equal(negotiationResult.decision, 'counter', 'a near-demand offer should 
 assert.equal(negotiationState.round, 1);
 negotiationState.offer = { salary: leaderDemand.salary, years: leaderDemand.years };
 negotiationResult = context.submitPlayerContractNegotiation();
-assert.equal(negotiationResult.applied, true, 'a revised fair offer should close the deal');
+assert.equal(negotiationResult.decision, 'accept', 'a revised fair offer should be accepted');
 assert.equal(negotiationState.completed, true);
+assert.equal(leader.contract.years, 1 + leaderDemand.years, 'accepted renewal should update contract length');
 
 const stubborn = { id: 103, name: 'Неприступный', age: 28, ovr: 80, morale: 35, character: 'egoist', contract: { salary: 5, years: 1 } };
 negotiatingTeam.roster.push(stubborn);
