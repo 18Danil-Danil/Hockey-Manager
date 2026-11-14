@@ -158,7 +158,7 @@ function openPlayerContractNegotiation(playerId, mode = 'renewal', context = {})
     playerId, mode,
     offer: { salary: demand.salary, years: Math.min(maxYears, demand.years) },
     transferFee: Number(context.transferFee) || 0, clubId: context.clubId || null,
-    lastResult: null, completed: false
+    round: 0, maxRounds: 3, history: [], lastResult: null, completed: false, closed: false
   };
   G.popupPlayerId = playerId;
   if (typeof render === 'function') render();
