@@ -350,7 +350,28 @@ function runAIContractExtensions() {
     }
   }
 }
+function refreshAITransferLists() {
+  for (const team of G.league.teams) {
+    if (team.id === G.playerTeamId) continue;
+    const byPosition = {};
+    for (const player of team.roster || []) (byPosition[player.position] ||= []).push(player);
+    for (const [position, players] of Object.entries(byPosition)) {
+      const target = tradePositionTarget(position);
+      if (players.length <= target) continue;
+      const sorted = players.slice().sort((a, b) => (a.ovr || 0) - (b.ovr || 0));
+      const surplus = players.length - target;
+      for (const player of sorted.slice(0, Math.min(2, surplus))) {
+        const peers = players.filter(item => item.id !== player.id);
+        const average = peers.length ? peers.reduce((sum, item) => sum + (Number(item.ovr) || 0), 0) / peers.length : player.ovr;
+        const isVeteran = Number(player.age) >= 28;
+        const isDepthPlayer = Number(player.ovr) <= average - 2 || (team.bench || []).includes(player.id);
+        if (isVeteran && isDepthPlayer && !player.transferRequest) player.transferListed = true;
+      }
+    }
+  }
+}
 function runAIActions() {
+  refreshAITransferLists();
   runAITransfers(); runAIContractExtensions();
   if (rng() < 0.35) generateAITradeOffer();
   if (rng() < 0.15) generateAITradeOffer();
