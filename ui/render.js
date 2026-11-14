@@ -48,9 +48,7 @@ function bindTeamSelect() {
       G.career.reputation = G.difficulty.startReputation;
       G.career.history = G.career.history || [];
       G.playerTeamId = Number(el.dataset.teamId);
-      G.league.teams.forEach(t => {
-        t.finance.salaryCap = Math.round(t.finance.seasonBudget * G.difficulty.salaryCapPct);
-      });
+      applyDifficultySalaryCaps(G.league.teams, G.playerTeamId, G.difficulty);
       G.injuryPrompt = null;
       G.skipInjuryPrompt = false;
       G.openingCupModal = null;
