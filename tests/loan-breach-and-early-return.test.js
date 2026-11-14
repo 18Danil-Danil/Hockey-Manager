@@ -126,7 +126,7 @@ assert.equal(damaged.problematic, 1);
 
 /* AI clubs actively review, improve and expire incoming loan offers. */
 const negotiationPlayer = { id: 71, name: 'Игрок для переговоров', position: 'F', age: 22, ovr: 74, contract: { salary: 1 }, loan: null };
-const negotiationParent = { id: 1, name: 'Наш клуб', roster: [negotiationPlayer], finance: { balance: 20 } };
+const negotiationParent = { id: 1, name: 'Наш клуб', roster: [negotiationPlayer, ...Array.from({ length: 18 }, (_, i) => ({ id: 800 + i, name: 'Запасной ' + i, position: 'D', nationality: 'Россия', contract: { salary: 0.5 } }))], finance: { balance: 20 } };
 const negotiationClubA = { id: 2, name: 'Клуб А', roster: [], finance: { balance: 10 } };
 const negotiationClubB = { id: 3, name: 'Клуб Б', roster: [], finance: { balance: 10 } };
 const negotiationOffer = {
