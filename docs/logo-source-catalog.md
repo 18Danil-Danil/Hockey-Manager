@@ -185,3 +185,14 @@ FootyLogos публикует каталоги хоккейных эмблем �
 | Swiss National League | SC Bern | https://www.footylogos.com/logos/sc-bern | https://www.footylogos.com/sports-assets/logos/sc-bern/sc-bern-logo-footylogos.svg |
 
 Всего в игровом каталоге международных клубов теперь 13 проверенных ссылок FootyLogos: предыдущие Ässät, Brynäs IF и HC Davos плюс 10 перечисленных выше. Тест tests/club-logos.test.js фиксирует точное соответствие ID клуба и URL, остальные клубы продолжают использовать fallback.
+## Ещё пять подтверждённых европейских клубов — 14 ноября 2026
+
+| Лига | Клуб | Страница-источник | Прямой SVG |
+|---|---|---|---|
+| Чехия · Extraliga | Dynamo Pardubice | https://www.footylogos.com/logos/hc-dynamo-pardubice | https://www.footylogos.com/sports-assets/logos/hc-dynamo-pardubice/hc-dynamo-pardubice-logo-footylogos.svg |
+| Чехия · Extraliga | Kometa Brno | https://www.footylogos.com/logos/hc-kometa-brno | https://www.footylogos.com/sports-assets/logos/hc-kometa-brno/hc-kometa-brno-logo-footylogos.svg |
+| Германия · DEL | Adler Mannheim | https://www.footylogos.com/logos/adler-mannheim | https://www.footylogos.com/sports-assets/logos/adler-mannheim/adler-mannheim-logo-footylogos.svg |
+| Словакия · Extraliga | HC Slovan Bratislava | https://www.footylogos.com/logos/hc-slovan-bratislava | https://www.footylogos.com/sports-assets/logos/hc-slovan-bratislava/hc-slovan-bratislava-logo-footylogos.svg |
+| Словакия · Extraliga | HC Košice | https://www.footylogos.com/logos/hc-kosice | https://www.footylogos.com/sports-assets/logos/hc-kosice/hc-kosice-logo-footylogos.svg |
+
+Все пять клубов присутствуют в соответствующих лигах игрового каталога. Ссылки получены с индивидуальных карточек FootyLogos, где указаны нужная хоккейная лига и доступность SVG; условия использования эмблем проверяются отдельно.
