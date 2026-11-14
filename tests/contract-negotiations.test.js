@@ -133,7 +133,8 @@ assert.match(rosterManagementSource, /evaluatePlayerContractOffer\(p, team, offe
 /* Contract add-ons: signing and performance bonuses. */
 const bonusFreeAgent = { id: 44, name: 'Бонусный игрок', age: 24, ovr: 76, morale: 75, nationality: 'Россия', contract: { salary: 2, years: 0 }, status: 'ufa' };
 context.G.league.freeAgents = [bonusFreeAgent];
-const bonusSigningTeam = { id: 48, roster: [], finance: { salaryCap: 100, balance: 100, expenses: {} } };\nconst bonusDemand = context.getPlayerContractDemand(bonusFreeAgent, bonusSigningTeam, 'signing');
+const bonusSigningTeam = { id: 48, roster: [], finance: { salaryCap: 100, balance: 100, expenses: {} } };
+const bonusDemand = context.getPlayerContractDemand(bonusFreeAgent, bonusSigningTeam, 'signing');
 const bonusOffer = {
   salary: bonusDemand.salary, years: bonusDemand.years,
   signingBonus: 2.5, bonusGoal: 0.2, bonusAssist: 0.1,
