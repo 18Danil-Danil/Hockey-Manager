@@ -3,9 +3,9 @@ window.GAME_CONFIG = {
 DIFFICULTIES: {
   easy: {
     key: 'easy', label: '🟢 Лёгкий',
-    desc: 'Стартовый баланс 100%, спонсоры +20%, потолок зарплат 60% только для вашего клуба, требование совета — топ-16, терпение 5 сезонов. Стартовая репутация 60.',
+    desc: 'Стартовый баланс 100%, спонсоры +20%, потолок зарплат 75% только для вашего клуба, требование совета — топ-16, терпение 5 сезонов. Стартовая репутация 60.',
     startBalancePct: 1.0, sponsorMult: 1.20, boardRequirement: 16,
-    boardPatience: 5, startReputation: 60, salaryCapPct: 0.60,
+    boardPatience: 5, startReputation: 60, salaryCapPct: 0.75,
   },
   normal: {
     key: 'normal', label: '🟡 Средний',
