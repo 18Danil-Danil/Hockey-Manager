@@ -49,11 +49,13 @@ vm.runInContext(youthRegistrySource, registryContext);
 const youthTeams = registryContext.window.YOUTH_CLUBS.teams;
 const mappingContext = {};
 vm.createContext(mappingContext);
+let mhlLogoMapping = null;
 for (const mappingName of ['MHL_OFFICIAL_LOGO_IDS', 'RHL_OFFICIAL_LOGO_IDS']) {
   const declaration = youthEngineSource.match(new RegExp('const ' + mappingName + ' = \\{[\\s\\S]*?\\n\\};'));
   assert.ok(declaration, mappingName + ' mapping must exist');
   vm.runInContext(declaration[0] + '\nglobalThis.__mapping = ' + mappingName + ';', mappingContext);
   const mapping = mappingContext.__mapping;
+  if (mappingName === 'MHL_OFFICIAL_LOGO_IDS') mhlLogoMapping = mapping;
   for (const [teamId, catalogId] of Object.entries(mapping)) {
     assert.ok(youthTeams.some(team => team.id === teamId), mappingName + ' has unknown game team ' + teamId);
     const leagueId = mappingName === 'MHL_OFFICIAL_LOGO_IDS' ? 'mhl' : 'rhl';
@@ -63,7 +65,7 @@ for (const mappingName of ['MHL_OFFICIAL_LOGO_IDS', 'RHL_OFFICIAL_LOGO_IDS']) {
 }
 const mhlTeams = youthTeams.filter(team => team.league === 'MHL');
 assert.equal(mhlTeams.length, 34, 'all 34 MHL game teams should be catalogued');
-assert.ok(mhlTeams.every(team => mappingContext.MHL_OFFICIAL_LOGO_IDS[team.id]),
+assert.ok(mhlTeams.every(team => mhlLogoMapping[team.id]),
   'every MHL game team should have an official logo source');
 
 const internationalContext = { window: {} };
