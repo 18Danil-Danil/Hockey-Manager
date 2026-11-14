@@ -9,7 +9,7 @@ vm.createContext(context);
 vm.runInContext(negotiationSource, context);
 
 const player = { id: 1, name: 'Тестовый', age: 25, ovr: 80, morale: 80, nationality: 'Россия', contract: { salary: 5, years: 1 } };
-const team = { id: 1, roster: [player], finance: { salaryCap: 20 } };
+const team = { id: 1, roster: [player], finance: { salaryCap: 20, balance: 100 } };
 context.G.league.freeAgents = [ ];
 const demand = context.getPlayerContractDemand(player, team, 'renewal');
 assert.ok(demand.salary >= 5, 'renewal demand must not fall far below current salary');
