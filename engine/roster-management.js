@@ -397,16 +397,28 @@ function loanPerformanceSummary(player) {
   return { gp: p.gp || 0, goals: p.goals || 0, assists: p.assists || 0, points: p.points || 0, wins: p.wins || 0, saves: p.saves || 0, shotsAgainst: p.shotsAgainst || 0, goalsAgainst: p.goalsAgainst || 0, shutouts: p.shutouts || 0 };
 }
 
+function loanRoleGuarantee(role, rounds) {
+  const roleTargets = { top: 0.65, rotation: 0.35, reserve: 0.15 };
+  const share = roleTargets[role] || roleTargets.rotation;
+  return { share, minimumGames: Math.max(0, Math.ceil(Math.max(0, Number(rounds) || 0) * share)) };
+}
 function loanPerformanceReport(player, currentRound = G.league?.currentRound || 0) {
   const loan = player?.loan || {};
   const performance = loan.performance || {};
   const gp = Number(performance.gp) || 0;
   const elapsed = Math.max(0, Number(currentRound) - Number(loan.startRound || currentRound));
+  const duration = Math.max(1, Number(loan.endRound || currentRound) - Number(loan.startRound || currentRound));
+  const role = loan.role || 'rotation';
+  const guarantee = loanRoleGuarantee(role, duration);
+  const minimumGames = Number.isFinite(Number(loan.guaranteedGames)) ? Math.max(0, Number(loan.guaranteedGames)) : guarantee.minimumGames;
+  const expectedByNow = Math.ceil(minimumGames * Math.min(1, elapsed / duration));
+  const remainingRounds = Math.max(0, duration - elapsed);
+  const guaranteedGamesRemaining = Math.max(0, minimumGames - gp);
+  const guaranteeAtRisk = elapsed >= 2 && gp + remainingRounds < minimumGames;
+  const guaranteeMet = gp >= minimumGames;
   const usage = elapsed > 0 ? gp / elapsed : 0;
   const goalie = player?.position === 'G';
-  const role = loan.role || 'rotation';
-  const roleTargets = { top: 0.65, rotation: 0.35, reserve: 0.15 };
-  const targetUsage = roleTargets[role] || roleTargets.rotation;
+  const targetUsage = guarantee.share;
   const pointsPerGame = gp > 0 ? (Number(performance.points) || 0) / gp : 0;
   const savePct = Number(performance.shotsAgainst) > 0
     ? (Number(performance.shotsAgainst) - (Number(performance.goalsAgainst) || 0)) / Number(performance.shotsAgainst)
@@ -414,7 +426,10 @@ function loanPerformanceReport(player, currentRound = G.league?.currentRound || 
   const gaa = gp > 0 ? (Number(performance.goalsAgainst) || 0) / gp : null;
   let status = 'Пока рано оценивать';
   let recommendation = 'Продолжить наблюдение';
-  if (elapsed >= 4 && usage < targetUsage * 0.55) {
+  if (guaranteeAtRisk) {
+    status = 'Риск нарушения гарантии';
+    recommendation = 'Обсудить игровое время или досрочный отзыв';
+  } else if (elapsed >= 4 && usage < targetUsage * 0.55) {
     status = 'Мало игрового времени';
     recommendation = 'Рассмотреть отзыв';
   } else if (elapsed >= 3 && gp >= 3) {
@@ -440,6 +455,12 @@ function loanPerformanceReport(player, currentRound = G.league?.currentRound || 
   return {
     elapsedRounds: elapsed,
     usageRate: Math.round(usage * 100),
+    guaranteedGames: minimumGames,
+    guaranteedGamesRemaining,
+    expectedGamesByNow: expectedByNow,
+    guaranteeMet,
+    guaranteeAtRisk,
+    guaranteeStatus: guaranteeMet ? 'Гарантия выполнена' : guaranteeAtRisk ? 'Гарантия под угрозой' : 'Гарантия выполняется',
     pointsPerGame: Math.round(pointsPerGame * 100) / 100,
     savePct: savePct === null ? null : Math.round(savePct * 1000) / 10,
     gaa: gaa === null ? null : Math.round(gaa * 100) / 100,
@@ -541,7 +562,7 @@ function submitOutgoingLoanOffer() {
   if (rng() > acceptance) { G.pendingOutgoingLoan = null; showToast(borrower.name + ' отклонил предложение об аренде', 'error'); render(); return false; }
   parent.roster.splice(parent.roster.indexOf(player), 1);
   player.loanOriginalContract = player.contract ? { ...player.contract } : null;
-  player.loan = { parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, borrowerTeamName: borrower.name, startRound: G.league.currentRound, endRound: G.league.currentRound + terms.rounds, wageShare: terms.wageShare, borrowerSalary: terms.borrowerSalary, parentSalary: terms.parentSalary, fee: 0, role, roleLabel: role === 'top' ? 'Ведущая роль' : role === 'rotation' ? 'Ротация' : 'Резерв' };
+  player.loan = { parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, borrowerTeamName: borrower.name, startRound: G.league.currentRound, endRound: G.league.currentRound + terms.rounds, wageShare: terms.wageShare, borrowerSalary: terms.borrowerSalary, parentSalary: terms.parentSalary, fee: 0, role, guaranteedGames: loanRoleGuarantee(role, terms.rounds).minimumGames, roleLabel: role === 'top' ? 'Ведущая роль' : role === 'rotation' ? 'Ротация' : 'Резерв' };
   initializeLoanPerformance(player);
   player.contract = { ...(player.contract || {}), salary: terms.borrowerSalary };
   borrower.roster.push(player);
