@@ -382,6 +382,7 @@ function getLoanTerms(player, parentTeam, borrowerTeam, rounds = 5, wageShare = 
   if (!player || !parentTeam || !borrowerTeam) reason = 'Не удалось определить игрока или клуб';
   else if (parentTeam.id === borrowerTeam.id) reason = 'Нельзя арендовать собственного игрока';
   else if (player.loan) reason = 'Игрок уже находится в аренде';
+  else if ((parentTeam.roster || []).length <= 18) reason = 'Клуб-владелец не может остаться с составом меньше 18 игроков';
   else if ((borrowerTeam.roster || []).length >= 25) reason = 'В составе уже 25 игроков';
   else if (player.nationality !== 'Россия' && foreigners >= 3) reason = 'Лимит легионеров (3) уже исчерпан';
   else if (payroll + borrowerSalary > Number(borrowerTeam.finance?.salaryCap ?? Infinity)) reason = 'Не хватает места под потолком зарплат';
