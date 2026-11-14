@@ -177,7 +177,10 @@ function submitPlayerContractNegotiation() {
   if (!state || state.completed || state.closed || (Number(state.round) || 0) >= (Number(state.maxRounds) || 3)) return false;
   const found = findNegotiationPlayer(state.playerId, state.mode);
   if (!found.team || !found.player) { state.lastResult = { decision: 'reject', message: 'Игрок больше недоступен' }; render(); return false; }
-  state.round = (Number(state.round) || 0) + 1;\n  const result = evaluatePlayerContractOffer(found.player, found.team, state.offer, state.mode, state);\n  state.history = Array.isArray(state.history) ? state.history : [];\n  state.history.push({ round: state.round, offer: { ...state.offer }, decision: result.decision, message: result.message });
+  state.round = (Number(state.round) || 0) + 1;
+  const result = evaluatePlayerContractOffer(found.player, found.team, state.offer, state.mode, state);
+  state.history = Array.isArray(state.history) ? state.history : [];
+  state.history.push({ round: state.round, offer: { ...state.offer }, decision: result.decision, message: result.message });
   state.lastResult = result;
   if (result.decision === 'accept') {
     const applied = applyPlayerContractAgreement(found.team, found.player, state.offer, state.mode);
