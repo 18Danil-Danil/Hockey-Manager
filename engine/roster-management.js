@@ -242,6 +242,66 @@ function declineTradeCounterOffer() {
   G.pendingTradeCounter = null;
   render();
 }
+function getVHLTransferQuote(player, sellingTeam, buyingTeam) {
+  if (!player || !sellingTeam || !buyingTeam) return { allowed: false, reason: 'Не удалось определить игрока или клуб', price: 0 };
+  const ageFactor = Number(player.age) <= 23 ? 1.12 : Number(player.age) >= 31 ? 0.82 : 1;
+  const potentialGap = Math.max(0, Number(player.pot || player.ovr) - Number(player.ovr || 0));
+  const listedFactor = player.transferRequest ? 0.9 : 1;
+  const price = Math.round(Math.max(0.5, ((Number(player.ovr || 60) - 55) * 0.16 + potentialGap * 0.055) * ageFactor * listedFactor) * 10) / 10;
+  const currentSalary = (buyingTeam.roster || []).reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0);
+  const salary = Number(player.contract?.salary) || 0.5;
+  const foreigners = (buyingTeam.roster || []).filter(item => item.nationality !== 'Россия').length;
+  let reason = '';
+  if (sellingTeam.id === buyingTeam.id) reason = 'Нельзя купить игрока у собственного клуба';
+  else if (!player.transferListed && !player.transferRequest) reason = 'Клуб не выставлял игрока на трансфер';
+  else if (typeof isTradeDeadlinePassed === 'function' && isTradeDeadlinePassed()) reason = 'Трансферное окно закрыто после 40-го тура';
+  else if ((buyingTeam.roster || []).length >= 25) reason = 'В составе уже 25 игроков';
+  else if ((sellingTeam.roster || []).length <= 18) reason = 'У клуба-продавца недостаточно игроков для сделки';
+  else if (player.nationality !== 'Россия' && foreigners >= 3) reason = 'Лимит легионеров (3) уже исчерпан';
+  else if (currentSalary + salary > Number(buyingTeam.finance?.salaryCap ?? Infinity)) reason = 'Не хватает места под потолком зарплат';
+  else if (Number(buyingTeam.finance?.balance || 0) < price) reason = 'Недостаточно средств для трансфера';
+  return { allowed: !reason, reason, price, salary };
+}
+function buyVHLPlayer(sellingTeamId, playerId) {
+  const buyingTeam = G.league?.teams.find(item => item.id === G.playerTeamId);
+  const sellingTeam = G.league?.teams.find(item => Number(item.id) === Number(sellingTeamId));
+  const player = sellingTeam?.roster.find(item => Number(item.id) === Number(playerId));
+  if (!buyingTeam || !sellingTeam || !player) { showToast('Игрок или клуб не найден', 'error'); return false; }
+  const quote = getVHLTransferQuote(player, sellingTeam, buyingTeam);
+  if (!quote.allowed) { showToast(quote.reason, 'error'); return false; }
+  const index = sellingTeam.roster.indexOf(player);
+  if (index < 0) return false;
+  sellingTeam.roster.splice(index, 1);
+  buyingTeam.roster.push(player);
+  player.originClub = sellingTeam.name;
+  player.originLeague = 'ВХЛ';
+  player.transferListed = false;
+  player.transferRequest = false;
+  player.status = 'contract';
+  buyingTeam.finance.balance = Math.round((Number(buyingTeam.finance.balance) - quote.price) * 10) / 10;
+  sellingTeam.finance.balance = Math.round((Number(sellingTeam.finance?.balance || 0) + quote.price) * 10) / 10;
+  buyingTeam.finance.expenses = buyingTeam.finance.expenses || {};
+  buyingTeam.finance.expenses.transfers = (Number(buyingTeam.finance.expenses.transfers) || 0) + quote.price;
+  sellingTeam.finance = sellingTeam.finance || {};
+  sellingTeam.finance.income = sellingTeam.finance.income || {};
+  sellingTeam.finance.income.transfers = (Number(sellingTeam.finance.income.transfers) || 0) + quote.price;
+  buyingTeam.lines = null;
+  sellingTeam.lines = null;
+  syncLines(buyingTeam);
+  syncLines(sellingTeam);
+  G.league.vhlTransferLog = Array.isArray(G.league.vhlTransferLog) ? G.league.vhlTransferLog : [];
+  G.league.vhlTransferLog.push({
+    season: G.league.season, round: G.league.currentRound,
+    playerId: player.id, playerName: player.name,
+    fromTeamId: sellingTeam.id, fromTeam: sellingTeam.name,
+    toTeamId: buyingTeam.id, toTeam: buyingTeam.name, fee: quote.price
+  });
+  addNews('signing', buyingTeam.name + ' приобрёл ' + player.name + ' у клуба ' + sellingTeam.name + ' за ' + quote.price.toFixed(1) + ' млн ₽', 2);
+  showToast(player.name + ' перешёл в ' + buyingTeam.name + ' за ' + quote.price.toFixed(1) + ' млн ₽', 'success');
+  render();
+  saveGame({ immediate: true });
+  return true;
+}
 function prepareTradeForPlayer(teamId, playerId) {
   G.tradeTargetTeamId = Number(teamId);
   G.marketTargetPlayerId = Number(playerId);
