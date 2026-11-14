@@ -75,6 +75,18 @@ const khl = internationalContext.window.INTERNATIONAL_LEAGUES.find(league => lea
 assert.equal(khl.clubs.length, 22, 'KHL catalogue should contain 22 clubs');
 assert.ok(khl.clubs.every(club => club.logo), 'every KHL club should have an official logo URL');
 
+const kazakhstan = internationalContext.window.INTERNATIONAL_LEAGUES.find(league => league.id === 'kazakhstan');
+const belarus = internationalContext.window.INTERNATIONAL_LEAGUES.find(league => league.id === 'belarus');
+const liiga = internationalContext.window.INTERNATIONAL_LEAGUES.find(league => league.id === 'finland-liiga');
+assert.equal(kazakhstan.clubs.length, 10, 'Kazakhstan catalogue should match the 10 Pro Hokei Ligasy clubs');
+assert.equal(belarus.clubs.length, 14, 'Belarus catalogue should contain the 14 current game entries');
+assert.equal(liiga.clubs.length, 16, 'Liiga catalogue currently has 16 game entries; the missing Pelicans club is documented');
+assert.ok(!liiga.clubs.some(club => club.id === 'pelicans'), 'do not silently claim Liiga coverage is complete while Pelicans is absent');
+for (const league of internationalContext.window.INTERNATIONAL_LEAGUES.filter(item => item.id !== 'khl')) {
+  assert.ok(league.clubs.every(club => !club.logo),
+    league.id + ' must keep the safe fallback until an approved logo source is integrated');
+}
+
 for (const league of internationalContext.window.INTERNATIONAL_LEAGUES) {
   for (const club of league.clubs) {
     const markup = context.clubLogoWithFallback(club, 28, 'international-test');
