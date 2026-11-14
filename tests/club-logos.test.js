@@ -105,6 +105,15 @@ const verifiedMarketLogos = new Map([
   ['germany-del/adler-mannheim', 'https://www.footylogos.com/sports-assets/logos/adler-mannheim/adler-mannheim-logo-footylogos.svg'],
   ['slovakia-extraliga/slovan-bratislava', 'https://www.footylogos.com/sports-assets/logos/hc-slovan-bratislava/hc-slovan-bratislava-logo-footylogos.svg'],
   ['slovakia-extraliga/kosice', 'https://www.footylogos.com/sports-assets/logos/hc-kosice/hc-kosice-logo-footylogos.svg'],
+  ['finland-liiga/jukurit', 'https://www.footylogos.com/sports-assets/logos/jukurit/jukurit-logo-footylogos.svg'],
+  ['finland-liiga/jyp', 'https://www.footylogos.com/sports-assets/logos/jyp/jyp-logo-footylogos.svg'],
+  ['finland-liiga/lukko', 'https://www.footylogos.com/sports-assets/logos/lukko/lukko-logo-footylogos.svg'],
+  ['finland-liiga/sport', 'https://www.footylogos.com/sports-assets/logos/vaasan-sport/vaasan-sport-logo-footylogos.svg'],
+  ['finland-liiga/karpat', 'https://www.footylogos.com/sports-assets/logos/karpat/karpat-logo-footylogos.svg'],
+  ['switzerland-nl/fribourg', 'https://www.footylogos.com/sports-assets/logos/fribourg-gotteron/fribourg-gotteron-logo-footylogos.svg'],
+  ['switzerland-nl/lausanne', 'https://www.footylogos.com/sports-assets/logos/lausanne-hc/lausanne-hc-logo-footylogos.svg'],
+  ['switzerland-nl/geneve-servette', 'https://www.footylogos.com/sports-assets/logos/geneve-servette/geneve-servette-logo-footylogos.svg'],
+  ['switzerland-nl/lugano', 'https://www.footylogos.com/sports-assets/logos/hc-lugano/hc-lugano-logo-footylogos.svg'],
 ]);
 for (const [key, url] of verifiedMarketLogos) {
   const [leagueId, clubId] = key.split('/');
