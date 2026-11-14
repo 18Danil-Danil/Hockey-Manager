@@ -152,7 +152,11 @@ function createInternationalMarket() {
 function ensureInternationalMarket() {
   if (!G.league) return;
   const previous = G.league.internationalMarket;
-  if (previous && previous.version >= 4 && Array.isArray(previous.clubs)) return;
+  if (previous && previous.version >= 4 && Array.isArray(previous.clubs)) {
+    // Старые сохранения могли содержать рынок без журнала трансферов.
+    if (!Array.isArray(previous.transferLog)) previous.transferLog = [];
+    return;
+  }
   const rebuilt = createInternationalMarket();
   if (previous && Array.isArray(previous.transferLog)) {
     rebuilt.transferLog = previous.transferLog.slice();
@@ -215,7 +219,10 @@ function buyInternationalPlayer(playerId) {
   player.contract.salary=quote.salary;
   player.contract.years=Math.max(1,player.contract.years||1);
   team.finance.balance=Math.round((team.finance.balance-quote.price)*10)/10;
+  team.finance.expenses = team.finance.expenses || {};
   team.finance.expenses.transfers=(team.finance.expenses.transfers||0)+quote.price;
+  G.league.internationalMarket.transferLog = Array.isArray(G.league.internationalMarket.transferLog)
+    ? G.league.internationalMarket.transferLog : [];
   team.roster.push(player);
   team.lines=null;
   syncLines(team);
