@@ -23,7 +23,7 @@ assert.equal(new Set(stats.players.map(item => item.key)).size, stats.players.le
 
 const expectedCounts = {
   kazakhstan: 80,
-  belarus: 240,
+  belarus: 270,
   khl: 85,
   'finland-liiga': 35,
   'sweden-shl': 35,
@@ -32,6 +32,23 @@ const expectedCounts = {
   'switzerland-nl': 28,
   'slovakia-extraliga': 28
 };
+const belarusPlayers = stats.players.filter(item => item.league === 'belarus');
+const belarusClubs = [
+  'aviator-baranovichi','dinamo-molodechno','brest','gomel','lida','mogilev','vitebsk',
+  'khimik-novopolotsk','lokomotiv-orsha','metallurg-zhlobin','neman-grodno',
+  'shakhtyor-soligorsk','slavutich-smolensk','yunost-minsk'
+];
+for (const clubId of belarusClubs) {
+  assert.ok(belarusPlayers.some(item => item.club === clubId),
+    'Belarus data must include club ' + clubId);
+}
+assert.ok(belarusPlayers.filter(item => item.position === 'G').length >= 41,
+  'Belarus should include the current roster goalies, including backups');
+for (const goalie of belarusPlayers.filter(item => item.position === 'G' && Number(item.gp) === 0)) {
+  assert.ok(Number.isFinite(Number(goalie.gaa)) && Number.isFinite(Number(goalie.svPct)),
+    goalie.name + ' needs explicit zero-appearance goalie stats');
+}
+
 for (const [leagueId, count] of Object.entries(expectedCounts)) {
   assert.ok(stats.players.filter(item => item.league === leagueId).length >= count,
     leagueId + ' player count is below the expected minimum');
