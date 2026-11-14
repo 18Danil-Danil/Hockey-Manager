@@ -114,6 +114,15 @@ const verifiedMarketLogos = new Map([
   ['switzerland-nl/lausanne', 'https://www.footylogos.com/sports-assets/logos/lausanne-hc/lausanne-hc-logo-footylogos.svg'],
   ['switzerland-nl/geneve-servette', 'https://www.footylogos.com/sports-assets/logos/geneve-servette/geneve-servette-logo-footylogos.svg'],
   ['switzerland-nl/lugano', 'https://www.footylogos.com/sports-assets/logos/hc-lugano/hc-lugano-logo-footylogos.svg'],
+  ['finland-liiga/kiekko-espoo', 'https://www.footylogos.com/sports-assets/logos/kiekko-espoo/kiekko-espoo-logo-footylogos.svg'],
+  ['finland-liiga/kalpa', 'https://www.footylogos.com/sports-assets/logos/kalpa/kalpa-logo-footylogos.svg'],
+  ['sweden-shl/djurgarden', 'https://www.footylogos.com/sports-assets/logos/djurgardens-if-hockey/djurgardens-if-hockey-logo-footylogos.svg'],
+  ['sweden-shl/hv71', 'https://www.footylogos.com/sports-assets/logos/hv71/hv71-logo-footylogos.svg'],
+  ['sweden-shl/linkoping', 'https://www.footylogos.com/sports-assets/logos/linkoping-hc/linkoping-hc-logo-footylogos.svg'],
+  ['sweden-shl/lulea', 'https://www.footylogos.com/sports-assets/logos/lulea-hockey/lulea-hockey-logo-footylogos.svg'],
+  ['sweden-shl/rogle', 'https://www.footylogos.com/sports-assets/logos/rogle-bk/rogle-bk-logo-footylogos.svg'],
+  ['sweden-shl/skelleftea', 'https://www.footylogos.com/sports-assets/logos/skelleftea-aik/skelleftea-aik-logo-footylogos.svg'],
+  ['sweden-shl/vaxjo', 'https://www.footylogos.com/sports-assets/logos/vaxjo-lakers/vaxjo-lakers-logo-footylogos.svg'],
 ]);
 for (const [key, url] of verifiedMarketLogos) {
   const [leagueId, clubId] = key.split('/');
