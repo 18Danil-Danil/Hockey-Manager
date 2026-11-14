@@ -122,4 +122,54 @@ const damaged = context.getLoanPartnershipRating(1, 3);
 assert.ok(damaged.score < reliable.score, 'breaking a playing-time guarantee should damage partnership reputation');
 assert.equal(damaged.problematic, 1);
 
-console.log('Loan breach and early-return checks passed.');
+
+
+/* AI clubs actively review, improve and expire incoming loan offers. */
+const negotiationPlayer = { id: 71, name: 'Игрок для переговоров', position: 'F', age: 22, ovr: 74, contract: { salary: 1 }, loan: null };
+const negotiationParent = { id: 1, name: 'Наш клуб', roster: [negotiationPlayer], finance: { balance: 20 } };
+const negotiationClubA = { id: 2, name: 'Клуб А', roster: [], finance: { balance: 10 } };
+const negotiationClubB = { id: 3, name: 'Клуб Б', roster: [], finance: { balance: 10 } };
+const negotiationOffer = {
+  id: 701, playerId: negotiationPlayer.id, fromTeamId: negotiationClubA.id,
+  createdRound: 12, expiresRound: 16, rounds: 5, wageShare: 25, fee: 1,
+  partnershipScore: 50
+};
+const rivalOffer = {
+  id: 702, playerId: negotiationPlayer.id, fromTeamId: negotiationClubB.id,
+  createdRound: 13, expiresRound: 17, rounds: 5, wageShare: 75, fee: 3,
+  partnershipScore: 50
+};
+const negotiationInbox = [];
+const negotiationNews = [];
+const negotiationContext = {
+  G: { playerTeamId: 1, league: { currentRound: 14, teams: [negotiationParent, negotiationClubA, negotiationClubB], aiLoanOffers: [negotiationOffer, rivalOffer] } },
+  rng: () => 0,
+  getLoanTerms: () => ({ allowed: true }),
+  addInboxMessage: (...args) => negotiationInbox.push(args),
+  addNews: (...args) => negotiationNews.push(args)
+};
+vm.createContext(negotiationContext);
+vm.runInContext(source, negotiationContext);
+negotiationContext.generateAIIncomingLoanOffer = () => false;
+negotiationContext.processAIIncomingLoanOffers();
+assert.equal(negotiationOffer.fee, 1.3, 'AI club should improve its loan fee when a rival offer is stronger');
+assert.equal(negotiationOffer.wageShare, 50, 'AI club should improve its wage contribution when affordable');
+assert.equal(negotiationOffer.revisionCount, 1, 'AI offer revisions should be tracked');
+assert.ok(negotiationOffer.expiresRound >= 16, 'an improved offer should remain available long enough to answer');
+assert.ok(negotiationInbox.some(item => item[2] === 'Клуб улучшил предложение по аренде'), 'the user should receive an inbox message about improved terms');
+
+const expiredInbox = [];
+const expiredOffer = { id: 703, playerId: negotiationPlayer.id, fromTeamId: negotiationClubA.id, createdRound: 10, expiresRound: 14, rounds: 3, wageShare: 50, fee: 1 };
+const expiryNegotiationContext = {
+  G: { playerTeamId: 1, league: { currentRound: 15, teams: [negotiationParent, negotiationClubA], aiLoanOffers: [expiredOffer] } },
+  rng: () => 0.99,
+  addInboxMessage: (...args) => expiredInbox.push(args),
+  addNews: () => {}
+};
+vm.createContext(expiryNegotiationContext);
+vm.runInContext(source, expiryNegotiationContext);
+expiryNegotiationContext.processAIIncomingLoanOffers();
+assert.equal(expiryNegotiationContext.G.league.aiLoanOffers.length, 0, 'expired loan offers should be removed');
+assert.ok(expiredInbox.some(item => item[2] === 'Предложение аренды истекло'), 'the user should be notified when an AI club offer expires');
+
+console.log('Loan breach, early-return and AI loan negotiation checks passed.');
