@@ -25,10 +25,15 @@ const context = {
   applyDifficultySalaryCaps: () => {},
   initAISponsors: () => {},
   render: () => {},
+  standingsSorted: () => [team],
+  ensureScheduleCalendar: () => [{ date: '2026-10-01' }],
+  ensureStats: () => ({ points: 0 }),
+  logoHeader: () => '',
+  unreadInboxCount: () => 0,
   document: { querySelectorAll: selector => selector === '.team-card' ? [card] : [] }
 };
 vm.createContext(context);
-vm.runInContext(source + '\nthis.api = { renderTeamSelect, bindTeamSelect };', context);
+vm.runInContext(source + '\nthis.api = { renderTeamSelect, bindTeamSelect, renderOverview };', context);
 const api = context.api;
 
 const easyMarkup = api.renderTeamSelect();
@@ -54,5 +59,21 @@ assert.strictEqual(api.renderTeamSelect().includes('Стартовая фина�
 api.bindTeamSelect();
 card.onclick();
 assert.strictEqual(team.finance.balance, 155, 'normal difficulty must not receive the bonus');
+
+// Регрессия: после выбора клуба стартовый экран должен отрисовать обзор.
+// Ранее renderOverview обращался к negotiationHistory из локальной области renderLoans,
+// из-за чего выбор клуба завершался ReferenceError и игра оставалась на экране выбора.
+team.record = { w: 0, l: 0, otl: 0, pts: 0, gf: 0, ga: 0 };
+team.roster = [{ id: 1, name: 'Тестовый игрок', position: 'C', ovr: 60 }];
+team.streak = { type: null, count: 0 };
+G.playerTeamId = 7;
+G.league.season = '2026/27';
+G.league.schedule = [[[7, 8]]];
+G.league.currentRound = 0;
+G.league.results = [];
+G.league.loanNegotiationHistory = [];
+const overview = api.renderOverview();
+assert(overview.includes('Добро пожаловать в штаб, Тестовый клуб'));
+assert(overview.includes('История переговоров (0)'));
 
 console.log('Starting bonus checks passed.');
