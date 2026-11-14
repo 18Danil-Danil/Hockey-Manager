@@ -51,7 +51,7 @@ assert.ok(toasts.length, 'successful purchase should show a confirmation');
 const marketStart = uiSource.indexOf('function renderInternationalMarket');
 const marketEnd = uiSource.indexOf('function renderTrades', marketStart);
 const marketSource = uiSource.slice(marketStart, marketEnd);
-assert.match(marketSource, /type="button"[^>]*onclick="buyInternationalPlayer\(\$\{Number\(player\.id\)\}\)"/,
-  'international market button should call the purchase handler with a numeric player id');
+assert.match(marketSource, /type="button"[^>]*onclick="openInternationalClubNegotiation\(\$\{Number\(player\.id\)\}\)"/,
+  'international market button should start club transfer negotiations with a numeric player id');
 
 console.log('International player purchase checks passed.');
