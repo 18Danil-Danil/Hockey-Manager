@@ -203,7 +203,7 @@ assert.match(ui, /startOutgoingLoanNegotiation/, 'loan UI should allow sending p
 assert.match(ui, /requestLoanEarlyReturn/, 'loan UI should negotiate early returns instead of forcing them');
 assert.match(ui, /Потребовать возврат/, 'loan UI should let the parent club request its player back');
 assert.match(ui, /function renderLoans/, 'loan management UI should exist');
-assert.match(ui, /Вернуть досрочно/, 'loan UI should support early return');
+assert.match(ui, /Запросить досрочный возврат/, 'loan UI should let the borrowing club request an early return');
 assert.match(ui, /ВХЛ · трансферный список/, 'market should include a VHL transfer-list tab');
 assert.match(ui, /buyVHLPlayer/, 'VHL market should support direct cash purchases');
 assert.match(ui, /startVHLTransferNegotiation/, 'VHL market should support transfer-fee negotiations');
