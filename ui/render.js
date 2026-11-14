@@ -1869,6 +1869,21 @@ function renderOverview() {
     const st = ensureStats(p);
     return '<div class="dashboard-player"><span class="dashboard-player-rank">0' + (i + 1) + '</span><div><strong>' + p.name + '</strong><small>' + p.position + ' · OVR ' + p.ovr + '</small></div><b>' + (st.points || 0) + '<small>ОЧКОВ</small></b></div>';
   }).join('');
+  // История переговоров должна формироваться в области видимости обзора,
+  // а не использовать локальные переменные экрана аренды.
+  const negotiationHistory = (G.league.loanNegotiationHistory || []).slice()
+    .sort((a, b) => Number(b.round || 0) - Number(a.round || 0) || Number(b.id || 0) - Number(a.id || 0)).slice(0, 40);
+  const negotiationLabels = {
+    'offer-created': 'Новое предложение', 'offer-improved': 'Клуб улучшил условия',
+    'counter-sent': 'Мы направили встречные условия', 'counter-accepted': 'Встречные условия приняты',
+    'counter-rejected': 'Встречные условия отклонены', 'deal-completed': 'Аренда согласована',
+    'offer-declined': 'Мы отклонили предложение', 'offer-expired': 'Предложение истекло',
+    'offer-withdrawn': 'Клуб отозвал предложение'
+  };
+  const negotiationCards = negotiationHistory.map(item => {
+    const terms = 'Срок: ' + (item.rounds ?? '—') + ' туров · доля зарплаты: ' + (item.wageShare ?? '—') + '% · плата: ' + (Number(item.fee) || 0).toFixed(1) + ' млн ₽';
+    return '<details class="trade-counter-card"><summary><b>' + (item.playerName || 'Хоккеист') + '</b> · ' + (negotiationLabels[item.type] || 'Событие переговоров') + ' · тур ' + (item.round || '—') + '</summary><p>' + (item.clubName || 'Клуб не указан') + ' · ' + terms + '</p><small class="market-player-meta">' + (item.message || '') + '</small></details>';
+  }).join('');
   const streak = team.streak && team.streak.count >= 2 ? '<span class="dashboard-streak ' + (team.streak.type === 'w' ? 'hot' : 'cold') + '">' + (team.streak.type === 'w' ? '🔥' : '❄️') + ' Серия: ' + team.streak.count + '</span>' : '';
   return '<section class="club-dashboard">' +
     '<div class="dashboard-welcome"><div><span class="dashboard-eyebrow">ЦЕНТР УПРАВЛЕНИЯ КЛУБОМ · ' + G.league.season + '</span><h2>Добро пожаловать в штаб, ' + team.name + '</h2><p>' + team.city + ' · ' + team.region + ' ' + streak + '</p></div><div class="dashboard-rank"><span>МЕСТО В ЛИГЕ</span><strong>#' + rank + '</strong><small>из ' + G.league.teams.length + ' клубов</small></div></div>' +
