@@ -1504,9 +1504,9 @@ function renderContractNegotiationPanel(player, team) {
           '</select></label>' +
           '<div class="profile-contract-bonuses"><p class="profile-muted"><b>Дополнительные условия</b> · все суммы в млн ₽</p>' +
           (state.mode === 'renewal' ? '' : bonusInput('signingBonus','Подписной бонус · сразу',20)) +
-          bonusInput('bonusGoal','За каждый гол',1) +
-          bonusInput('bonusAssist','За каждую передачу',1) +
-          bonusInput('bonusGames','За каждые 10 матчей',1) +
+          bonusInput('bonusGoal','За каждый гол',1,'0.01') +
+          bonusInput('bonusAssist','За каждую передачу',1,'0.01') +
+          bonusInput('bonusGames','За каждые 10 матчей',1,'0.01') +
           bonusInput('bonusPlayoff','За выход в плей-офф',10) +
           bonusInput('bonusMvp','За звание MVP сезона',20) +
           bonusInput('bonusTopScorer','За звание лучшего бомбардира',20) +
