@@ -147,7 +147,7 @@ function payContractBonuses(team) {
   for (const p of team.roster) {
     const s = ensureStats(p);
     if (p.position === 'G') total += Math.floor(s.gp / 10) * (p.contract.bonusGames || 0) + s.shutouts * 0.15;
-    else total += s.goals * (p.contract.bonusGoal || 0) + Math.floor(s.gp / 10) * (p.contract.bonusGames || 0);
+    else total += s.goals * (p.contract.bonusGoal || 0) + s.assists * (p.contract.bonusAssist || 0) + Math.floor(s.gp / 10) * (p.contract.bonusGames || 0);
   }
   total = Math.round(total * 10) / 10;
   if (total > 0) { team.finance.expenses.bonuses += total; team.finance.balance -= total; }
