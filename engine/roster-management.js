@@ -575,6 +575,96 @@ function processLoanExpirations() {
     addNews('signing', item.player.name + ' завершил аренду и вернулся в ' + parent.name, 2);
   }
 }
+
+/* ============================================================
+   ПЕРЕГОВОРЫ О ПРОДЛЕНИИ АРЕНДЫ
+   ============================================================ */
+function startLoanExtensionNegotiation(playerId, extraRounds = 5) {
+  const team = G.league?.teams.find(item => item.id === G.playerTeamId);
+  const player = G.league?.teams.flatMap(item => item.roster || []).find(item => Number(item.id) === Number(playerId) && item.loan);
+  if (!team || !player) { showToast('Игрок в аренде не найден', 'error'); return false; }
+  const loan = player.loan;
+  const isBorrower = Number(loan.borrowerTeamId) === Number(team.id);
+  const isParent = Number(loan.parentTeamId) === Number(team.id);
+  if (!isBorrower && !isParent) { showToast('Эта аренда не относится к твоему клубу', 'error'); return false; }
+  if (loan.extensionNegotiation && loan.extensionNegotiation.status === 'pending') {
+    showToast('Переговоры по этой аренде уже идут', 'info'); return false;
+  }
+  const remaining = Math.max(0, Number(loan.endRound) - Number(G.league.currentRound));
+  const extension = Math.max(1, Math.min(10 - Math.max(0, Number(loan.endRound) - Number(loan.startRound)), Math.round(Number(extraRounds) || 5)));
+  if (!extension || remaining > 3) { showToast('Продление можно обсуждать ближе к окончанию аренды', 'info'); return false; }
+  loan.extensionNegotiation = {
+    status: 'pending', requestedRounds: extension, requestedRound: G.league.currentRound,
+    responseRound: G.league.currentRound + 1, initiatorTeamId: team.id,
+    counterRounds: null, direction: isBorrower ? 'borrower' : 'parent'
+  };
+  const other = G.league.teams.find(item => Number(item.id) === Number(isBorrower ? loan.parentTeamId : loan.borrowerTeamId));
+  addNews('signing', team.name + ' запросил продление аренды игрока ' + player.name + ' у клуба ' + (other?.name || 'соперника') + '.', 1);
+  showToast('Запрос на продление отправлен. Ответ поступит после следующего тура.', 'success');
+  render(); saveGame({ immediate: true }); return true;
+}
+function processLoanExtensionNegotiations() {
+  for (const team of G.league.teams || []) for (const player of team.roster || []) {
+    const loan = player.loan, negotiation = loan?.extensionNegotiation;
+    if (!negotiation || negotiation.status !== 'pending' || G.league.currentRound < negotiation.responseRound) continue;
+    const borrower = G.league.teams.find(item => Number(item.id) === Number(loan.borrowerTeamId));
+    const parent = G.league.teams.find(item => Number(item.id) === Number(loan.parentTeamId));
+    if (!borrower || !parent || G.league.currentRound >= loan.endRound) {
+      negotiation.status = 'rejected';
+      negotiation.message = 'Срок аренды уже истёк или один из клубов недоступен.';
+      continue;
+    }
+    const report = loanPerformanceReport(player);
+    const isBorrowerRequest = negotiation.direction === 'borrower';
+    const decisionClub = isBorrowerRequest ? parent : borrower;
+    const depth = (decisionClub.roster || []).filter(item => item.position === player.position && item.id !== player.id).length;
+    const goodPerformance = report.status === 'Оправдывает ожидания' || report.status === 'Получает игровое время';
+    const chance = Math.max(0.12, Math.min(0.88, 0.48 + (goodPerformance ? 0.18 : 0) + (isBorrowerRequest ? 0 : depth * 0.07) - (player.age >= 30 ? 0.08 : 0)));
+    const roll = rng();
+    if (roll < chance * 0.62) {
+      loan.endRound += negotiation.requestedRounds;
+      negotiation.status = 'accepted';
+      negotiation.message = decisionClub.name + ' согласился продлить аренду на ' + negotiation.requestedRounds + ' туров.';
+      loan.extensions = (Number(loan.extensions) || 0) + 1;
+      loan.extensionHistory = Array.isArray(loan.extensionHistory) ? loan.extensionHistory : [];
+      loan.extensionHistory.push({ round: G.league.currentRound, rounds: negotiation.requestedRounds, result: 'accepted' });
+      const log = (G.league.loanLog || []).slice().reverse().find(item => Number(item.playerId) === Number(player.id) && item.returnedRound === undefined);
+      if (log) log.endRound = loan.endRound;
+      addNews('signing', player.name + ': аренда продлена до ' + loan.endRound + '-го тура.', 2);
+    } else if (roll < chance) {
+      negotiation.status = 'counter';
+      negotiation.counterRounds = Math.max(1, negotiation.requestedRounds - 2);
+      negotiation.message = decisionClub.name + ' готов продлить аренду, но предлагает срок ' + negotiation.counterRounds + ' тур(а).';
+    } else {
+      negotiation.status = 'rejected';
+      negotiation.message = decisionClub.name + ' отказался продлевать аренду ' + player.name + '.';
+    }
+    addInboxMessage('league', decisionClub.name, 'Ответ по продлению аренды', negotiation.message, []);
+  }
+}
+function respondToLoanExtension(playerId, accept) {
+  const player = G.league?.teams.flatMap(item => item.roster || []).find(item => Number(item.id) === Number(playerId) && item.loan);
+  const negotiation = player?.loan?.extensionNegotiation;
+  if (!negotiation || negotiation.status !== 'counter') return false;
+  if (accept) {
+    player.loan.endRound += negotiation.counterRounds;
+    player.loan.extensions = (Number(player.loan.extensions) || 0) + 1;
+    player.loan.extensionHistory = Array.isArray(player.loan.extensionHistory) ? player.loan.extensionHistory : [];
+    player.loan.extensionHistory.push({ round: G.league.currentRound, rounds: negotiation.counterRounds, result: 'counter-accepted' });
+    const log = (G.league.loanLog || []).slice().reverse().find(item => Number(item.playerId) === Number(player.id) && item.returnedRound === undefined);
+    if (log) log.endRound = player.loan.endRound;
+    addNews('signing', player.name + ': встречное предложение по продлению аренды принято. Новый срок — до ' + player.loan.endRound + '-го тура.', 2);
+    showToast('Продление аренды согласовано', 'success');
+  } else {
+    player.loan.extensionHistory = Array.isArray(player.loan.extensionHistory) ? player.loan.extensionHistory : [];
+    player.loan.extensionHistory.push({ round: G.league.currentRound, rounds: negotiation.counterRounds, result: 'counter-rejected' });
+    showToast('Встречное предложение отклонено', 'info');
+  }
+  negotiation.status = accept ? 'accepted' : 'rejected';
+  negotiation.message = accept ? 'Встречное предложение принято.' : 'Встречное предложение отклонено.';
+  render(); saveGame({ immediate: true }); return true;
+}
+
 function prepareTradeForPlayer(teamId, playerId) {
   G.tradeTargetTeamId = Number(teamId);
   G.marketTargetPlayerId = Number(playerId);
