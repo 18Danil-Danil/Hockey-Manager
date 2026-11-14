@@ -262,13 +262,78 @@ function getVHLTransferQuote(player, sellingTeam, buyingTeam) {
   else if (Number(buyingTeam.finance?.balance || 0) < price) reason = 'Недостаточно средств для трансфера';
   return { allowed: !reason, reason, price, salary };
 }
-function buyVHLPlayer(sellingTeamId, playerId) {
+function evaluateVHLTransferOffer(player, sellingTeam, buyingTeam, offeredPrice, askingPrice, round = 1) {
+  const offer = Number(offeredPrice);
+  const asking = Number(askingPrice);
+  if (!Number.isFinite(offer) || offer <= 0) return { decision: 'reject', message: 'Укажи положительную сумму' };
+  if (!Number.isFinite(asking) || asking <= 0) return { decision: 'reject', message: 'Не удалось определить запрашиваемую сумму' };
+  if (offer > Number(buyingTeam?.finance?.balance || 0)) return { decision: 'reject', message: 'У клуба не хватает денег на такое предложение' };
+  const acceptance = round <= 1 ? 0.94 : 0.97;
+  if (offer >= asking * acceptance) return { decision: 'accept', agreedPrice: Math.round(offer * 10) / 10, message: 'Клуб согласен на трансфер' };
+  if (round >= 3 || offer < asking * 0.68) return { decision: 'reject', message: round >= 3 ? 'Клуб завершил переговоры после трёх раундов' : 'Предложение слишком далеко от ожиданий клуба' };
+  const counterPrice = Math.round(Math.max(offer + 0.1, asking * (round === 1 ? 0.92 : 0.96)) * 10) / 10;
+  return { decision: 'counter', counterPrice, message: 'Клуб выдвинул встречную цену' };
+}
+function startVHLTransferNegotiation(sellingTeamId, playerId) {
+  const seller = G.league?.teams.find(item => Number(item.id) === Number(sellingTeamId));
+  const buyer = G.league?.teams.find(item => item.id === G.playerTeamId);
+  const player = seller?.roster.find(item => Number(item.id) === Number(playerId));
+  const quote = getVHLTransferQuote(player, seller, buyer);
+  if (!quote.allowed) { showToast(quote.reason, 'error'); return false; }
+  G.pendingVHLTransferNegotiation = { sellingTeamId: seller.id, playerId: player.id, askingPrice: quote.price, round: 1, counterPrice: null };
+  render();
+  return true;
+}
+function submitVHLTransferOffer() {
+  const state = G.pendingVHLTransferNegotiation;
+  if (!state) return false;
+  const seller = G.league.teams.find(item => Number(item.id) === Number(state.sellingTeamId));
+  const buyer = G.league.teams.find(item => item.id === G.playerTeamId);
+  const player = seller?.roster.find(item => Number(item.id) === Number(state.playerId));
+  const quote = getVHLTransferQuote(player, seller, buyer);
+  if (!quote.allowed) { showToast(quote.reason, 'error'); G.pendingVHLTransferNegotiation = null; render(); return false; }
+  const field = document.getElementById('vhl-transfer-offer');
+  const offer = Number(field?.value);
+  const evaluation = evaluateVHLTransferOffer(player, seller, buyer, offer, state.counterPrice || state.askingPrice, state.round);
+  if (evaluation.decision === 'accept') {
+    G.pendingVHLTransferNegotiation = null;
+    return buyVHLPlayer(seller.id, player.id, evaluation.agreedPrice);
+  }
+  if (evaluation.decision === 'counter') {
+    state.counterPrice = evaluation.counterPrice;
+    state.round += 1;
+    showToast('Встречное предложение: ' + evaluation.counterPrice.toFixed(1) + ' млн ₽');
+    render();
+    return true;
+  }
+  showToast(evaluation.message, 'error');
+  G.pendingVHLTransferNegotiation = null;
+  render();
+  return false;
+}
+function acceptVHLTransferCounter() {
+  const state = G.pendingVHLTransferNegotiation;
+  if (!state?.counterPrice) return false;
+  const price = state.counterPrice;
+  const seller = G.league.teams.find(item => Number(item.id) === Number(state.sellingTeamId));
+  const player = seller?.roster.find(item => Number(item.id) === Number(state.playerId));
+  G.pendingVHLTransferNegotiation = null;
+  return buyVHLPlayer(state.sellingTeamId, state.playerId, price);
+}
+function cancelVHLTransferNegotiation() {
+  G.pendingVHLTransferNegotiation = null;
+  render();
+}
+function buyVHLPlayer(sellingTeamId, playerId, negotiatedPrice = null) {
   const buyingTeam = G.league?.teams.find(item => item.id === G.playerTeamId);
   const sellingTeam = G.league?.teams.find(item => Number(item.id) === Number(sellingTeamId));
   const player = sellingTeam?.roster.find(item => Number(item.id) === Number(playerId));
   if (!buyingTeam || !sellingTeam || !player) { showToast('Игрок или клуб не найден', 'error'); return false; }
   const quote = getVHLTransferQuote(player, sellingTeam, buyingTeam);
-  if (!quote.allowed) { showToast(quote.reason, 'error'); return false; }
+  if (!quote.allowed && negotiatedPrice === null) { showToast(quote.reason, 'error'); return false; }
+  const transferPrice = negotiatedPrice === null ? quote.price : Math.round(Number(negotiatedPrice) * 10) / 10;
+  if (!Number.isFinite(transferPrice) || transferPrice <= 0 || Number(buyingTeam.finance?.balance || 0) < transferPrice) { showToast('Недостаточно средств для согласованной суммы', 'error'); return false; }
+  if (isTradeDeadlinePassed() || buyingTeam.roster.length >= 25 || sellingTeam.roster.length <= 18) { showToast('Условия трансфера больше не выполняются', 'error'); return false; }
   const index = sellingTeam.roster.indexOf(player);
   if (index < 0) return false;
   sellingTeam.roster.splice(index, 1);
@@ -278,10 +343,10 @@ function buyVHLPlayer(sellingTeamId, playerId) {
   player.transferListed = false;
   player.transferRequest = false;
   player.status = 'contract';
-  buyingTeam.finance.balance = Math.round((Number(buyingTeam.finance.balance) - quote.price) * 10) / 10;
-  sellingTeam.finance.balance = Math.round((Number(sellingTeam.finance?.balance || 0) + quote.price) * 10) / 10;
+  buyingTeam.finance.balance = Math.round((Number(buyingTeam.finance.balance) - transferPrice) * 10) / 10;
+  sellingTeam.finance.balance = Math.round((Number(sellingTeam.finance?.balance || 0) + transferPrice) * 10) / 10;
   buyingTeam.finance.expenses = buyingTeam.finance.expenses || {};
-  buyingTeam.finance.expenses.transfers = (Number(buyingTeam.finance.expenses.transfers) || 0) + quote.price;
+  buyingTeam.finance.expenses.transfers = (Number(buyingTeam.finance.expenses.transfers) || 0) + transferPrice;
   sellingTeam.finance = sellingTeam.finance || {};
   sellingTeam.finance.income = sellingTeam.finance.income || {};
   sellingTeam.finance.income.transfers = (Number(sellingTeam.finance.income.transfers) || 0) + quote.price;
@@ -294,10 +359,10 @@ function buyVHLPlayer(sellingTeamId, playerId) {
     season: G.league.season, round: G.league.currentRound,
     playerId: player.id, playerName: player.name,
     fromTeamId: sellingTeam.id, fromTeam: sellingTeam.name,
-    toTeamId: buyingTeam.id, toTeam: buyingTeam.name, fee: quote.price
+    toTeamId: buyingTeam.id, toTeam: buyingTeam.name, fee: transferPrice
   });
-  addNews('signing', buyingTeam.name + ' приобрёл ' + player.name + ' у клуба ' + sellingTeam.name + ' за ' + quote.price.toFixed(1) + ' млн ₽', 2);
-  showToast(player.name + ' перешёл в ' + buyingTeam.name + ' за ' + quote.price.toFixed(1) + ' млн ₽', 'success');
+  addNews('signing', buyingTeam.name + ' приобрёл ' + player.name + ' у клуба ' + sellingTeam.name + ' за ' + transferPrice.toFixed(1) + ' млн ₽', 2);
+  showToast(player.name + ' перешёл в ' + buyingTeam.name + ' за ' + transferPrice.toFixed(1) + ' млн ₽', 'success');
   render();
   saveGame({ immediate: true });
   return true;
