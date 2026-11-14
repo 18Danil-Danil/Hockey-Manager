@@ -52,8 +52,8 @@ vm.createContext(mappingContext);
 for (const mappingName of ['MHL_OFFICIAL_LOGO_IDS', 'RHL_OFFICIAL_LOGO_IDS']) {
   const declaration = youthEngineSource.match(new RegExp('const ' + mappingName + ' = \\{[\\s\\S]*?\\n\\};'));
   assert.ok(declaration, mappingName + ' mapping must exist');
-  vm.runInContext(declaration[0], mappingContext);
-  const mapping = mappingContext[mappingName];
+  vm.runInContext(declaration[0] + '\nglobalThis.__mapping = ' + mappingName + ';', mappingContext);
+  const mapping = mappingContext.__mapping;
   for (const [teamId, catalogId] of Object.entries(mapping)) {
     assert.ok(youthTeams.some(team => team.id === teamId), mappingName + ' has unknown game team ' + teamId);
     const leagueId = mappingName === 'MHL_OFFICIAL_LOGO_IDS' ? 'mhl' : 'rhl';
