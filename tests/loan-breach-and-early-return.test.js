@@ -96,8 +96,8 @@ const aiOwnedPlayer2 = {
     statsSnapshot: {}
   }
 };
-parent.roster = [];
-borrower.roster = [aiOwnedPlayer2];
+parent.roster = [aiOwnedPlayer2];
+borrower.roster = [];
 aiOwnedPlayer2.loan.aiRecallRequest = { status: 'pending', requestedRound: 9 };
 assert.equal(context.respondToAIRecallRequest(aiOwnedPlayer2.id, false), true, 'user should be able to reject an AI recall request');
 assert.ok(borrower.roster.some(item => item.id === aiOwnedPlayer2.id), 'rejected AI recall should keep the loan active');
