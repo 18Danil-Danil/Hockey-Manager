@@ -20,6 +20,7 @@ const team = {
 const context = {
   G: { playerTeamId: 7, league: { teams: [team], currentRound: 0, season: '2026/27' } },
   nextId: () => nextId++,
+  rng: () => 0,
   addInboxMessage: (...args) => { messages.push(args); },
   addNews: (...args) => { news.push(args); },
   showToast: (...args) => { toasts.push(args); },
@@ -71,6 +72,40 @@ team.staff.psychologist = null;
 assert.match(context.holdLockerRoomEvent('psychologist').message, /психолог/);
 assert.equal(context.holdLockerRoomEvent('psychologist').success, false, 'psychologist event requires a psychologist');
 
+// Player-initiated requests, staff decisions, conflicts and delayed consequences.
+team.bench = [2];
+p2.morale = 50;
+context.G.league.currentRound = 21;
+let generated = context.processPlayerRelations(team);
+assert.equal(generated.length, 1);
+assert.equal(generated[0].type, 'playing_time');
+let moraleBefore = p2.morale;
+result = context.resolveLockerRoomRequest(generated[0].id, 'give_chance');
+assert.equal(result.success, true);
+assert.equal(p2.morale, moraleBefore + 6);
+assert.equal(p2.playingTimePromiseRound, 24);
+
+team.bench = [];
+p2.character = 'egoist';
+context.G.league.currentRound = 22;
+generated = context.processPlayerRelations(team);
+assert.equal(generated.length, 1);
+assert.equal(generated[0].type, 'conflict');
+const leaderMorale = p1.morale;
+const egoistMorale = p2.morale;
+result = context.resolveLockerRoomRequest(generated[0].id, 'mediate');
+assert.equal(result.success, true);
+assert.equal(p1.morale, leaderMorale + 3);
+assert.equal(p2.morale, egoistMorale + 3);
+
+const expired = context.createLockerRoomRequest(team, 'support', p2);
+const beforeExpiry = p2.morale;
+context.G.league.currentRound = expired.deadlineRound;
+context.processPlayerRelations(team);
+assert.equal(expired.status, 'expired');
+assert.equal(p2.morale, beforeExpiry - 5, 'ignored requests must have delayed morale consequences');
+
+
 
 const renderSource = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8');
 const appRenderSource = fs.readFileSync(path.join(__dirname, '..', 'ui', 'app-render.js'), 'utf8');
@@ -83,4 +118,4 @@ assert.match(indexSource, /engine\/locker-room\.js/, 'locker room engine must lo
 const seasonSource = fs.readFileSync(path.join(__dirname, '..', 'engine', 'season-simulation.js'), 'utf8');
 assert.equal((seasonSource.match(/processLockerRoomMeetings/g) || []).length, 2, 'scheduled meetings must process in both single-round and full-season simulation');
 
-console.log('Locker room talks, meetings and team events checks passed.');
+console.log('Locker room talks, meetings, player requests, conflicts and team events checks passed.');
