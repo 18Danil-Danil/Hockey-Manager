@@ -657,6 +657,11 @@ function renderTrades() {
   const deadline = isTradeDeadlinePassed();
   let html = `<h2>Обмены</h2>`;
   if (deadline) html += `<div class="trade-deadline-banner">🚫 Трансферный дедлайн закрыт. Обмены недоступны до конца сезона.</div>`;
+  if (G.pendingTradeCounter) {
+    const counter = G.pendingTradeCounter;
+    const club = G.league.teams.find(t => t.id === counter.aiTeamId);
+    html += '<div class="trade-counter-card"><b>Встречное предложение ' + (club ? club.name : 'клуба') + '</b><p>' + counter.message + '. Клуб просит увеличить денежную часть с ' + counter.myCash.toFixed(1) + ' до ' + counter.counterMyCash.toFixed(1) + ' млн ₽.</p><button class="btn small" onclick="acceptTradeCounterOffer()">Принять условия</button> <button class="btn small secondary" onclick="declineTradeCounterOffer()">Отказаться</button></div>';
+  }
   if (offers.length) {
     html += `<h2>💼 Предложения (${offers.length})</h2>`;
     for (const o of offers) {
@@ -675,7 +680,7 @@ function renderTrades() {
   const myPlayers = team.roster.filter(p => p.ovr >= 55).sort((a, b) => b.ovr - a.ovr);
   const theirPlayers = theirTeam ? theirTeam.roster.slice().sort((a, b) => b.ovr - a.ovr) : [];
   html += `<h2>Свой обмен</h2><div class="finance-card"><div class="fc-title">Соперник</div><select onchange="setTradeTeam(this.value)" style="width:100%;background:#0f1117;color:#e6e8ee;border:1px solid #2a3042;padding:8px;border-radius:4px">${aiTeams.map(t => `<option value="${t.id}" ${t.id === G.tradeTargetTeamId ? 'selected' : ''}>${t.name}</option>`).join('')}</select></div>`;
-  const tradePlayerRow = (p, side) => `<label class="trade-check-row"><input type="checkbox" class="trade-${side}-pick" value="${p.id}"><span><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span> ${p.name} (${p.ovr}) — ${tradeValue(p)}</span></label>`;
+  const tradePlayerRow = (p, side) => `<label class="trade-check-row"><input type="checkbox" class="trade-${side}-pick" value="${p.id}" ${side === "their" && Number(G.marketTargetPlayerId) === Number(p.id) ? "checked" : ""}><span><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span> ${p.name} (${p.ovr}) — ${tradeValue(p)}</span></label>`;
   html += `<div class="trade-multi"><div class="trade-col"><h4>Мои игроки</h4>${myPlayers.map(p => tradePlayerRow(p, 'my')).join('')}<div style="margin-top:8px"><label style="font-size:12px">+ Деньги (млн): </label><input id="my-cash" type="number" min="0" value="0" style="width:80px;background:#0f1117;color:#e6e8ee;border:1px solid #2a3042;padding:4px;border-radius:3px"></div></div><div class="trade-col"><h4>Игроки соперника</h4>${theirPlayers.map(p => tradePlayerRow(p, 'their')).join('')}<div style="margin-top:8px"><label style="font-size:12px">+ Деньги (млн): </label><input id="their-cash" type="number" min="0" value="0" style="width:80px;background:#0f1117;color:#e6e8ee;border:1px solid #2a3042;padding:4px;border-radius:3px"></div></div></div>`;
   html += `<button class="btn" onclick="proposeMultiTrade()" style="margin-top:12px">🔄 Предложить обмен</button>`;
   return html;
