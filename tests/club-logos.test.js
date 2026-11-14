@@ -9,6 +9,7 @@ const youthEngineSource = fs.readFileSync(path.join(__dirname, '..', 'engine', '
 const youthRegistrySource = fs.readFileSync(path.join(__dirname, '..', 'data', 'youth-clubs.js'), 'utf8');
 const youthCatalogSource = fs.readFileSync(path.join(__dirname, '..', 'data', 'youth-league-clubs.js'), 'utf8');
 const internationalSource = fs.readFileSync(path.join(__dirname, '..', 'data', 'international-leagues.js'), 'utf8');
+const vhlTeamsSource = fs.readFileSync(path.join(__dirname, '..', 'data', 'teams.js'), 'utf8');
 const indexSource = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 const context = { getInitials: name => String(name).split(/\\s+/).map(part => part[0]).join('').slice(0, 3).toUpperCase() };
 vm.createContext(context);
@@ -71,5 +72,17 @@ vm.runInContext(internationalSource, internationalContext);
 const khl = internationalContext.window.INTERNATIONAL_LEAGUES.find(league => league.id === 'khl');
 assert.equal(khl.clubs.length, 22, 'KHL catalogue should contain 22 clubs');
 assert.ok(khl.clubs.every(club => club.logo), 'every KHL club should have an official logo URL');
+
+for (const league of internationalContext.window.INTERNATIONAL_LEAGUES) {
+  for (const club of league.clubs) {
+    const markup = context.clubLogoWithFallback(club, 28, 'international-test');
+    assert.match(markup, /<svg viewBox="0 0 64 64"/, league.id + '/' + club.id + ' must have an offline fallback badge');
+  }
+}
+const vhlContext = { window: {} };
+vm.createContext(vhlContext);
+vm.runInContext(vhlTeamsSource, vhlContext);
+assert.equal(vhlContext.window.VHL_TEAMS.length, 30, 'all 30 VHL clubs should be present');
+assert.ok(vhlContext.window.VHL_TEAMS.every(club => club.logo), 'all VHL clubs should retain their official logo source');
 
 console.log('Offline club logo rendering checks passed.');
