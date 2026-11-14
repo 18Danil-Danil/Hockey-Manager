@@ -900,14 +900,13 @@ function processPlayerContractRequests() {
 
 function runAITransfers() {
   const teams = G.league.teams.filter(team => team.id !== G.playerTeamId);
-  const freeAgents = G.league.freeAgents;
-  if (!freeAgents.length) return;
+  if (!(G.league.freeAgents || []).length) return;
   for (const team of teams) {
     if (rng() > 0.2 || team.roster.length >= 25) continue;
     const currentSalary = team.roster.reduce((sum, player) => sum + (Number(player.contract?.salary) || 0), 0);
     const salaryRoom = Number(team.finance.salaryCap) - currentSalary;
     if (salaryRoom < 2) continue;
-    const candidates = freeAgents.map(player => ({
+    const candidates = (G.league.freeAgents || []).map(player => ({
       player,
       demand: getPlayerContractDemand(player, team, 'signing')
     })).filter(item => item.demand.salary <= salaryRoom * 0.95)
