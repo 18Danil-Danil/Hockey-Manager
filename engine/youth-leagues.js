@@ -83,10 +83,8 @@ const RHL_OFFICIAL_LOGO_IDS = {
   'rhl-kaluga-rockets': 'kaluga-rockets',
   'rhl-leningradets': 'leningradets',
   'rhl-dynamo-karelia': 'dynamo-karelia',
-  'rhl-metallurg-vo': 'metallurg-cherepovets',
   'rhl-polet': 'polet',
   'rhl-tverichi': 'tverichi',
-  'rhl-fakel': 'fakel-yamal',
   'rhl-bryansk': 'bryansk',
   'rhl-dizelist': 'dizelist',
   'rhl-belgorod': 'belgorod',
@@ -98,7 +96,6 @@ const RHL_OFFICIAL_LOGO_IDS = {
   'rhl-progress-glazov': 'progress',
   'rhl-proton': 'proton',
   'rhl-sokol-novocheboksarsk': 'sokol-chuvashia',
-  'rhl-samara': 'samara',
   'rhl-ekoniva-bobrov': 'econiva-bobrov'
 };;
 
