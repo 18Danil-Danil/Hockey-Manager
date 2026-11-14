@@ -899,24 +899,45 @@ function processPlayerContractRequests() {
 }
 
 function runAITransfers() {
-  const teams = G.league.teams.filter(t => t.id !== G.playerTeamId);
-  const freeAgents = G.league.freeAgents; if (!freeAgents.length) return;
+  const teams = G.league.teams.filter(team => team.id !== G.playerTeamId);
+  const freeAgents = G.league.freeAgents;
+  if (!freeAgents.length) return;
   for (const team of teams) {
-    if (rng() > 0.2) continue;
-    if (team.roster.length >= 25) continue;
-    const currentSalary = team.roster.reduce((s, p) => s + p.contract.salary, 0);
-    const salaryRoom = team.finance.salaryCap - currentSalary;
+    if (rng() > 0.2 || team.roster.length >= 25) continue;
+    const currentSalary = team.roster.reduce((sum, player) => sum + (Number(player.contract?.salary) || 0), 0);
+    const salaryRoom = Number(team.finance.salaryCap) - currentSalary;
     if (salaryRoom < 2) continue;
-    const candidates = freeAgents.filter(p => p.contract.salary <= salaryRoom * 0.7).sort((a, b) => b.ovr - a.ovr);
+    const candidates = freeAgents.map(player => ({
+      player,
+      demand: getPlayerContractDemand(player, team, 'signing')
+    })).filter(item => item.demand.salary <= salaryRoom * 0.95)
+      .sort((a, b) => b.player.ovr - a.player.ovr);
     if (!candidates.length) continue;
-    const target = candidates[0];
-    // ⚙️ ФИКС: лимит легионеров у ИИ тоже соблюдается
-    const foreigners = team.roster.filter(p => p.nationality !== 'Россия').length;
-    if (target.nationality !== 'Россия' && foreigners >= 3) continue;
-    const idx = freeAgents.indexOf(target);
-    if (idx !== -1) { freeAgents.splice(idx, 1); target.status = 'contract'; team.roster.push(target); markYouthGraduateSigned(target, team, 'contract'); }
+    const foreigners = team.roster.filter(player => player.nationality !== 'Россия').length;
+    const targetEntry = candidates.find(item => item.player.nationality === 'Россия' || foreigners < 3);
+    if (!targetEntry) continue;
+    const target = targetEntry.player;
+    const demand = targetEntry.demand;
+    const offer = {
+      salary: Math.round(demand.salary * (0.96 + rng() * 0.08) * 10) / 10,
+      years: demand.years
+    };
+    let result = evaluatePlayerContractOffer(target, team, offer, 'signing');
+    let agreedOffer = offer;
+    if (result.decision === 'counter') {
+      const counter = result.counteroffer;
+      const counterPayroll = currentSalary + Number(counter.salary || 0);
+      if (counterPayroll > Number(team.finance.salaryCap) || rng() > 0.72) continue;
+      result = evaluatePlayerContractOffer(target, team, counter, 'signing');
+      agreedOffer = counter;
+    }
+    if (result.decision !== 'accept') continue;
+    const agreement = applyPlayerContractAgreement(team, target, agreedOffer, 'signing');
+    if (!agreement.applied) continue;
+    if (target.ovr >= 78) addNews('signing', team.name + ' подписал свободного агента ' + target.name + ' после переговоров о контракте.', 1);
   }
 }
+
 function runAIContractExtensions() {
   for (const team of G.league.teams) {
     if (team.id === G.playerTeamId) continue;
