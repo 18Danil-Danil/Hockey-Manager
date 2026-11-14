@@ -66,6 +66,22 @@ context.G = { playerTeamId: 99, league: { teams: [veteranSurplus] } };
 context.refreshAITransferLists();
 assert.equal(veteranSurplus.roster[4].transferListed, true, 'AI should list a surplus veteran with a lower rating');
 assert.equal(veteranSurplus.roster[5].transferListed, true, 'AI may list a second surplus veteran');
+// Переговоры о трансферной сумме: принятие, встречное предложение и отказ.
+const negotiationPlayer = player(150, 'C', 75);
+const negotiationSeller = team(151, [negotiationPlayer], { balance: 10 });
+const negotiationBuyer = team(152, [], { balance: 100 });
+const acceptedTransfer = context.evaluateVHLTransferOffer(negotiationPlayer, negotiationSeller, negotiationBuyer, 9.5, 10, 1);
+assert.equal(acceptedTransfer.decision, 'accept', 'near-asking offer should be accepted');
+assert.equal(acceptedTransfer.agreedPrice, 9.5);
+const counterTransfer = context.evaluateVHLTransferOffer(negotiationPlayer, negotiationSeller, negotiationBuyer, 8, 10, 1);
+assert.equal(counterTransfer.decision, 'counter', 'reasonable discount request should receive a counteroffer');
+assert.ok(counterTransfer.counterPrice > 8);
+const rejectedTransfer = context.evaluateVHLTransferOffer(negotiationPlayer, negotiationSeller, negotiationBuyer, 5, 10, 1);
+assert.equal(rejectedTransfer.decision, 'reject', 'very low transfer offer should be rejected');
+const brokeBuyer = team(153, [], { balance: 3 });
+assert.equal(context.evaluateVHLTransferOffer(negotiationPlayer, negotiationSeller, brokeBuyer, 5, 10, 1).decision, 'reject', 'offer above budget must be rejected');
+assert.equal(context.evaluateVHLTransferOffer(negotiationPlayer, negotiationSeller, negotiationBuyer, 9, 10, 3).decision, 'reject', 'seller should stop negotiations after the third round');
+
 // Покупка игрока ВХЛ за деньги: успешный переход и финансовые/спортивные ограничения.
 const buyerPlayer = player(101, 'C', 70);
 const sellerPlayer = player(102, 'D', 76, { pot: 82, salary: 3 });
@@ -110,6 +126,8 @@ assert.equal(context.getVHLTransferQuote(foreignTarget, poorSeller, foreignBuyer
 const ui = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8');
 assert.match(ui, /ВХЛ · трансферный список/, 'market should include a VHL transfer-list tab');
 assert.match(ui, /buyVHLPlayer/, 'VHL market should support direct cash purchases');
+assert.match(ui, /startVHLTransferNegotiation/, 'VHL market should support transfer-fee negotiations');
+assert.match(ui, /acceptVHLTransferCounter/, 'VHL market should support accepting seller counteroffers');
 assert.match(ui, /prepareTradeForPlayer/, 'VHL market should retain the option to negotiate a trade');
 assert.match(ui, /acceptTradeCounterOffer/, 'trade UI should let the user accept counterterms');
 
