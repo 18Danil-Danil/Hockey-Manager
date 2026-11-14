@@ -58,7 +58,8 @@ function normalizeContractBonusTerms(offer, mode = 'renewal') {
   const terms = {};
   for (const field of fields) {
     const value = Number(offer?.[field]);
-    const precision = ['bonusGoal', 'bonusAssist', 'bonusGames'].includes(field) ? 100 : 10;\n    terms[field] = Math.round(Math.max(0, Math.min(limits[field], Number.isFinite(value) ? value : 0)) * precision) / precision;
+    const precision = ['bonusGoal', 'bonusAssist', 'bonusGames'].includes(field) ? 100 : 10;
+    terms[field] = Math.round(Math.max(0, Math.min(limits[field], Number.isFinite(value) ? value : 0)) * precision) / precision;
   }
   if (mode === 'renewal') terms.signingBonus = 0;
   return terms;
@@ -195,7 +196,8 @@ function updatePlayerContractOffer(field, value) {
   else if (field === 'years') G.contractNegotiation.offer[field] = Math.max(1, Math.min(5, Math.floor(numeric)));
   else {
     const limits = { signingBonus: 20, bonusGoal: 1, bonusAssist: 1, bonusGames: 1, bonusPlayoff: 10, bonusMvp: 20, bonusTopScorer: 20 };
-    const precision = ['bonusGoal', 'bonusAssist', 'bonusGames'].includes(field) ? 100 : 10;\n    G.contractNegotiation.offer[field] = Math.round(Math.max(0, Math.min(limits[field], numeric)) * precision) / precision;
+    const precision = ['bonusGoal', 'bonusAssist', 'bonusGames'].includes(field) ? 100 : 10;
+    G.contractNegotiation.offer[field] = Math.round(Math.max(0, Math.min(limits[field], numeric)) * precision) / precision;
   }
 }
 function submitPlayerContractNegotiation() {
