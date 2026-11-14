@@ -30,6 +30,8 @@ const userPlayers = Array.from({ length: 19 }, (_, i) => ({
 }));
 userPlayers[0].age = 22;
 userPlayers[0].name = 'Молодой игрок';
+const targetPlayer = userPlayers[0];
+const targetPlayerId = targetPlayer.id;
 const aiPlayers = Array.from({ length: 18 }, (_, i) => ({
   id: 1000 + i, name: 'Игрок ИИ ' + i, age: 25, position: i < 2 ? 'F' : i < 10 ? 'D' : 'G',
   nationality: 'Россия', ovr: 62, contract: { salary: 1 }
@@ -40,13 +42,12 @@ context.G.league.teams = [userClub, aiClub];
 
 assert.equal(context.generateAIIncomingLoanOffer(), true, 'AI club should generate an incoming loan proposal for an eligible young player');
 const offer = context.G.league.aiLoanOffers[0];
-assert.equal(offer.playerId, userPlayers[0].id);
+assert.equal(offer.playerId, targetPlayerId);
 assert.equal(offer.fromTeamId, aiClub.id);
 assert.equal(context.generateAIIncomingLoanOffer(), false, 'the same player must not receive duplicate pending offers');
 
 assert.equal(context.acceptAIIncomingLoanOffer(offer.id), true);
-console.log('DEBUG LOAN', userPlayers[0].id, userPlayers[0].loan, userClub.roster.length, aiClub.roster.length, aiClub.roster.map(player => [player.id, !!player.loan]));
-const loaned = aiClub.roster.find(player => player.id === userPlayers[0].id);
+const loaned = aiClub.roster.find(player => player.id === targetPlayerId);
 assert.ok(loaned && loaned.loan, 'accepting the offer must move the player to the borrowing club');
 assert.equal(loaned.loan.parentTeamId, userClub.id);
 assert.equal(loaned.loan.borrowerTeamId, aiClub.id);
