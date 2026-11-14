@@ -157,7 +157,6 @@ function evaluateTradeProposal(myTeam, theirTeam, myOut, theirOut, myCash = 0, t
   const myIds = myOut.map(p => p.id), theirIds = theirOut.map(p => p.id);
   const myRosterAfter = myTeam.roster.filter(p => !myIds.includes(p.id)).concat(theirOut);
   const theirRosterAfter = theirTeam.roster.filter(p => !theirIds.includes(p.id)).concat(myOut);
-  if (myRosterAfter.length > 25 || theirRosterAfter.length > 25) return { decision: 'reject', reason: 'roster-full', message: 'После обмена в одном из клубов будет больше 25 игроков' };
   const foreigners = roster => roster.filter(p => p.nationality !== 'Россия').length;
   if (foreigners(myRosterAfter) > 3 || foreigners(theirRosterAfter) > 3) return { decision: 'reject', reason: 'foreign-limit', message: 'После обмена будет превышен лимит легионеров' };
   const payroll = roster => roster.reduce((sum, p) => sum + (Number(p.contract?.salary) || 0), 0);
@@ -255,7 +254,6 @@ function getVHLTransferQuote(player, sellingTeam, buyingTeam) {
   if (sellingTeam.id === buyingTeam.id) reason = 'Нельзя купить игрока у собственного клуба';
   else if (!player.transferListed && !player.transferRequest) reason = 'Клуб не выставлял игрока на трансфер';
   else if (typeof isTradeDeadlinePassed === 'function' && isTradeDeadlinePassed()) reason = 'Трансферное окно закрыто после 40-го тура';
-  else if ((buyingTeam.roster || []).length >= 25) reason = 'В составе уже 25 игроков';
   else if ((sellingTeam.roster || []).length <= 18) reason = 'У клуба-продавца недостаточно игроков для сделки';
   else if (player.nationality !== 'Россия' && foreigners >= 3) reason = 'Лимит легионеров (3) уже исчерпан';
   else if (currentSalary + salary > Number(buyingTeam.finance?.salaryCap ?? Infinity)) reason = 'Не хватает места под потолком зарплат';
@@ -335,7 +333,7 @@ function buyVHLPlayer(sellingTeamId, playerId, negotiatedPrice = null) {
   if (!Number.isFinite(transferPrice) || transferPrice <= 0 || Number(buyingTeam.finance?.balance || 0) < transferPrice) { showToast('Недостаточно средств для согласованной суммы', 'error'); return false; }
   const foreignCount = buyingTeam.roster.filter(item => item.nationality !== 'Россия').length;
   const payroll = buyingTeam.roster.reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0);
-  if (isTradeDeadlinePassed() || buyingTeam.roster.length >= 25 || sellingTeam.roster.length <= 18 || (player.nationality !== 'Россия' && foreignCount >= 3) || payroll + quote.salary > Number(buyingTeam.finance?.salaryCap ?? Infinity) || (!player.transferListed && !player.transferRequest)) { showToast('Условия трансфера больше не выполняются', 'error'); return false; }
+  if (isTradeDeadlinePassed() || sellingTeam.roster.length <= 18 || (player.nationality !== 'Россия' && foreignCount >= 3) || payroll + quote.salary > Number(buyingTeam.finance?.salaryCap ?? Infinity) || (!player.transferListed && !player.transferRequest)) { showToast('Условия трансфера больше не выполняются', 'error'); return false; }
   const index = sellingTeam.roster.indexOf(player);
   if (index < 0) return false;
   sellingTeam.roster.splice(index, 1);
@@ -525,7 +523,6 @@ function getLoanTerms(player, parentTeam, borrowerTeam, rounds = 5, wageShare = 
   else if (parentTeam.id === borrowerTeam.id) reason = 'Нельзя арендовать собственного игрока';
   else if (player.loan) reason = 'Игрок уже находится в аренде';
   else if ((parentTeam.roster || []).length <= 18) reason = 'Клуб-владелец не может остаться с составом меньше 18 игроков';
-  else if ((borrowerTeam.roster || []).length >= 25) reason = 'В составе уже 25 игроков';
   else if (player.nationality !== 'Россия' && foreigners >= 3) reason = 'Лимит легионеров (3) уже исчерпан';
   else if (payroll + borrowerSalary > Number(borrowerTeam.finance?.salaryCap ?? Infinity)) reason = 'Не хватает места под потолком зарплат';
   else if (Number(borrowerTeam.finance?.balance || 0) < fee) reason = 'Недостаточно средств для арендной платы';
@@ -804,7 +801,7 @@ function generateAIIncomingLoanOffer() {
   );
   if (!candidates.length) return false;
   const clubs = G.league.teams.filter(club => Number(club.id) !== Number(parent.id) &&
-    (club.roster || []).length < 25 && (club.roster || []).length >= 18);
+    (club.roster || []).length >= 18);
   if (!clubs.length) return false;
   const player = pick(candidates.slice().sort((a, b) =>
     Number(!!b.transferListed) - Number(!!a.transferListed) || Number(a.age) - Number(b.age)
@@ -1288,7 +1285,7 @@ function runAITransfers() {
 
   // Клубы одновременно подают заявки, поэтому один хоккеист может выбирать между несколькими предложениями.
   for (const team of teams) {
-    if (rng() > 0.24 || team.roster.length >= 25) continue;
+    if (rng() > 0.24) continue;
     const currentSalary = team.roster.reduce((sum, player) => sum + (Number(player.contract?.salary) || 0), 0);
     const salaryRoom = Number(team.finance?.salaryCap) - currentSalary;
     if (salaryRoom < 2) continue;
