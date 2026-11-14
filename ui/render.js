@@ -576,12 +576,13 @@ function renderLoans() {
   const historyCards = history.map(item => {
     const wasParent = item.parentTeamId === team.id, stats = item.performance || {}, assessment = item.assessment || {};
     const goalie = item.position === 'G' || item.playerPosition === 'G';
+    const clubWageShare = item.wageShare == null ? '—' : (wasParent ? 100 - Number(item.wageShare) : Number(item.wageShare));
     const statLine = goalie ? 'Матчи: ' + (stats.gp || 0) + ' · Победы: ' + (stats.wins || 0) + ' · Отражено бросков: ' + (stats.saves || 0) + ' · Шат-ауты: ' + (stats.shutouts || 0) : 'Матчи: ' + (stats.gp || 0) + ' · Голы: ' + (stats.goals || 0) + ' · Передачи: ' + (stats.assists || 0) + ' · Очки: ' + (stats.points || 0);
     const reason = item.reason === 'expired' ? 'Срок завершён' : item.reason === 'recall' ? 'Отзыв владельцем' : 'Досрочное возвращение';
     const period = item.startRound != null ? 'Туры ' + item.startRound + '–' + (item.returnedRound || item.endRound || '?') : 'Завершение: тур ' + item.returnedRound;
     const side = wasParent ? 'Отдали в аренду' : 'Взяли в аренду';
     const clubs = wasParent ? 'Клуб: ' + (item.borrowerTeamName || '—') : 'Владелец: ' + (item.parentTeamName || '—');
-    return '<details class="trade-counter-card"><summary><b>' + (item.playerName || 'Хоккеист') + '</b> · ' + side + ' · ' + (assessment.status || 'Оценка не сохранена') + '</summary><div class="market-player-meta">' + clubs + ' · ' + period + ' · ' + reason + '</div><p>' + statLine + '</p><p>Игровое время: ' + (assessment.usageRate ?? '—') + '% · ' + (assessment.recommendation || 'Нет сохранённой рекомендации') + '</p><p>Роль: ' + (item.roleLabel || item.role || 'не указана') + ' · Доля зарплаты клуба: ' + (item.wageShare ?? '—') + '% · Плата: ' + (Number(item.fee) || 0).toFixed(1) + ' млн ₽</p></details>';
+    return '<details class="trade-counter-card"><summary><b>' + (item.playerName || 'Хоккеист') + '</b> · ' + side + ' · ' + (assessment.status || 'Оценка не сохранена') + '</summary><div class="market-player-meta">' + clubs + ' · ' + period + ' · ' + reason + '</div><p>' + statLine + '</p><p>Игровое время: ' + (assessment.usageRate ?? '—') + '% · ' + (assessment.recommendation || 'Нет сохранённой рекомендации') + '</p><p>Роль: ' + (item.roleLabel || item.role || 'не указана') + ' · Доля зарплаты твоего клуба: ' + clubWageShare + '% · Плата: ' + (Number(item.fee) || 0).toFixed(1) + ' млн ₽</p></details>';
   }).join('');
   const own = (team.roster || []).filter(player => !player.loan && (player.transferListed || player.age <= 23)).map(player => '<tr><td>' + player.name + '</td><td>' + player.position + '</td><td>' + player.age + '</td><td>' + player.ovr + '</td><td><button class="btn small" onclick="startOutgoingLoanNegotiation(' + player.id + ')">Предложить в аренду</button></td></tr>').join('');
   let offerPanel = '';
