@@ -254,3 +254,19 @@ FootyLogos публикует каталоги хоккейных эмблем �
 | HC Prešov | https://www.footylogos.com/logos/hc-presov | https://www.footylogos.com/sports-assets/logos/hc-presov/hc-presov-logo-footylogos.svg |
 
 Все карточки относятся к Tipsport liga сезона 2026/27. Две игровые записи Žilina (`vlci-zilina` и `zilina`) указывают на один клуб, поэтому обе используют один SVG. Клубы, для которых каталог предлагает только PNG, не получили выдуманный SVG-адрес.
+## PENNY DEL: ещё десять эмблем игровых клубов — 14 ноября 2026
+
+| Клуб | Страница-источник | Прямой SVG |
+|---|---|---|
+| Eisbären Berlin | https://www.footylogos.com/logos/eisbaren-berlin | https://www.footylogos.com/sports-assets/logos/eisbaren-berlin/eisbaren-berlin-logo-footylogos.svg |
+| Löwen Frankfurt | https://www.footylogos.com/logos/lowen-frankfurt | https://www.footylogos.com/sports-assets/logos/lowen-frankfurt/lowen-frankfurt-logo-footylogos.svg |
+| Nürnberg Ice Tigers | https://www.footylogos.com/logos/nurnberg-ice-tigers | https://www.footylogos.com/sports-assets/logos/nurnberg-ice-tigers/nurnberg-ice-tigers-logo-footylogos.svg |
+| Augsburger Panther | https://www.footylogos.com/logos/augsburger-panther | https://www.footylogos.com/sports-assets/logos/augsburger-panther/augsburger-panther-logo-footylogos.svg |
+| Fischtown Pinguins | https://www.footylogos.com/logos/pinguins-bremerhaven | https://www.footylogos.com/sports-assets/logos/pinguins-bremerhaven/pinguins-bremerhaven-logo-footylogos.svg |
+| EHC Red Bull München | https://www.footylogos.com/logos/ehc-red-bull-munchen | https://www.footylogos.com/sports-assets/logos/ehc-red-bull-munchen/ehc-red-bull-munchen-logo-footylogos.svg |
+| Iserlohn Roosters | https://www.footylogos.com/logos/iserlohn-roosters | https://www.footylogos.com/sports-assets/logos/iserlohn-roosters/iserlohn-roosters-logo-footylogos.svg |
+| Straubing Tigers | https://www.footylogos.com/logos/straubing-tigers | https://www.footylogos.com/sports-assets/logos/straubing-tigers/straubing-tigers-logo-footylogos.svg |
+| Kölner Haie | https://www.footylogos.com/logos/kolner-haie | https://www.footylogos.com/sports-assets/logos/kolner-haie/kolner-haie-logo-footylogos.svg |
+| Krefeld Pinguine | https://www.footylogos.com/logos/krefeld-pinguine | https://www.footylogos.com/sports-assets/logos/krefeld-pinguine/krefeld-pinguine-logo-footylogos.svg |
+
+Все ссылки получены с индивидуальных карточек FootyLogos и зафиксированы тестами. Krefeld Pinguine оставлен в игровом каталоге как историческая команда; запись не означает, что клуб участвует в PENNY DEL 2026/27.
