@@ -1271,3 +1271,27 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
   .locker-event-card { min-height:0; }
   .profile-section .profile-action-group select { flex:1 1 100%; }
 }
+
+
+/* Раздевалка: единый стиль карточек внимания и личных бесед */
+.locker-room-page .locker-attention-link,
+.locker-room-page .locker-attention-link:visited { color:#f0f3f8; text-decoration:none; transition:color .16s ease; }
+.locker-room-page .locker-attention-link:hover { color:#ffad8d; text-decoration:underline; }
+.locker-room-page .dev-row:has(.locker-attention-link) { border:1px solid rgba(255,255,255,.055); background:linear-gradient(110deg,#202635,#191f2c); }
+.locker-conversation .locker-topic-list { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.locker-conversation .locker-topic-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 12px; border:1px solid var(--ui-line,rgba(255,255,255,.1)); border-radius:9px; background:rgba(255,255,255,.025); }
+.locker-conversation .locker-topic-copy { display:flex; flex:1; min-width:0; flex-direction:column; gap:4px; }
+.locker-conversation .locker-topic-copy b { color:#edf2fa; font-size:12px; }
+.locker-conversation .locker-topic-copy small { color:var(--ui-muted,#929caf); font-size:10px; line-height:1.4; }
+.locker-conversation .locker-topic-actions { display:flex; flex:0 0 auto; gap:6px; }
+.locker-conversation .locker-topic-actions .btn { width:auto; min-width:88px; }
+.locker-meeting-delay { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; color:var(--ui-muted,#929caf); font-size:11px; }
+.locker-meeting-delay select { min-width:150px; padding:9px 32px 9px 11px; border:1px solid var(--ui-line,#343c50); border-radius:8px; background:#171d2a; color:#edf2fa; }
+.locker-meeting-delay select:focus { outline:none; border-color:#ff8a61; box-shadow:0 0 0 2px rgba(255,107,53,.13); }
+.locker-meeting-status { margin:12px 0 0; padding:10px 12px; border:1px solid rgba(94,205,154,.22); border-radius:8px; background:rgba(94,205,154,.07); color:#a9e8c9; font-size:11px; }
+@media(max-width:560px) {
+ .locker-conversation .locker-topic-row { align-items:stretch; flex-direction:column; }
+ .locker-conversation .locker-topic-actions .btn { flex:1; }
+ .locker-meeting-delay { align-items:stretch; flex-direction:column; }
+ .locker-meeting-delay select { width:100%; }
+}
