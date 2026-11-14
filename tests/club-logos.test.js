@@ -6,6 +6,7 @@ const vm = require('node:vm');
 const logoSource = fs.readFileSync(path.join(__dirname, '..', 'data', 'club-logos.js'), 'utf8');
 const renderSource = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8');
 const youthEngineSource = fs.readFileSync(path.join(__dirname, '..', 'engine', 'youth-leagues.js'), 'utf8');
+const youthRegistrySource = fs.readFileSync(path.join(__dirname, '..', 'data', 'youth-clubs.js'), 'utf8');
 const youthCatalogSource = fs.readFileSync(path.join(__dirname, '..', 'data', 'youth-league-clubs.js'), 'utf8');
 const internationalSource = fs.readFileSync(path.join(__dirname, '..', 'data', 'international-leagues.js'), 'utf8');
 const indexSource = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
@@ -40,6 +41,29 @@ assert.equal(catalogContext.window.getYouthClubLogoUrl('mhl', 'academy-mikhailov
   'https://img.khl.ru/clubs/ru/671/40.png');
 assert.equal(catalogContext.window.getYouthClubLogoUrl('rhl', 'arktika'),
   'https://ss.fhr.ru/files/images/league/teams/200_200/66.png?1=');
+
+const registryContext = { window: {} };
+vm.createContext(registryContext);
+vm.runInContext(youthRegistrySource, registryContext);
+const youthTeams = registryContext.window.YOUTH_CLUBS.teams;
+const mappingContext = {};
+vm.createContext(mappingContext);
+for (const mappingName of ['MHL_OFFICIAL_LOGO_IDS', 'RHL_OFFICIAL_LOGO_IDS']) {
+  const declaration = youthEngineSource.match(new RegExp('const ' + mappingName + ' = \\{[\\s\\S]*?\\n\\};'));
+  assert.ok(declaration, mappingName + ' mapping must exist');
+  vm.runInContext(declaration[0], mappingContext);
+  const mapping = mappingContext[mappingName];
+  for (const [teamId, catalogId] of Object.entries(mapping)) {
+    assert.ok(youthTeams.some(team => team.id === teamId), mappingName + ' has unknown game team ' + teamId);
+    const leagueId = mappingName === 'MHL_OFFICIAL_LOGO_IDS' ? 'mhl' : 'rhl';
+    assert.ok(catalogContext.window.getYouthClubLogoUrl(leagueId, catalogId),
+      mappingName + ' has missing official source for ' + teamId);
+  }
+}
+const mhlTeams = youthTeams.filter(team => team.league === 'MHL');
+assert.equal(mhlTeams.length, 34, 'all 34 MHL game teams should be catalogued');
+assert.ok(mhlTeams.every(team => mappingContext.MHL_OFFICIAL_LOGO_IDS[team.id]),
+  'every MHL game team should have an official logo source');
 
 const internationalContext = { window: {} };
 vm.createContext(internationalContext);
