@@ -629,7 +629,8 @@ function submitOutgoingLoanOffer() {
   const depth = borrower.roster.filter(p => p.position === player.position).length;
   const quality = player.ovr >= 82 ? 1.15 : player.ovr >= 72 ? 1 : 0.85;
   const roleFactor = role === 'top' ? 0.9 : role === 'rotation' ? 1 : 1.08;
-  const acceptance = Math.max(0.12, Math.min(0.92, (0.72 - depth * 0.09) * quality * (0.5 + (100 - parentShare) / 100) * roleFactor));
+  const partnership = getLoanPartnershipRating(parent.id, borrower.id);
+  const acceptance = Math.max(0.12, Math.min(0.92, (0.72 - depth * 0.09) * quality * (0.5 + (100 - parentShare) / 100) * roleFactor + (partnership.score - 50) * 0.002));
   if (rng() > acceptance) { G.pendingOutgoingLoan = null; showToast(borrower.name + ' отклонил предложение об аренде', 'error'); render(); return false; }
   parent.roster.splice(parent.roster.indexOf(player), 1);
   player.loanOriginalContract = player.contract ? { ...player.contract } : null;
@@ -789,7 +790,8 @@ function generateAIIncomingLoanOffer() {
   const player = pick(candidates.slice().sort((a, b) => Number(!!b.transferListed) - Number(!!a.transferListed) || Number(a.age) - Number(b.age)).slice(0, Math.min(8, candidates.length)));
   const interested = clubs.filter(club => (club.roster || []).filter(item => item.position === player.position).length <= 3);
   if (!interested.length) return false;
-  const borrower = pick(interested);
+  const rankedBorrowers = interested.slice().sort((a, b) => getLoanPartnershipRating(parent.id, b.id).score - getLoanPartnershipRating(parent.id, a.id).score);
+  const borrower = pick(rankedBorrowers.slice(0, Math.min(3, rankedBorrowers.length)));
   const rounds = pick([3, 5, 5, 8]);
   const wageShare = pick([50, 60, 75, 100]);
   const terms = getLoanTerms(player, parent, borrower, rounds, wageShare);
@@ -883,7 +885,8 @@ function submitIncomingLoanCounter() {
   if (!cost.allowed) { showToast(cost.reason, 'error'); return false; }
   const askValue = Number(offer.fee) + Number(offer.wageShare) * 0.025 - Number(offer.rounds) * 0.06;
   const counterValue = fee + wageShare * 0.025 - rounds * 0.06;
-  const acceptance = Math.max(0.08, Math.min(0.92, 0.68 - Math.max(0, counterValue - askValue) * 0.12 + (rounds <= offer.rounds ? 0.08 : 0)));
+  const partnership = getLoanPartnershipRating(parent.id, borrower.id);
+  const acceptance = Math.max(0.08, Math.min(0.92, 0.68 - Math.max(0, counterValue - askValue) * 0.12 + (rounds <= offer.rounds ? 0.08 : 0) + (partnership.score - 50) * 0.0025));
   if (rng() > acceptance) {
     G.league.aiLoanOffers = G.league.aiLoanOffers.filter(item => item.id !== offer.id);
     G.pendingIncomingLoanCounter = null;
@@ -916,9 +919,11 @@ function processAIRequestedLoanRecalls() {
       item.assessment?.status === 'Мало игрового времени').length;
     const concern = !!loan.guaranteeBreach || report.guaranteeAtRisk ||
       report.status === 'Мало игрового времени' || report.status === 'Результативность ниже ожиданий';
-    const chance = Math.max(0.04, Math.min(0.78,
+    const partnership = getLoanPartnershipRating(parent.id, userTeam.id);
+    const chance = Math.max(0.04, Math.min(0.82,
       0.025 + (concern ? 0.34 : 0) + (loan.guaranteeBreach ? 0.18 : 0) +
-      (50 - relation) * 0.003 + Math.min(0.12, priorBadLoans * 0.04)));
+      (50 - relation) * 0.003 + Math.min(0.12, priorBadLoans * 0.04) +
+      Math.max(-0.08, Math.min(0.12, (50 - partnership.score) * 0.003))));
     if (rng() >= chance) continue;
     loan.aiRecallRequest = {
       status: 'pending', requestedRound: G.league.currentRound,
