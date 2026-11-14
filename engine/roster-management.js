@@ -379,6 +379,29 @@ function updateLoanClubRelationship(parentTeamId, borrowerTeamId, delta) {
   league.loanClubRelations[key] = Math.max(0, Math.min(100, current + Number(delta || 0)));
   return league.loanClubRelations[key];
 }
+function getLoanPartnershipRating(parentTeamId, borrowerTeamId) {
+  const log = (G.league?.loanLog || []).filter(item =>
+    Number(item.parentTeamId) === Number(parentTeamId) &&
+    Number(item.borrowerTeamId) === Number(borrowerTeamId) &&
+    item.returnedRound !== undefined
+  );
+  if (!log.length) return { score: 50, label: 'Нет истории', completed: 0, successful: 0, problematic: 0 };
+  let score = 50, successful = 0, problematic = 0;
+  for (const item of log) {
+    const assessment = item.assessment || {};
+    const guaranteeMet = assessment.guaranteeMet || assessment.guaranteeStatus === 'Гарантия выполнена';
+    const breach = !!assessment.guaranteeAtRisk || assessment.status === 'Мало игрового времени' ||
+      item.reason === 'recall' || item.reason === 'ai-recall';
+    if (breach) { score -= 9; problematic++; }
+    else if (guaranteeMet || assessment.status === 'Оправдывает ожидания') { score += 7; successful++; }
+    else score += 1;
+    if (item.reason === 'expired' && !breach) score += 2;
+  }
+  score = Math.max(0, Math.min(100, Math.round(score)));
+  const label = score >= 75 ? 'Надёжный партнёр' : score >= 60 ? 'Хороший партнёр' :
+    score >= 40 ? 'Нейтральная репутация' : score >= 25 ? 'Ненадёжный партнёр' : 'Плохая репутация';
+  return { score, label, completed: log.length, successful, problematic };
+}
 function loanStatsSnapshot(player) {
   const snapshot = {};
   for (const source of [player.stats, player.playoffStats]) for (const key of ["gp","goals","assists","points","wins","losses","otl","saves","shotsAgainst","goalsAgainst","shutouts","shots","plusMinus","pim"]) snapshot[key] = (snapshot[key] || 0) + (Number(source?.[key]) || 0);
