@@ -29,12 +29,12 @@ const context = {
   ensureScheduleCalendar: () => [{ date: '2026-10-01' }],
   ensureStats: () => ({ points: 0 }),
   logoHeader: () => '',
-  unreadInboxCount: () => (G.league.inbox || []).filter(message => !message.read).length,
   document: { querySelectorAll: selector => selector === '.team-card' ? [card] : [] }
 };
 vm.createContext(context);
-vm.runInContext(source + '\nthis.api = { renderTeamSelect, bindTeamSelect, renderOverview };', context);
+vm.runInContext(source + '\nthis.api = { renderTeamSelect, bindTeamSelect, renderOverview, unreadInboxCount };', context);
 const api = context.api;
+assert.strictEqual(api.unreadInboxCount(), 0, 'unread inbox helper should work without a test stub');
 
 const easyMarkup = api.renderTeamSelect();
 assert(easyMarkup.includes('Стартовая финансовая надбавка'));
@@ -79,6 +79,7 @@ G.league.inbox = [
   { id: 1, type: 'league', from: 'Лига', subject: 'Календарь обновлён', body: 'Опубликовано расписание ближайших матчей.', season: '2026/27', round: 0, read: true },
   { id: 2, type: 'league', from: 'Клуб-соперник', subject: 'Предложение о трансфере', body: 'Предлагаем приобрести вашего хоккеиста.', season: '2026/27', round: 1, read: false }
 ];
+assert.strictEqual(api.unreadInboxCount(), 1, 'unread inbox helper should count unread messages');
 const overviewWithMail = api.renderOverview();
 assert(overviewWithMail.includes('dashboard-mail-panel'), 'overview should contain a dedicated mail panel');
 assert(overviewWithMail.includes('Предложение о трансфере'), 'overview should preview recent messages');
