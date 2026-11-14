@@ -21,6 +21,7 @@ const context = {
   G: { playerTeamId: 7, league: { teams: [team], currentRound: 0, season: '2026/27' } },
   nextId: () => nextId++,
   rng: () => 0,
+  openPlayerContractNegotiation: (id, mode) => { context.lastContractRequest = { id, mode }; return true; },
   addInboxMessage: (...args) => { messages.push(args); },
   addNews: (...args) => { news.push(args); },
   showToast: (...args) => { toasts.push(args); },
@@ -104,6 +105,28 @@ context.G.league.currentRound = expired.deadlineRound;
 context.processPlayerRelations(team);
 assert.equal(expired.status, 'expired');
 assert.equal(p2.morale, beforeExpiry - 5, 'ignored requests must have delayed morale consequences');
+
+// Contract renewal and transfer requests from players.
+p2.contract = { salary: 1, years: 1 };
+p2.morale = 65;
+context.G.league.currentRound = 34;
+generated = context.processPlayerRelations(team);
+assert.equal(generated[0].type, 'contract');
+result = context.resolveLockerRoomRequest(generated[0].id, 'negotiate');
+assert.equal(result.success, true);
+assert.deepEqual(context.lastContractRequest, { id: 2, mode: 'renewal' });
+
+p2.contract.years = 3;
+p2.morale = 24;
+team.bench = [2];
+context.G.league.currentRound = 45;
+generated = context.processPlayerRelations(team);
+assert.equal(generated[0].type, 'transfer');
+result = context.resolveLockerRoomRequest(generated[0].id, 'seek_transfer');
+assert.equal(result.success, true);
+assert.equal(p2.transferRequest, true);
+assert.equal(p2.transferListed, true);
+
 
 
 
