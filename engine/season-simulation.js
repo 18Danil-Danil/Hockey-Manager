@@ -37,6 +37,7 @@ function simRound(forceNoPrompt = false) {
   G.lastRoundNumber = roundNumber;
   G.lastRoundResults = roundResults;
   G.league.currentRound++;
+  processLoanExtensionNegotiations();
   processLoanExpirations();
   G.league.teams.filter(team => team.id === G.playerTeamId).forEach(processLockerRoomMeetings);
   G.league.teams.filter(team => team.id === G.playerTeamId).forEach(processPlayerRelations);
@@ -107,7 +108,8 @@ function simSeason() {
     generatePlayerStories();
     simYouthRoundBoth(true, G.league.currentRound + 1);
     G.league.currentRound++;
-    processLoanExpirations();
+    processLoanExtensionNegotiations();
+  processLoanExpirations();
     G.league.teams.filter(team => team.id === G.playerTeamId).forEach(processLockerRoomMeetings);
   G.league.teams.filter(team => team.id === G.playerTeamId).forEach(processPlayerRelations);
     const activeTeamIds = new Set(round.flatMap(([homeId, awayId]) => [homeId, awayId]));
