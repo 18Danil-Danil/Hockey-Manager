@@ -201,4 +201,30 @@ assert.equal(requestPlayer.contractRequest, null, 'expired requests should be cl
 assert.equal(requestPlayer.morale, 76, 'ignoring an expired request should slightly reduce morale');
 assert.match(rosterManagementForRequests, /processPlayerContractRequests\(\);/, 'player requests must be processed during AI turn actions');
 
+
+/* AI free-agent signings must use the contract negotiation model. */
+const aiFreeAgent = { id: 601, name: 'Свободный для ИИ', age: 25, ovr: 79, nationality: 'Россия', contract: { salary: 2, years: 0 }, status: 'ufa' };
+const aiClub = { id: 602, name: 'Клуб ИИ', roster: [], finance: { salaryCap: 30 } };
+const aiSigningCalls = [];
+const aiSigningContext = {
+  G: { playerTeamId: 1, league: { teams: [{ id: 1 }, aiClub], freeAgents: [aiFreeAgent] } },
+  rng: () => 0,
+  getPlayerContractDemand: (player, team, mode) => { aiSigningCalls.push(['demand', player.id, team.id, mode]); return { salary: 4, years: 3 }; },
+  evaluatePlayerContractOffer: (player, team, offer, mode) => { aiSigningCalls.push(['evaluate', offer.salary, offer.years, mode]); return { decision: 'accept' }; },
+  applyPlayerContractAgreement: (team, player, offer, mode) => {
+    aiSigningCalls.push(['apply', player.id, mode]);
+    aiSigningContext.G.league.freeAgents = aiSigningContext.G.league.freeAgents.filter(item => item.id !== player.id);
+    team.roster.push(player);
+    return { applied: true };
+  },
+  addNews: () => {}
+};
+vm.createContext(aiSigningContext);
+vm.runInContext(rosterManagementForRequests, aiSigningContext);
+aiSigningContext.runAITransfers();
+assert.ok(aiClub.roster.includes(aiFreeAgent), 'AI club should sign a player after accepted contract terms');
+assert.equal(aiSigningContext.G.league.freeAgents.length, 0);
+assert.ok(aiSigningCalls.some(call => call[0] === 'evaluate'), 'AI signing must evaluate the player offer');
+assert.ok(aiSigningCalls.some(call => call[0] === 'apply'), 'AI signing must apply a negotiated contract');
+
 console.log('Contract negotiation and expiry checks passed.');
