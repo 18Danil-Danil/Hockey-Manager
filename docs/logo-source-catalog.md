@@ -196,3 +196,18 @@ FootyLogos публикует каталоги хоккейных эмблем �
 | Словакия · Extraliga | HC Košice | https://www.footylogos.com/logos/hc-kosice | https://www.footylogos.com/sports-assets/logos/hc-kosice/hc-kosice-logo-footylogos.svg |
 
 Все пять клубов присутствуют в соответствующих лигах игрового каталога. Ссылки получены с индивидуальных карточек FootyLogos, где указаны нужная хоккейная лига и доступность SVG; условия использования эмблем проверяются отдельно.
+## Ещё девять подтверждённых эмблем — 14 ноября 2026
+
+| Лига | Клуб | Страница-источник | Прямой SVG |
+|---|---|---|---|
+| Liiga | Jukurit | https://www.footylogos.com/logos/jukurit | https://www.footylogos.com/sports-assets/logos/jukurit/jukurit-logo-footylogos.svg |
+| Liiga | JYP | https://www.footylogos.com/logos/jyp | https://www.footylogos.com/sports-assets/logos/jyp/jyp-logo-footylogos.svg |
+| Liiga | Lukko | https://www.footylogos.com/logos/lukko | https://www.footylogos.com/sports-assets/logos/lukko/lukko-logo-footylogos.svg |
+| Liiga | Vaasan Sport | https://www.footylogos.com/logos/vaasan-sport | https://www.footylogos.com/sports-assets/logos/vaasan-sport/vaasan-sport-logo-footylogos.svg |
+| Liiga | Kärpät | https://www.footylogos.com/logos/karpat | https://www.footylogos.com/sports-assets/logos/karpat/karpat-logo-footylogos.svg |
+| Swiss National League | Fribourg-Gottéron | https://www.footylogos.com/logos/fribourg-gotteron | https://www.footylogos.com/sports-assets/logos/fribourg-gotteron/fribourg-gotteron-logo-footylogos.svg |
+| Swiss National League | Lausanne HC | https://www.footylogos.com/logos/lausanne-hc | https://www.footylogos.com/sports-assets/logos/lausanne-hc/lausanne-hc-logo-footylogos.svg |
+| Swiss National League | Genève-Servette HC | https://www.footylogos.com/logos/geneve-servette | https://www.footylogos.com/sports-assets/logos/geneve-servette/geneve-servette-logo-footylogos.svg |
+| Swiss National League | HC Lugano | https://www.footylogos.com/logos/hc-lugano | https://www.footylogos.com/sports-assets/logos/hc-lugano/hc-lugano-logo-footylogos.svg |
+
+Индивидуальные карточки подтверждают хоккейную принадлежность клубов и соответствующие лиги сезона 2026/27. Прямые адреса SVG зафиксированы в тестах. Всего внесено 27 эмблем международного рынка вне КХЛ; все остальные клубы используют fallback до аналогичной проверки.
