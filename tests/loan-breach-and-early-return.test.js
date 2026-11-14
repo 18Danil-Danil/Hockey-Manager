@@ -100,7 +100,7 @@ parent.roster = [aiOwnedPlayer2];
 borrower.roster = [];
 aiOwnedPlayer2.loan.aiRecallRequest = { status: 'pending', requestedRound: 9 };
 assert.equal(context.respondToAIRecallRequest(aiOwnedPlayer2.id, false), true, 'user should be able to reject an AI recall request');
-assert.ok(borrower.roster.some(item => item.id === aiOwnedPlayer2.id), 'rejected AI recall should keep the loan active');
+assert.ok(parent.roster.some(item => item.id === aiOwnedPlayer2.id), 'rejected AI recall should keep the loan active');
 assert.equal(aiOwnedPlayer2.loan.aiRecallRequest.status, 'rejected');
 
 console.log('Loan breach and early-return checks passed.');
