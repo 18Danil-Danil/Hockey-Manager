@@ -123,6 +123,13 @@ const verifiedMarketLogos = new Map([
   ['sweden-shl/rogle', 'https://www.footylogos.com/sports-assets/logos/rogle-bk/rogle-bk-logo-footylogos.svg'],
   ['sweden-shl/skelleftea', 'https://www.footylogos.com/sports-assets/logos/skelleftea-aik/skelleftea-aik-logo-footylogos.svg'],
   ['sweden-shl/vaxjo', 'https://www.footylogos.com/sports-assets/logos/vaxjo-lakers/vaxjo-lakers-logo-footylogos.svg'],
+  ['sweden-shl/malmo', 'https://www.footylogos.com/sports-assets/logos/malmo-redhawks/malmo-redhawks-logo-footylogos.svg'],
+  ['sweden-shl/malmo-redhawks', 'https://www.footylogos.com/sports-assets/logos/malmo-redhawks/malmo-redhawks-logo-footylogos.svg'],
+  ['sweden-shl/orebro', 'https://www.footylogos.com/sports-assets/logos/orebro-hk/orebro-hk-logo-footylogos.svg'],
+  ['sweden-shl/timra', 'https://www.footylogos.com/sports-assets/logos/timra-ik/timra-ik-logo-footylogos.svg'],
+  ['czech-extraliga/trinec', 'https://www.footylogos.com/sports-assets/logos/hc-ocelari-trinec/hc-ocelari-trinec-logo-footylogos.svg'],
+  ['czech-extraliga/sparta-praha', 'https://www.footylogos.com/sports-assets/logos/hc-sparta-praha/hc-sparta-praha-logo-footylogos.svg'],
+  ['czech-extraliga/motor-ceske-budejovice', 'https://www.footylogos.com/sports-assets/logos/motor-ceske-budejovice/motor-ceske-budejovice-logo-footylogos.svg'],
 ]);
 for (const [key, url] of verifiedMarketLogos) {
   const [leagueId, clubId] = key.split('/');
