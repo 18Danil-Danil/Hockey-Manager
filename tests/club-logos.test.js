@@ -155,6 +155,11 @@ const verifiedMarketLogos = new Map([
   ['switzerland-nl/ehc-kloten', 'https://www.footylogos.com/sports-assets/logos/ehc-kloten/ehc-kloten-logo-footylogos.svg'],
   ['switzerland-nl/biel-bienne', 'https://www.footylogos.com/sports-assets/logos/ehc-biel-bienne/ehc-biel-bienne-logo-footylogos.svg'],
   ['switzerland-nl/rapperswil', 'https://www.footylogos.com/sports-assets/logos/sc-rapperswil-jona-lakers/sc-rapperswil-jona-lakers-logo-footylogos.svg'],
+  ['finland-liiga/jokerit', 'https://www.footylogos.com/sports-assets/logos/jokerit/jokerit-logo-footylogos.png'],
+  ['finland-liiga/saipa', 'https://www.footylogos.com/sports-assets/logos/saipa/saipa-logo-footylogos.png'],
+  ['finland-liiga/kookoo', 'https://www.footylogos.com/sports-assets/logos/kookoo/kookoo-logo-footylogos.png'],
+  ['slovakia-extraliga/banska-bystrica', 'https://www.footylogos.com/sports-assets/logos/hc-05-tam-banska-bystrica/hc-05-tam-banska-bystrica-logo-footylogos.png'],
+  ['czech-extraliga/kladno', 'https://www.footylogos.com/sports-assets/logos/rytiri-kladno/rytiri-kladno-logo-footylogos.png'],
 ]);
 for (const [key, url] of verifiedMarketLogos) {
   const [leagueId, clubId] = key.split('/');
