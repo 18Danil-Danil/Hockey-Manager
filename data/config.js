@@ -3,9 +3,9 @@ window.GAME_CONFIG = {
 DIFFICULTIES: {
   easy: {
     key: 'easy', label: '🟢 Лёгкий',
-    desc: 'Стартовый баланс 100%, спонсоры +20%, требование совета — топ-16, терпение 5 сезонов. Стартовая репутация 60.',
+    desc: 'Стартовый баланс 100%, спонсоры +20%, потолок зарплат 60% только для вашего клуба, требование совета — топ-16, терпение 5 сезонов. Стартовая репутация 60.',
     startBalancePct: 1.0, sponsorMult: 1.20, boardRequirement: 16,
-    boardPatience: 5, startReputation: 60, salaryCapPct: 0.50,
+    boardPatience: 5, startReputation: 60, salaryCapPct: 0.60,
   },
   normal: {
     key: 'normal', label: '🟡 Средний',
@@ -35,3 +35,16 @@ CHARACTERS: {
 },
 CHARACTER_WEIGHTS: { leader: 0.25, worker: 0.30, egoist: 0.20, calm: 0.25 },
 };
+
+
+// На лёгкой сложности дополнительное место под потолком получает только клуб игрока.
+function applyDifficultySalaryCaps(teams, playerTeamId, difficulty) {
+  const easy = difficulty && difficulty.key === 'easy';
+  (teams || []).forEach(team => {
+    const pct = easy && Number(team.id) === Number(playerTeamId)
+      ? difficulty.salaryCapPct
+      : easy ? 0.50 : difficulty.salaryCapPct;
+    team.finance = team.finance || {};
+    team.finance.salaryCap = Math.round(Number(team.finance.seasonBudget || 0) * pct);
+  });
+}
