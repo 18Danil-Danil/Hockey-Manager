@@ -81,4 +81,51 @@ assert.deepEqual(Array.from(roster.roster, item => item.id), [10, 12]);
 assert.equal(expiryContext.G.league.freeAgents[0], expires);
 assert.equal(tryout.status, 'tryout', 'tryout agreements must not expire through standard contract processing');
 
+
+/* Player personality preferences, role fit and multi-round negotiations. */
+const leader = { id: 101, name: 'Лидер', age: 27, ovr: 82, morale: 85, character: 'leader', contract: { salary: 6, years: 1 } };
+const egoist = { id: 102, name: 'Эгоист', age: 27, ovr: 82, morale: 85, character: 'egoist', contract: { salary: 6, years: 1 } };
+const leaderPrefs = context.getPlayerContractPreferences(leader);
+const egoistPrefs = context.getPlayerContractPreferences(egoist);
+assert.ok(leaderPrefs.loyalty > egoistPrefs.loyalty, 'leaders should value loyalty more than egoists');
+assert.ok(egoistPrefs.money > leaderPrefs.money, 'egoists should value salary more than leaders');
+assert.equal(context.getPlayerContractPreferences(leader), leaderPrefs, 'preferences should persist instead of rerolling');
+
+const negotiatingTeam = { id: 77, name: 'Переговорный клуб', roster: [leader, egoist], bench: [egoist.id], record: { w: 10, l: 15, otl: 3, pts: 23 }, finance: { salaryCap: 100, balance: 100 } };
+const leaderDemand = context.getPlayerContractDemand(leader, negotiatingTeam, 'renewal');
+const egoistDemand = context.getPlayerContractDemand(egoist, negotiatingTeam, 'renewal');
+assert.ok(leaderDemand.fit.role > egoistDemand.fit.role, 'starter role fit should exceed bench role fit');
+context.G.league.teams = [negotiatingTeam];
+context.G.playerTeamId = negotiatingTeam.id;
+context.render = () => {};
+context.saveGame = () => {};
+context.addNews = () => {};
+context.openPlayerContractNegotiation(leader.id, 'renewal');
+let negotiationState = context.G.contractNegotiation;
+assert.equal(negotiationState.maxRounds, 3);
+negotiationState.offer = { salary: Math.round(leaderDemand.salary * 0.9 * 10) / 10, years: leaderDemand.years };
+let negotiationResult = context.submitPlayerContractNegotiation();
+assert.equal(negotiationResult.decision, 'counter', 'a near-demand offer should trigger a counteroffer');
+assert.equal(negotiationState.round, 1);
+negotiationState.offer = { salary: leaderDemand.salary, years: leaderDemand.years };
+negotiationResult = context.submitPlayerContractNegotiation();
+assert.equal(negotiationResult.applied, true, 'a revised fair offer should close the deal');
+assert.equal(negotiationState.completed, true);
+
+const stubborn = { id: 103, name: 'Неприступный', age: 28, ovr: 80, morale: 35, character: 'egoist', contract: { salary: 5, years: 1 } };
+negotiatingTeam.roster.push(stubborn);
+context.openPlayerContractNegotiation(stubborn.id, 'renewal');
+negotiationState = context.G.contractNegotiation;
+negotiationState.offer = { salary: 0.5, years: 1 };
+for (let round = 0; round < 3; round++) {
+  negotiationResult = context.submitPlayerContractNegotiation();
+}
+assert.equal(negotiationState.round, 3);
+assert.equal(negotiationState.closed, true, 'player should end talks after three unacceptable offers');
+assert.equal(context.submitPlayerContractNegotiation(), false, 'closed negotiations must not accept a fourth offer');
+
+const rosterManagementSource = fs.readFileSync(path.join(__dirname, '..', 'engine', 'roster-management.js'), 'utf8');
+assert.match(rosterManagementSource, /getPlayerContractDemand\(p, team, 'renewal'\)/, 'AI renewals must use the same player demand model');
+assert.match(rosterManagementSource, /evaluatePlayerContractOffer\(p, team, offer, 'renewal'\)/, 'AI renewals must evaluate player preferences');
+
 console.log('Contract negotiation and expiry checks passed.');
