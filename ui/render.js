@@ -21,8 +21,7 @@ function renderTeamSelect() {
   const teams = G.league.teams.slice().sort((a, b) => b.talent - a.talent);
   const cards = teams.map(t => {
     const trendDef = { up: '↗', down: '↘', stable: '→', newcomer: '🆕' };
-    const logoImg = clubLogoWithFallback(t, 36, 'team-logo-card');height:36px;object-fit:contain;vertical-align:middle;margin-right:8px" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'"><span style="display:none;width:36px;height:36px;background:linear-gradient(135deg,#ff6b35,#fbbf24);color:#0f1117;border-radius:6px;align-items:center;justify-content:center;font-weight:900;font-size:12px;vertical-align:middle;margin-right:8px">${getInitials(t.name)}</span>`
-      : `<span style="display:inline-flex;width:36px;height:36px;background:linear-gradient(135deg,#ff6b35,#fbbf24);color:#0f1117;border-radius:6px;align-items:center;justify-content:center;font-weight:900;font-size:12px;vertical-align:middle;margin-right:8px">${getInitials(t.name)}</span>`;
+    const logoImg = clubLogoWithFallback(t, 36, 'team-logo-card');
     return `<div class="team-card" data-team-id="${t.id}">
       <div class="t-name">${logoImg}${t.name}</div>
       <div class="t-city">${t.city} · ${t.region} ${trendDef[t.trend] || ''}</div>
