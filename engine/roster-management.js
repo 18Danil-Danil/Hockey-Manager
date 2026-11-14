@@ -538,6 +538,12 @@ function loanPlayerFromClub(parentTeamId, playerId, rounds = 5, wageShare = 50) 
   const terms = getLoanTerms(player, parent, borrower, rounds, wageShare);
   if (!terms.allowed) { showToast(terms.reason, 'error'); return false; }
   if (rng() > (player.ovr >= 82 ? 0.72 : player.ovr >= 72 ? 0.84 : 0.93)) { showToast(parent.name + ' отклонил предложение об аренде', 'error'); return false; }
+  recordLoanNegotiationEvent({
+    type: 'deal-completed', offerId: offer.id, playerId: player.id, playerName: player.name,
+    clubId: borrower.id, clubName: borrower.name, rounds: terms.rounds,
+    wageShare: terms.wageShare, fee: agreedFee, role: offer.role || 'rotation',
+    message: 'Стороны согласовали аренду. Игрок отправлен в клуб.'
+  });
   parent.roster.splice(parent.roster.indexOf(player), 1);
   player.loanOriginalContract = player.contract ? { ...player.contract } : null;
   player.loan = { parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, startRound: G.league.currentRound, endRound: G.league.currentRound + terms.rounds, wageShare: terms.wageShare, borrowerSalary: terms.borrowerSalary, parentSalary: terms.parentSalary, fee: terms.fee };
@@ -774,6 +780,17 @@ function setTradeTeam(teamId) { G.tradeTargetTeamId = Number(teamId); render(); 
 /* ============================================================
    ВХОДЯЩИЕ ПРЕДЛОЖЕНИЯ ОБ АРЕНДЕ ОТ КЛУБОВ
    ============================================================ */
+function recordLoanNegotiationEvent(event) {
+  if (!G.league) return null;
+  G.league.loanNegotiationHistory = Array.isArray(G.league.loanNegotiationHistory) ? G.league.loanNegotiationHistory : [];
+  const entry = {
+    id: nextId(), round: Number(G.league.currentRound) || 0,
+    timestamp: Date.now(), ...event
+  };
+  G.league.loanNegotiationHistory.push(entry);
+  if (G.league.loanNegotiationHistory.length > 120) G.league.loanNegotiationHistory.splice(0, G.league.loanNegotiationHistory.length - 120);
+  return entry;
+}
 function generateAIIncomingLoanOffer() {
   const parent = G.league?.teams.find(team => Number(team.id) === Number(G.playerTeamId));
   if (!parent || (parent.roster || []).length <= 18) return false;
@@ -825,6 +842,12 @@ function generateAIIncomingLoanOffer() {
       competitionCount: selected.length, partnershipScore: candidate.partnership.score
     };
     offers.push(offer);
+    recordLoanNegotiationEvent({
+      type: 'offer-created', offerId: offer.id, playerId: player.id, playerName: player.name,
+      clubId: borrower.id, clubName: borrower.name, rounds: offer.rounds,
+      wageShare: offer.wageShare, fee: offer.fee, role: offer.role,
+      competitionCount: offer.competitionCount, message: 'Клуб направил первоначальное предложение.'
+    });
     addInboxMessage('league', borrower.name, 'Предложение аренды',
       borrower.name + ' хочет взять ' + player.name + ' в аренду на ' + offer.rounds +
       ' туров. Клуб готов оплачивать ' + offer.wageShare + '% зарплаты и предложил ' +
@@ -887,6 +910,18 @@ function acceptAIIncomingLoanOffer(offerId) {
   saveGame({ immediate: true }); render(); return true;
 }
 function declineAIIncomingLoanOffer(offerId) {
+  const offer = (G.league.aiLoanOffers || []).find(item => Number(item.id) === Number(offerId));
+  if (offer) {
+    const parent = G.league.teams.find(item => Number(item.id) === Number(G.playerTeamId));
+    const player = parent?.roster.find(item => Number(item.id) === Number(offer.playerId));
+    const club = G.league.teams.find(item => Number(item.id) === Number(offer.fromTeamId));
+    recordLoanNegotiationEvent({
+      type: 'offer-declined', offerId: offer.id, playerId: offer.playerId,
+      playerName: player?.name || 'Хоккеист', clubId: offer.fromTeamId,
+      clubName: club?.name || 'Клуб', rounds: offer.rounds, wageShare: offer.wageShare,
+      fee: offer.fee, message: 'Наш клуб отклонил предложение.'
+    });
+  }
   G.league.aiLoanOffers = (G.league.aiLoanOffers || []).filter(item => Number(item.id) !== Number(offerId));
   render(); saveGame({ immediate: true }); return true;
 }
@@ -909,6 +944,11 @@ function submitIncomingLoanCounter() {
   if (!borrower || !player || ![3,5,8,10].includes(rounds) || ![0,25,50,60,75,100].includes(wageShare) || !Number.isFinite(fee) || fee < 0) {
     showToast('Проверь условия встречного предложения', 'error'); return false;
   }
+  recordLoanNegotiationEvent({
+    type: 'counter-sent', offerId: offer.id, playerId: player.id, playerName: player.name,
+    clubId: borrower.id, clubName: borrower.name, rounds, wageShare, fee,
+    message: 'Наш клуб направил встречные условия.'
+  });
   const cost = getLoanTerms(player, parent, borrower, rounds, wageShare);
   if (!cost.allowed) { showToast(cost.reason, 'error'); return false; }
   const askValue = Number(offer.fee) + Number(offer.wageShare) * 0.025 - Number(offer.rounds) * 0.06;
@@ -918,6 +958,11 @@ function submitIncomingLoanCounter() {
   const competitionBonus = Math.min(0.16, competingOffers.length * 0.06);
   const acceptance = Math.max(0.08, Math.min(0.94, 0.68 - Math.max(0, counterValue - askValue) * 0.12 + (rounds <= offer.rounds ? 0.08 : 0) + (partnership.score - 50) * 0.0025 + competitionBonus));
   if (rng() > acceptance) {
+    recordLoanNegotiationEvent({
+      type: 'counter-rejected', offerId: offer.id, playerId: player.id, playerName: player.name,
+      clubId: borrower.id, clubName: borrower.name, rounds, wageShare, fee,
+      message: 'Клуб не согласился на встречные условия.'
+    });
     G.league.aiLoanOffers = G.league.aiLoanOffers.filter(item => item.id !== offer.id);
     const rivalBids = G.league.aiLoanOffers.filter(item => Number(item.playerId) === Number(offer.playerId))
       .sort((a, b) => (Number(b.fee) + Number(b.wageShare) * 0.02) - (Number(a.fee) + Number(a.wageShare) * 0.02));
@@ -946,6 +991,11 @@ function submitIncomingLoanCounter() {
     showToast(rivalBid ? 'Один из клубов улучшил своё предложение' : borrower.name + ' отклонил встречные условия', 'error');
     render(); saveGame({ immediate: true }); return false;
   }
+  recordLoanNegotiationEvent({
+    type: 'counter-accepted', offerId: offer.id, playerId: player.id, playerName: player.name,
+    clubId: borrower.id, clubName: borrower.name, rounds, wageShare, fee,
+    message: 'Клуб принял встречные условия.'
+  });
   const result = applyIncomingLoanOffer(offer, rounds, wageShare, fee);
   G.pendingIncomingLoanCounter = null;
   if (!result.success) { showToast(result.error, 'error'); render(); return false; }
@@ -1029,6 +1079,11 @@ function processAIIncomingLoanOffers() {
     const player = parent?.roster.find(item => Number(item.id) === Number(offer.playerId));
     if (!parent || !borrower || !player || player.loan) continue;
     if (Number(offer.expiresRound) < round) {
+      recordLoanNegotiationEvent({
+        type: 'offer-expired', offerId: offer.id, playerId: player.id, playerName: player.name,
+        clubId: borrower.id, clubName: borrower.name, rounds: offer.rounds,
+        wageShare: offer.wageShare, fee: offer.fee, message: 'Срок ответа истёк, клуб снял предложение.'
+      });
       addInboxMessage('league', borrower.name, 'Предложение аренды истекло',
         borrower.name + ' отозвал предложение по аренде хоккеиста ' + player.name +
         ': срок ответа истёк. При необходимости клуб может обратиться повторно.', []);
@@ -1060,6 +1115,11 @@ function processAIIncomingLoanOffers() {
             revisedTerms.allowed && feeRoom >= improvedFee) {
           offer.fee = improvedFee;
           offer.wageShare = improvedShare;
+          recordLoanNegotiationEvent({
+            type: 'offer-improved', offerId: offer.id, playerId: player.id, playerName: player.name,
+            clubId: borrower.id, clubName: borrower.name, rounds: offer.rounds,
+            wageShare: improvedShare, fee: improvedFee, message: 'Клуб улучшил условия, реагируя на конкуренцию.'
+          });
           offer.revisedRound = round;
           offer.revisionCount = (Number(offer.revisionCount) || 0) + 1;
           offer.expiresRound = Math.max(Number(offer.expiresRound) || 0, round + 2);
@@ -1071,6 +1131,11 @@ function processAIIncomingLoanOffers() {
         }
       } else if (!rivals.length && round >= Number(offer.createdRound) + 2 &&
           rng() < 0.08 + (Number(offer.partnershipScore) < 35 ? 0.08 : 0)) {
+        recordLoanNegotiationEvent({
+          type: 'offer-withdrawn', offerId: offer.id, playerId: player.id, playerName: player.name,
+          clubId: borrower.id, clubName: borrower.name, rounds: offer.rounds,
+          wageShare: offer.wageShare, fee: offer.fee, message: 'Клуб потерял интерес и отозвал предложение.'
+        });
         addInboxMessage('league', borrower.name, 'Клуб снял предложение об аренде',
           borrower.name + ' решил отказаться от переговоров по аренде хоккеиста ' + player.name + '.', []);
         addNews('signing', borrower.name + ' отозвал предложение по аренде хоккеиста ' + player.name + '.', 1);
