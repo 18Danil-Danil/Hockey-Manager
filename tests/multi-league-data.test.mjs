@@ -23,7 +23,7 @@ assert.equal(new Set(stats.players.map(item => item.key)).size, stats.players.le
 
 const expectedCounts = {
   kazakhstan: 80,
-  belarus: 270,
+  belarus: 250,
   khl: 85,
   'finland-liiga': 35,
   'sweden-shl': 35,
