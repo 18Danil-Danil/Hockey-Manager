@@ -40,11 +40,56 @@ function createYouthRoster(leagueId, season = 1) {
   return positions.map(position => createYouthPlayer(position, leagueId, season));
 }
 
+const MHL_OFFICIAL_LOGO_IDS = {
+  'mhl-academy-mikhailov': 'academy-mikhailov',
+  'mhl-dynamo-shinnik': 'dynamo-shinnik',
+  'mhl-red-army': 'krasnaya-armiya',
+  'mhl-loko': 'loko',
+  'mhl-dynamo-m': 'dynamo-moscow',
+  'mhl-dynamo-spb': 'dynamo-spb',
+  'mhl-spartak': 'spartak',
+  'mhl-ska-1946': 'ska-1946',
+  'mhl-typhoon': 'taifun',
+  'mhl-ska-academy': 'academy-ska',
+  'mhl-almaz': 'almaz',
+  'mhl-amur-tigers': 'amur-tigers',
+  'mhl-atlant': 'red-machine-atlant',
+  'mhl-krasnaya-junior': 'red-machine-junior',
+  'mhl-krylia-sovetov': 'krylya-sovetov',
+  'mhl-spartak-max': 'spartak-max',
+  'mhl-sakhalin-sharks': 'sakhalin-sharks',
+  'mhl-avto': 'avto',
+  'mhl-white-bears': 'white-bears',
+  'mhl-irbis': 'irbis',
+  'mhl-loko-76': 'loko-76',
+  'mhl-omsk-hawks': 'omskie-yastreby',
+  'mhl-siberian-snipers': 'siberian-snipers',
+  'mhl-steel-foxes': 'steel-foxes',
+  'mhl-tolpar': 'tolpar',
+  'mhl-chaika': 'chaika',
+  'mhl-akm-junior': 'akm-junior',
+  'mhl-krasnoyarsk-lynx': 'krasnoyarsk-lynx',
+  'mhl-kuznetskie-medvedi': 'kuznetsk-bears',
+  'mhl-mammoths': 'mammoths-yugra',
+  'mhl-molot': 'molot',
+  'mhl-reactor': 'reaktor',
+  'mhl-snow-bears': 'snow-bary',
+  'mhl-sputnik-al': 'sputnik-almetyevsk'
+};
+
+function getYouthOfficialLogo(meta) {
+  if (!meta || meta.league !== 'MHL') return meta?.logo || null;
+  const catalogId = MHL_OFFICIAL_LOGO_IDS[meta.id];
+  if (!catalogId || typeof window.getYouthClubLogoUrl !== 'function') return null;
+  return window.getYouthClubLogoUrl('mhl', catalogId);
+}
+
 function createYouthTeam(meta) {
   const organization = window.YOUTH_CLUBS.organizations.find(item => item.id === meta.org);
   return {
     id: meta.id,
     name: meta.name,
+    logo: getYouthOfficialLogo(meta),
     leagueId: meta.league,
     organizationId: meta.org,
     organizationName: organization ? organization.name : meta.name,
