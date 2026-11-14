@@ -45,8 +45,8 @@ for (const clubId of belarusClubs) {
 assert.ok(belarusPlayers.filter(item => item.position === 'G').length >= 41,
   'Belarus should include the current roster goalies, including backups');
 for (const goalie of belarusPlayers.filter(item => item.position === 'G' && Number(item.gp) === 0)) {
-  assert.ok(Number.isFinite(Number(goalie.gaa)) && Number.isFinite(Number(goalie.svPct)),
-    goalie.name + ' needs explicit zero-appearance goalie stats');
+  assert.equal(goalie.statsStatus, 'roster-only-unverified',
+    goalie.name + ' must be marked as roster-only when its GP is below the source table threshold');
 }
 
 for (const [leagueId, count] of Object.entries(expectedCounts)) {
