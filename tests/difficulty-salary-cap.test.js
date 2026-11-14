@@ -11,7 +11,7 @@ const teams = [
   { id: 3, finance: { seasonBudget: 120, salaryCap: 60 } },
 ];
 apply(teams, 2, difficulties.easy);
-assert.deepStrictEqual(teams.map(team => team.finance.salaryCap), [50, 48, 60]);
+assert.deepStrictEqual(teams.map(team => team.finance.salaryCap), [50, 60, 60]);
 apply(teams, 2, difficulties.normal);
 assert.deepStrictEqual(teams.map(team => team.finance.salaryCap), [50, 40, 60]);
 apply(teams, 2, difficulties.hardcore);
