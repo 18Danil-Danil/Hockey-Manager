@@ -252,7 +252,11 @@ function createLockerRoomRequest(team, type, player, otherPlayer = null) {
     ? player.name + ' недоволен количеством игрового времени и просит обсудить свою роль.'
     : type === 'support'
       ? player.name + ' переживает из-за своей формы и морального состояния и просит поддержки.'
-      : player.name + ' и ' + otherPlayer.name + ' испытывают напряжение в отношениях. Ситуация может повлиять на атмосферу в раздевалке.';
+      : type === 'conflict'
+        ? player.name + ' и ' + otherPlayer.name + ' испытывают напряжение в отношениях. Ситуация может повлиять на атмосферу в раздевалке.'
+        : type === 'contract'
+          ? player.name + ' хочет обсудить условия нового контракта.'
+          : player.name + ' рассматривает возможность ухода из клуба и просит отпустить его.';
   addInboxMessage('player', player?.name || 'Команда', definition.title, body, []);
   addNews('player_story', body, 1);
   return request;
