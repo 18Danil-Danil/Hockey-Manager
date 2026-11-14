@@ -50,6 +50,7 @@ function render() {
     G.activeTab === 'inbox' ? renderInbox() :
     G.activeTab === 'news' ? renderNews() :
     G.activeTab === 'tactics' ? renderTactics() :
+    G.activeTab === 'lockerRoom' ? renderLockerRoom() :
     G.activeTab === 'training' ? renderTraining() :
     G.activeTab === 'staff' ? renderStaff() :
     G.activeTab === 'infrastructure' ? renderInfrastructure() :
