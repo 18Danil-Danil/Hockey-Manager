@@ -262,6 +262,18 @@ function processPlayerRelations(team) {
   const state = getLockerRoomState(team);
   const round = G.league.currentRound;
   const created = [];
+  const benchSetForPromises = new Set(team.bench || []);
+  for (const player of team.roster) {
+    if (!Number.isFinite(Number(player.playingTimePromiseRound)) || round < player.playingTimePromiseRound) continue;
+    const fulfilled = !benchSetForPromises.has(player.id);
+    if (!fulfilled) player.morale = Math.max(20, (Number(player.morale) || 60) - 5);
+    const message = fulfilled
+      ? player.name + ' получил игровую возможность после обещания тренера.'
+      : player.name + ' не получил обещанное игровое время. Доверие к тренерскому штабу снизилось, мораль -5.';
+    addInboxMessage('player', player.name, fulfilled ? 'Обещание тренера выполнено' : 'Обещание тренера не выполнено', message, []);
+    if (!fulfilled) addNews('player_story', message, 1);
+    delete player.playingTimePromiseRound;
+  }
   for (const request of state.requests) {
     if (request.status !== 'pending' || round < request.deadlineRound) continue;
     request.status = 'expired';
