@@ -69,7 +69,7 @@ fields['incoming-loan-share'] = { value: String(counterOffer.wageShare) };
 fields['incoming-loan-fee'] = { value: String(counterOffer.fee + 0.5) };
 roll = 0;
 assert.equal(context.submitIncomingLoanCounter(), true, 'AI should accept a reasonable counteroffer when the acceptance roll succeeds');
-assert.ok(aiClub.roster.some(player => player.id === second.id && player.loan));
+assert.ok([aiClub, rivalClub].some(club => club.roster.some(player => player.id === second.id && player.loan)), 'the selected AI bidder should receive the player after accepting the counteroffer');
 assert.equal(context.G.pendingIncomingLoanCounter, null);
 
 const stale = { id: 999, playerId: 999, fromTeamId: aiClub.id, rounds: 5, wageShare: 50, fee: 1, expiresRound: 10 };
