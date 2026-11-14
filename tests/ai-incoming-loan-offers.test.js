@@ -59,7 +59,7 @@ assert.equal(context.G.league.aiLoanOffers.length, 0);
 assert.equal(context.G.league.loanLog.length, 1);
 assert.ok(userClub.finance.balance > 20, 'parent club should receive the loan fee');
 
-const second = { ...userPlayers[1], id: 55, age: 21, name: 'Игрок для торга' };
+const second = { ...userPlayers[1], id: 55, age: 21, position: 'F', name: 'Игрок для торга' };
 userClub.roster.push(second);
 assert.equal(context.generateAIIncomingLoanOffer(), true);
 const counterOffer = context.G.league.aiLoanOffers[0];
