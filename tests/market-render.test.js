@@ -28,6 +28,7 @@ const G = {
 };
 const context = {
   G,
+  clubLogoWithFallback: () => '<span class="test-club-logo"></span>',
   CHARACTERS: { calm: { cls: 'calm', label: 'Спокойный' } },
   getInternationalTransferQuote: () => ({ allowed: true, reason: '', salary: 1, price: 2 })
 };
