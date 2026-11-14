@@ -130,6 +130,15 @@ const verifiedMarketLogos = new Map([
   ['czech-extraliga/trinec', 'https://www.footylogos.com/sports-assets/logos/hc-ocelari-trinec/hc-ocelari-trinec-logo-footylogos.svg'],
   ['czech-extraliga/sparta-praha', 'https://www.footylogos.com/sports-assets/logos/hc-sparta-praha/hc-sparta-praha-logo-footylogos.svg'],
   ['czech-extraliga/motor-ceske-budejovice', 'https://www.footylogos.com/sports-assets/logos/motor-ceske-budejovice/motor-ceske-budejovice-logo-footylogos.svg'],
+  ['slovakia-extraliga/spisska-nova-ves', 'https://www.footylogos.com/sports-assets/logos/hk-spisska-nova-ves/hk-spisska-nova-ves-logo-footylogos.svg'],
+  ['slovakia-extraliga/nitra', 'https://www.footylogos.com/sports-assets/logos/hk-nitra/hk-nitra-logo-footylogos.svg'],
+  ['slovakia-extraliga/poprad', 'https://www.footylogos.com/sports-assets/logos/hk-poprad/hk-poprad-logo-footylogos.svg'],
+  ['slovakia-extraliga/dukla-trencin', 'https://www.footylogos.com/sports-assets/logos/hk-dukla-trencin/hk-dukla-trencin-logo-footylogos.svg'],
+  ['slovakia-extraliga/vlci-zilina', 'https://www.footylogos.com/sports-assets/logos/vlci-zilina/vlci-zilina-logo-footylogos.svg'],
+  ['slovakia-extraliga/liptovsky-mikulas', 'https://www.footylogos.com/sports-assets/logos/hk-32-liptovsky-mikulas/hk-32-liptovsky-mikulas-logo-footylogos.svg'],
+  ['slovakia-extraliga/dukla-michalovce', 'https://www.footylogos.com/sports-assets/logos/hk-dukla-michalovce/hk-dukla-michalovce-logo-footylogos.svg'],
+  ['slovakia-extraliga/presov', 'https://www.footylogos.com/sports-assets/logos/hc-presov/hc-presov-logo-footylogos.svg'],
+  ['slovakia-extraliga/zilina', 'https://www.footylogos.com/sports-assets/logos/vlci-zilina/vlci-zilina-logo-footylogos.svg'],
 ]);
 for (const [key, url] of verifiedMarketLogos) {
   const [leagueId, clubId] = key.split('/');
