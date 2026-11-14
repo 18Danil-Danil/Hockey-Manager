@@ -29,7 +29,7 @@ const context = {
   ensureScheduleCalendar: () => [{ date: '2026-10-01' }],
   ensureStats: () => ({ points: 0 }),
   logoHeader: () => '',
-  unreadInboxCount: () => 0,
+  unreadInboxCount: () => (G.league.inbox || []).filter(message => !message.read).length,
   document: { querySelectorAll: selector => selector === '.team-card' ? [card] : [] }
 };
 vm.createContext(context);
@@ -75,5 +75,15 @@ G.league.loanNegotiationHistory = [];
 const overview = api.renderOverview();
 assert(overview.includes('Добро пожаловать в штаб, Тестовый клуб'));
 assert(overview.includes('История переговоров (0)'));
+G.league.inbox = [
+  { id: 1, type: 'league', from: 'Лига', subject: 'Календарь обновлён', body: 'Опубликовано расписание ближайших матчей.', season: '2026/27', round: 0, read: true },
+  { id: 2, type: 'league', from: 'Клуб-соперник', subject: 'Предложение о трансфере', body: 'Предлагаем приобрести вашего хоккеиста.', season: '2026/27', round: 1, read: false }
+];
+const overviewWithMail = api.renderOverview();
+assert(overviewWithMail.includes('dashboard-mail-panel'), 'overview should contain a dedicated mail panel');
+assert(overviewWithMail.includes('Предложение о трансфере'), 'overview should preview recent messages');
+assert(overviewWithMail.includes('1 новых'), 'overview should show the unread message count');
+assert(overviewWithMail.includes('dashboard-mail-unread-dot'), 'unread messages should be visually distinguished');
+assert(overviewWithMail.includes("G.activeTab='inbox'"), 'mail panel should link to the full inbox');
 
-console.log('Starting bonus checks passed.');
+console.log('Starting bonus and overview mail checks passed.');
