@@ -21,6 +21,7 @@ function getLockerRoomState(team) {
   }
   if (!Array.isArray(team.lockerRoom.meetings)) team.lockerRoom.meetings = [];
   if (!Array.isArray(team.lockerRoom.eventHistory)) team.lockerRoom.eventHistory = [];
+  if (!Array.isArray(team.lockerRoom.meetingHistory)) team.lockerRoom.meetingHistory = [];
   if (!Number.isFinite(Number(team.lockerRoom.lastTeamEventRound))) team.lockerRoom.lastTeamEventRound = -100;
   return team.lockerRoom;
 }
@@ -74,6 +75,8 @@ function applyPlayerConversation(team, player, topic, source = 'direct') {
   if (!team || !player || !team.roster?.some(item => item.id === player.id)) {
     return { success: false, reason: 'player-not-in-team', message: 'Хоккеист больше не состоит в команде' };
   }
+  const state = getLockerRoomState(team);
+  if (source === 'direct' && state.meetings.some(item => item.playerId === player.id)) return { success: false, reason: 'meeting-scheduled', message: 'С этим хоккеистом уже назначена встреча.' };
   const cooldown = getPlayerTalkCooldown(player);
   if (cooldown > 0) return { success: false, reason: 'cooldown', cooldown, message: 'Следующий личный разговор можно провести через ' + cooldown + ' тур.' };
   const result = getPlayerConversationResult(player, topic);
@@ -83,7 +86,7 @@ function applyPlayerConversation(team, player, topic, source = 'direct') {
   player.lastLockerRoomTalkRound = G.league.currentRound;
   player.lastLockerRoomTalkTopic = topic;
   const topicLabel = LOCKER_ROOM_TOPICS[topic].label.toLowerCase();
-  if (team.id === G.playerTeamId) {
+  if (team.id === G.playerTeamId && source === 'direct') {
     addInboxMessage('player', player.name, 'Личный разговор: ' + LOCKER_ROOM_TOPICS[topic].label,
       result.message + ' Мораль ' + (result.moraleDelta >= 0 ? '+' : '') + result.moraleDelta +
       (result.formDelta ? ', форма +' + result.formDelta : '') + '.', []);
@@ -157,6 +160,8 @@ function processLockerRoomMeetings(team) {
     if (result.success) addNews('player_story', 'Состоялась личная встреча с ' + player.name, 1);
     completed.push(meeting);
   }
+  state.meetingHistory.push(...completed);
+  if (state.meetingHistory.length > 30) state.meetingHistory = state.meetingHistory.slice(-30);
   state.meetings = state.meetings.filter(item => item.status === 'scheduled');
   return completed;
 }
