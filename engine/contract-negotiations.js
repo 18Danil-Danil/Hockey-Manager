@@ -116,8 +116,8 @@ function evaluatePlayerContractOffer(player, team, offer, mode = 'renewal', nego
   return { decision: 'reject', reason: 'too-low', message: 'Предложение не соответствует ожиданиям игрока', demand, score, fit: nonFinancialFit };
 }
 
-function applyPlayerContractAgreement(team, player, offer, mode = 'renewal') {
-  const result = evaluatePlayerContractOffer(player, team, offer, mode);
+function applyPlayerContractAgreement(team, player, offer, mode = 'renewal', negotiationState = null) {
+  const result = evaluatePlayerContractOffer(player, team, offer, mode, negotiationState);
   if (result.decision !== 'accept') return result;
   const salary = Math.round(Number(offer.salary) * 10) / 10;
   const years = Math.floor(Number(offer.years));
@@ -211,7 +211,7 @@ function submitPlayerContractNegotiation() {
   state.history.push({ round: state.round, offer: { ...state.offer }, decision: result.decision, message: result.message });
   state.lastResult = result;
   if (result.decision === 'accept') {
-    const applied = applyPlayerContractAgreement(found.team, found.player, state.offer, state.mode);
+    const applied = applyPlayerContractAgreement(found.team, found.player, state.offer, state.mode, state);
     state.lastResult = applied;
     state.completed = !!applied.applied;
     if (state.completed) {
@@ -239,7 +239,7 @@ function acceptPlayerCounterOffer() {
   const found = findNegotiationPlayer(state.playerId, state.mode);
   if (!found.team || !found.player) return false;
   const offer = state.lastResult.counteroffer;
-  const result = applyPlayerContractAgreement(found.team, found.player, offer, state.mode);
+  const result = applyPlayerContractAgreement(found.team, found.player, offer, state.mode, state);
   state.lastResult = result;
   state.completed = !!result.applied;
   if (state.completed) {
