@@ -40,6 +40,10 @@ vm.createContext(catalogContext);
 vm.runInContext(youthCatalogSource, catalogContext);
 assert.equal(catalogContext.window.getYouthClubLogoUrl('mhl', 'academy-mikhailov'),
   'https://img.khl.ru/clubs/ru/671/40.png');
+assert.equal(catalogContext.window.getYouthClubLogoUrl('rhl', 'ahmat-granit'),
+  'https://ss.fhr.ru/files/images/league/teams/200_200/74.png?1=');
+assert.equal(catalogContext.window.getYouthClubLogoUrl('rhl', 'fakel-yamal'),
+  'https://ss.fhr.ru/files/images/league/teams/200_200/67.png?1=');
 assert.equal(catalogContext.window.getYouthClubLogoUrl('rhl', 'arktika'),
   'https://ss.fhr.ru/files/images/league/teams/200_200/66.png?1=');
 
@@ -82,9 +86,22 @@ assert.equal(kazakhstan.clubs.length, 10, 'Kazakhstan catalogue should match the
 assert.equal(belarus.clubs.length, 14, 'Belarus catalogue should contain the 14 current game entries');
 assert.equal(liiga.clubs.length, 16, 'Liiga catalogue currently has 16 game entries; the missing Pelicans club is documented');
 assert.ok(!liiga.clubs.some(club => club.id === 'pelicans'), 'do not silently claim Liiga coverage is complete while Pelicans is absent');
-for (const league of internationalContext.window.INTERNATIONAL_LEAGUES.filter(item => item.id !== 'khl')) {
-  assert.ok(league.clubs.every(club => !club.logo),
-    league.id + ' must keep the safe fallback until an approved logo source is integrated');
+const verifiedMarketLogos = new Map([
+  ['finland-liiga/assat', 'https://www.footylogos.com/sports-assets/logos/assat/assat-logo-footylogos.svg'],
+  ['sweden-shl/brynas', 'https://www.footylogos.com/sports-assets/logos/brynas-if/brynas-if-logo-footylogos.svg'],
+  ['switzerland-nl/davos', 'https://www.footylogos.com/sports-assets/logos/hc-davos/hc-davos-logo-footylogos.svg'],
+]);
+for (const [key, url] of verifiedMarketLogos) {
+  const [leagueId, clubId] = key.split('/');
+  const club = internationalContext.window.INTERNATIONAL_LEAGUES.find(item => item.id === leagueId)?.clubs.find(item => item.id === clubId);
+  assert.ok(club, 'verified market club must exist: ' + key);
+  assert.equal(club.logo, url, 'verified market logo URL must remain stable: ' + key);
+}
+for (const league of internationalContext.window.INTERNATIONAL_LEAGUES) {
+  for (const club of league.clubs) {
+    if (league.id === 'khl' || verifiedMarketLogos.has(league.id + '/' + club.id)) continue;
+    assert.ok(!club.logo, league.id + '/' + club.id + ' must keep safe fallback until its source is verified');
+  }
 }
 
 for (const league of internationalContext.window.INTERNATIONAL_LEAGUES) {
