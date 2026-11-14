@@ -143,6 +143,10 @@ const indexSource = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'u
 assert.match(renderSource, /\['lockerRoom','Раздевалка'\]/, 'locker room must be available in club navigation');
 assert.match(appRenderSource, /G\.activeTab === 'lockerRoom' \? renderLockerRoom\(\)/, 'locker room tab must render its screen');
 assert.match(renderSource, /Назначить встречу/, 'player profile must offer appointment scheduling');
+assert.match(renderSource, /locker-attention-link/, 'locker room attention links must use dedicated neutral styling');
+assert.match(renderSource, /locker-topic-row/, 'conversation topics must use compact action rows');
+assert.match(renderSource, /locker-meeting-delay/, 'meeting delay must use the styled single selector');
+assert.doesNotMatch(renderSource.slice(renderSource.indexOf('function renderPlayerConversationPanel'), renderSource.indexOf('function renderLockerRoom')), /locker-topic-[^'"]*.*<option/, 'conversation topic must not be duplicated in a second dropdown');
 assert.match(renderSource, /talkToPlayer\(/, 'player profile must expose direct conversations');
 assert.match(indexSource, /engine\/locker-room\.js/, 'locker room engine must load before UI');
 const seasonSource = fs.readFileSync(path.join(__dirname, '..', 'engine', 'season-simulation.js'), 'utf8');
