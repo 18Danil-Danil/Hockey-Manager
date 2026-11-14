@@ -6,6 +6,7 @@ const vm = require('node:vm');
 const logoSource = fs.readFileSync(path.join(__dirname, '..', 'data', 'club-logos.js'), 'utf8');
 const renderSource = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8');
 const youthEngineSource = fs.readFileSync(path.join(__dirname, '..', 'engine', 'youth-leagues.js'), 'utf8');
+const youthCatalogSource = fs.readFileSync(path.join(__dirname, '..', 'data', 'youth-league-clubs.js'), 'utf8');
 const indexSource = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 const context = { getInitials: name => String(name).split(/\\s+/).map(part => part[0]).join('').slice(0, 3).toUpperCase() };
 vm.createContext(context);
@@ -30,5 +31,13 @@ assert.match(youthEngineSource, /'rhl-arktika': 'arktika'/);
 assert.match(youthEngineSource, /'rhl-ekoniva-bobrov': 'econiva-bobrov'/);
 assert.match(youthEngineSource, /logo: getYouthOfficialLogo\(meta\)/);
 assert.match(renderSource, /clubLogoWithFallback\(team, 24, 'youth-table-logo'\)/);
+
+const catalogContext = { window: {} };
+vm.createContext(catalogContext);
+vm.runInContext(youthCatalogSource, catalogContext);
+assert.equal(catalogContext.window.getYouthClubLogoUrl('mhl', 'academy-mikhailov'),
+  'https://img.khl.ru/clubs/ru/671/40.png');
+assert.equal(catalogContext.window.getYouthClubLogoUrl('rhl', 'arktika'),
+  'https://ss.fhr.ru/files/images/league/teams/200_200/66.png?1=');
 
 console.log('Offline club logo rendering checks passed.');
