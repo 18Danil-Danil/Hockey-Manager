@@ -138,6 +138,42 @@ function tradeValue(p) {
   const ageFactor = p.age <= 24 ? 1.2 : p.age >= 31 ? 0.7 : 1.0;
   return Math.round((p.ovr * 2 + potBonus) * ageFactor);
 }
+function tradePositionTarget(position) {
+  return position === 'G' ? 2 : position === 'D' ? 8 : 4;
+}
+function getTeamTradePlayerValue(team, player) {
+  const base = tradeValue(player);
+  const count = (team.roster || []).filter(item => item.position === player.position && item.id !== player.id).length;
+  const target = tradePositionTarget(player.position);
+  const needFactor = Math.max(0.82, Math.min(1.2, 1 + ((target - count) / Math.max(1, target)) * 0.18));
+  const contractFactor = player.contract?.years <= 1 ? 0.96 : 1;
+  return Math.round(base * needFactor * contractFactor);
+}
+function evaluateTradeProposal(myTeam, theirTeam, myOut, theirOut, myCash = 0, theirCash = 0) {
+  if (!myTeam || !theirTeam || !Array.isArray(myOut) || !Array.isArray(theirOut)) return { decision: 'reject', reason: 'invalid', message: 'Не удалось проверить состав сделки' };
+  if (!myOut.length && !myCash || !theirOut.length && !theirCash) return { decision: 'reject', reason: 'empty', message: 'В обеих частях сделки должны быть игроки или деньги' };
+  if (myCash < 0 || theirCash < 0) return { decision: 'reject', reason: 'cash', message: 'Сумма не может быть отрицательной' };
+  if (myCash > Number(myTeam.finance?.balance || 0) || theirCash > Number(theirTeam.finance?.balance || 0)) return { decision: 'reject', reason: 'budget', message: 'Одному из клубов не хватает средств' };
+  const myIds = myOut.map(p => p.id), theirIds = theirOut.map(p => p.id);
+  const myRosterAfter = myTeam.roster.filter(p => !myIds.includes(p.id)).concat(theirOut);
+  const theirRosterAfter = theirTeam.roster.filter(p => !theirIds.includes(p.id)).concat(myOut);
+  if (myRosterAfter.length > 25 || theirRosterAfter.length > 25) return { decision: 'reject', reason: 'roster-full', message: 'После обмена в одном из клубов будет больше 25 игроков' };
+  const foreigners = roster => roster.filter(p => p.nationality !== 'Россия').length;
+  if (foreigners(myRosterAfter) > 3 || foreigners(theirRosterAfter) > 3) return { decision: 'reject', reason: 'foreign-limit', message: 'После обмена будет превышен лимит легионеров' };
+  const payroll = roster => roster.reduce((sum, p) => sum + (Number(p.contract?.salary) || 0), 0);
+  if (payroll(myRosterAfter) > Number(myTeam.finance?.salaryCap || Infinity) || payroll(theirRosterAfter) > Number(theirTeam.finance?.salaryCap || Infinity)) {
+    return { decision: 'reject', reason: 'salary-cap', message: 'После обмена один из клубов превысит потолок зарплат' };
+  }
+  const aiReceives = myOut.reduce((sum, p) => sum + getTeamTradePlayerValue(theirTeam, p), 0) + myCash * 5;
+  const aiGives = theirOut.reduce((sum, p) => sum + getTeamTradePlayerValue(theirTeam, p), 0) + theirCash * 5;
+  const ratio = aiGives > 0 ? aiReceives / aiGives : Infinity;
+  if (ratio >= 0.9) return { decision: 'accept', reason: 'fair-value', message: 'Клуб считает предложение приемлемым', ratio, aiReceives, aiGives };
+  if (ratio >= 0.7) {
+    const extraCash = Math.ceil(Math.max(0, aiGives * 0.9 - aiReceives) / 5 * 10) / 10;
+    return { decision: 'counter', reason: 'counteroffer', message: 'Клуб готов продолжить переговоры, но просит доплату', ratio, aiReceives, aiGives, extraCash, counterMyCash: Math.round((myCash + extraCash) * 10) / 10 };
+  }
+  return { decision: 'reject', reason: 'value-gap', message: 'Клуб не заинтересован: разница в ценности игроков слишком велика', ratio, aiReceives, aiGives };
+}
 function executeMultiTrade(myIds, theirIds, aiTeamId, myCash = 0, theirCash = 0) {
   const myTeam = G.league.teams.find(t => t.id === G.playerTeamId);
   const theirTeam = G.league.teams.find(t => t.id === aiTeamId);
@@ -146,12 +182,8 @@ function executeMultiTrade(myIds, theirIds, aiTeamId, myCash = 0, theirCash = 0)
   const myOut = myTeam.roster.filter(p => myIds.includes(p.id));
   const theirOut = theirTeam.roster.filter(p => theirIds.includes(p.id));
   if (myOut.length !== myIds.length || theirOut.length !== theirIds.length) return { success: false, error: 'Игрок не найден' };
-  if (myCash < 0 || theirCash < 0) return { success: false, error: 'Отрицательная сумма' };
-  if (myCash > myTeam.finance.balance) return { success: false, error: 'Недостаточно баланса' };
-  if (theirCash > theirTeam.finance.balance) return { success: false, error: 'У соперника недостаточно баланса' };
-  const myTotal = myOut.reduce((s, p) => s + tradeValue(p), 0) + myCash * 5;
-  const theirTotal = theirOut.reduce((s, p) => s + tradeValue(p), 0) + theirCash * 5;
-  if (myTotal < theirTotal * 0.8) return { success: false, error: `Неравноценно: твоя ${myTotal} < ${Math.round(theirTotal * 0.8)}` };
+  const evaluation = evaluateTradeProposal(myTeam, theirTeam, myOut, theirOut, myCash, theirCash);
+  if (evaluation.decision !== 'accept') return { success: false, error: evaluation.message, evaluation };
   const myForeignKeep = myTeam.roster.filter(p => p.nationality !== 'Россия' && !myIds.includes(p.id)).length;
   const theirForeignKeep = theirTeam.roster.filter(p => p.nationality !== 'Россия' && !theirIds.includes(p.id)).length;
   const myIncoming = theirOut.filter(p => p.nationality !== 'Россия').length;
@@ -180,8 +212,34 @@ function proposeMultiTrade() {
   if (!myIds.length && !myCash) { showToast('Выбери хотя бы одного игрока или деньги'); return; }
   if (!theirIds.length && !theirCash) { showToast('Выбери хотя бы одного игрока соперника или деньги'); return; }
   if (!aiTeamId) { showToast('Выбери команду соперника'); return; }
+  const myTeam = G.league.teams.find(t => t.id === G.playerTeamId);
+  const theirTeam = G.league.teams.find(t => t.id === aiTeamId);
+  const myOut = myTeam?.roster.filter(p => myIds.includes(p.id)) || [];
+  const theirOut = theirTeam?.roster.filter(p => theirIds.includes(p.id)) || [];
+  const evaluation = evaluateTradeProposal(myTeam, theirTeam, myOut, theirOut, myCash, theirCash);
+  if (evaluation.decision === 'counter') {
+    G.pendingTradeCounter = { myIds, theirIds, aiTeamId, myCash, theirCash, counterMyCash: evaluation.counterMyCash, message: evaluation.message };
+    showToast('Клуб выдвинул встречные условия');
+    render();
+    return;
+  }
+  if (evaluation.decision === 'reject') { showToast('Обмен отклонён: ' + evaluation.message); return; }
   const r = executeMultiTrade(myIds, theirIds, aiTeamId, myCash, theirCash);
   if (r.success) { showToast('Обмен состоялся!'); render(); } else showToast('Обмен отклонён: ' + (r.error || ''));
+}
+function acceptTradeCounterOffer() {
+  const offer = G.pendingTradeCounter;
+  if (!offer) return false;
+  const result = executeMultiTrade(offer.myIds, offer.theirIds, offer.aiTeamId, offer.counterMyCash, offer.theirCash);
+  if (!result.success) { showToast('Не удалось принять условия: ' + result.error); return false; }
+  G.pendingTradeCounter = null;
+  showToast('Обмен состоялся на встречных условиях!');
+  render();
+  return true;
+}
+function declineTradeCounterOffer() {
+  G.pendingTradeCounter = null;
+  render();
 }
 function setTradeTeam(teamId) { G.tradeTargetTeamId = Number(teamId); render(); }
 function generateAITradeOffer() {
