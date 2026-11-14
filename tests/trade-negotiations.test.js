@@ -57,6 +57,15 @@ const noBudgetTeam = team(11, [player(13, 'C', 65)], { balance: 1 });
 const cashOpponent = team(12, [player(14, 'C', 65)]);
 assert.equal(context.evaluateTradeProposal(noBudgetTeam, cashOpponent, [noBudgetTeam.roster[0]], [cashOpponent.roster[0]], 2, 0).reason, 'budget');
 
+const veteranSurplus = team(20, [
+  player(20, 'C', 80, { age: 29 }), player(21, 'C', 79, { age: 29 }),
+  player(22, 'C', 78, { age: 29 }), player(23, 'C', 77, { age: 29 }),
+  player(24, 'C', 60, { age: 30 }), player(25, 'C', 58, { age: 31 })
+]);
+context.G = { playerTeamId: 99, league: { teams: [veteranSurplus] } };
+context.refreshAITransferLists();
+assert.equal(veteranSurplus.roster[4].transferListed, true, 'AI should list a surplus veteran with a lower rating');
+assert.equal(veteranSurplus.roster[5].transferListed, true, 'AI may list a second surplus veteran');
 const ui = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8');
 assert.match(ui, /ВХЛ · трансферный список/, 'market should include a VHL transfer-list tab');
 assert.match(ui, /prepareTradeForPlayer/, 'VHL market should link a player directly to trade negotiations');
