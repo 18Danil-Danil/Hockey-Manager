@@ -77,8 +77,41 @@ const MHL_OFFICIAL_LOGO_IDS = {
   'mhl-sputnik-al': 'sputnik-almetyevsk'
 };
 
+const RHL_OFFICIAL_LOGO_IDS = {
+  'rhl-arktika': 'arktika',
+  'rhl-dynamo-576': 'dynamo-576',
+  'rhl-kaluga-rockets': 'kaluga-rockets',
+  'rhl-leningradets': 'leningradets',
+  'rhl-dynamo-karelia': 'dynamo-karelia',
+  'rhl-metallurg-vo': 'metallurg-cherepovets',
+  'rhl-polet': 'polet',
+  'rhl-tverichi': 'tverichi',
+  'rhl-fakel': 'fakel-yamal',
+  'rhl-bryansk': 'bryansk',
+  'rhl-dizelist': 'dizelist',
+  'rhl-belgorod': 'belgorod',
+  'rhl-ermak': 'ermak',
+  'rhl-kristall-saratov': 'kristall',
+  'rhl-rostov': 'rostov',
+  'rhl-ryazan-vdv': 'ryazan-vdv',
+  'rhl-tambov': 'tambov',
+  'rhl-progress-glazov': 'progress',
+  'rhl-proton': 'proton',
+  'rhl-sokol-novocheboksarsk': 'sokol-chuvashia',
+  'rhl-krasnodar': 'krasnodar',
+  'rhl-samara': 'samara',
+  'rhl-ekoniva-bobrov': 'econiva-bobrov',
+  'rhl-granit': 'ahmat-granit'
+};
+
 function getYouthOfficialLogo(meta) {
-  if (!meta || meta.league !== 'MHL') return meta?.logo || null;
+  if (!meta) return null;
+  if (meta.league === 'RHL') {
+    const catalogId = RHL_OFFICIAL_LOGO_IDS[meta.id];
+    return catalogId && typeof window.getYouthClubLogoUrl === 'function'
+      ? window.getYouthClubLogoUrl('rhl', catalogId) : null;
+  }
+  if (meta.league !== 'MHL') return meta.logo || null;
   const catalogId = MHL_OFFICIAL_LOGO_IDS[meta.id];
   if (!catalogId || typeof window.getYouthClubLogoUrl !== 'function') return null;
   return window.getYouthClubLogoUrl('mhl', catalogId);
