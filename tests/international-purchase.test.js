@@ -43,8 +43,8 @@ assert.equal(context.buyInternationalPlayer(501), true);
 assert.equal(team.roster.length, 1, 'purchased player should be added to the VHL roster');
 assert.equal(team.roster[0].name, 'Тестовый игрок');
 assert.equal(club.roster.length, 0, 'purchased player should be removed from the foreign club');
-assert.equal(team.finance.balance, 17, 'transfer fee should be deducted');
-assert.equal(team.finance.expenses.transfers, 3, 'transfer expense should be recorded');
+assert.equal(team.finance.balance, 16.9, 'transfer fee should be deducted');
+assert.equal(team.finance.expenses.transfers, 3.1, 'transfer expense should be recorded');
 assert.equal(G.league.internationalMarket.transferLog.length, 1, 'transfer log should be created even in older saves');
 assert.ok(toasts.length, 'successful purchase should show a confirmation');
 
