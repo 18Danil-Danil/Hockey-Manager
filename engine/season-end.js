@@ -85,6 +85,27 @@ function getPlayoffResult(team, playoffs) {
     if (s.aId === team.id || s.bId === team.id) return i === 3 ? 'finalist' : i === 2 ? 'semifinal' : i === 1 ? 'quarterfinal' : 'round16';
   return null;
 }
+function processTeamContractExpirations(team) {
+  if (!team || !Array.isArray(team.roster)) return [];
+  if (!Array.isArray(G.league.freeAgents)) G.league.freeAgents = [];
+  const expired = [];
+  team.roster = team.roster.filter(player => {
+    if (player.status === 'tryout') return true;
+    if (!player.contract || !Number.isFinite(Number(player.contract.years))) {
+      if (!player.contract) player.contract = contractFor(player.ovr, player.age);
+      else player.contract.years = 1;
+    }
+    player.contract.years = Math.max(0, Math.floor(Number(player.contract.years)) - 1);
+    if (player.contract.years > 0) return true;
+    player.status = 'ufa';
+    G.league.freeAgents.push(player);
+    if (typeof markYouthGraduateAvailable === 'function') markYouthGraduateAvailable(player);
+    expired.push(player);
+    return false;
+  });
+  return expired;
+}
+
 function endSeason() {
   finishYouthSeason();
   const sorted = standingsSorted(); const p = G.league.playoffs;
@@ -128,10 +149,7 @@ function endSeason() {
   developPlayers(G.league.teams);
   G.league.teams.forEach(t => progressAcademy(t));
   G.league.teams.forEach(t => {
-    t.roster = t.roster.filter(pl => {
-      if (pl.contract.years <= 0) { if (rng() < 0.8) { pl.contract = contractFor(pl.ovr, pl.age); pl.status = 'contract'; return true; } G.league.freeAgents.push(pl); pl.status = 'ufa'; markYouthGraduateAvailable(pl); return false; }
-      return true;
-    });
+    processTeamContractExpirations(t);
     while (t.roster.length < 22) t.roster.push(genPlayer(pick(['C','LW','RW','D','G']), randInt(58, 74)));
     t.lines = null; t.bench = []; t.waiversUsed = 0; t.lastRehabRound = -10;
     t.roster.forEach(pl => { ensurePlayoffStats(pl); });
