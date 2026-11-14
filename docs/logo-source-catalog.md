@@ -240,3 +240,17 @@ FootyLogos публикует каталоги хоккейных эмблем �
 | Czech Extraliga | Motor České Budějovice | https://www.footylogos.com/logos/motor-ceske-budejovice | https://www.footylogos.com/sports-assets/logos/motor-ceske-budejovice/motor-ceske-budejovice-logo-footylogos.svg |
 
 Ссылки извлечены через SVG download на индивидуальных карточках FootyLogos. Malmö Redhawks присутствует в игровом файле под двумя ID (malmo и malmo-redhawks), поэтому один и тот же официальный SVG назначен обоим записям, чтобы обе карточки отображались корректно. Для внешнего использования необходимо отдельно проверить права на клубные знаки.
+## Словацкая Tipsport liga: ещё девять игровых записей — 14 ноября 2026
+
+| Клуб | Страница-источник | Прямой SVG |
+|---|---|---|
+| HK Spišská Nová Ves | https://www.footylogos.com/logos/hk-spisska-nova-ves | https://www.footylogos.com/sports-assets/logos/hk-spisska-nova-ves/hk-spisska-nova-ves-logo-footylogos.svg |
+| HK Nitra | https://www.footylogos.com/logos/hk-nitra | https://www.footylogos.com/sports-assets/logos/hk-nitra/hk-nitra-logo-footylogos.svg |
+| HK Poprad | https://www.footylogos.com/logos/hk-poprad | https://www.footylogos.com/sports-assets/logos/hk-poprad/hk-poprad-logo-footylogos.svg |
+| HK Dukla Trenčín | https://www.footylogos.com/logos/hk-dukla-trencin | https://www.footylogos.com/sports-assets/logos/hk-dukla-trencin/hk-dukla-trencin-logo-footylogos.svg |
+| Vlci Žilina | https://www.footylogos.com/logos/vlci-zilina | https://www.footylogos.com/sports-assets/logos/vlci-zilina/vlci-zilina-logo-footylogos.svg |
+| HK 32 Liptovský Mikuláš | https://www.footylogos.com/logos/hk-32-liptovsky-mikulas | https://www.footylogos.com/sports-assets/logos/hk-32-liptovsky-mikulas/hk-32-liptovsky-mikulas-logo-footylogos.svg |
+| HK Dukla Michalovce | https://www.footylogos.com/logos/hk-dukla-michalovce | https://www.footylogos.com/sports-assets/logos/hk-dukla-michalovce/hk-dukla-michalovce-logo-footylogos.svg |
+| HC Prešov | https://www.footylogos.com/logos/hc-presov | https://www.footylogos.com/sports-assets/logos/hc-presov/hc-presov-logo-footylogos.svg |
+
+Все карточки относятся к Tipsport liga сезона 2026/27. Две игровые записи Žilina (`vlci-zilina` и `zilina`) указывают на один клуб, поэтому обе используют один SVG. Клубы, для которых каталог предлагает только PNG, не получили выдуманный SVG-адрес.
