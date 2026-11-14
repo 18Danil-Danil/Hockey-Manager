@@ -900,40 +900,79 @@ function processPlayerContractRequests() {
 
 function runAITransfers() {
   const teams = G.league.teams.filter(team => team.id !== G.playerTeamId);
-  if (!(G.league.freeAgents || []).length) return;
+  const round = Number(G.league.currentRound) || 0;
+  G.league.aiFreeAgentBids = Array.isArray(G.league.aiFreeAgentBids) ? G.league.aiFreeAgentBids : [];
+  const bids = G.league.aiFreeAgentBids;
+
+  // Сначала закрываем заявки прошлого тура: хоккеист выбирает наиболее выгодный вариант.
+  const ready = bids.filter(bid => Number(bid.createdRound) < round);
+  const grouped = new Map();
+  for (const bid of ready) {
+    if (!grouped.has(bid.playerId)) grouped.set(bid.playerId, []);
+    grouped.get(bid.playerId).push(bid);
+  }
+  for (const [playerId, playerBids] of grouped) {
+    const player = (G.league.freeAgents || []).find(item => item.id === playerId);
+    if (!player) continue;
+    const ranked = playerBids.map(bid => {
+      const club = teams.find(item => item.id === bid.teamId);
+      if (!club) return null;
+      const result = evaluatePlayerContractOffer(player, club, bid.offer, 'signing', { round: 1 });
+      return { bid, club, result };
+    }).filter(item => item && item.result.decision !== 'reject')
+      .sort((a, b) => (Number(b.result.score) || 0) - (Number(a.result.score) || 0));
+    for (const entry of ranked) {
+      let offer = entry.bid.offer;
+      let result = entry.result;
+      if (result.decision === 'counter') {
+        const counter = result.counteroffer;
+        const payroll = entry.club.roster.reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0);
+        if (payroll + Number(counter.salary || 0) > Number(entry.club.finance?.salaryCap) || rng() > 0.82) continue;
+        result = evaluatePlayerContractOffer(player, entry.club, counter, 'signing', { round: 2 });
+        offer = counter;
+      }
+      if (result.decision !== 'accept') continue;
+      const agreement = applyPlayerContractAgreement(entry.club, player, offer, 'signing', { round: 2 });
+      if (!agreement.applied) continue;
+      addNews('signing', entry.club.name + ' выиграл борьбу за свободного агента ' + player.name + ', предложив контракт на ' + agreement.salary.toFixed(1) + ' млн ₽.', 1);
+      break;
+    }
+  }
+  // Заявки старше одного тура больше не действуют.
+  G.league.aiFreeAgentBids = bids.filter(bid => Number(bid.createdRound) >= round &&
+    (G.league.freeAgents || []).some(player => player.id === bid.playerId));
+
+  // Клубы одновременно подают заявки, поэтому один хоккеист может выбирать между несколькими предложениями.
   for (const team of teams) {
-    if (rng() > 0.2 || team.roster.length >= 25) continue;
+    if (rng() > 0.24 || team.roster.length >= 25) continue;
     const currentSalary = team.roster.reduce((sum, player) => sum + (Number(player.contract?.salary) || 0), 0);
-    const salaryRoom = Number(team.finance.salaryCap) - currentSalary;
+    const salaryRoom = Number(team.finance?.salaryCap) - currentSalary;
     if (salaryRoom < 2) continue;
+    const foreigners = team.roster.filter(player => player.nationality !== 'Россия').length;
+    const existingForClub = G.league.aiFreeAgentBids.some(bid => bid.teamId === team.id && Number(bid.createdRound) === round);
+    if (existingForClub) continue;
     const candidates = (G.league.freeAgents || []).map(player => ({
       player,
       demand: getPlayerContractDemand(player, team, 'signing')
-    })).filter(item => item.demand.salary <= salaryRoom * 0.95)
+    })).filter(item => item.demand.salary <= salaryRoom * 0.95 &&
+      (item.player.nationality === 'Россия' || foreigners < 3) &&
+      !G.league.aiFreeAgentBids.some(bid => bid.playerId === item.player.id && bid.teamId === team.id))
       .sort((a, b) => b.player.ovr - a.player.ovr);
     if (!candidates.length) continue;
-    const foreigners = team.roster.filter(player => player.nationality !== 'Россия').length;
-    const targetEntry = candidates.find(item => item.player.nationality === 'Россия' || foreigners < 3);
-    if (!targetEntry) continue;
+    const shortlist = candidates.slice(0, Math.min(5, candidates.length));
+    const targetEntry = pick(shortlist);
     const target = targetEntry.player;
     const demand = targetEntry.demand;
     const offer = {
-      salary: Math.round(demand.salary * (0.96 + rng() * 0.08) * 10) / 10,
-      years: demand.years
+      salary: Math.round(Math.min(salaryRoom * 0.95, demand.salary * (1.02 + rng() * 0.12)) * 10) / 10,
+      years: Math.max(1, Math.min(5, demand.years))
     };
-    let result = evaluatePlayerContractOffer(target, team, offer, 'signing');
-    let agreedOffer = offer;
-    if (result.decision === 'counter') {
-      const counter = result.counteroffer;
-      const counterPayroll = currentSalary + Number(counter.salary || 0);
-      if (counterPayroll > Number(team.finance.salaryCap) || rng() > 0.72) continue;
-      result = evaluatePlayerContractOffer(target, team, counter, 'signing');
-      agreedOffer = counter;
-    }
-    if (result.decision !== 'accept') continue;
-    const agreement = applyPlayerContractAgreement(team, target, agreedOffer, 'signing');
-    if (!agreement.applied) continue;
-    if (target.ovr >= 78) addNews('signing', team.name + ' подписал свободного агента ' + target.name + ' после переговоров о контракте.', 1);
+    const projectedPayroll = currentSalary + offer.salary;
+    if (projectedPayroll > Number(team.finance.salaryCap)) continue;
+    G.league.aiFreeAgentBids.push({
+      playerId: target.id, playerName: target.name, teamId: team.id, teamName: team.name,
+      offer, createdRound: round, expiresRound: round + 1
+    });
   }
 }
 
