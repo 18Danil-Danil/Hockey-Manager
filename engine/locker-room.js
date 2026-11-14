@@ -22,6 +22,7 @@ function getLockerRoomState(team) {
   if (!Array.isArray(team.lockerRoom.meetings)) team.lockerRoom.meetings = [];
   if (!Array.isArray(team.lockerRoom.eventHistory)) team.lockerRoom.eventHistory = [];
   if (!Array.isArray(team.lockerRoom.meetingHistory)) team.lockerRoom.meetingHistory = [];
+  if (!Array.isArray(team.lockerRoom.requests)) team.lockerRoom.requests = [];
   if (!Number.isFinite(Number(team.lockerRoom.lastTeamEventRound))) team.lockerRoom.lastTeamEventRound = -100;
   return team.lockerRoom;
 }
