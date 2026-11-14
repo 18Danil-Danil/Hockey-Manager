@@ -226,6 +226,14 @@ const LOCKER_ROOM_REQUESTS = {
   conflict: { title: 'Напряжение внутри команды', choices: {
     mediate: 'Провести общую беседу',
     separate: 'Развести игроков и поговорить отдельно'
+  }},
+  contract: { title: 'Игрок хочет обсудить новый контракт', choices: {
+    negotiate: 'Начать переговоры о продлении',
+    delay: 'Вернуться к вопросу позже'
+  }},
+  transfer: { title: 'Игрок просит отпустить его из клуба', choices: {
+    seek_transfer: 'Разрешить искать новый клуб',
+    convince: 'Попытаться убедить остаться'
   }}
 };
 function createLockerRoomRequest(team, type, player, otherPlayer = null) {
@@ -269,6 +277,19 @@ function processPlayerRelations(team) {
     addNews('player_story', request.resolution, 1);
   }
   const pendingPlayers = new Set(state.requests.filter(item => item.status === 'pending').flatMap(item => [item.playerId, item.otherPlayerId]).filter(Boolean));
+  const requestReady = player => !pendingPlayers.has(player.id) && round - (Number(player.lastLockerRoomRequestRound) || -100) >= 10;
+  const transferCandidate = team.roster.find(player => requestReady(player) && (Number(player.morale) || 60) <= 25 && (team.bench || []).includes(player.id));
+  if (transferCandidate) {
+    const request = createLockerRoomRequest(team, 'transfer', transferCandidate);
+    if (request) { transferCandidate.lastLockerRoomRequestRound = round; created.push(request); }
+  }
+  if (!created.length) {
+    const contractCandidate = team.roster.find(player => requestReady(player) && Number(player.contract?.years) <= 1 && Number(player.contract?.years) >= 0);
+    if (contractCandidate && rng() < 0.12) {
+      const request = createLockerRoomRequest(team, 'contract', contractCandidate);
+      if (request) { contractCandidate.lastLockerRoomRequestRound = round; created.push(request); }
+    }
+  }
   const bench = new Set(team.bench || []);
   const unhappy = team.roster.filter(player => !pendingPlayers.has(player.id) && round - (Number(player.lastLockerRoomRequestRound) || -100) >= 10 && bench.has(player.id) && (Number(player.morale) || 60) <= 58);
   if (unhappy.length && rng() < 0.28) {
@@ -313,6 +334,16 @@ function resolveLockerRoomRequest(requestId, decision) {
   } else if (request.type === 'conflict') {
     if (decision === 'mediate') { changeMorale(player, 3); changeMorale(other, 3); message = 'Тренер провёл общую беседу. Напряжение снизилось, мораль обоих игроков +3.'; }
     else { changeMorale(player, 1); changeMorale(other, 1); message = 'Игроков развели по разным группам и провели отдельные разговоры. Мораль обоих +1.'; }
+  } else if (request.type === 'contract') {
+    if (decision === 'negotiate') {
+      message = 'Тренер согласился обсудить новый контракт с ' + (player?.name || request.playerName) + '.';
+      if (player && typeof openPlayerContractNegotiation === 'function') openPlayerContractNegotiation(player.id, 'renewal');
+    } else { changeMorale(player, -2); message = 'Переговоры отложены. Игрок надеется вернуться к вопросу в ближайшее время. Мораль -2.'; }
+  } else if (request.type === 'transfer') {
+    if (decision === 'seek_transfer') {
+      if (player) { player.transferRequest = true; player.transferListed = true; changeMorale(player, 2); }
+      message = (player?.name || request.playerName) + ' получил разрешение искать новый клуб. Мораль +2.';
+    } else { changeMorale(player, 3); message = 'Тренер поговорил с игроком и попытался убедить его остаться. Мораль +3.'; }
   }
   request.status = 'resolved';
   request.resolvedRound = G.league.currentRound;
