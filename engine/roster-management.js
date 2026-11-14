@@ -677,6 +677,140 @@ function prepareTradeForPlayer(teamId, playerId) {
   render();
 }
 function setTradeTeam(teamId) { G.tradeTargetTeamId = Number(teamId); render(); }
+
+/* ============================================================
+   ВХОДЯЩИЕ ПРЕДЛОЖЕНИЯ ОБ АРЕНДЕ ОТ КЛУБОВ
+   ============================================================ */
+function generateAIIncomingLoanOffer() {
+  const parent = G.league?.teams.find(team => Number(team.id) === Number(G.playerTeamId));
+  if (!parent || (parent.roster || []).length <= 18) return false;
+  G.league.aiLoanOffers = Array.isArray(G.league.aiLoanOffers) ? G.league.aiLoanOffers : [];
+  const pendingIds = new Set(G.league.aiLoanOffers.map(offer => Number(offer.playerId)));
+  const candidates = (parent.roster || []).filter(player =>
+    !player.loan && player.status !== 'tryout' && !pendingIds.has(Number(player.id)) &&
+    (player.transferListed || Number(player.age) <= 24)
+  );
+  if (!candidates.length) return false;
+  const clubs = G.league.teams.filter(club => Number(club.id) !== Number(parent.id) &&
+    (club.roster || []).length < 25 && (club.roster || []).length >= 18);
+  if (!clubs.length) return false;
+  const player = pick(candidates.slice().sort((a, b) => Number(!!b.transferListed) - Number(!!a.transferListed) || Number(a.age) - Number(b.age)).slice(0, Math.min(8, candidates.length)));
+  const interested = clubs.filter(club => (club.roster || []).filter(item => item.position === player.position).length <= 3);
+  if (!interested.length) return false;
+  const borrower = pick(interested);
+  const rounds = pick([3, 5, 5, 8]);
+  const wageShare = pick([50, 60, 75, 100]);
+  const terms = getLoanTerms(player, parent, borrower, rounds, wageShare);
+  if (!terms.allowed) return false;
+  const offer = {
+    id: nextId(), fromTeamId: borrower.id, playerId: player.id,
+    rounds: terms.rounds, wageShare: terms.wageShare, fee: terms.fee,
+    role: (borrower.roster || []).filter(item => item.position === player.position).length <= 1 ? 'top' : 'rotation',
+    createdRound: G.league.currentRound, expiresRound: G.league.currentRound + 3
+  };
+  G.league.aiLoanOffers.push(offer);
+  addInboxMessage('league', borrower.name, 'Предложение аренды',
+    borrower.name + ' хочет взять ' + player.name + ' в аренду на ' + offer.rounds + ' туров. Клуб готов оплачивать ' + offer.wageShare + '% зарплаты и предложил ' + offer.fee.toFixed(1) + ' млн ₽.',
+    [{ label: 'Открыть аренды', action: 'open_loans', payload: {} }]);
+  addNews('signing', borrower.name + ' направил запрос на аренду хоккеиста ' + player.name + ' из ' + parent.name + '.', 1);
+  return true;
+}
+function applyIncomingLoanOffer(offer, rounds, wageShare, fee) {
+  const parent = G.league?.teams.find(team => Number(team.id) === Number(G.playerTeamId));
+  const borrower = G.league?.teams.find(team => Number(team.id) === Number(offer.fromTeamId));
+  const player = parent?.roster.find(item => Number(item.id) === Number(offer.playerId));
+  if (!parent || !borrower || !player || player.loan) return { success: false, error: 'Игрок или клуб больше недоступен' };
+  if (G.league.currentRound > Number(offer.expiresRound)) return { success: false, error: 'Срок предложения истёк' };
+  const terms = getLoanTerms(player, parent, borrower, rounds, wageShare);
+  const agreedFee = Math.round(Math.max(0, Number(fee) || 0) * 10) / 10;
+  if (!terms.allowed) return { success: false, error: terms.reason };
+  if (Number(borrower.finance?.balance || 0) < agreedFee) return { success: false, error: 'У клуба недостаточно средств для арендной платы' };
+  parent.roster.splice(parent.roster.indexOf(player), 1);
+  player.loanOriginalContract = player.contract ? { ...player.contract } : null;
+  player.loan = {
+    parentTeamId: parent.id, parentTeamName: parent.name,
+    borrowerTeamId: borrower.id, borrowerTeamName: borrower.name,
+    startRound: G.league.currentRound, endRound: G.league.currentRound + terms.rounds,
+    wageShare: terms.wageShare, borrowerSalary: terms.borrowerSalary,
+    parentSalary: terms.parentSalary, fee: agreedFee,
+    role: offer.role || 'rotation', roleLabel: offer.role === 'top' ? 'Ведущая роль' : 'Ротация'
+  };
+  initializeLoanPerformance(player);
+  player.contract = { ...(player.contract || {}), salary: terms.borrowerSalary };
+  borrower.roster.push(player);
+  borrower.finance.balance = Math.round((Number(borrower.finance.balance) - agreedFee) * 10) / 10;
+  parent.finance.balance = Math.round((Number(parent.finance?.balance || 0) + agreedFee) * 10) / 10;
+  borrower.finance.expenses = borrower.finance.expenses || {};
+  borrower.finance.expenses.loans = (Number(borrower.finance.expenses.loans) || 0) + agreedFee;
+  parent.finance.income = parent.finance.income || {};
+  parent.finance.income.loans = (Number(parent.finance.income.loans) || 0) + agreedFee;
+  G.league.loanLog = Array.isArray(G.league.loanLog) ? G.league.loanLog : [];
+  G.league.loanLog.push({
+    playerId: player.id, playerName: player.name, parentTeamId: parent.id, parentTeamName: parent.name,
+    borrowerTeamId: borrower.id, borrowerTeamName: borrower.name,
+    startRound: G.league.currentRound, endRound: player.loan.endRound,
+    fee: agreedFee, wageShare: terms.wageShare, role: player.loan.role
+  });
+  parent.lines = null; borrower.lines = null; syncLines(parent); syncLines(borrower);
+  G.league.aiLoanOffers = (G.league.aiLoanOffers || []).filter(item => item.id !== offer.id);
+  addNews('signing', borrower.name + ' арендовал ' + player.name + ' у ' + parent.name + ' до ' + player.loan.endRound + '-го тура.', 2);
+  return { success: true, player, terms };
+}
+function acceptAIIncomingLoanOffer(offerId) {
+  const offer = (G.league?.aiLoanOffers || []).find(item => Number(item.id) === Number(offerId));
+  if (!offer) return false;
+  const result = applyIncomingLoanOffer(offer, offer.rounds, offer.wageShare, offer.fee);
+  if (!result.success) { showToast(result.error, 'error'); return false; }
+  showToast(result.player.name + ' отправлен в аренду', 'success');
+  saveGame({ immediate: true }); render(); return true;
+}
+function declineAIIncomingLoanOffer(offerId) {
+  G.league.aiLoanOffers = (G.league.aiLoanOffers || []).filter(item => Number(item.id) !== Number(offerId));
+  render(); saveGame({ immediate: true }); return true;
+}
+function startIncomingLoanCounter(offerId) {
+  const offer = (G.league?.aiLoanOffers || []).find(item => Number(item.id) === Number(offerId));
+  if (!offer) return false;
+  G.pendingIncomingLoanCounter = { offerId: offer.id };
+  render(); return true;
+}
+function submitIncomingLoanCounter() {
+  const state = G.pendingIncomingLoanCounter;
+  const offer = (G.league?.aiLoanOffers || []).find(item => Number(item.id) === Number(state?.offerId));
+  if (!offer) { G.pendingIncomingLoanCounter = null; render(); return false; }
+  const rounds = Number(document.getElementById('incoming-loan-rounds')?.value || offer.rounds);
+  const wageShare = Number(document.getElementById('incoming-loan-share')?.value || offer.wageShare);
+  const fee = Number(document.getElementById('incoming-loan-fee')?.value || offer.fee);
+  const borrower = G.league.teams.find(item => Number(item.id) === Number(offer.fromTeamId));
+  const parent = G.league.teams.find(item => Number(item.id) === Number(G.playerTeamId));
+  const player = parent?.roster.find(item => Number(item.id) === Number(offer.playerId));
+  if (!borrower || !player || ![3,5,8,10].includes(rounds) || ![0,25,50,60,75,100].includes(wageShare) || !Number.isFinite(fee) || fee < 0) {
+    showToast('Проверь условия встречного предложения', 'error'); return false;
+  }
+  const cost = getLoanTerms(player, parent, borrower, rounds, wageShare);
+  if (!cost.allowed) { showToast(cost.reason, 'error'); return false; }
+  const askValue = Number(offer.fee) + Number(offer.wageShare) * 0.025 - Number(offer.rounds) * 0.06;
+  const counterValue = fee + wageShare * 0.025 - rounds * 0.06;
+  const acceptance = Math.max(0.08, Math.min(0.92, 0.68 - Math.max(0, counterValue - askValue) * 0.12 + (rounds <= offer.rounds ? 0.08 : 0)));
+  if (rng() > acceptance) {
+    G.league.aiLoanOffers = G.league.aiLoanOffers.filter(item => item.id !== offer.id);
+    G.pendingIncomingLoanCounter = null;
+    showToast(borrower.name + ' отклонил встречные условия', 'error');
+    render(); saveGame({ immediate: true }); return false;
+  }
+  const result = applyIncomingLoanOffer(offer, rounds, wageShare, fee);
+  G.pendingIncomingLoanCounter = null;
+  if (!result.success) { showToast(result.error, 'error'); render(); return false; }
+  showToast(borrower.name + ' согласился на встречные условия', 'success');
+  saveGame({ immediate: true }); render(); return true;
+}
+function processAIIncomingLoanOffers() {
+  if (!G.league?.teams || G.league.currentRound >= 40) return;
+  G.league.aiLoanOffers = (G.league.aiLoanOffers || []).filter(offer => Number(offer.expiresRound) >= Number(G.league.currentRound));
+  if (G.league.aiLoanOffers.length >= 3 || rng() > 0.38) return;
+  generateAIIncomingLoanOffer();
+}
+
 function generateAITradeOffer() {
   const myTeam = G.league.teams.find(t => t.id === G.playerTeamId); if (!myTeam) return;
   const aiTeams = G.league.teams.filter(t => t.id !== G.playerTeamId); if (!aiTeams.length) return;
