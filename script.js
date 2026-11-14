@@ -61,6 +61,7 @@ function newGame() {
   clearSave();
   _idCounter = 1; setSeed(Date.now() % 1000000);
   G.difficulty = DIFFICULTIES[G.selectedDifficulty || 'normal'];
+  G.startingBonusMillions = 0;
   G.career = { reputation: G.difficulty.startReputation, history: [], noFireMode: G.noFireMode || false };
   G.league = genLeague(); resetAllStats(G.league);
   G.league.freeAgents = generateFreeAgents(30); G.league.staffPool = generateStaffCandidates(12); ensureInternationalMarket();
