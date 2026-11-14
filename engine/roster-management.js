@@ -864,6 +864,40 @@ function acceptAITradeOffer(offerId) {
   showToast('Обмен принят!'); render();
 }
 function declineAITradeOffer(offerId) { G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId); render(); }
+function processPlayerContractRequests() {
+  const team = G.league?.teams?.find(item => Number(item.id) === Number(G.playerTeamId));
+  if (!team) return false;
+  const round = Number(G.league.currentRound) || 0;
+  for (const player of team.roster || []) {
+    if (player.contractRequest && Number(player.contractRequest.expiresRound) < round) {
+      player.contractRequest = null;
+      player.morale = Math.max(20, (Number(player.morale) || 60) - 2);
+    }
+  }
+  const pending = (team.roster || []).filter(player => player.contractRequest?.status === 'pending').length;
+  if (pending >= 2 || round < 20 || round > 54 || rng() > 0.2) return false;
+  const candidates = (team.roster || []).filter(player =>
+    player.status === 'contract' && !player.loan && !player.contractRequest &&
+    Number(player.contract?.years) <= 1 && Number(player.age) <= 34 &&
+    Number(player.morale) >= 45 && !player.transferListed
+  );
+  if (!candidates.length) return false;
+  const shortlist = candidates.slice().sort((a, b) =>
+    (Number(b.morale) - Number(a.morale)) || (Number(b.ovr) - Number(a.ovr))
+  ).slice(0, 6);
+  const player = pick(shortlist);
+  const demand = getPlayerContractDemand(player, team, 'renewal');
+  player.contractRequest = {
+    status: 'pending', createdRound: round, expiresRound: Math.min(57, round + 6),
+    expectedSalary: demand.salary, requestedYears: demand.years
+  };
+  const message = player.name + ' хотел бы обсудить продление контракта. Ожидания: около ' +
+    demand.salary.toFixed(1) + ' млн ₽ за сезон на ' + demand.years + ' лет.';
+  if (typeof addInboxMessage === 'function') addInboxMessage('player', player.name, 'Запрос на продление контракта', message, []);
+  if (typeof addNews === 'function') addNews('contract', player.name + ' обратился к руководству ' + team.name + ' с просьбой обсудить новый контракт.', 1);
+  return true;
+}
+
 function runAITransfers() {
   const teams = G.league.teams.filter(t => t.id !== G.playerTeamId);
   const freeAgents = G.league.freeAgents; if (!freeAgents.length) return;
@@ -934,7 +968,7 @@ function refreshAITransferLists() {
 }
 function runAIActions() {
   refreshAITransferLists();
-  runAITransfers(); runAIContractExtensions();
+  runAITransfers(); runAIContractExtensions(); processPlayerContractRequests();
   if (rng() < 0.35) generateAITradeOffer();
   if (rng() < 0.15) generateAITradeOffer();
   G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.expiresRound > G.league.currentRound);
