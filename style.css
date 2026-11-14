@@ -1295,3 +1295,11 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
  .locker-meeting-delay { align-items:stretch; flex-direction:column; }
  .locker-meeting-delay select { width:100%; }
 }
+
+/* Рынок ВХЛ и встречные условия по обменам */
+.trade-counter-card { margin:12px 0 16px; padding:14px 16px; border:1px solid rgba(255,167,91,.32); border-left:3px solid #ff9b62; border-radius:9px; background:linear-gradient(110deg,rgba(255,155,98,.09),rgba(255,255,255,.025)); }
+.trade-counter-card b { color:#ffd0b8; font-size:13px; }
+.trade-counter-card p { margin:7px 0 11px; color:#aeb7c9; font-size:12px; line-height:1.5; }
+.market-intro { margin-bottom:12px; }
+.market-intro p { color:#929caf; font-size:12px; margin-top:5px; }
+@media(max-width:700px) { .trade-counter-card .btn { width:100%; margin:4px 0; } }
