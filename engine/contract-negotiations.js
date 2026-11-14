@@ -193,6 +193,11 @@ function submitPlayerContractNegotiation() {
       if (typeof showToast === 'function') showToast('Соглашение достигнуто: ' + found.player.name, 'success');
       if (typeof saveGame === 'function') saveGame({ immediate: true });
     }
+  } else if (result.decision === 'reject' && state.round >= state.maxRounds) {
+    state.closed = true;
+    result.message += '. Игрок завершил переговоры после трёх предложений.';
+    if (typeof addInboxMessage === 'function') addInboxMessage('player', found.player.name, 'Переговоры по контракту прекращены', result.message, []);
+    if (typeof showToast === 'function') showToast('Игрок завершил переговоры', 'error');
   } else if (typeof showToast === 'function') {
     showToast(result.message || 'Предложение не принято', result.decision === 'reject' ? 'error' : 'info');
   }
