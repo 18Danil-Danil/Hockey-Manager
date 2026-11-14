@@ -10,7 +10,7 @@ vm.runInContext(source, context);
 
 const player = { id: 1, name: 'Хоккеист', position: 'C', age: 26, transferListed: false, contract: { years: 3 } };
 const club = { id: 'club-a', roster: [
-  { id: 1, position: 'C' }, { id: 2, position: 'C' }, { id: 3, position: 'D' },
+  { id: 1, position: 'C' }, { id: 2, position: 'C' }, { id: 7, position: 'C' }, { id: 3, position: 'D' },
   { id: 4, position: 'LW' }, { id: 5, position: 'G' }, { id: 6, position: 'RW' }
 ] };
 const team = { finance: { balance: 100 } };
