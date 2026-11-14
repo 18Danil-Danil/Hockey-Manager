@@ -139,6 +139,16 @@ const verifiedMarketLogos = new Map([
   ['slovakia-extraliga/dukla-michalovce', 'https://www.footylogos.com/sports-assets/logos/hk-dukla-michalovce/hk-dukla-michalovce-logo-footylogos.svg'],
   ['slovakia-extraliga/presov', 'https://www.footylogos.com/sports-assets/logos/hc-presov/hc-presov-logo-footylogos.svg'],
   ['slovakia-extraliga/zilina', 'https://www.footylogos.com/sports-assets/logos/vlci-zilina/vlci-zilina-logo-footylogos.svg'],
+  ['germany-del/eisbaren-berlin', 'https://www.footylogos.com/sports-assets/logos/eisbaren-berlin/eisbaren-berlin-logo-footylogos.svg'],
+  ['germany-del/loewen-frankfurt', 'https://www.footylogos.com/sports-assets/logos/lowen-frankfurt/lowen-frankfurt-logo-footylogos.svg'],
+  ['germany-del/nuernberg', 'https://www.footylogos.com/sports-assets/logos/nurnberg-ice-tigers/nurnberg-ice-tigers-logo-footylogos.svg'],
+  ['germany-del/augsburger-panther', 'https://www.footylogos.com/sports-assets/logos/augsburger-panther/augsburger-panther-logo-footylogos.svg'],
+  ['germany-del/fischtown', 'https://www.footylogos.com/sports-assets/logos/pinguins-bremerhaven/pinguins-bremerhaven-logo-footylogos.svg'],
+  ['germany-del/ehc-munich', 'https://www.footylogos.com/sports-assets/logos/ehc-red-bull-munchen/ehc-red-bull-munchen-logo-footylogos.svg'],
+  ['germany-del/iserlohn', 'https://www.footylogos.com/sports-assets/logos/iserlohn-roosters/iserlohn-roosters-logo-footylogos.svg'],
+  ['germany-del/straubing', 'https://www.footylogos.com/sports-assets/logos/straubing-tigers/straubing-tigers-logo-footylogos.svg'],
+  ['germany-del/koelner-haie', 'https://www.footylogos.com/sports-assets/logos/kolner-haie/kolner-haie-logo-footylogos.svg'],
+  ['germany-del/krefeld-pinguine', 'https://www.footylogos.com/sports-assets/logos/krefeld-pinguine/krefeld-pinguine-logo-footylogos.svg'],
 ]);
 for (const [key, url] of verifiedMarketLogos) {
   const [leagueId, clubId] = key.split('/');
