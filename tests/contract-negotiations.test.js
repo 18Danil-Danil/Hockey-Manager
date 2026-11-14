@@ -202,29 +202,37 @@ assert.equal(requestPlayer.morale, 76, 'ignoring an expired request should sligh
 assert.match(rosterManagementForRequests, /processPlayerContractRequests\(\);/, 'player requests must be processed during AI turn actions');
 
 
-/* AI free-agent signings must use the contract negotiation model. */
+/* Competing AI clubs submit offers and the best contract wins next round. */
 const aiFreeAgent = { id: 601, name: 'Свободный для ИИ', age: 25, ovr: 79, nationality: 'Россия', contract: { salary: 2, years: 0 }, status: 'ufa' };
-const aiClub = { id: 602, name: 'Клуб ИИ', roster: [], finance: { salaryCap: 30 } };
+const aiClubA = { id: 602, name: 'Клуб А', roster: [], finance: { salaryCap: 30, balance: 30 } };
+const aiClubB = { id: 603, name: 'Клуб Б', roster: [], finance: { salaryCap: 30, balance: 30 } };
 const aiSigningCalls = [];
 const aiSigningContext = {
-  G: { playerTeamId: 1, league: { teams: [{ id: 1 }, aiClub], freeAgents: [aiFreeAgent] } },
+  G: { playerTeamId: 1, league: { teams: [{ id: 1 }, aiClubA, aiClubB], freeAgents: [aiFreeAgent], currentRound: 10 } },
   rng: () => 0,
-  getPlayerContractDemand: (player, team, mode) => { aiSigningCalls.push(['demand', player.id, team.id, mode]); return { salary: 4, years: 3 }; },
-  evaluatePlayerContractOffer: (player, team, offer, mode) => { aiSigningCalls.push(['evaluate', offer.salary, offer.years, mode]); return { decision: 'accept' }; },
+  pick: items => items[0],
+  getPlayerContractDemand: (player, team, mode) => { aiSigningCalls.push(['demand', player.id, team.id, mode]); return { salary: team.id === 603 ? 5 : 4, years: 3 }; },
+  evaluatePlayerContractOffer: (player, team, offer, mode) => ({ decision: 'accept', score: offer.salary }),
   applyPlayerContractAgreement: (team, player, offer, mode) => {
-    aiSigningCalls.push(['apply', player.id, mode]);
+    aiSigningCalls.push(['apply', player.id, team.id, mode, offer.salary]);
     aiSigningContext.G.league.freeAgents = aiSigningContext.G.league.freeAgents.filter(item => item.id !== player.id);
     team.roster.push(player);
-    return { applied: true };
+    player.contract = { salary: offer.salary, years: offer.years };
+    return { applied: true, salary: offer.salary };
   },
   addNews: () => {}
 };
 vm.createContext(aiSigningContext);
 vm.runInContext(rosterManagementForRequests, aiSigningContext);
 aiSigningContext.runAITransfers();
-assert.ok(aiClub.roster.includes(aiFreeAgent), 'AI club should sign a player after accepted contract terms');
-assert.equal(aiSigningContext.G.league.freeAgents.length, 0);
-assert.ok(aiSigningCalls.some(call => call[0] === 'evaluate'), 'AI signing must evaluate the player offer');
-assert.ok(aiSigningCalls.some(call => call[0] === 'apply'), 'AI signing must apply a negotiated contract');
+assert.equal(aiSigningContext.G.league.aiFreeAgentBids.length, 2, 'two AI clubs should be able to compete for one player');
+assert.equal(aiClubA.roster.length + aiClubB.roster.length, 0, 'bids should remain open for one round');
+aiSigningContext.G.league.currentRound = 11;
+aiSigningContext.runAITransfers();
+assert.equal(aiSigningContext.G.league.freeAgents.length, 0, 'the winning bid should sign the free agent');
+assert.equal(aiClubB.roster[0], aiFreeAgent, 'the club with the stronger offer should win');
+assert.equal(aiClubA.roster.length, 0, 'the losing club must not sign the same player');
+assert.ok(aiSigningCalls.some(call => call[0] === 'apply' && call[2] === aiClubB.id), 'the winning offer must be applied through contract agreement');
+assert.equal(aiSigningContext.G.league.aiFreeAgentBids.length, 0, 'stale competing bids should be removed after signing');
 
 console.log('Contract negotiation and expiry checks passed.');
