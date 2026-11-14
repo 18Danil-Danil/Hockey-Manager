@@ -179,7 +179,7 @@ function openPlayerContractNegotiation(playerId, mode = 'renewal', context = {})
   const maxYears = mode === 'renewal' ? Math.max(1, 5 - Math.max(0, Number(found.player.contract?.years) || 0)) : 5;
   G.contractNegotiation = {
     playerId, mode,
-    offer: { salary: demand.salary, years: Math.min(maxYears, demand.years), signingBonus: 0, bonusGoal: 0, bonusAssist: 0, bonusGames: 0, bonusPlayoff: 0, bonusMvp: 0, bonusTopScorer: 0 },
+    offer: { salary: demand.salary, years: Math.min(maxYears, demand.years), signingBonus: 0, bonusGoal: mode === 'renewal' ? Number(found.player.contract?.bonusGoal) || 0 : 0, bonusAssist: mode === 'renewal' ? Number(found.player.contract?.bonusAssist) || 0 : 0, bonusGames: mode === 'renewal' ? Number(found.player.contract?.bonusGames) || 0 : 0, bonusPlayoff: mode === 'renewal' ? Number(found.player.contract?.bonusPlayoff) || 0 : 0, bonusMvp: mode === 'renewal' ? Number(found.player.contract?.bonusMvp) || 0 : 0, bonusTopScorer: mode === 'renewal' ? Number(found.player.contract?.bonusTopScorer) || 0 : 0 },
     transferFee: Number(context.transferFee) || 0, clubId: context.clubId || null,
     round: 0, maxRounds: 3, history: [], lastResult: null, completed: false, closed: false
   };
