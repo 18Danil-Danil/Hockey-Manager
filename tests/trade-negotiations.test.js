@@ -93,6 +93,25 @@ assert.equal(loanPlayer.contract.salary, 4, 'original salary should be restored'
 assert.equal(loanPlayer.loan, null, 'loan marker should be cleared');
 assert.equal(context.G.league.loanLog.length, 2, 'loan and return should be recorded');
 
+// Исходящая аренда и досрочный отзыв собственного игрока.
+const outgoingPlayer = player(401, 'RW', 68, { salary: 3 });
+const userLoanClub = team(401, [outgoingPlayer, ...Array.from({length:18}, (_,i) => player(4100+i, 'C', 55))], { balance: 20, salaryCap: 100 });
+const aiLoanClub = team(402, [], { balance: 20, salaryCap: 100 });
+context.G = { playerTeamId: 401, league: { currentRound: 10, teams: [userLoanClub, aiLoanClub] } };
+context.rng = () => 0; context.addNews = () => {}; context.showToast = () => {}; context.render = () => {}; context.saveGame = () => {}; context.syncLines = () => {};
+context.document = { getElementById(id) { return ({'loan-target-club': {value:'402'}, 'loan-duration': {value:'5'}, 'loan-wage-share': {value:'50'}, 'loan-role': {value:'rotation'}})[id] || null; } };
+assert.equal(context.startOutgoingLoanNegotiation(401), true);
+assert.equal(context.submitOutgoingLoanOffer(), true, 'AI club should accept a suitable loan offer');
+assert.equal(userLoanClub.roster.includes(outgoingPlayer), false);
+assert.equal(aiLoanClub.roster.includes(outgoingPlayer), true);
+assert.equal(outgoingPlayer.loan.parentTeamId, 401);
+assert.equal(outgoingPlayer.loan.borrowerTeamId, 402);
+assert.equal(outgoingPlayer.loan.role, 'rotation');
+assert.equal(context.returnLoanPlayer(401, 'recall'), true, 'user should recall a loaned player');
+assert.equal(userLoanClub.roster.includes(outgoingPlayer), true);
+assert.equal(aiLoanClub.roster.includes(outgoingPlayer), false);
+assert.equal(outgoingPlayer.contract.salary, 3, 'original salary should be restored after recall');
+
 // Переговоры о трансферной сумме: принятие, встречное предложение и отказ.
 const negotiationPlayer = player(150, 'C', 75);
 const negotiationSeller = team(151, [negotiationPlayer], { balance: 10 });
@@ -151,6 +170,8 @@ foreignTarget.transferListed = true;
 assert.equal(context.getVHLTransferQuote(foreignTarget, poorSeller, foreignBuyer).reason, 'Лимит легионеров (3) уже исчерпан');
 
 const ui = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8');
+assert.match(ui, /startOutgoingLoanNegotiation/, 'loan UI should allow sending players to other clubs');
+assert.match(ui, /Отозвать из аренды/, 'loan UI should allow recalling outgoing players');
 assert.match(ui, /function renderLoans/, 'loan management UI should exist');
 assert.match(ui, /Вернуть досрочно/, 'loan UI should support early return');
 assert.match(ui, /ВХЛ · трансферный список/, 'market should include a VHL transfer-list tab');
