@@ -636,7 +636,7 @@ function renderInternationalMarket(region) {
       <td class="market-player-stats">${stats}</td>
       <td class="salary">${quote.salary.toFixed(1)}M</td>
       <td class="salary">${quote.price.toFixed(1)}M</td>
-      <td><button class="btn small" ${disabled} title="${title}" onclick="buyInternationalPlayer(${player.id})">Купить</button></td>
+      <td><button type="button" class="btn small" ${disabled} title="${title}" onclick="buyInternationalPlayer(${Number(player.id)})">Купить</button></td>
     </tr>`;
   }).join('');
   const title = region === 'kazakhstan' ? 'Клубы Казахстана' : region === 'belarus' ? 'Клубы Беларуси' : 'Европейские клубы';
