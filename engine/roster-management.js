@@ -204,6 +204,7 @@ function executeMultiTrade(myIds, theirIds, aiTeamId, myCash = 0, theirCash = 0)
 }
 function proposeMultiTrade() {
   if (isTradeDeadlinePassed()) { showToast('Трансферный дедлайн закрыт'); return; }
+  G.pendingTradeCounter = null;
   const myIds = Array.from(document.querySelectorAll('.trade-my-pick:checked')).map(el => Number(el.value));
   const theirIds = Array.from(document.querySelectorAll('.trade-their-pick:checked')).map(el => Number(el.value));
   const aiTeamId = G.tradeTargetTeamId;
@@ -280,6 +281,19 @@ function acceptAITradeOffer(offerId) {
   if (!offer.theyOffer.every(id => aiTeam.roster.some(p => p.id === id))) { showToast('Игрок не в команде соперника'); G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId); render(); return; }
   const myOut = myTeam.roster.filter(p => offer.theyWant.includes(p.id));
   const theirOut = aiTeam.roster.filter(p => offer.theyOffer.includes(p.id));
+  const evaluation = evaluateTradeProposal(myTeam, aiTeam, myOut, theirOut, 0, 0);
+  if (evaluation.decision === 'counter') {
+    G.pendingTradeCounter = { myIds: offer.theyWant.slice(), theirIds: offer.theyOffer.slice(), aiTeamId: aiTeam.id, myCash: 0, theirCash: 0, counterMyCash: evaluation.counterMyCash, message: evaluation.message };
+    G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId);
+    render();
+    return;
+  }
+  if (evaluation.decision !== 'accept') {
+    showToast('Обмен не проходит проверку: ' + evaluation.message, 'error');
+    G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.id !== offerId);
+    render();
+    return;
+  }
   myTeam.roster = myTeam.roster.filter(p => !offer.theyWant.includes(p.id)).concat(theirOut);
   aiTeam.roster = aiTeam.roster.filter(p => !offer.theyOffer.includes(p.id)).concat(myOut);
   myTeam.lines = null; aiTeam.lines = null;
