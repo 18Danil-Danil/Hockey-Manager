@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const negotiationSource = fs.readFileSync(path.join(__dirname, '..', 'engine', 'contract-negotiations.js'), 'utf8');
-const context = { G: { league: { freeAgents: [] } }, markYouthGraduateSigned: (player, team, method) => { player.signingMethod = method; } };
+const context = { G: { league: { freeAgents: [], season: '2026/27', internationalMarket: { clubs: [], transferLog: [] } } }, markYouthGraduateSigned: (player, team, method) => { player.signingMethod = method; } };
 vm.createContext(context);
 vm.runInContext(negotiationSource, context);
 
@@ -43,6 +43,22 @@ const foreignTeam = { id: 3, roster: [
 ], finance: { salaryCap: 50 } };
 const foreignResult = context.evaluatePlayerContractOffer({ ...freeAgent, nationality: 'Швеция' }, foreignTeam, { salary: 2, years: 2 }, 'signing');
 assert.equal(foreignResult.reason, 'foreign-limit');
+
+const internationalPlayer = { id: 30, name: 'Игрок из Европы', age: 24, ovr: 72, morale: 80, nationality: 'Россия', contract: { salary: 1, years: 2 }, status: 'contract' };
+const sourceClub = { id: 'source', name: 'Европейский клуб', leagueName: 'Европейская лига', country: 'Швейцария', roster: [internationalPlayer], averageOvr: 72 };
+context.G.league.internationalMarket.clubs = [sourceClub];
+context.G.contractNegotiation = { transferFee: 3, clubId: 'source' };
+context.findInternationalPlayer = id => {
+  const club = context.G.league.internationalMarket.clubs.find(item => item.roster.some(candidate => candidate.id === id));
+  return club ? { player: club.roster.find(candidate => candidate.id === id), club } : null;
+};
+const internationalDemand = context.getPlayerContractDemand(internationalPlayer, team, 'international-signing');
+const internationalAgreement = context.applyPlayerContractAgreement(team, internationalPlayer, { salary: internationalDemand.salary, years: internationalDemand.years }, 'international-signing');
+assert.equal(internationalAgreement.applied, true);
+assert.ok(team.roster.includes(internationalPlayer));
+assert.equal(sourceClub.roster.length, 0);
+assert.equal(team.finance.balance, 97);
+assert.equal(context.G.league.internationalMarket.transferLog[0].fee, 3);
 
 const seasonEndSource = fs.readFileSync(path.join(__dirname, '..', 'engine', 'season-end.js'), 'utf8');
 const expiryContext = {
