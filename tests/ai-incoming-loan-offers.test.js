@@ -38,13 +38,17 @@ const aiPlayers = Array.from({ length: 18 }, (_, i) => ({
 }));
 const userClub = { id: 1, name: 'Наш клуб', roster: userPlayers, finance: { balance: 20, salaryCap: 100, income: {}, expenses: {} } };
 const aiClub = { id: 2, name: 'Клуб-соперник', roster: aiPlayers, finance: { balance: 20, salaryCap: 100, income: {}, expenses: {} } };
-context.G.league.teams = [userClub, aiClub];
+const rivalPlayers = aiPlayers.map((player, i) => ({ ...player, id: 2000 + i, name: 'Игрок второго ИИ ' + i }));
+const rivalClub = { id: 3, name: 'Второй клуб', roster: rivalPlayers, finance: { balance: 25, salaryCap: 100, income: {}, expenses: {} } };
+context.G.league.teams = [userClub, aiClub, rivalClub];
 
 assert.equal(context.generateAIIncomingLoanOffer(), true, 'AI club should generate an incoming loan proposal for an eligible young player');
 const offer = context.G.league.aiLoanOffers[0];
 assert.equal(offer.playerId, targetPlayerId);
-assert.equal(offer.fromTeamId, aiClub.id);
-assert.equal(context.generateAIIncomingLoanOffer(), false, 'the same player must not receive duplicate pending offers');
+assert.equal(context.G.league.aiLoanOffers.length, 2, 'two AI clubs should compete for the same eligible player');
+assert.deepEqual([...new Set(context.G.league.aiLoanOffers.map(item => item.fromTeamId))].sort(), [2, 3]);
+assert.ok(context.G.league.aiLoanOffers.every(item => item.competitionCount === 2), 'each bid should show the size of the bidding contest');
+assert.equal(context.generateAIIncomingLoanOffer(), false, 'clubs that already bid must not submit duplicate offers');
 
 assert.equal(context.acceptAIIncomingLoanOffer(offer.id), true);
 const loaned = aiClub.roster.find(player => player.id === targetPlayerId);
