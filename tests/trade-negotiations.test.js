@@ -188,11 +188,11 @@ assert.equal(context.getVHLTransferQuote(poorSellerPlayer, poorSeller, poorBuyer
 
 const expandedBuyer = team(105, Array.from({length:25}, (_,i) => player(1100+i, 'C', 60)), { balance: 100, salaryCap: 200 });
 assert.equal(context.getVHLTransferQuote(poorSellerPlayer, poorSeller, expandedBuyer).allowed, true, 'clubs should be allowed to exceed 25 rostered players');
-const expandedTradeStar = player(1399, 'C', 90);
+const expandedTradeStar = player(1399, 'C', 80);
 const expandedTradeClub = team(107, [...Array.from({length:24}, (_,i) => player(1300+i, 'C', 60)), expandedTradeStar]);
-const expandedTradeOpponent = team(108, [player(1400, 'C', 50), player(1401, 'C', 50)]);
+const expandedTradeOpponent = team(108, [player(1400, 'C', 40), player(1401, 'C', 40)]);
 const expandedTrade = context.evaluateTradeProposal(expandedTradeClub, expandedTradeOpponent, [expandedTradeStar], expandedTradeOpponent.roster, 0, 0);
-assert.equal(expandedTrade.decision, 'accept', 'trades should be allowed to increase a club roster beyond 25 players');
+assert.equal(expandedTrade.decision, 'accept', 'fair trades should be allowed to increase a club roster beyond 25 players');
 assert.equal(expandedTradeClub.roster.length - 1 + expandedTradeOpponent.roster.length, 26, 'trade should permit a 26-player roster');
 
 const foreignBuyer = team(106, [
