@@ -129,4 +129,44 @@ const rosterManagementSource = fs.readFileSync(path.join(__dirname, '..', 'engin
 assert.match(rosterManagementSource, /getPlayerContractDemand\(p, team, 'renewal'\)/, 'AI renewals must use the same player demand model');
 assert.match(rosterManagementSource, /evaluatePlayerContractOffer\(p, team, offer, 'renewal'\)/, 'AI renewals must evaluate player preferences');
 
+
+/* Contract add-ons: signing and performance bonuses. */
+const bonusFreeAgent = { id: 44, name: 'Бонусный игрок', age: 24, ovr: 76, morale: 75, nationality: 'Россия', contract: { salary: 2, years: 0 }, status: 'ufa' };
+context.G.league.freeAgents = [bonusFreeAgent];
+const bonusDemand = context.getPlayerContractDemand(bonusFreeAgent, team, 'signing');
+const bonusOffer = {
+  salary: bonusDemand.salary, years: bonusDemand.years,
+  signingBonus: 2.5, bonusGoal: 0.2, bonusAssist: 0.1,
+  bonusGames: 0.3, bonusPlayoff: 1.5, bonusMvp: 4, bonusTopScorer: 2
+};
+const bonusEvaluation = context.evaluatePlayerContractOffer(bonusFreeAgent, team, bonusOffer, 'signing');
+assert.equal(bonusEvaluation.decision, 'accept', 'reasonable bonus package should improve a fair offer');
+const balanceBeforeSigningBonus = team.finance.balance;
+const bonusAgreement = context.applyPlayerContractAgreement(team, bonusFreeAgent, bonusOffer, 'signing');
+assert.equal(bonusAgreement.applied, true);
+assert.equal(team.finance.balance, balanceBeforeSigningBonus - 2.5, 'signing bonus must be paid immediately');
+assert.equal(bonusFreeAgent.contract.bonusGoal, 0.2);
+assert.equal(bonusFreeAgent.contract.bonusAssist, 0.1);
+assert.equal(bonusFreeAgent.contract.bonusGames, 0.3);
+assert.equal(bonusFreeAgent.contract.bonusPlayoff, 1.5);
+assert.equal(bonusFreeAgent.contract.bonusMvp, 4);
+assert.equal(bonusFreeAgent.contract.bonusTopScorer, 2);
+assert.equal(team.finance.expenses.signingBonuses, 2.5);
+
+const renewalBonusPlayer = { id: 45, name: 'Продлеваемый', age: 27, ovr: 78, morale: 75, nationality: 'Россия', contract: { salary: 3, years: 1 } };
+const renewalBonusTeam = { id: 45, roster: [renewalBonusPlayer], finance: { salaryCap: 50, balance: 50 } };
+const renewalDemand = context.getPlayerContractDemand(renewalBonusPlayer, renewalBonusTeam, 'renewal');
+const renewalOffer = { salary: renewalDemand.salary, years: renewalDemand.years, signingBonus: 10, bonusGoal: 0.15 };
+const renewalAgreement = context.applyPlayerContractAgreement(renewalBonusTeam, renewalBonusPlayer, renewalOffer, 'renewal');
+assert.equal(renewalAgreement.applied, true);
+assert.equal(renewalBonusTeam.finance.balance, 50, 'renewal must not pay a signing bonus');
+assert.equal(renewalBonusPlayer.contract.signingBonus, 0);
+assert.equal(renewalBonusPlayer.contract.bonusGoal, 0.15);
+
+const unaffordableBonusTeam = { id: 46, roster: [], finance: { salaryCap: 50, balance: 1 } };
+const unaffordable = context.evaluatePlayerContractOffer(bonusFreeAgent, unaffordableBonusTeam, {
+  salary: bonusDemand.salary, years: bonusDemand.years, signingBonus: 2
+}, 'signing');
+assert.equal(unaffordable.reason, 'signing-bonus', 'unaffordable signing bonuses must be rejected');
+
 console.log('Contract negotiation and expiry checks passed.');
