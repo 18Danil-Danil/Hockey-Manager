@@ -1,4 +1,33 @@
-/* Переговоры по контрактам: ожидания игроков и оценка предложений. */
+/* Переговоры по контрактам: ожидания игроков, характер и оценка предложений. */
+function getPlayerContractPreferences(player) {
+  if (!player) return { money: 0.45, role: 0.4, winning: 0.35, loyalty: 0.4, security: 0.4 };
+  if (player.contractPreferences) return player.contractPreferences;
+  const profiles = {
+    leader: { money: 0.38, role: 0.62, winning: 0.48, loyalty: 0.66, security: 0.42 },
+    worker: { money: 0.34, role: 0.58, winning: 0.34, loyalty: 0.52, security: 0.58 },
+    egoist: { money: 0.72, role: 0.48, winning: 0.42, loyalty: 0.22, security: 0.32 },
+    calm: { money: 0.42, role: 0.32, winning: 0.28, loyalty: 0.48, security: 0.68 }
+  };
+  const base = profiles[player.character] || profiles.worker;
+  const seed = Math.abs(Number(player.id) || String(player.name || '').length * 37);
+  const variation = key => (((seed * (key.length + 3) + key.charCodeAt(0) * 17) % 17) - 8) / 100;
+  player.contractPreferences = Object.fromEntries(Object.entries(base).map(([key, value]) => [key, Math.max(0.15, Math.min(0.85, Math.round((value + variation(key)) * 100) / 100))]));
+  return player.contractPreferences;
+}
+function getPlayerContractClubFit(player, team, mode = 'renewal') {
+  const roster = Array.isArray(team?.roster) ? team.roster : [];
+  const peers = roster.filter(item => item.id !== player?.id);
+  const averageOvr = peers.length ? peers.reduce((sum, item) => sum + (Number(item.ovr) || 0), 0) / peers.length : Number(player?.ovr) || 60;
+  const roleScore = roster.some(item => item.id === player?.id)
+    ? ((team.bench || []).includes(player.id) ? 0.25 : Number(player.ovr) >= averageOvr ? 0.95 : 0.65)
+    : (roster.length < 22 ? 0.82 : 0.52);
+  const record = team?.record || {};
+  const games = (Number(record.w) || 0) + (Number(record.l) || 0) + (Number(record.otl) || 0);
+  const winningScore = games ? Math.max(0.2, Math.min(1, (Number(record.pts) || 0) / (games * 2))) : 0.58;
+  const moraleScore = Math.max(0.2, Math.min(1, (Number(player?.morale) || 60) / 100));
+  const loyaltyScore = mode === 'renewal' ? Math.min(1, 0.55 + moraleScore * 0.35) : 0.45;
+  return { role: roleScore, winning: winningScore, morale: moraleScore, loyalty: loyaltyScore, averageOvr: Math.round(averageOvr * 10) / 10 };
+}
 function getPlayerContractDemand(player, team, mode = 'renewal') {
   if (!player || !team) return { salary: 0.5, years: 1 };
   const age = Math.max(16, Number(player.age) || 25);
@@ -11,15 +40,19 @@ function getPlayerContractDemand(player, team, mode = 'renewal') {
   const averageOvr = peers.length ? peers.reduce((sum, item) => sum + (Number(item.ovr) || 0), 0) / peers.length : ovr;
   const roleFactor = ovr >= averageOvr + 5 ? 1.08 : ovr <= averageOvr - 8 ? 0.94 : 1;
   const morale = Math.max(20, Math.min(100, Number(player.morale) || 65));
+  const preferences = getPlayerContractPreferences(player);
+  const fit = getPlayerContractClubFit(player, team, mode);
   const moraleFactor = 0.94 + ((morale - 50) / 50) * 0.08;
-  const loyaltyFactor = mode === 'renewal' ? 0.97 : 1.02;
+  const loyaltyFactor = mode === 'renewal' ? 0.94 + preferences.loyalty * 0.12 : 1.02;
+  const ambitionFactor = 0.94 + preferences.money * 0.18 + (1 - fit.role) * preferences.role * 0.08;
   const currentSalary = Math.max(0, Number(player.contract?.salary) || 0);
-  const salary = Math.max(0.5, Math.round(Math.max(marketSalary * roleFactor * moraleFactor * loyaltyFactor, currentSalary * 0.92) * 10) / 10);
-  const years = age <= 23 ? 3 : age <= 29 ? 3 : age <= 33 ? 2 : 1;
-  return { salary, years, marketSalary: Math.round(marketSalary * 10) / 10, roleFactor, moraleFactor };
+  const salary = Math.max(0.5, Math.round(Math.max(marketSalary * roleFactor * moraleFactor * loyaltyFactor * ambitionFactor, currentSalary * 0.92) * 10) / 10);
+  const baseYears = age <= 23 ? 3 : age <= 29 ? 3 : age <= 33 ? 2 : 1;
+  const years = Math.max(1, Math.min(5, baseYears + (preferences.security >= 0.62 && age <= 31 ? 1 : 0)));
+  return { salary, years, marketSalary: Math.round(marketSalary * 10) / 10, roleFactor, moraleFactor, preferences, fit };
 }
 
-function evaluatePlayerContractOffer(player, team, offer, mode = 'renewal') {
+function evaluatePlayerContractOffer(player, team, offer, mode = 'renewal', negotiationState = null) {
   if (!player || !team || !offer) return { decision: 'reject', reason: 'invalid', message: 'Некорректное предложение' };
   const salary = Math.round((Number(offer.salary) || 0) * 10) / 10;
   const years = Math.floor(Number(offer.years) || 0);
@@ -46,19 +79,25 @@ function evaluatePlayerContractOffer(player, team, offer, mode = 'renewal') {
   }
   const salaryFit = salary / Math.max(0.5, demand.salary);
   const termFit = years / Math.max(1, demand.years);
-  const score = salaryFit * 0.78 + Math.min(1.2, termFit) * 0.22;
-  if (salaryFit >= 1 && termFit >= 0.85) {
-    return { decision: 'accept', reason: 'accepted', message: 'Игрок готов принять предложение', demand, offer: { salary, years }, score };
+  const prefs = demand.preferences || getPlayerContractPreferences(player);
+  const fit = demand.fit || getPlayerContractClubFit(player, team, mode);
+  const nonFinancialFit = fit.role * prefs.role * 0.28 + fit.winning * prefs.winning * 0.22 + fit.morale * 0.18 + fit.loyalty * prefs.loyalty * 0.32;
+  const score = salaryFit * (0.62 + prefs.money * 0.2) + Math.min(1.2, termFit) * (0.16 + prefs.security * 0.12) + nonFinancialFit * 0.22;
+  const round = Number(negotiationState?.round) || 0;
+  const patience = round >= 2 ? 0.04 : 0;
+  if (salaryFit >= (0.96 - patience) && termFit >= (0.78 - patience) && score >= 0.88) {
+    return { decision: 'accept', reason: 'accepted', message: 'Игрок готов принять предложение', demand, offer: { salary, years }, score, fit: nonFinancialFit };
   }
-  if (score >= 0.88) {
-    const counterSalary = Math.max(salary, demand.salary);
-    const counterYears = Math.max(years, demand.years);
+  if (score >= (round >= 2 ? 0.82 : 0.70)) {
+    const concession = Math.max(0, round) * (0.035 + prefs.loyalty * 0.015);
+    const counterSalary = Math.max(salary, Math.round(demand.salary * (1 - concession) * 10) / 10);
+    const counterYears = Math.max(years, demand.years - (round >= 1 && prefs.security < 0.45 ? 1 : 0));
     return {
-      decision: 'counter', reason: 'counteroffer', message: 'Игрок выдвигает встречные условия',
-      demand, counteroffer: { salary: Math.round(counterSalary * 10) / 10, years: Math.min(5, counterYears) }, score
+      decision: 'counter', reason: 'counteroffer', message: 'Игрок готов продолжить переговоры, но предлагает изменить условия',
+      demand, counteroffer: { salary: Math.round(counterSalary * 10) / 10, years: Math.max(1, Math.min(5, counterYears)) }, score, fit: nonFinancialFit
     };
   }
-  return { decision: 'reject', reason: 'too-low', message: 'Игрок отклоняет предложение', demand, score };
+  return { decision: 'reject', reason: 'too-low', message: 'Предложение не соответствует ожиданиям игрока', demand, score, fit: nonFinancialFit };
 }
 
 function applyPlayerContractAgreement(team, player, offer, mode = 'renewal') {
@@ -135,10 +174,10 @@ function updatePlayerContractOffer(field, value) {
 }
 function submitPlayerContractNegotiation() {
   const state = G.contractNegotiation;
-  if (!state || state.completed) return false;
+  if (!state || state.completed || state.closed || (Number(state.round) || 0) >= (Number(state.maxRounds) || 3)) return false;
   const found = findNegotiationPlayer(state.playerId, state.mode);
   if (!found.team || !found.player) { state.lastResult = { decision: 'reject', message: 'Игрок больше недоступен' }; render(); return false; }
-  const result = evaluatePlayerContractOffer(found.player, found.team, state.offer, state.mode);
+  state.round = (Number(state.round) || 0) + 1;\n  const result = evaluatePlayerContractOffer(found.player, found.team, state.offer, state.mode, state);\n  state.history = Array.isArray(state.history) ? state.history : [];\n  state.history.push({ round: state.round, offer: { ...state.offer }, decision: result.decision, message: result.message });
   state.lastResult = result;
   if (result.decision === 'accept') {
     const applied = applyPlayerContractAgreement(found.team, found.player, state.offer, state.mode);
@@ -159,7 +198,7 @@ function submitPlayerContractNegotiation() {
 }
 function acceptPlayerCounterOffer() {
   const state = G.contractNegotiation;
-  if (!state || state.completed || state.lastResult?.decision !== 'counter' || !state.lastResult.counteroffer) return false;
+  if (!state || state.completed || state.closed || state.lastResult?.decision !== 'counter' || !state.lastResult.counteroffer) return false;
   const found = findNegotiationPlayer(state.playerId, state.mode);
   if (!found.team || !found.player) return false;
   const offer = state.lastResult.counteroffer;
