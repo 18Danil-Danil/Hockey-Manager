@@ -1341,7 +1341,7 @@ function renderPlayerConversationPanel(player, team) {
   const delayControl = '<label class="locker-meeting-delay"><span>Запланировать на</span><select id="locker-delay-'+player.id+'"><option value="1">Следующий тур</option><option value="2">Через 2 тура</option><option value="3">Через 3 тура</option></select></label>';
   const topicRows = topics.map(([key, topic]) =>
     '<div class="locker-topic-row"><div class="locker-topic-copy"><b>'+topic.label+'</b><small>'+topic.description+'</small></div><div class="locker-topic-actions">'+
-    '<button class="btn small secondary" '+(cooldown || pending ? 'disabled' : '')+' onclick="talkToPlayer('+player.id+', \' '+key+'\')">Поговорить</button>'+
+    '<button class="btn small secondary" '+(cooldown || pending ? 'disabled' : '')+' onclick="talkToPlayer('+player.id+', \''+key+'\')">Поговорить</button>'+
     '<button class="btn small" '+(cooldown || pending ? 'disabled' : '')+' onclick="schedulePlayerMeeting('+player.id+',\''+key+'\',Number(document.getElementById(\'locker-delay-'+player.id+'\').value))">Назначить</button></div></div>'
   ).join('');
   const meetingInfo = pending
