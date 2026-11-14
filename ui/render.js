@@ -18,6 +18,7 @@ function renderTeamSelect() {
       <div class="d-desc">${d.desc}</div>
     </div>
   `).join('');
+  const bonusPanel = selDiff === 'easy' ? `<section class="starting-bonus-panel"><div class="starting-bonus-heading"><div><h3>💰 Стартовая финансовая надбавка</h3><p>Добавь средства к балансу выбранного клуба. На зарплатный потолок и бюджет сезона это не влияет.</p></div><strong id="starting-bonus-value">${Math.max(0, Math.min(500, Number(G.startingBonusMillions) || 0))} млн ₽</strong></div><div class="starting-bonus-controls"><input id="starting-bonus-range" type="range" min="0" max="500" step="10" value="${Math.max(0, Math.min(500, Number(G.startingBonusMillions) || 0))}" oninput="updateStartingBonus(this.value)" aria-label="Стартовая надбавка от 0 до 500 миллионов рублей"><label for="starting-bonus-number">Сумма, млн ₽</label><input id="starting-bonus-number" type="number" min="0" max="500" step="1" value="${Math.max(0, Math.min(500, Number(G.startingBonusMillions) || 0))}" onchange="updateStartingBonus(this.value)"></div><div class="starting-bonus-hint">Можно выбрать от 0 до 500 млн ₽. Установи 0, если надбавка не нужна.</div></section>` : '';
   const teams = G.league.teams.slice().sort((a, b) => b.talent - a.talent);
   const cards = teams.map(t => {
     const trendDef = { up: '↗', down: '↘', stable: '→', newcomer: '🆕' };
@@ -36,6 +37,7 @@ function renderTeamSelect() {
     <h2>Уровень сложности</h2>
     <div class="difficulty-grid">${diffCards}</div>
     <label class="no-fire-checkbox"><input type="checkbox" ${G.noFireMode ? 'checked' : ''} onchange="G.noFireMode=this.checked; render();"> 🚫 Режим «без увольнения» (совет не может уволить)</label>
+    ${bonusPanel}
     <h2>Клуб</h2>
     <div class="team-grid">${cards}</div>`;
 }
@@ -48,6 +50,13 @@ function bindTeamSelect() {
       G.career.reputation = G.difficulty.startReputation;
       G.career.history = G.career.history || [];
       G.playerTeamId = Number(el.dataset.teamId);
+      const selectedTeam = G.league.teams.find(team => team.id === G.playerTeamId);
+      const startingBonus = G.difficulty.key === 'easy' ? Math.max(0, Math.min(500, Math.round(Number(G.startingBonusMillions) || 0))) : 0;
+      if (selectedTeam && !G.career.startingBonusApplied) {
+        selectedTeam.finance.balance += startingBonus;
+        G.career.startingBonusMillions = startingBonus;
+        G.career.startingBonusApplied = true;
+      }
       applyDifficultySalaryCaps(G.league.teams, G.playerTeamId, G.difficulty);
       G.injuryPrompt = null;
       G.skipInjuryPrompt = false;
