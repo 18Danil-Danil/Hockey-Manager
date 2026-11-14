@@ -165,7 +165,7 @@ function openPlayerContractNegotiation(playerId, mode = 'renewal', context = {})
   return true;
 }
 function updatePlayerContractOffer(field, value) {
-  if (!G.contractNegotiation || !['salary', 'years'].includes(field)) return;
+  if (!G.contractNegotiation || G.contractNegotiation.completed || G.contractNegotiation.closed || (Number(G.contractNegotiation.round) || 0) >= (Number(G.contractNegotiation.maxRounds) || 3) || !['salary', 'years'].includes(field)) return;
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) return;
   G.contractNegotiation.offer[field] = field === 'salary'
