@@ -37,6 +37,7 @@ function simRound(forceNoPrompt = false) {
   G.lastRoundNumber = roundNumber;
   G.lastRoundResults = roundResults;
   G.league.currentRound++;
+  G.league.teams.filter(team => team.id === G.playerTeamId).forEach(processLockerRoomMeetings);
   const activeTeamIds = new Set(round.flatMap(([homeId, awayId]) => [homeId, awayId]));
   G.league.teams.filter(t => activeTeamIds.has(t.id)).forEach(t => { paySalaries(t); paySponsors(t); processMerchRevenue(t); checkScoutMission(t); });
   if (G.league.currentRound % scaledInterval(10) === 0) G.league.teams.forEach(t => { payTVInstallment(t); processSponsorPayouts(t); });
