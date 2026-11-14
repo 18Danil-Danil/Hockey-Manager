@@ -241,6 +241,13 @@ function declineTradeCounterOffer() {
   G.pendingTradeCounter = null;
   render();
 }
+function prepareTradeForPlayer(teamId, playerId) {
+  G.tradeTargetTeamId = Number(teamId);
+  G.marketTargetPlayerId = Number(playerId);
+  G.activeTab = 'trades';
+  G.navGroupOpen = 'transfers';
+  render();
+}
 function setTradeTeam(teamId) { G.tradeTargetTeamId = Number(teamId); render(); }
 function generateAITradeOffer() {
   const myTeam = G.league.teams.find(t => t.id === G.playerTeamId); if (!myTeam) return;
