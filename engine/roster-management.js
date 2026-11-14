@@ -539,10 +539,10 @@ function loanPlayerFromClub(parentTeamId, playerId, rounds = 5, wageShare = 50) 
   if (!terms.allowed) { showToast(terms.reason, 'error'); return false; }
   if (rng() > (player.ovr >= 82 ? 0.72 : player.ovr >= 72 ? 0.84 : 0.93)) { showToast(parent.name + ' отклонил предложение об аренде', 'error'); return false; }
   recordLoanNegotiationEvent({
-    type: 'deal-completed', offerId: offer.id, playerId: player.id, playerName: player.name,
-    clubId: borrower.id, clubName: borrower.name, rounds: terms.rounds,
-    wageShare: terms.wageShare, fee: agreedFee, role: offer.role || 'rotation',
-    message: 'Стороны согласовали аренду. Игрок отправлен в клуб.'
+    type: 'deal-completed', offerId: null, playerId: player.id, playerName: player.name,
+    clubId: parent.id, clubName: parent.name, rounds: terms.rounds,
+    wageShare: terms.wageShare, fee: terms.fee, role: 'rotation',
+    message: 'Наш клуб согласовал аренду хоккеиста у другого клуба.'
   });
   parent.roster.splice(parent.roster.indexOf(player), 1);
   player.loanOriginalContract = player.contract ? { ...player.contract } : null;
@@ -870,6 +870,12 @@ function applyIncomingLoanOffer(offer, rounds, wageShare, fee) {
   const agreedFee = Math.round(Math.max(0, Number(fee) || 0) * 10) / 10;
   if (!terms.allowed) return { success: false, error: terms.reason };
   if (Number(borrower.finance?.balance || 0) < agreedFee) return { success: false, error: 'У клуба недостаточно средств для арендной платы' };
+  recordLoanNegotiationEvent({
+    type: 'deal-completed', offerId: offer.id, playerId: player.id, playerName: player.name,
+    clubId: borrower.id, clubName: borrower.name, rounds: terms.rounds,
+    wageShare: terms.wageShare, fee: agreedFee, role: offer.role || 'rotation',
+    message: 'Стороны согласовали аренду. Игрок отправлен в клуб.'
+  });
   parent.roster.splice(parent.roster.indexOf(player), 1);
   player.loanOriginalContract = player.contract ? { ...player.contract } : null;
   player.loan = {
