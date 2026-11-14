@@ -170,4 +170,35 @@ const unaffordable = context.evaluatePlayerContractOffer(bonusFreeAgent, unaffor
 }, 'signing');
 assert.equal(unaffordable.reason, 'signing-bonus', 'unaffordable signing bonuses must be rejected');
 
+
+/* Player-initiated contract renewal requests. */
+const rosterManagementForRequests = fs.readFileSync(path.join(__dirname, '..', 'engine', 'roster-management.js'), 'utf8');
+const requestPlayer = { id: 501, name: 'Инициативный игрок', age: 27, ovr: 76, morale: 78, status: 'contract', contract: { salary: 2, years: 1 } };
+const requestTeam = { id: 501, name: 'Клуб запросов', roster: [requestPlayer] };
+const requestInbox = [];
+const requestNews = [];
+let requestRng = 0;
+const requestContext = {
+  G: { playerTeamId: requestTeam.id, league: { teams: [requestTeam], currentRound: 25 } },
+  rng: () => requestRng,
+  pick: items => items[0],
+  getPlayerContractDemand: () => ({ salary: 4.2, years: 3 }),
+  addInboxMessage: (...args) => requestInbox.push(args),
+  addNews: (...args) => requestNews.push(args)
+};
+vm.createContext(requestContext);
+vm.runInContext(rosterManagementForRequests, requestContext);
+assert.equal(requestContext.processPlayerContractRequests(), true);
+assert.equal(requestPlayer.contractRequest.status, 'pending');
+assert.equal(requestPlayer.contractRequest.expectedSalary, 4.2);
+assert.equal(requestInbox.length, 1);
+assert.equal(requestContext.processPlayerContractRequests(), false, 'the same player must not receive duplicate pending requests');
+requestContext.G.league.currentRound = requestPlayer.contractRequest.expiresRound + 1;
+requestRng = 0.9;
+requestPlayer.morale = 78;
+assert.equal(requestContext.processPlayerContractRequests(), false);
+assert.equal(requestPlayer.contractRequest, null, 'expired requests should be cleared');
+assert.equal(requestPlayer.morale, 76, 'ignoring an expired request should slightly reduce morale');
+assert.match(rosterManagementForRequests, /processPlayerContractRequests\(\);/, 'player requests must be processed during AI turn actions');
+
 console.log('Contract negotiation and expiry checks passed.');
