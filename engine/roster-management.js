@@ -330,10 +330,12 @@ function buyVHLPlayer(sellingTeamId, playerId, negotiatedPrice = null) {
   const player = sellingTeam?.roster.find(item => Number(item.id) === Number(playerId));
   if (!buyingTeam || !sellingTeam || !player) { showToast('Игрок или клуб не найден', 'error'); return false; }
   const quote = getVHLTransferQuote(player, sellingTeam, buyingTeam);
-  if (!quote.allowed && negotiatedPrice === null) { showToast(quote.reason, 'error'); return false; }
+  if (!quote.allowed && (negotiatedPrice === null || quote.reason !== 'Недостаточно средств для трансфера')) { showToast(quote.reason, 'error'); return false; }
   const transferPrice = negotiatedPrice === null ? quote.price : Math.round(Number(negotiatedPrice) * 10) / 10;
   if (!Number.isFinite(transferPrice) || transferPrice <= 0 || Number(buyingTeam.finance?.balance || 0) < transferPrice) { showToast('Недостаточно средств для согласованной суммы', 'error'); return false; }
-  if (isTradeDeadlinePassed() || buyingTeam.roster.length >= 25 || sellingTeam.roster.length <= 18) { showToast('Условия трансфера больше не выполняются', 'error'); return false; }
+  const foreignCount = buyingTeam.roster.filter(item => item.nationality !== 'Россия').length;
+  const payroll = buyingTeam.roster.reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0);
+  if (isTradeDeadlinePassed() || buyingTeam.roster.length >= 25 || sellingTeam.roster.length <= 18 || (player.nationality !== 'Россия' && foreignCount >= 3) || payroll + quote.salary > Number(buyingTeam.finance?.salaryCap ?? Infinity) || (!player.transferListed && !player.transferRequest)) { showToast('Условия трансфера больше не выполняются', 'error'); return false; }
   const index = sellingTeam.roster.indexOf(player);
   if (index < 0) return false;
   sellingTeam.roster.splice(index, 1);
@@ -349,7 +351,7 @@ function buyVHLPlayer(sellingTeamId, playerId, negotiatedPrice = null) {
   buyingTeam.finance.expenses.transfers = (Number(buyingTeam.finance.expenses.transfers) || 0) + transferPrice;
   sellingTeam.finance = sellingTeam.finance || {};
   sellingTeam.finance.income = sellingTeam.finance.income || {};
-  sellingTeam.finance.income.transfers = (Number(sellingTeam.finance.income.transfers) || 0) + quote.price;
+  sellingTeam.finance.income.transfers = (Number(sellingTeam.finance.income.transfers) || 0) + transferPrice;
   buyingTeam.lines = null;
   sellingTeam.lines = null;
   syncLines(buyingTeam);
