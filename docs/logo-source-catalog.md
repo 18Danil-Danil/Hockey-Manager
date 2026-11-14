@@ -8,7 +8,7 @@
 - КХЛ: 22 клуба в международном каталоге имеют внешние ссылки на изображения эмблем; проверка тестом подтверждает заполнение всех 22 ссылок.
 - МХЛ: 34 команды. Все 34 игровых клуба сопоставлены с каталогом официальных изображений МХЛ (40×40 px); ссылки подключаются при создании молодёжных команд.
 - РХЛ: в игровом реестре 26 команд. Подтверждённые соответствия подключены к каталогу ФХР; спорные названия (например, «Гранит», «Воевода», «Гвардия Краснодар», «Факел Салехард») намеренно не получают чужую эмблему и используют локальный fallback.
-- Казахстан, Беларусь и европейские лиги: отдельные официальные эмблемы клубов пока не интегрированы; для каждого клуба уже доступен локальный SVG-fallback с инициалами.
+- Казахстан и Беларусь: отдельные эмблемы пока не интегрированы; для каждого клуба доступен локальный SVG-fallback. В европейских лигах подтверждены и подключены 13 прямых SVG-ссылок из каталога FootyLogos (Liiga, SHL и Swiss National League); это источник для технической интеграции, но не доказательство лицензии на коммерческое использование.
 - В репозитории пока нет локальных PNG/SVG-файлов официальных клубных эмблем. Внешние URL требуют подключения к интернету; локальные SVG-заглушки работают офлайн.
 
 ## МХЛ — официальные изображения
@@ -166,3 +166,22 @@ FootyLogos публикует каталоги хоккейных эмблем �
 - **Трансферный рынок:** добавлены прямые SVG URL для Ässät (Liiga), Brynäs IF (SHL) и HC Davos (Swiss National League). URL ведут на отдельные карточки логотипов FootyLogos; в каталоге клуба проверяются название и принадлежность к соответствующей лиге.
 - Остальные команды трансферного рынка пока сохраняют fallback до проверки индивидуальных страниц/файлов. Наличие логотипа в публичном каталоге само по себе не подтверждает право на коммерческое использование в игре.
 - В `tests/club-logos.test.js` добавлены точные проверки трёх новых рыночных URL и двух RHL alias-сопоставлений.
+
+## Дополнительные клубные эмблемы европейских лиг — 14 ноября 2026
+
+Добавлены ещё 10 эмблем с индивидуальных страниц FootyLogos; на страницах подтверждены название клуба, страна/лига и доступность SVG-файла. Сайт просит указывать FootyLogos как источник. Ссылки используются для внутренней тестовой сборки; перед публичным или коммерческим распространением требуется отдельная проверка прав.
+
+| Лига | Клуб | Страница-источник | Прямой SVG |
+|---|---|---|---|
+| Liiga | Tappara | https://www.footylogos.com/logos/tappara | https://www.footylogos.com/sports-assets/logos/tappara/tappara-logo-footylogos.svg |
+| Liiga | Ilves | https://www.footylogos.com/logos/ilves-ice-hockey | https://www.footylogos.com/sports-assets/logos/ilves-ice-hockey/ilves-ice-hockey-logo-footylogos.svg |
+| Liiga | HIFK | https://www.footylogos.com/logos/hifk-ice-hockey | https://www.footylogos.com/sports-assets/logos/hifk-ice-hockey/hifk-ice-hockey-logo-footylogos.svg |
+| Liiga | HPK | https://www.footylogos.com/logos/hpk | https://www.footylogos.com/sports-assets/logos/hpk/hpk-logo-footylogos.svg |
+| Liiga | TPS | https://www.footylogos.com/logos/hc-tps | https://www.footylogos.com/sports-assets/logos/hc-tps/hc-tps-logo-footylogos.svg |
+| SHL | Frölunda HC | https://www.footylogos.com/logos/frolunda-hc | https://www.footylogos.com/sports-assets/logos/frolunda-hc/frolunda-hc-logo-footylogos.svg |
+| SHL | Färjestad BK | https://www.footylogos.com/logos/farjestad-bk | https://www.footylogos.com/sports-assets/logos/farjestad-bk/farjestad-bk-logo-footylogos.svg |
+| Swiss National League | ZSC Lions | https://www.footylogos.com/logos/zsc-lions | https://www.footylogos.com/sports-assets/logos/zsc-lions/zsc-lions-logo-footylogos.svg |
+| Swiss National League | EV Zug | https://www.footylogos.com/logos/ev-zug | https://www.footylogos.com/sports-assets/logos/ev-zug/ev-zug-logo-footylogos.svg |
+| Swiss National League | SC Bern | https://www.footylogos.com/logos/sc-bern | https://www.footylogos.com/sports-assets/logos/sc-bern/sc-bern-logo-footylogos.svg |
+
+Всего в игровом каталоге международных клубов теперь 13 проверенных ссылок FootyLogos: предыдущие Ässät, Brynäs IF и HC Davos плюс 10 перечисленных выше. Тест tests/club-logos.test.js фиксирует точное соответствие ID клуба и URL, остальные клубы продолжают использовать fallback.
