@@ -14,6 +14,7 @@ const G = {
   statsMode: 'regular',
   difficulty: null,
   selectedDifficulty: 'normal',
+  startingBonusMillions: 0,
   noFireMode: false,
   career: null,
   careerOffers: null,
