@@ -93,6 +93,19 @@ assert.equal(loanPlayer.contract.salary, 4, 'original salary should be restored'
 assert.equal(loanPlayer.loan, null, 'loan marker should be cleared');
 assert.equal(context.G.league.loanLog.length, 2, 'loan and return should be recorded');
 
+
+const reportPlayer = player(499, 'C', 70);
+reportPlayer.loan = { startRound: 10, endRound: 18, role: 'rotation', performance: { gp: 5, goals: 2, assists: 3, points: 5, wins: 0, saves: 0, shotsAgainst: 0, goalsAgainst: 0, shutouts: 0 } };
+const strongReport = context.loanPerformanceReport(reportPlayer, 16);
+assert.equal(strongReport.status, 'Оправдывает ожидания', 'strong loan performance with expected playing time should be rated positively');
+assert.equal(strongReport.recommendation, 'Рассмотреть продление', 'successful loan near expiry should suggest extension');
+reportPlayer.loan.performance.gp = 1;
+const lowUsageReport = context.loanPerformanceReport(reportPlayer, 16);
+assert.equal(lowUsageReport.status, 'Мало игрового времени', 'limited appearances should flag low usage');
+assert.equal(lowUsageReport.recommendation, 'Рассмотреть отзыв', 'persistent lack of playing time should recommend recall');
+const goalieReportPlayer = player(500, 'G', 70);
+goalieReportPlayer.loan = { startRound: 1, endRound: 15, performance: { gp: 5, goals: 0, assists: 0, points: 0, wins: 3, saves: 140, shotsAgainst: 150, goalsAgainst: 10, shutouts: 1 } };
+assert.equal(context.loanPerformanceReport(goalieReportPlayer, 10).savePct, 93.3, 'goalie report should calculate save percentage');
 // Исходящая аренда и досрочный отзыв собственного игрока.
 const outgoingPlayer = player(401, 'RW', 68, { salary: 3 });
 const userLoanClub = team(401, [outgoingPlayer, ...Array.from({length:18}, (_,i) => player(4100+i, 'C', 55))], { balance: 20, salaryCap: 100 });
