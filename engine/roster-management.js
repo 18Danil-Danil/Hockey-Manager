@@ -294,6 +294,7 @@ function acceptAITradeOffer(offerId) {
     render();
     return;
   }
+  [...myOut, ...theirOut].forEach(player => { player.transferRequest = false; player.transferListed = false; });
   myTeam.roster = myTeam.roster.filter(p => !offer.theyWant.includes(p.id)).concat(theirOut);
   aiTeam.roster = aiTeam.roster.filter(p => !offer.theyOffer.includes(p.id)).concat(myOut);
   myTeam.lines = null; aiTeam.lines = null;
