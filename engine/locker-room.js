@@ -1,0 +1,204 @@
+/* ============================================================
+   РАЗДЕВАЛКА: личные разговоры, встречи и командные мероприятия
+   ============================================================ */
+const LOCKER_ROOM_TOPICS = {
+  support: { label: 'Поддержать', description: 'Помочь игроку справиться с трудным отрезком' },
+  praise: { label: 'Похвалить', description: 'Отметить хорошую игру и вклад в команду' },
+  role: { label: 'Обсудить роль', description: 'Объяснить игровую роль и ожидания тренерского штаба' },
+  feedback: { label: 'Обратная связь', description: 'Спокойно разобрать ошибки и наметить улучшения' }
+};
+const LOCKER_ROOM_TEAM_EVENTS = {
+  meeting: { label: 'Командное собрание', description: 'Обсудить цели, задачи и атмосферу в раздевалке', cost: 0, cooldown: 4 },
+  dinner: { label: 'Командный ужин', description: 'Неформальное общение помогает сплотить коллектив', cost: 1.5, cooldown: 6 },
+  recovery: { label: 'Совместный день восстановления', description: 'Отдых и восстановительные процедуры после тяжёлого отрезка', cost: 1.2, cooldown: 5 },
+  psychologist: { label: 'Групповая встреча с психологом', description: 'Работа с напряжением и настроением команды', cost: 0.5, cooldown: 5, requiresPsychologist: true },
+  teambuilding: { label: 'Командное мероприятие', description: 'Совместная активность вне льда', cost: 2, cooldown: 7 }
+};
+
+function getLockerRoomState(team) {
+  if (!team.lockerRoom || typeof team.lockerRoom !== 'object') {
+    team.lockerRoom = { meetings: [], lastTeamEventRound: -100, lastTeamEvent: null, eventHistory: [] };
+  }
+  if (!Array.isArray(team.lockerRoom.meetings)) team.lockerRoom.meetings = [];
+  if (!Array.isArray(team.lockerRoom.eventHistory)) team.lockerRoom.eventHistory = [];
+  if (!Number.isFinite(Number(team.lockerRoom.lastTeamEventRound))) team.lockerRoom.lastTeamEventRound = -100;
+  return team.lockerRoom;
+}
+function getLockerRoomTeam() {
+  return G.league?.teams?.find(team => team.id === G.playerTeamId) || null;
+}
+function getPlayerTalkCooldown(player) {
+  const last = Number(player.lastLockerRoomTalkRound);
+  return Number.isFinite(last) ? Math.max(0, 3 - (G.league.currentRound - last)) : 0;
+}
+function getPlayerConversationResult(player, topic) {
+  const morale = Math.max(20, Math.min(100, Number(player.morale) || 65));
+  const form = Math.max(30, Math.min(99, Number(player.form) || 60));
+  let moraleDelta = 0, formDelta = 0, message = '';
+  if (topic === 'support') {
+    moraleDelta = morale < 45 ? 6 : morale < 60 ? 5 : morale < 75 ? 3 : 1;
+    formDelta = form < 50 ? 2 : 0;
+    message = morale < 55
+      ? 'Разговор помог хоккеисту почувствовать поддержку тренерского штаба.'
+      : 'Игрок оценил внимание и поддержку со стороны тренера.';
+  } else if (topic === 'praise') {
+    const stats = player.stats || {};
+    const productive = form >= 70 || (Number(stats.gp) >= 5 && Number(stats.points) >= 5);
+    moraleDelta = productive ? 4 : 1;
+    formDelta = productive ? 2 : 0;
+    message = productive
+      ? 'Хоккеист положительно отреагировал на похвалу и признание его вклада.'
+      : 'Игрок поблагодарил за внимание, но понимает, что должен прибавить.';
+  } else if (topic === 'role') {
+    const team = getLockerRoomTeam();
+    const benched = (team?.bench || []).includes(player.id);
+    moraleDelta = benched ? (morale < 55 ? 2 : -1) : 2;
+    message = benched
+      ? 'Вы объяснили причины текущей роли. Игрок понял позицию штаба, хотя хотел бы больше игрового времени.'
+      : 'Роль и ожидания тренерского штаба стали понятнее игроку.';
+  } else if (topic === 'feedback') {
+    moraleDelta = morale < 45 ? -2 : 0;
+    formDelta = form < 75 ? 2 : 1;
+    message = morale < 45
+      ? 'Игрок воспринял замечания болезненно. Потребуется дополнительное внимание.'
+      : 'Конструктивный разбор помог игроку понять, над чем работать.';
+  } else {
+    return { success: false, message: 'Неизвестная тема разговора' };
+  }
+  const character = player.character || 'calm';
+  if (character === 'leader' && (topic === 'support' || topic === 'praise')) moraleDelta += 1;
+  if (character === 'worker' && topic === 'feedback') formDelta += 1;
+  return { success: true, moraleDelta, formDelta, message };
+}
+function applyPlayerConversation(team, player, topic, source = 'direct') {
+  if (!team || !player || !team.roster?.some(item => item.id === player.id)) {
+    return { success: false, reason: 'player-not-in-team', message: 'Хоккеист больше не состоит в команде' };
+  }
+  const cooldown = getPlayerTalkCooldown(player);
+  if (cooldown > 0) return { success: false, reason: 'cooldown', cooldown, message: 'Следующий личный разговор можно провести через ' + cooldown + ' тур.' };
+  const result = getPlayerConversationResult(player, topic);
+  if (!result.success) return result;
+  player.morale = Math.max(20, Math.min(100, (Number(player.morale) || 65) + result.moraleDelta));
+  player.form = Math.max(30, Math.min(99, (Number(player.form) || 60) + result.formDelta));
+  player.lastLockerRoomTalkRound = G.league.currentRound;
+  player.lastLockerRoomTalkTopic = topic;
+  const topicLabel = LOCKER_ROOM_TOPICS[topic].label.toLowerCase();
+  if (team.id === G.playerTeamId) {
+    addInboxMessage('player', player.name, 'Личный разговор: ' + LOCKER_ROOM_TOPICS[topic].label,
+      result.message + ' Мораль ' + (result.moraleDelta >= 0 ? '+' : '') + result.moraleDelta +
+      (result.formDelta ? ', форма +' + result.formDelta : '') + '.', []);
+    addNews('player_story', 'Тренер провёл личный разговор с ' + player.name + ' (' + topicLabel + ')', 1);
+  }
+  return { ...result, player, topic, source };
+}
+function talkToPlayer(playerId, topic) {
+  const team = getLockerRoomTeam();
+  const player = team?.roster?.find(item => item.id === playerId);
+  const result = applyPlayerConversation(team, player, topic, 'direct');
+  if (typeof showToast === 'function') showToast(result.message, result.success ? 'success' : 'info');
+  if (typeof render === 'function') render();
+  if (result.success && typeof saveGame === 'function') saveGame({ immediate: true });
+  return result;
+}
+function schedulePlayerMeeting(playerId, topic, delay = 1) {
+  const team = getLockerRoomTeam();
+  const player = team?.roster?.find(item => item.id === playerId);
+  if (!team || !player) return { success: false, message: 'Хоккеист не найден' };
+  if (!LOCKER_ROOM_TOPICS[topic]) return { success: false, message: 'Выберите тему встречи' };
+  const state = getLockerRoomState(team);
+  if (state.meetings.some(item => item.playerId === playerId)) return { success: false, message: 'Встреча с этим хоккеистом уже назначена' };
+  const cooldown = getPlayerTalkCooldown(player);
+  if (cooldown > 0) return { success: false, message: 'Личный разговор будет доступен через ' + cooldown + ' тур.' };
+  const roundsAhead = Math.max(1, Math.min(3, Math.floor(Number(delay) || 1)));
+  const meeting = {
+    id: nextId(), playerId, playerName: player.name, topic,
+    scheduledRound: G.league.currentRound + roundsAhead,
+    createdRound: G.league.currentRound, status: 'scheduled'
+  };
+  state.meetings.push(meeting);
+  addInboxMessage('player', player.name, 'Назначена личная встреча',
+    'Встреча назначена на ' + roundsAhead + ' тур(а) вперёд. Тема: ' + LOCKER_ROOM_TOPICS[topic].label + '.', []);
+  if (typeof showToast === 'function') showToast('Встреча с ' + player.name + ' назначена', 'success');
+  if (typeof render === 'function') render();
+  if (typeof saveGame === 'function') saveGame({ immediate: true });
+  return { success: true, meeting };
+}
+function cancelPlayerMeeting(meetingId) {
+  const team = getLockerRoomTeam();
+  if (!team) return false;
+  const state = getLockerRoomState(team);
+  const before = state.meetings.length;
+  state.meetings = state.meetings.filter(item => item.id !== meetingId);
+  if (state.meetings.length === before) return false;
+  if (typeof render === 'function') render();
+  if (typeof saveGame === 'function') saveGame({ immediate: true });
+  return true;
+}
+function processLockerRoomMeetings(team) {
+  if (!team || team.id !== G.playerTeamId) return [];
+  const state = getLockerRoomState(team);
+  const due = state.meetings.filter(item => item.status === 'scheduled' && item.scheduledRound <= G.league.currentRound);
+  if (!due.length) return [];
+  const completed = [];
+  for (const meeting of due) {
+    const player = team.roster.find(item => item.id === meeting.playerId);
+    let result;
+    if (!player) {
+      result = { success: false, message: 'Встреча отменена: хоккеист больше не состоит в команде.' };
+    } else {
+      result = applyPlayerConversation(team, player, meeting.topic, 'scheduled');
+      if (!result.success) result.message = 'Встреча не состоялась: ' + result.message;
+    }
+    meeting.status = result.success ? 'completed' : 'cancelled';
+    meeting.result = result.message;
+    meeting.completedRound = G.league.currentRound;
+    const subject = result.success ? 'Личная встреча состоялась' : 'Личная встреча не состоялась';
+    addInboxMessage('player', player?.name || meeting.playerName, subject, result.message, []);
+    if (result.success) addNews('player_story', 'Состоялась личная встреча с ' + player.name, 1);
+    completed.push(meeting);
+  }
+  state.meetings = state.meetings.filter(item => item.status === 'scheduled');
+  return completed;
+}
+function holdLockerRoomEvent(eventKey) {
+  const team = getLockerRoomTeam();
+  const definition = LOCKER_ROOM_TEAM_EVENTS[eventKey];
+  if (!team || !definition) return { success: false, message: 'Мероприятие недоступно' };
+  const state = getLockerRoomState(team);
+  const remaining = definition.cooldown - (G.league.currentRound - state.lastTeamEventRound);
+  if (remaining > 0) return { success: false, message: 'Командное мероприятие будет доступно через ' + remaining + ' тур.' };
+  if (definition.requiresPsychologist && !team.staff?.psychologist) return { success: false, message: 'Для этой встречи нужен психолог команды' };
+  if (team.finance.balance < definition.cost) return { success: false, message: 'Недостаточно средств. Нужно ' + definition.cost.toFixed(1) + ' млн ₽.' };
+  if (!team.roster.length) return { success: false, message: 'В команде нет хоккеистов' };
+  if (definition.cost > 0) {
+    team.finance.balance = Math.round((team.finance.balance - definition.cost) * 10) / 10;
+    team.finance.expenses.operations = (team.finance.expenses.operations || 0) + definition.cost;
+  }
+  let moraleDelta = 0, fatigueDelta = 0, formDelta = 0, body = '';
+  if (eventKey === 'meeting') {
+    moraleDelta = 2; body = 'Команда обсудила цели, роли и ближайшие задачи. Мораль +2.';
+  } else if (eventKey === 'dinner') {
+    moraleDelta = 3; fatigueDelta = -2; body = 'Игроки провели вечер вместе вне арены. Мораль +3, усталость -2.';
+  } else if (eventKey === 'recovery') {
+    moraleDelta = 1; fatigueDelta = -6; body = 'Команда получила дополнительное время на восстановление. Мораль +1, усталость -6.';
+  } else if (eventKey === 'psychologist') {
+    moraleDelta = 3; body = 'Психолог помог команде обсудить напряжение и наладить общение. Мораль +3.';
+  } else if (eventKey === 'teambuilding') {
+    moraleDelta = 4; formDelta = 1; body = 'Совместная активность укрепила командный дух. Мораль +4, форма +1.';
+  }
+  for (const player of team.roster) {
+    player.morale = Math.max(20, Math.min(100, (Number(player.morale) || 65) + moraleDelta));
+    player.fatigue = Math.max(0, Math.min(100, (Number(player.fatigue) || 0) + fatigueDelta));
+    player.form = Math.max(30, Math.min(99, (Number(player.form) || 60) + formDelta));
+  }
+  state.lastTeamEventRound = G.league.currentRound;
+  state.lastTeamEvent = { key: eventKey, round: G.league.currentRound, cost: definition.cost };
+  state.eventHistory.push({ ...state.lastTeamEvent });
+  if (state.eventHistory.length > 20) state.eventHistory = state.eventHistory.slice(-20);
+  addNews('event', team.name + ': ' + definition.label, 1);
+  addInboxMessage('coach', 'Тренерский штаб', definition.label, body + (definition.cost ? ' Расходы: ' + definition.cost.toFixed(1) + ' млн ₽.' : ''), []);
+  if (typeof showToast === 'function') showToast(definition.label + ' проведено', 'success');
+  if (typeof render === 'function') render();
+  if (typeof saveGame === 'function') saveGame({ immediate: true });
+  return { success: true, event: eventKey, cost: definition.cost, moraleDelta, fatigueDelta, formDelta };
+}
