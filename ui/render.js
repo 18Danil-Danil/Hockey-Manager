@@ -573,13 +573,18 @@ function renderMarket() {
   return `<section class="market-shell"><div class="market-region-tabs">${tabsHtml}</div>${content}</section>`;
 }
 function renderVHLTransferMarket() {
+  const buyer = G.league.teams.find(club => club.id === G.playerTeamId);
   const entries = G.league.teams.filter(club => club.id !== G.playerTeamId).flatMap(club => (club.roster || []).filter(player => player.transferListed || player.transferRequest).map(player => ({ club, player })));
   const filter = G.marketFilter || 'all';
   const visible = entries.filter(({ player }) => filter === 'all' || (filter === 'F' ? !['D','G'].includes(player.position) : filter === 'D' ? player.position === 'D' : player.position === 'G'));
-  const sort = G.marketSort === 'age-asc' ? (a,b) => a.player.age-b.player.age : G.marketSort === 'age-desc' ? (a,b) => b.player.age-a.player.age : (a,b) => b.player.ovr-a.player.ovr;
+  const sort = G.marketSort === 'age-asc' ? (a,b) => a.player.age-b.player.age : G.marketSort === 'age-desc' ? (a,b) => b.player.age-a.player.age : G.marketSort === 'ovr-asc' ? (a,b) => a.player.ovr-b.player.ovr : (a,b) => b.player.ovr-a.player.ovr;
   visible.sort(sort);
-  const rows = visible.map(({club,player}) => '<tr><td>' + player.position + '</td><td><b>' + player.name + '</b> ' + (player.transferRequest ? 'Запросил переход' : 'Выставлен клубом') + '</td><td>' + club.name + '</td><td>' + player.ovr + '</td><td>' + (player.pot || player.ovr) + '</td><td>' + (Number(player.contract?.salary)||0).toFixed(1) + ' млн ₽</td><td><button class="btn small" onclick="prepareTradeForPlayer(' + club.id + ',' + player.id + ')">Предложить обмен</button></td></tr>').join('');
-  return '<div class="market-intro"><h2>Игроки ВХЛ на трансферном рынке (' + visible.length + ')</h2><p>Хоккеисты клубов ВХЛ, выставленные на трансфер или запросившие переход.</p></div><div class="market-filters"><button onclick="G.marketFilter=\'all\';render();">Все</button><button onclick="G.marketFilter=\'F\';render();">Форварды</button><button onclick="G.marketFilter=\'D\';render();">Защитники</button><button onclick="G.marketFilter=\'G\';render();">Вратари</button></div><div class="market-table-wrap"><table><thead><tr><th>Поз.</th><th>Игрок</th><th>Клуб</th><th>OVR</th><th>Потенциал</th><th>Зарплата</th><th>Действие</th></tr></thead><tbody>' + (rows || '<tr><td colspan="7">Сейчас клубы ВХЛ не выставили игроков на трансфер.</td></tr>') + '</tbody></table></div>';
+  const rows = visible.map(({club,player}) => {
+    const quote = getVHLTransferQuote(player, club, buyer);
+    const disabled = quote.allowed ? '' : 'disabled title="' + quote.reason + '"';
+    return '<tr><td>' + player.position + '</td><td><b>' + player.name + '</b> ' + (player.transferRequest ? 'Запросил переход' : 'Выставлен клубом') + '<small class="market-player-meta">' + player.age + ' лет</small></td><td>' + club.name + '</td><td>' + player.ovr + '</td><td>' + (player.pot || player.ovr) + '</td><td>' + (Number(player.contract?.salary)||0).toFixed(1) + ' млн ₽</td><td>' + quote.price.toFixed(1) + ' млн ₽</td><td><button class="btn small" ' + disabled + ' onclick="buyVHLPlayer(' + club.id + ',' + player.id + ')">Купить</button></td></tr>';
+  }).join('');
+  return '<div class="market-intro"><h2>Игроки ВХЛ на трансферном рынке (' + visible.length + ')</h2><p>Можно купить игрока за трансферную сумму или перейти к обмену. Стоимость и ограничения проверяются перед сделкой.</p></div><div class="market-filters"><button onclick="G.marketFilter=\'all\';render();">Все</button><button onclick="G.marketFilter=\'F\';render();">Форварды</button><button onclick="G.marketFilter=\'D\';render();">Защитники</button><button onclick="G.marketFilter=\'G\';render();">Вратари</button></div><div class="market-table-wrap"><table><thead><tr><th>Поз.</th><th>Игрок</th><th>Клуб</th><th>OVR</th><th>Потенциал</th><th>Зарплата</th><th>Трансфер</th><th>Действие</th></tr></thead><tbody>' + (rows || '<tr><td colspan="8">Сейчас клубы ВХЛ не выставили игроков на трансфер.</td></tr>') + '</tbody></table></div>';
 }
 function renderInternationalMarket(region) {
   const team = G.league.teams.find(item => item.id === G.playerTeamId);
