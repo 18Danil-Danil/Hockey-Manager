@@ -246,14 +246,28 @@ function runAIContractExtensions() {
   for (const team of G.league.teams) {
     if (team.id === G.playerTeamId) continue;
     for (const p of team.roster) {
-      if (p.contract.years > 1) continue;
-      if (rng() > 0.4) continue;
-      const marketSalary = contractFor(p.ovr, p.age).salary;
-      const newSalary = Math.max(p.contract.salary, Math.round(marketSalary * 1.05 * 10) / 10);
-      const currentSalary = team.roster.reduce((s, x) => s + x.contract.salary, 0);
-      const salaryRoom = team.finance.salaryCap - currentSalary + p.contract.salary;
-      if (newSalary > salaryRoom) continue;
-      p.contract.salary = newSalary; p.contract.years += randInt(1, 3);
+      if (!p.contract || p.status === 'tryout' || Number(p.contract.years) > 1) continue;
+      if (G.league.currentRound - (Number(p.lastContractNegotiationRound) || -10) < 5) continue;
+      if (rng() > 0.22) continue;
+      p.lastContractNegotiationRound = G.league.currentRound;
+      const demand = getPlayerContractDemand(p, team, 'renewal');
+      const salary = Math.max(Number(p.contract.salary) || 0.5, Math.round(demand.salary * (0.94 + rng() * 0.12) * 10) / 10);
+      const years = Math.max(1, Math.min(5, demand.years + (rng() < 0.25 ? -1 : rng() > 0.82 ? 1 : 0)));
+      const offer = { salary, years };
+      let result = evaluatePlayerContractOffer(p, team, offer, 'renewal');
+      if (result.decision === 'counter') {
+        const counter = result.counteroffer;
+        const counterCost = team.roster.reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0)
+          - (Number(p.contract.salary) || 0) + counter.salary;
+        if (counterCost <= Number(team.finance.salaryCap) && rng() < (0.55 + (getPlayerContractPreferences(p).loyalty * 0.35))) {
+          result = applyPlayerContractAgreement(team, p, counter, 'renewal');
+        }
+      } else if (result.decision === 'accept') {
+        result = applyPlayerContractAgreement(team, p, offer, 'renewal');
+      }
+      if (result.applied && p.ovr >= 80) {
+        addNews('contract', team.name + ' договорился о новом контракте с ' + p.name, 1);
+      }
     }
   }
 }
