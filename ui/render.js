@@ -1338,18 +1338,20 @@ function renderPlayerConversationPanel(player, team) {
   const pending = state.meetings.find(item => item.playerId === player.id);
   const cooldown = getPlayerTalkCooldown(player);
   const topics = Object.entries(LOCKER_ROOM_TOPICS);
-  const talkButtons = topics.map(([key, topic]) =>
-    '<button class="btn small secondary" '+(cooldown || pending ? 'disabled' : '')+' onclick="talkToPlayer('+player.id+', \''+key+'\')">'+topic.label+'</button>'
+  const delayControl = '<label class="locker-meeting-delay"><span>Запланировать на</span><select id="locker-delay-'+player.id+'"><option value="1">Следующий тур</option><option value="2">Через 2 тура</option><option value="3">Через 3 тура</option></select></label>';
+  const topicRows = topics.map(([key, topic]) =>
+    '<div class="locker-topic-row"><div class="locker-topic-copy"><b>'+topic.label+'</b><small>'+topic.description+'</small></div><div class="locker-topic-actions">'+
+    '<button class="btn small secondary" '+(cooldown || pending ? 'disabled' : '')+' onclick="talkToPlayer('+player.id+', \' '+key+'\')">Поговорить</button>'+
+    '<button class="btn small" '+(cooldown || pending ? 'disabled' : '')+' onclick="schedulePlayerMeeting('+player.id+',\''+key+'\',Number(document.getElementById(\'locker-delay-'+player.id+'\').value))">Назначить</button></div></div>'
   ).join('');
-  const topicOptions = topics.map(([key, topic]) => '<option value="'+key+'">'+topic.label+'</option>').join('');
   const meetingInfo = pending
-    ? '<p class="profile-muted">Встреча назначена на тур '+(pending.scheduledRound+1)+'. Тема: '+LOCKER_ROOM_TOPICS[pending.topic].label+'.</p>'
+    ? '<p class="locker-meeting-status">Встреча назначена на тур '+(pending.scheduledRound+1)+'. Тема: '+LOCKER_ROOM_TOPICS[pending.topic].label+'.</p>'
     : cooldown
       ? '<p class="profile-muted">Следующий личный разговор доступен через '+cooldown+' тур.</p>'
-      : '<div class="profile-action-group"><select id="locker-topic-'+player.id+'">'+topicOptions+'</select><select id="locker-delay-'+player.id+'"><option value="1">Через 1 тур</option><option value="2">Через 2 тура</option><option value="3">Через 3 тура</option></select><button class="btn small" onclick="schedulePlayerMeeting('+player.id+',document.getElementById(\'locker-topic-'+player.id+'\').value,Number(document.getElementById(\'locker-delay-'+player.id+'\').value))">Назначить встречу</button></div>';
-  return '<section class="profile-section profile-contract"><span class="profile-eyebrow">РАЗДЕВАЛКА</span><h2>Личный разговор</h2>'+
+      : delayControl;
+  return '<section class="profile-section profile-contract locker-conversation"><span class="profile-eyebrow">РАЗДЕВАЛКА</span><h2>Личный разговор</h2>'+
     '<p class="profile-muted">Мораль '+player.morale+'/100 · форма '+player.form+'/100. Повторный разговор — не чаще одного раза в 3 тура.</p>'+
-    '<div class="profile-action-group">'+talkButtons+'</div>'+meetingInfo+'</section>';
+    '<div class="locker-topic-list">'+topicRows+'</div>'+meetingInfo+'</section>';
 }
 function renderLockerRoom() {
   const team = getLockerRoomTeam();
