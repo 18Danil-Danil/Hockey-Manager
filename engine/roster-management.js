@@ -397,6 +397,59 @@ function loanPerformanceSummary(player) {
   return { gp: p.gp || 0, goals: p.goals || 0, assists: p.assists || 0, points: p.points || 0, wins: p.wins || 0, saves: p.saves || 0, shotsAgainst: p.shotsAgainst || 0, goalsAgainst: p.goalsAgainst || 0, shutouts: p.shutouts || 0 };
 }
 
+function loanPerformanceReport(player, currentRound = G.league?.currentRound || 0) {
+  const loan = player?.loan || {};
+  const performance = loan.performance || {};
+  const gp = Number(performance.gp) || 0;
+  const elapsed = Math.max(0, Number(currentRound) - Number(loan.startRound || currentRound));
+  const usage = elapsed > 0 ? gp / elapsed : 0;
+  const goalie = player?.position === 'G';
+  const role = loan.role || 'rotation';
+  const roleTargets = { top: 0.65, rotation: 0.35, reserve: 0.15 };
+  const targetUsage = roleTargets[role] || roleTargets.rotation;
+  const pointsPerGame = gp > 0 ? (Number(performance.points) || 0) / gp : 0;
+  const savePct = Number(performance.shotsAgainst) > 0
+    ? (Number(performance.shotsAgainst) - (Number(performance.goalsAgainst) || 0)) / Number(performance.shotsAgainst)
+    : null;
+  const gaa = gp > 0 ? (Number(performance.goalsAgainst) || 0) / gp : null;
+  const enoughData = elapsed >= 3 && gp >= 3;
+  let status = 'Пока рано оценивать';
+  let recommendation = 'Продолжить наблюдение';
+  if (enoughData) {
+    const usageLow = usage < targetUsage * 0.55;
+    const performanceLow = goalie
+      ? savePct !== null && (savePct < 0.87 || (gaa !== null && gaa > 4.2))
+      : pointsPerGame < ({ top: 0.65, rotation: 0.35, reserve: 0.15 }[role] || 0.35) * 0.55;
+    const performanceGood = goalie
+      ? savePct !== null && savePct >= 0.91 && gaa !== null && gaa <= 3.2
+      : pointsPerGame >= ({ top: 0.65, rotation: 0.35, reserve: 0.15 }[role] || 0.35);
+    if (usageLow && elapsed >= 4) {
+      status = 'Мало игрового времени';
+      recommendation = 'Рассмотреть отзыв';
+    } else if (performanceLow && elapsed >= 6) {
+      status = 'Результативность ниже ожиданий';
+      recommendation = 'Обсудить отзыв';
+    } else if (performanceGood && usage >= targetUsage * 0.8) {
+      status = 'Оправдывает ожидания';
+      recommendation = Number(loan.endRound || 0) - Number(currentRound) <= 2
+        ? 'Рассмотреть продление'
+        : 'Оставить до конца аренды';
+    } else {
+      status = usage >= targetUsage * 0.7 ? 'Получает игровое время' : 'Нужна дополнительная оценка';
+      recommendation = 'Продолжить наблюдение';
+    }
+  }
+  return {
+    elapsedRounds: elapsed,
+    usageRate: Math.round(usage * 100),
+    pointsPerGame: Math.round(pointsPerGame * 100) / 100,
+    savePct: savePct === null ? null : Math.round(savePct * 1000) / 10,
+    gaa: gaa === null ? null : Math.round(gaa * 100) / 100,
+    status,
+    recommendation
+  };
+}
+
 function getLoanTerms(player, parentTeam, borrowerTeam, rounds = 5, wageShare = 50) {
   const salary = Number(player?.contract?.salary) || 0.5;
   const fee = Math.round(Math.max(0.1, (Number(player?.ovr || 60) - 50) * 0.025) * 10) / 10;
