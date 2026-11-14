@@ -5,6 +5,16 @@ function normalizeGameSettings(settings) {
   value.compactNav = !!value.compactNav; value.reducedMotion = !!value.reducedMotion; value.confirmNewGame = value.confirmNewGame !== false;
   return value;
 }
+function updateStartingBonus(value) {
+  const amount = Math.max(0, Math.min(500, Math.round(Number(value) || 0)));
+  G.startingBonusMillions = amount;
+  const range = document.getElementById('starting-bonus-range');
+  const number = document.getElementById('starting-bonus-number');
+  const output = document.getElementById('starting-bonus-value');
+  if (range) range.value = amount;
+  if (number) number.value = amount;
+  if (output) output.textContent = amount + ' млн ₽';
+}
 function applyGameSettings() {
   G.settings = normalizeGameSettings(G.settings);
   document.body.dataset.accent = G.settings.accent;
