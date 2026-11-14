@@ -132,7 +132,7 @@ function applyPlayerContractAgreement(team, player, offer, mode = 'renewal') {
       const found = typeof findInternationalPlayer === 'function' ? findInternationalPlayer(player.id) : null;
       if (!found) return { decision: 'reject', reason: 'player-unavailable', message: 'Игрок больше не доступен в клубе' };
       const fee = Number(G.contractNegotiation?.transferFee) || 0;
-      if (fee > Number(team.finance?.balance || 0)) return { decision: 'reject', reason: 'transfer-fee', message: 'Недостаточно средств для трансфера' };
+      if (fee + bonusTerms.signingBonus > Number(team.finance?.balance || 0)) return { decision: 'reject', reason: 'transfer-fee', message: 'Недостаточно средств для трансфера и подписного бонуса' };
       const sourceClub = found.club;
       sourceClub.roster = sourceClub.roster.filter(item => item.id !== player.id);
       sourceClub.averageOvr = sourceClub.roster.reduce((sum, item) => sum + item.ovr, 0) / Math.max(1, sourceClub.roster.length);
@@ -191,9 +191,12 @@ function updatePlayerContractOffer(field, value) {
   if (!G.contractNegotiation || G.contractNegotiation.completed || G.contractNegotiation.closed || (Number(G.contractNegotiation.round) || 0) >= (Number(G.contractNegotiation.maxRounds) || 3) || !['salary', 'years', 'signingBonus', 'bonusGoal', 'bonusAssist', 'bonusGames', 'bonusPlayoff', 'bonusMvp', 'bonusTopScorer'].includes(field)) return;
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) return;
-  G.contractNegotiation.offer[field] = field === 'salary'
-    ? Math.max(0.5, Math.round(numeric * 10) / 10)
-    : Math.max(1, Math.min(5, Math.floor(numeric)));
+  if (field === 'salary') G.contractNegotiation.offer[field] = Math.max(0.5, Math.round(numeric * 10) / 10);
+  else if (field === 'years') G.contractNegotiation.offer[field] = Math.max(1, Math.min(5, Math.floor(numeric)));
+  else {
+    const limits = { signingBonus: 20, bonusGoal: 1, bonusAssist: 1, bonusGames: 1, bonusPlayoff: 10, bonusMvp: 20, bonusTopScorer: 20 };
+    G.contractNegotiation.offer[field] = Math.round(Math.max(0, Math.min(limits[field], numeric)) * 10) / 10;
+  }
 }
 function submitPlayerContractNegotiation() {
   const state = G.contractNegotiation;
