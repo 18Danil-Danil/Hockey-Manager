@@ -1486,11 +1486,12 @@ function renderContractNegotiationPanel(player, team) {
   ].sort((a,b) => b[1]-a[1]).slice(0,3).map(item => item[0]).join(' · ');
   const resultHtml = result
     ? '<div class="profile-contract-row"><span>Ответ игрока</span><b>' + (result.message || 'Получен ответ') + '</b></div>' +
-      (result.counteroffer ? '<div class="profile-contract-row"><span>Встречное предложение</span><b>' + result.counteroffer.salary.toFixed(1) + ' млн ₽ · ' + result.counteroffer.years + ' лет</b></div>' : '')
+      (result.counteroffer ? '<div class="profile-contract-row"><span>Встречное предложение</span><b>' + result.counteroffer.salary.toFixed(1) + ' млн ₽ · ' + result.counteroffer.years + ' лет' + (result.counteroffer.signingBonus ? ' · бонус ' + result.counteroffer.signingBonus.toFixed(1) + ' млн ₽' : '') + '</b></div>' : '')
     : '';
   const counterButton = result && result.decision === 'counter' && !state.completed
     ? '<button class="btn" onclick="acceptPlayerCounterOffer()">Принять встречные условия</button>' : '';
   const roundLabel = '<p class="profile-muted">Раунд ' + (Number(state.round)||0) + ' из ' + (Number(state.maxRounds)||3) + ' · приоритеты игрока: ' + priorities + '</p>';
+  const bonusInput = (field, label, max, step = '0.1') => '<label class="profile-contract-row"><span>' + label + '</span><input type="number" min="0" max="' + max + '" step="' + step + '" value="' + Number(state.offer[field] || 0).toFixed(1) + '" onchange="updatePlayerContractOffer(\'' + field + '\',this.value)"></label>';
   const controls = state.completed
     ? '<p class="profile-muted">Соглашение оформлено.</p>'
     : state.closed
@@ -1501,7 +1502,15 @@ function renderContractNegotiationPanel(player, team) {
           '<label class="profile-contract-row"><span>' + (state.mode === 'renewal' ? 'Добавить лет' : 'Срок контракта, лет') + '</span><select onchange="updatePlayerContractOffer(\'years\',this.value)">' +
           [1,2,3,4,5].filter(years => state.mode !== 'renewal' || years <= Math.max(1,5-(Number(player.contract?.years)||0))).map(years => '<option value="' + years + '"' + (Number(state.offer.years) === years ? ' selected' : '') + '>' + years + '</option>').join('') +
           '</select></label>' +
-          '<div class="profile-action-group"><button class="btn" onclick="submitPlayerContractNegotiation()">Отправить предложение</button>' + counterButton + '</div>';
+          '<div class="profile-contract-bonuses"><p class="profile-muted"><b>Дополнительные условия</b> · все суммы в млн ₽</p>' +
+          (state.mode === 'renewal' ? '' : bonusInput('signingBonus','Подписной бонус · сразу',20)) +
+          bonusInput('bonusGoal','За каждый гол',1) +
+          bonusInput('bonusAssist','За каждую передачу',1) +
+          bonusInput('bonusGames','За каждые 10 матчей',1) +
+          bonusInput('bonusPlayoff','За выход в плей-офф',10) +
+          bonusInput('bonusMvp','За звание MVP сезона',20) +
+          bonusInput('bonusTopScorer','За звание лучшего бомбардира',20) +
+          '</div><div class="profile-action-group"><button class="btn" onclick="submitPlayerContractNegotiation()">Отправить предложение</button>' + counterButton + '</div>';
   return '<section class="profile-section profile-contract"><span class="profile-eyebrow">ПЕРЕГОВОРЫ</span><h2>' + mode + '</h2>' +
     '<p class="profile-muted">Ожидания игрока: около ' + demand.salary.toFixed(1) + ' млн ₽ за сезон · желаемый срок ' + demand.years + ' лет</p>' + roundLabel +
     controls + resultHtml +
