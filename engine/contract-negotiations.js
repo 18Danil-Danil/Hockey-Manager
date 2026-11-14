@@ -215,6 +215,7 @@ function submitPlayerContractNegotiation() {
     state.lastResult = applied;
     state.completed = !!applied.applied;
     if (state.completed) {
+      if (state.mode === 'renewal') found.player.contractRequest = null;
       if (state.mode === 'renewal') addNews('contract', found.team.name + ' продлил контракт с ' + found.player.name, 1);
       else addNews('signing', found.team.name + ' подписал ' + found.player.name + ' после переговоров', 2);
       if (typeof syncLines === 'function') syncLines(found.team);
@@ -242,6 +243,7 @@ function acceptPlayerCounterOffer() {
   state.lastResult = result;
   state.completed = !!result.applied;
   if (state.completed) {
+    if (state.mode === 'renewal') found.player.contractRequest = null;
     if (state.mode === 'renewal') addNews('contract', found.team.name + ' продлил контракт с ' + found.player.name, 1);
     else addNews('signing', found.team.name + ' подписал ' + found.player.name + ' после переговоров', 2);
     if (typeof syncLines === 'function') syncLines(found.team);
