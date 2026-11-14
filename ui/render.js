@@ -1358,6 +1358,18 @@ function renderLockerRoom() {
   const averageMorale = team.roster.length ? Math.round(team.roster.reduce((sum, player) => sum + (Number(player.morale)||0), 0) / team.roster.length) : 0;
   const lowMorale = team.roster.slice().sort((a,b) => (a.morale||0)-(b.morale||0)).slice(0,8);
   const meetings = state.meetings.slice().sort((a,b) => a.scheduledRound-b.scheduledRound);
+  const requests = state.requests.filter(item => item.status === 'pending').sort((a,b) => a.deadlineRound-b.deadlineRound);
+  const requestRows = requests.length ? requests.map(request => {
+    const definition = LOCKER_ROOM_REQUESTS[request.type];
+    const player = team.roster.find(item => item.id === request.playerId);
+    const other = team.roster.find(item => item.id === request.otherPlayerId);
+    const title = definition?.title || 'Обращение игрока';
+    const names = [player?.name || request.playerName, other?.name || request.otherPlayerName].filter(Boolean).join(' и ');
+    const buttons = Object.entries(definition?.choices || {}).map(([decision,label]) =>
+      '<button class="btn small secondary" onclick="resolveLockerRoomRequest('+request.id+',\\''+decision+'\\')">'+label+'</button>'
+    ).join('');
+    return '<article class="finance-card locker-request-card"><div class="fc-title">'+title+'</div><div class="fc-sub">'+names+' · ответить до тура '+(request.deadlineRound+1)+'</div><div class="profile-action-group">'+buttons+'</div></article>';
+  }).join('') : '<div class="subtitle">Новых обращений нет. Игроки могут сами попросить о встрече, поддержке или пересмотре своей роли.</div>';
   const meetingRows = meetings.length ? meetings.map(meeting => {
     const player = team.roster.find(item => item.id === meeting.playerId);
     return '<div class="dev-row"><div class="dr-info"><div class="dr-name">'+(player?.name||meeting.playerName)+'</div><div class="dr-meta">'+LOCKER_ROOM_TOPICS[meeting.topic].label+' · тур '+(meeting.scheduledRound+1)+'</div></div><button class="btn small danger" onclick="cancelPlayerMeeting('+meeting.id+')">Отменить</button></div>';
@@ -1373,7 +1385,7 @@ function renderLockerRoom() {
   const lastEvent = state.lastTeamEvent ? '<p class="subtitle">Последнее мероприятие: '+(LOCKER_ROOM_TEAM_EVENTS[state.lastTeamEvent.key]?.label||state.lastTeamEvent.key)+' · тур '+(state.lastTeamEvent.round+1)+'</p>' : '';
   return '<div class="locker-room-page"><h2>Раздевалка команды</h2>'+
     '<div class="finance-grid"><div class="finance-card"><div class="fc-title">Средняя мораль</div><div class="fc-value">'+averageMorale+'/100</div><div class="fc-sub">В составе '+team.roster.length+' хоккеистов</div></div><div class="finance-card"><div class="fc-title">Запланированные встречи</div><div class="fc-value">'+meetings.length+'</div><div class="fc-sub">Личные беседы с игроками</div></div><div class="finance-card"><div class="fc-title">Командные мероприятия</div><div class="fc-value">'+(eventCooldown>0?'Через '+eventCooldown+' тур.':'Доступно')+'</div><div class="fc-sub">Пауза между мероприятиями</div></div></div>'+
-    '<h2>Личные встречи</h2><div class="dev-list">'+meetingRows+'</div>'+
+    '<h2>Обращения игроков</h2><div class="finance-grid">'+requestRows+'</div>'+\n    '<h2>Личные встречи</h2><div class="dev-list">'+meetingRows+'</div>'+
     '<h2>Командные мероприятия</h2><div class="finance-grid">'+eventCards+'</div>'+lastEvent+
     '<h2>Кому нужно внимание</h2><div class="dev-list">'+(playerRows||'<div class="subtitle">Состав пуст.</div>')+'</div>'+
     '<p class="profile-muted">Личные разговоры доступны в профиле каждого хоккеиста. Результат зависит от его формы, морали, роли и характера. Повторные разговоры и мероприятия ограничены по времени.</p></div>';
