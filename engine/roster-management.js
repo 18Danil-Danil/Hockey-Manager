@@ -919,8 +919,27 @@ function submitIncomingLoanCounter() {
   const acceptance = Math.max(0.08, Math.min(0.94, 0.68 - Math.max(0, counterValue - askValue) * 0.12 + (rounds <= offer.rounds ? 0.08 : 0) + (partnership.score - 50) * 0.0025 + competitionBonus));
   if (rng() > acceptance) {
     G.league.aiLoanOffers = G.league.aiLoanOffers.filter(item => item.id !== offer.id);
+    const rivalBids = G.league.aiLoanOffers.filter(item => Number(item.playerId) === Number(offer.playerId))
+      .sort((a, b) => (Number(b.fee) + Number(b.wageShare) * 0.02) - (Number(a.fee) + Number(a.wageShare) * 0.02));
+    const rivalBid = rivalBids[0];
+    if (rivalBid) {
+      const rivalClub = G.league.teams.find(item => Number(item.id) === Number(rivalBid.fromTeamId));
+      if (rivalClub) {
+        const currentFee = Number(rivalBid.fee) || 0;
+        const affordableFee = Math.max(0, Number(rivalClub.finance?.balance) || 0);
+        rivalBid.fee = Math.round(Math.min(affordableFee, currentFee + 0.3) * 10) / 10;
+        const shares = [0, 25, 50, 60, 75, 100];
+        const shareIndex = shares.indexOf(Number(rivalBid.wageShare));
+        if (shareIndex >= 0 && shareIndex < shares.length - 1) rivalBid.wageShare = shares[shareIndex + 1];
+        rivalBid.expiresRound = Math.max(Number(rivalBid.expiresRound), Number(G.league.currentRound) + 1);
+        addInboxMessage('league', rivalClub.name, 'Улучшенное предложение аренды',
+          rivalClub.name + ' улучшил условия аренды хоккеиста ' + player.name +
+          ': теперь предлагает ' + rivalBid.fee.toFixed(1) + ' млн ₽ и оплачивает ' + rivalBid.wageShare + '% зарплаты.', []);
+        addNews('signing', rivalClub.name + ' улучшил предложение по аренде хоккеиста ' + player.name + '.', 1);
+      }
+    }
     G.pendingIncomingLoanCounter = null;
-    showToast(borrower.name + ' отклонил встречные условия', 'error');
+    showToast(rivalBid ? 'Один из клубов улучшил своё предложение' : borrower.name + ' отклонил встречные условия', 'error');
     render(); saveGame({ immediate: true }); return false;
   }
   const result = applyIncomingLoanOffer(offer, rounds, wageShare, fee);
