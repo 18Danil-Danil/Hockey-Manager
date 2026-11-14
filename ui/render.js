@@ -88,7 +88,7 @@ function renderHeader() {
   const r = team.record; const myRank = standingsSorted().findIndex(t => t.id === G.playerTeamId) + 1;
   const bal = team.finance.balance;
   const injured = team.roster.filter(p => p.injury && p.injury.gamesLeft > 0).length;
-  const offers = (G.league.aiTradeOffers || []).length;
+  const offers = (G.league.aiTradeOffers || []).length + (G.league.aiTransferOffers || []).length;
   const unread = unreadInboxCount();
   const rep = G.career?.reputation ?? 50;
   const diffLabel = G.difficulty?.label || '🟡 Средний';
@@ -333,13 +333,13 @@ function renderRoster() {
       '<div class="roster-card-top"><span class="roster-position ' + (goalie ? 'goalie' : p.position === 'D' ? 'defence' : 'forward') + '">' + position + '</span><span class="roster-player-age">' + p.age + ' лет</span></div>' +
       '<div class="roster-player-identity"><div class="roster-player-name"><a href="#" onclick="event.preventDefault();G.popupPlayerId=' + p.id + ';render();">' + p.name + '</a></div><div class="roster-player-meta"><span class="char-badge ' + char.cls + '">' + char.label + '</span>' + country + '</div></div>' +
       '<div class="roster-rating-row"><div class="roster-rating"><strong>' + p.ovr + '</strong><small>OVR</small></div><div class="roster-rating-caption"><span>Общий рейтинг</span>' + potential + '</div><div class="roster-salary"><b>' + (p.contract.salary || 0).toFixed(1) + '</b><small>млн ₽ / сезон</small></div></div>' +
-      stats + '<div class="roster-card-bottom">' + condition + '<div class="roster-card-actions"><button class="btn small secondary" onclick="sendToBench(' + p.id + ');render();" title="Отправить на скамейку">🪑</button><button class="btn small danger" onclick="putOnWaivers(' + p.id + ');render();" title="Выставить на драфт отказов (' + (team.waiversUsed || 0) + '/3)">📤</button></div></div></article>';
+      stats + '<div class="roster-card-bottom">' + condition + '<div class="roster-card-actions"><button class="btn small secondary" onclick="sendToBench(' + p.id + ');render();" title="Отправить на скамейку">🪑</button><button class="btn small danger" onclick="putOnWaivers(' + p.id + ');render();" title="Выставить на драфт отказов (' + (team.waiversUsed || 0) + '/3)">📤</button><button class="btn small secondary" onclick="' + (p.transferListed ? 'removePlayerFromTransferList(' + p.id + ')' : 'listPlayerForTransfer(' + p.id + ')') + ';render();" title="' + (p.transferListed ? 'Снять с трансфера' : 'Выставить на трансфер') + '">' + (p.transferListed ? 'Снять с трансфера' : 'На трансфер') + '</button></div></div></article>';
   };
   const cards = (arr, goalie) => arr.length
     ? '<div class="roster-card-grid">' + arr.map(p => playerCard(p, goalie)).join('') + '</div>'
     : '<div class="roster-empty">В этой категории пока нет игроков.</div>';
   const benchHtml = benched.length
-    ? '<section class="roster-bench"><div class="roster-section-heading"><div><span class="roster-eyebrow">РЕЗЕРВ</span><h3>На скамейке <small>' + benched.length + '</small></h3></div><span>Игроки не участвуют в активном составе</span></div><div class="roster-bench-list">' + benched.map(p => '<div class="roster-bench-row"><div><b>' + p.name + '</b><span>' + p.position + ' · OVR ' + p.ovr + ' · ' + p.age + ' лет</span></div><button class="btn small" onclick="removeFromBench(' + p.id + ');render();">⬆ Вернуть в состав</button></div>').join('') + '</div></section>'
+    ? '<section class="roster-bench"><div class="roster-section-heading"><div><span class="roster-eyebrow">РЕЗЕРВ</span><h3>На скамейке <small>' + benched.length + '</small></h3></div><span>Игроки не участвуют в активном составе</span></div><div class="roster-bench-list">' + benched.map(p => '<div class="roster-bench-row"><div><b>' + p.name + '</b><span>' + p.position + ' · OVR ' + p.ovr + ' · ' + p.age + ' лет' + (p.transferListed ? ' · На трансфере' : '') + '</span></div><button class="btn small" onclick="removeFromBench(' + p.id + ');render();">⬆ Вернуть в состав</button><button class="btn small secondary" onclick="' + (p.transferListed ? 'removePlayerFromTransferList(' + p.id + ')' : 'listPlayerForTransfer(' + p.id + ')') + ';render();">' + (p.transferListed ? 'Снять с трансфера' : 'На трансфер') + '</button></div>').join('') + '</div></section>'
     : '';
   return '<section class="roster-management">' +
     '<div class="roster-hero"><div><span class="roster-eyebrow">СПОРТИВНЫЙ ОТДЕЛ · ' + team.name + '</span><h2>Состав команды</h2><p>Управляй игроками, следи за формой и контролируй зарплатную ведомость.</p></div><div class="roster-sort-control"><label for="roster-sort">Сортировка</label><select id="roster-sort" onchange="G.rosterSort=this.value;render();">' + sortOptions + '</select></div></div>' +
@@ -347,7 +347,7 @@ function renderRoster() {
     '<div class="roster-section-heading"><div><span class="roster-eyebrow">ПОЛЕВЫЕ ИГРОКИ</span><h3>Нападающие и защитники <small>' + skaters.length + '</small></h3></div><span>Нажми на имя, чтобы открыть карточку игрока</span></div>' + cards(sortedSkaters, false) +
     '<div class="roster-section-heading roster-goalies-heading"><div><span class="roster-eyebrow">ПОСЛЕДНИЙ РУБЕЖ</span><h3>Вратари <small>' + goalies.length + '</small></h3></div><span>SV% — процент отражённых бросков</span></div>' + cards(sortedGoalies, true) +
     benchHtml +
-    '<div class="roster-footer-note">Драфт отказов: <b>' + (team.waiversUsed || 0) + '/3</b> использовано за сезон. Перевод на скамейку и выставление на драфт отказов доступны на карточке каждого игрока.</div>' +
+    '<div class="roster-footer-note">Драфт отказов: <b>' + (team.waiversUsed || 0) + '/3</b> использовано за сезон. Перевод на скамейку, драфт отказов и трансферный список доступны на карточке каждого игрока. Выставленный игрок может получать денежные предложения от других клубов.</div>' +
     '</section>';
 }
 function renderLines() {
@@ -752,8 +752,19 @@ function renderInternationalMarket(region) {
 function renderTrades() {
   const team = G.league.teams.find(t => t.id === G.playerTeamId);
   const offers = G.league.aiTradeOffers || [];
+  const transferOffers = G.league.aiTransferOffers || [];
   const deadline = isTradeDeadlinePassed();
-  let html = `<h2>Обмены</h2>`;
+  let html = `<h2>Обмены и предложения о трансфере</h2>`;
+  if (transferOffers.length) {
+    html += `<h2>💰 Предложения о покупке твоих игроков (${transferOffers.length})</h2>`;
+    for (const offer of transferOffers) {
+      const buyer = G.league.teams.find(t => Number(t.id) === Number(offer.fromTeamId));
+      const player = team.roster.find(p => Number(p.id) === Number(offer.playerId));
+      if (!buyer || !player) continue;
+      const disabled = deadline ? 'disabled title="Трансферное окно закрыто"' : '';
+      html += `<div class="trade-offer-card"><div class="to-head"><span class="to-team">💰 ${buyer.name}</span></div><div class="to-players"><div><b>${player.name}</b> · ${player.position} · OVR ${player.ovr} · ${player.age} лет</div><div><b style="color:#4ade80">Предлагают:</b> ${Number(offer.amount).toFixed(1)} млн ₽ <small>· срок до ${offer.expiresRound}-го тура</small></div></div><div class="to-actions"><button class="btn small" ${disabled} onclick="acceptAITransferOffer(${offer.id})">✅ Принять продажу</button><button class="btn small secondary" onclick="declineAITransferOffer(${offer.id})">❌ Отклонить</button></div></div>`;
+    }
+  }
   if (deadline) html += `<div class="trade-deadline-banner">🚫 Трансферный дедлайн закрыт. Обмены недоступны до конца сезона.</div>`;
   if (G.pendingTradeCounter) {
     const counter = G.pendingTradeCounter;
