@@ -46,6 +46,7 @@ function render() {
     G.activeTab === 'stats' ? renderStats() :
     G.activeTab === 'market' ? renderMarket() :
     G.activeTab === 'trades' ? renderTrades() :
+    G.activeTab === 'loans' ? renderLoans() :
     G.activeTab === 'waivers' ? renderWaivers() :
     G.activeTab === 'inbox' ? renderInbox() :
     G.activeTab === 'news' ? renderNews() :
