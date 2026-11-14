@@ -551,7 +551,7 @@ function renderFreeAgentMarket() {
     const char = CHARACTERS[p.character] || CHARACTERS.calm;
     const potTag = hasScout && p.pot > p.ovr ? `<span class="pot">▲${p.pot - p.ovr}</span>` : '';
     const graduateTag = p.youthGraduated ? '<span class="tag" title="Выпускник молодёжной лиги">🎓 Выпускник</span>' : '';
-    return `<tr><td><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span></td><td><a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a> <span class="char-badge ${char.cls}">${char.label}</span> ${graduateTag} ${foreign ? '🌍' : ''}</td><td>${p.age}</td><td class="ovr ${cls}">${p.ovr}${potTag}</td><td class="salary">${p.contract.salary.toFixed(1)}M</td><td><button class="btn small" onclick="signFreeAgent(G.league.teams.find(t=>t.id===G.playerTeamId), G.league.freeAgents.find(x=>x.id===${p.id})); render();">Подписать</button><button class="btn small secondary" onclick="offerTryout(G.league.teams.find(t=>t.id===G.playerTeamId), G.league.freeAgents.find(x=>x.id===${p.id})); render();">Просмотр</button></td></tr>`;
+    return `<tr><td><span class="pos ${p.position === 'G' ? 'G' : p.position === 'D' ? 'D' : 'F'}">${p.position}</span></td><td><a href="#" onclick="event.preventDefault(); G.popupPlayerId=${p.id}; render();" style="color:inherit;text-decoration:none;border-bottom:1px dotted #7a8299">${p.name}</a> <span class="char-badge ${char.cls}">${char.label}</span> ${graduateTag} ${foreign ? '🌍' : ''}</td><td>${p.age}</td><td class="ovr ${cls}">${p.ovr}${potTag}</td><td class="salary">${p.contract.salary.toFixed(1)}M</td><td><button class="btn small" onclick="openPlayerContractNegotiation(${p.id}, 'signing')">Переговоры</button><button class="btn small secondary" onclick="offerTryout(G.league.teams.find(t=>t.id===G.playerTeamId), G.league.freeAgents.find(x=>x.id===${p.id})); render();">Просмотр</button></td></tr>`;
   }).join('');
   return `<div class="market-toolbar"><div class="market-filters"><button class="${G.marketFilter === 'all' ? 'active' : ''}" onclick="G.marketFilter='all'; render();">Все</button><button class="${G.marketFilter === 'F' ? 'active' : ''}" onclick="G.marketFilter='F'; render();">Форварды</button><button class="${G.marketFilter === 'D' ? 'active' : ''}" onclick="G.marketFilter='D'; render();">Защитники</button><button class="${G.marketFilter === 'G' ? 'active' : ''}" onclick="G.marketFilter='G'; render();">Вратари</button></div>${sortControl}</div><h2>Свободные агенты (${sorted.length})</h2><table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>ЗП</th><th>Действия</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
@@ -1115,6 +1115,7 @@ function renderModal() {
   const onBench = team && (team.bench || []).includes(p.id), isMyTeam = team && team.id === G.playerTeamId;
   const mentor = isMyTeam ? getMentor(team,p.id) : null, char = CHARACTERS[p.character] || CHARACTERS.calm;
   const contract = p.contract || {salary:0,years:0}, injured = p.injury && p.injury.gamesLeft > 0;
+  const isFreeAgent = !team && (G.league.freeAgents || []).some(item => item.id === p.id);
   const badges = [];
   if (onBench) badges.push('<span class="profile-badge neutral">🪑 На скамейке</span>');
   if (injured) badges.push('<span class="profile-badge danger">🚑 Травма · '+p.injury.gamesLeft+' игр</span>');
@@ -1276,7 +1277,7 @@ function renderModal() {
   const attrButtons=canIndTraining?attrs.filter(a=>p.attrs[a]<p.attrPot[a]).map(a=>'<button class="btn small secondary" onclick="handleIndTraining('+p.id+', \''+a+'\')">'+ATTR_LABELS[a]+'</button>').join(''):'';
   const canRehab=isMyTeam&&injured&&(G.league.currentRound-(team.lastRehabRound||-10))>=5, rehabCost=Math.min(3,p.injury?p.injury.gamesLeft:0);
   const goalHtml=p.seasonGoal?'<div class="profile-goal"><span>🎯 '+p.seasonGoal.description+'</span><b>'+(p.seasonGoal.achieved===true?'ВЫПОЛНЕНО ✓':p.seasonGoal.achieved===false?'НЕ ВЫПОЛНЕНО':'В ПРОЦЕССЕ')+'</b></div>':'';
-  return '<div class="modal-overlay profile-overlay" onclick="if(event.target===this){G.popupPlayerId=null;render();}"><div class="modal player-profile-modal"><button class="close-btn" onclick="G.popupPlayerId=null;render();">✕</button>'+
+  return '<div class="modal-overlay profile-overlay" onclick="if(event.target===this){G.contractNegotiation=null;G.popupPlayerId=null;render();}"><div class="modal player-profile-modal"><button class="close-btn" onclick="G.contractNegotiation=null;G.popupPlayerId=null;render();">✕</button>'+
     '<div class="profile-hero"><div class="profile-hero-main"><span class="profile-eyebrow">ПРОФИЛЬ ХОККЕИСТА</span><div class="profile-name-line"><h1>'+p.name+'</h1><span class="char-badge '+char.cls+'">'+char.label+'</span></div><p>'+(team?team.name:'Свободный агент')+' · '+p.nationality+' · '+p.age+' лет</p><div class="profile-badges">'+badges.join('')+'</div></div><div class="profile-overall"><strong>'+p.ovr+'</strong><span>ОБЩИЙ РЕЙТИНГ</span><small>Потенциал '+p.pot+'</small></div></div>'+
     '<div class="profile-quick-stats"><div><span>ПОЗИЦИЯ</span><b>'+(isG?'Вратарь':p.position==='D'?'Защитник':'Нападающий')+'</b></div><div><span>ФОРМА</span><b>'+p.form+'/100</b></div><div><span>МОРАЛЬ</span><b>'+p.morale+'/100</b></div><div><span>ЭФФЕКТИВНЫЙ OVR</span><b>'+getEffectiveOvr(p)+'</b></div></div>'+
     '<div class="profile-columns"><div class="profile-column">'+
@@ -1288,8 +1289,10 @@ function renderModal() {
     '<section class="profile-section"><span class="profile-eyebrow">ПЕРЕМЕЩЕНИЯ</span><h2>История переходов</h2>'+transferHtml+'</section>'+
     '<section class="profile-section"><span class="profile-eyebrow">ДОСТИЖЕНИЯ</span><h2>Индивидуальные награды</h2>'+awardHtml+'</section></div>'+
     '<aside class="profile-side-column"><section class="profile-section profile-contract"><span class="profile-eyebrow">СОГЛАШЕНИЕ</span><h2>Контракт</h2><div class="profile-contract-value"><b>'+Number(contract.salary||0).toFixed(1)+'</b><span>млн ₽ / сезон</span></div><div class="profile-contract-row"><span>Срок</span><b>'+(contract.years||0)+' лет</b></div><div class="profile-contract-row"><span>Статус</span><b>'+(p.status==='contract'?'Действует':p.status==='ufa'?'Свободный агент':p.status)+'</b></div>'+
-    (canExtend?'<div class="profile-action-group"><button class="btn" onclick="handleExtend('+p.id+',1)">Продлить на 1 год</button><button class="btn secondary" onclick="handleExtend('+p.id+',2)">Продлить на 2 года</button></div>':'')+
+    (canExtend?'<div class="profile-action-group"><button class="btn" onclick="openPlayerContractNegotiation('+p.id+', \'renewal\')">Начать переговоры о продлении</button></div>':'')+
+    (isFreeAgent?'<div class="profile-action-group"><button class="btn" onclick="openPlayerContractNegotiation('+p.id+', \'signing\')">Предложить контракт</button></div>':'')+
     (canRelease?'<div class="profile-action-group"><button class="btn danger" onclick="handleRelease('+p.id+')">Расторгнуть · '+releaseCost.toFixed(1)+' млн ₽</button></div>':'')+'</section>'+
+    (G.contractNegotiation&&G.contractNegotiation.playerId===p.id?renderContractNegotiationPanel(p,team):'')+
     (goalHtml?'<section class="profile-section"><span class="profile-eyebrow">ЛИЧНАЯ ЦЕЛЬ</span><h2>Задача на сезон</h2>'+goalHtml+'</section>':'')+
     (mentor?'<section class="profile-section"><span class="profile-eyebrow">РАЗВИТИЕ</span><h2>Наставник</h2><p class="profile-mentor">🎓 '+mentor.name+'</p></section>':'')+
     (canIndTraining&&attrButtons?'<section class="profile-section"><span class="profile-eyebrow">ТРЕНИРОВКИ</span><h2>Индивидуальная работа</h2><p class="profile-muted">0,5 млн ₽ · раз в 5 туров</p><div class="profile-action-group profile-training-actions">'+attrButtons+'</div></section>':'')+
@@ -1297,6 +1300,32 @@ function renderModal() {
     (canSendToYouth?'<section class="profile-section"><span class="profile-eyebrow">АКАДЕМИЯ</span><h2>Молодёжная команда</h2><div class="profile-action-group">'+youthTransferButtons+'</div></section>':'')+
     '</aside></div></div></div>';
 }
+
+function renderContractNegotiationPanel(player, team) {
+  const state = G.contractNegotiation;
+  if (!state || state.playerId !== player.id) return '';
+  const mode = state.mode === 'renewal' ? 'Продление контракта' : 'Предложение свободному агенту';
+  const demand = getPlayerContractDemand(player, team, state.mode);
+  const result = state.lastResult;
+  const resultHtml = result
+    ? '<div class="profile-contract-row"><span>Ответ игрока</span><b>' + (result.message || 'Получен ответ') + '</b></div>' +
+      (result.counteroffer ? '<div class="profile-contract-row"><span>Встречное предложение</span><b>' + result.counteroffer.salary.toFixed(1) + ' млн ₽ · ' + result.counteroffer.years + ' лет</b></div>' : '')
+    : '';
+  const counterButton = result && result.decision === 'counter' && !state.completed
+    ? '<button class="btn" onclick="acceptPlayerCounterOffer()">Принять встречные условия</button>' : '';
+  const controls = state.completed
+    ? '<p class="profile-muted">Соглашение оформлено.</p>'
+    : '<label class="profile-contract-row"><span>Зарплата, млн ₽ за сезон</span><input type="number" min="0.5" max="99" step="0.1" value="' + state.offer.salary.toFixed(1) + '" onchange="updatePlayerContractOffer(\'salary\',this.value)"></label>' +
+      '<label class="profile-contract-row"><span>' + (state.mode === 'renewal' ? 'Добавить лет' : 'Срок контракта, лет') + '</span><select onchange="updatePlayerContractOffer(\'years\',this.value)">' +
+      [1,2,3,4,5].filter(years => state.mode !== 'renewal' || years <= Math.max(1,5-(Number(player.contract?.years)||0))).map(years => '<option value="' + years + '"' + (Number(state.offer.years) === years ? ' selected' : '') + '>' + years + '</option>').join('') +
+      '</select></label>' +
+      '<div class="profile-action-group"><button class="btn" onclick="submitPlayerContractNegotiation()">Отправить предложение</button>' + counterButton + '</div>';
+  return '<section class="profile-section profile-contract"><span class="profile-eyebrow">ПЕРЕГОВОРЫ</span><h2>' + mode + '</h2>' +
+    '<p class="profile-muted">Ожидания игрока: около ' + demand.salary.toFixed(1) + ' млн ₽ за сезон · желаемый срок ' + demand.years + ' лет</p>' +
+    controls + resultHtml +
+    '<div class="profile-action-group"><button class="btn secondary" onclick="closePlayerContractNegotiation()">Закрыть переговоры</button></div></section>';
+}
+
 function handleExtend(playerId, years) { const r = extendContract(playerId, years); if (r.success) showToast(`Продлено! ЗП: ${r.salary} млн на ${years} лет`); else if (r.reason === 'contract too long') showToast('Контракт длинный'); else showToast(`Отказ. Запрос: ${r.salary} млн`); render(); }
 function handleRehab(playerId, games) { const r = rehabPlayer(playerId, games); if (r.success) showToast(`Реабилитация: ${r.gamesSkipped} игр. Стоимость: ${r.cost} млн`); else showToast('Ошибка: ' + r.error); render(); }
 function handleIndTraining(playerId, attr) { const r = individualTraining(playerId, attr); if (r.success) showToast(`+1 к ${ATTR_LABELS[r.attr]}`); else showToast('Ошибка: ' + r.error); render(); }
