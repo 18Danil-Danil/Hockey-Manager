@@ -186,8 +186,12 @@ poorSellerPlayer.transferListed = true;
 const poorSeller = team(104, [poorSellerPlayer, ...Array.from({length:18}, (_,i) => player(2100+i, 'C', 55))], { balance: 10 });
 assert.equal(context.getVHLTransferQuote(poorSellerPlayer, poorSeller, poorBuyer).reason, 'Недостаточно средств для трансфера');
 
-const fullBuyer = team(105, Array.from({length:25}, (_,i) => player(1100+i, 'C', 60)), { balance: 100, salaryCap: 200 });
-assert.equal(context.getVHLTransferQuote(poorSellerPlayer, poorSeller, fullBuyer).reason, 'В составе уже 25 игроков');
+const expandedBuyer = team(105, Array.from({length:25}, (_,i) => player(1100+i, 'C', 60)), { balance: 100, salaryCap: 200 });
+assert.equal(context.getVHLTransferQuote(poorSellerPlayer, poorSeller, expandedBuyer).allowed, true, 'clubs should be allowed to exceed 25 rostered players');
+const expandedTradeClub = team(107, Array.from({length:25}, (_,i) => player(1300+i, 'C', 60)));
+const expandedTradeOpponent = team(108, [player(1400, 'C', 60)]);
+const expandedTrade = context.evaluateTradeProposal(expandedTradeClub, expandedTradeOpponent, [expandedTradeClub.roster[0]], [expandedTradeOpponent.roster[0]], 0, 0);
+assert.equal(expandedTrade.decision, 'accept', 'trades should not be rejected when a club roster exceeds 25 players');
 
 const foreignBuyer = team(106, [
   player(1201,'C',60,{nationality:'Канада'}), player(1202,'LW',60,{nationality:'США'}), player(1203,'D',60,{nationality:'Швеция'})
