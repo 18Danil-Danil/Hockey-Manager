@@ -1152,6 +1152,150 @@ function processAIIncomingLoanOffers() {
   generateAIIncomingLoanOffer();
 }
 
+function listPlayerForTransfer(playerId) {
+  const team = G.league?.teams.find(item => Number(item.id) === Number(G.playerTeamId));
+  const player = team?.roster.find(item => Number(item.id) === Number(playerId));
+  if (!team || !player || player.loan || player.status === 'tryout') {
+    if (typeof showToast === 'function') showToast('Этого игрока нельзя выставить на трансфер', 'error');
+    return false;
+  }
+  if (player.transferListed) {
+    if (typeof showToast === 'function') showToast('Игрок уже находится в трансферном списке');
+    return false;
+  }
+  player.transferListed = true;
+  player.transferListedAtRound = Number(G.league.currentRound) || 0;
+  player.transferOfferCooldownRound = 0;
+  if (typeof addNews === 'function') addNews('trade', team.name + ' выставил на трансфер хоккеиста ' + player.name + '.', 1);
+  if (typeof showToast === 'function') showToast(player.name + ' выставлен на трансфер');
+  if (typeof render === 'function') render();
+  return true;
+}
+function removePlayerFromTransferList(playerId) {
+  const team = G.league?.teams.find(item => Number(item.id) === Number(G.playerTeamId));
+  const player = team?.roster.find(item => Number(item.id) === Number(playerId));
+  if (!player) return false;
+  player.transferListed = false;
+  player.transferListedAtRound = null;
+  G.league.aiTransferOffers = (G.league.aiTransferOffers || []).filter(offer => Number(offer.playerId) !== Number(player.id));
+  if (typeof showToast === 'function') showToast('Игрок снят с трансферного списка');
+  if (typeof render === 'function') render();
+  return true;
+}
+function getAITransferValue(player) {
+  const age = Number(player.age) || 26;
+  const ageFactor = age <= 23 ? 1.14 : age >= 31 ? 0.82 : age <= 27 ? 1.05 : 0.94;
+  const potentialGap = Math.max(0, Number(player.pot || player.ovr) - Number(player.ovr || 0));
+  return Math.round(Math.max(0.5, ((Number(player.ovr || 60) - 50) * 0.18 + potentialGap * 0.07) * ageFactor) * 10) / 10;
+}
+function generateAITransferOffer(player) {
+  const seller = G.league?.teams.find(item => Number(item.id) === Number(G.playerTeamId));
+  if (!seller || !player || !seller.roster.includes(player) || !player.transferListed ||
+      player.loan || player.status === 'tryout' || isTradeDeadlinePassed() ||
+      seller.roster.length <= 18 ||
+      Number(player.transferOfferCooldownRound || 0) > Number(G.league.currentRound || 0)) return false;
+  G.league.aiTransferOffers = Array.isArray(G.league.aiTransferOffers) ? G.league.aiTransferOffers : [];
+  if (G.league.aiTransferOffers.some(offer => Number(offer.playerId) === Number(player.id))) return false;
+  const salary = Number(player.contract?.salary) || 0.5;
+  const foreigners = club => (club.roster || []).filter(item => item.nationality !== 'Россия').length;
+  const payroll = club => (club.roster || []).reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0);
+  const asking = getAITransferValue(player);
+  const clubs = G.league.teams.filter(club => Number(club.id) !== Number(seller.id) &&
+    (club.roster || []).length >= 18 &&
+    Number(club.finance?.balance || 0) >= asking * 0.78 &&
+    payroll(club) + salary <= Number(club.finance?.salaryCap ?? Infinity) &&
+    (player.nationality === 'Россия' || foreigners(club) < 3));
+  if (!clubs.length) return false;
+  const buyer = pick(clubs);
+  const amount = Math.round(asking * (0.84 + rng() * 0.24) * 10) / 10;
+  if (Number(buyer.finance?.balance || 0) < amount) return false;
+  const offer = {
+    id: nextId(), playerId: player.id, playerName: player.name,
+    fromTeamId: buyer.id, amount, askingPrice: asking,
+    createdRound: Number(G.league.currentRound) || 0,
+    expiresRound: (Number(G.league.currentRound) || 0) + 4
+  };
+  G.league.aiTransferOffers.push(offer);
+  if (typeof addInboxMessage === 'function') addInboxMessage('league', buyer.name, 'Предложение о трансфере',
+    buyer.name + ' предлагает ' + amount.toFixed(1) + ' млн ₽ за хоккеиста ' + player.name +
+    '. Предложение действует до ' + offer.expiresRound + '-го тура. Рассмотреть его можно во вкладке «Обмены».', []);
+  if (typeof addNews === 'function') addNews('trade', buyer.name + ' направил предложение о покупке ' + player.name + ' за ' + amount.toFixed(1) + ' млн ₽.', 1);
+  return true;
+}
+function processAITransferOffers() {
+  const team = G.league?.teams.find(item => Number(item.id) === Number(G.playerTeamId));
+  if (!team) return;
+  G.league.aiTransferOffers = (G.league.aiTransferOffers || []).filter(offer =>
+    Number(offer.expiresRound) > Number(G.league.currentRound || 0) &&
+    team.roster.some(player => Number(player.id) === Number(offer.playerId) && player.transferListed));
+  if (isTradeDeadlinePassed() || G.league.aiTransferOffers.length >= 8) return;
+  for (const player of team.roster.filter(item => item.transferListed && !item.loan && item.status !== 'tryout')) {
+    if (G.league.aiTransferOffers.length >= 8) break;
+    if (rng() < 0.42) generateAITransferOffer(player);
+  }
+}
+function acceptAITransferOffer(offerId) {
+  const offers = G.league?.aiTransferOffers || [];
+  const offer = offers.find(item => Number(item.id) === Number(offerId));
+  const seller = G.league?.teams.find(item => Number(item.id) === Number(G.playerTeamId));
+  const buyer = offer && G.league?.teams.find(item => Number(item.id) === Number(offer.fromTeamId));
+  const player = offer && seller?.roster.find(item => Number(item.id) === Number(offer.playerId));
+  if (!offer || !seller || !buyer || !player || !player.transferListed) {
+    if (typeof showToast === 'function') showToast('Предложение больше недействительно', 'error');
+    return false;
+  }
+  const amount = Number(offer.amount);
+  const payroll = (buyer.roster || []).reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0);
+  const foreigners = (buyer.roster || []).filter(item => item.nationality !== 'Россия').length;
+  if (isTradeDeadlinePassed() || seller.roster.length <= 18 ||
+      !Number.isFinite(amount) || amount <= 0 ||
+      Number(buyer.finance?.balance || 0) < amount ||
+      payroll + (Number(player.contract?.salary) || 0.5) > Number(buyer.finance?.salaryCap ?? Infinity) ||
+      (player.nationality !== 'Россия' && foreigners >= 3)) {
+    if (typeof showToast === 'function') showToast('Клуб больше не может выполнить условия трансфера', 'error');
+    return false;
+  }
+  seller.roster = seller.roster.filter(item => Number(item.id) !== Number(player.id));
+  buyer.roster.push(player);
+  player.transferListed = false;
+  player.transferListedAtRound = null;
+  player.transferOfferCooldownRound = 0;
+  player.status = 'contract';
+  player.originClub = seller.name;
+  player.originLeague = seller.leagueName || G.league.name || '';
+  buyer.finance.balance = Math.round((Number(buyer.finance.balance) - amount) * 10) / 10;
+  seller.finance.balance = Math.round((Number(seller.finance?.balance || 0) + amount) * 10) / 10;
+  buyer.finance.expenses = buyer.finance.expenses || {};
+  buyer.finance.expenses.transfers = (Number(buyer.finance.expenses.transfers) || 0) + amount;
+  seller.finance.income = seller.finance.income || {};
+  seller.finance.income.transfers = (Number(seller.finance.income.transfers) || 0) + amount;
+  buyer.lines = null;
+  seller.lines = null;
+  if (typeof syncLines === 'function') { syncLines(buyer); syncLines(seller); }
+  G.league.aiTransferLog = Array.isArray(G.league.aiTransferLog) ? G.league.aiTransferLog : [];
+  G.league.aiTransferLog.push({ season: G.league.season, round: G.league.currentRound, playerId: player.id,
+    playerName: player.name, fromTeamId: seller.id, fromTeamName: seller.name,
+    toTeamId: buyer.id, toTeamName: buyer.name, amount });
+  G.league.aiTransferOffers = offers.filter(item => Number(item.playerId) !== Number(player.id));
+  if (typeof addNews === 'function') addNews('trade', player.name + ' перешёл из ' + seller.name + ' в ' + buyer.name + ' за ' + amount.toFixed(1) + ' млн ₽.', 2);
+  if (typeof showToast === 'function') showToast('Трансфер состоялся: ' + amount.toFixed(1) + ' млн ₽');
+  if (typeof render === 'function') render();
+  return true;
+}
+function declineAITransferOffer(offerId) {
+  const offers = G.league?.aiTransferOffers || [];
+  const offer = offers.find(item => Number(item.id) === Number(offerId));
+  if (offer) {
+    const team = G.league.teams.find(item => Number(item.id) === Number(G.playerTeamId));
+    const player = team?.roster.find(item => Number(item.id) === Number(offer.playerId));
+    if (player) player.transferOfferCooldownRound = (Number(G.league.currentRound) || 0) + 6;
+  }
+  G.league.aiTransferOffers = offers.filter(item => Number(item.id) !== Number(offerId));
+  if (typeof showToast === 'function') showToast('Предложение отклонено');
+  if (typeof render === 'function') render();
+  return true;
+}
+
 function generateAITradeOffer() {
   const myTeam = G.league.teams.find(t => t.id === G.playerTeamId); if (!myTeam) return;
   const aiTeams = G.league.teams.filter(t => t.id !== G.playerTeamId); if (!aiTeams.length) return;
@@ -1369,6 +1513,7 @@ function refreshAITransferLists() {
 function runAIActions() {
   refreshAITransferLists();
   runAITransfers(); runAIContractExtensions(); processPlayerContractRequests();
+  processAITransferOffers();
   if (rng() < 0.35) generateAITradeOffer();
   if (rng() < 0.15) generateAITradeOffer();
   G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.expiresRound > G.league.currentRound);
