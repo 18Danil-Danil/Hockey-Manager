@@ -1366,7 +1366,7 @@ function renderLockerRoom() {
     const title = definition?.title || 'Обращение игрока';
     const names = [player?.name || request.playerName, other?.name || request.otherPlayerName].filter(Boolean).join(' и ');
     const buttons = Object.entries(definition?.choices || {}).map(([decision,label]) =>
-      '<button class="btn small secondary" onclick="resolveLockerRoomRequest('+request.id+',\\''+decision+'\\')">'+label+'</button>'
+      '<button class="btn small secondary" onclick="resolveLockerRoomRequest('+request.id+',\''+decision+'\')">'+label+'</button>'
     ).join('');
     return '<article class="finance-card locker-request-card"><div class="fc-title">'+title+'</div><div class="fc-sub">'+names+' · ответить до тура '+(request.deadlineRound+1)+'</div><div class="profile-action-group">'+buttons+'</div></article>';
   }).join('') : '<div class="subtitle">Новых обращений нет. Игроки могут сами попросить о встрече, поддержке или пересмотре своей роли.</div>';
