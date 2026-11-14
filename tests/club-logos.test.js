@@ -98,5 +98,9 @@ vm.createContext(vhlContext);
 vm.runInContext(vhlTeamsSource, vhlContext);
 assert.equal(vhlContext.window.VHL_TEAMS.length, 30, 'all 30 VHL clubs should be present');
 assert.ok(vhlContext.window.VHL_TEAMS.every(club => club.logo), 'all VHL clubs should retain their official logo source');
+const kaluga = vhlContext.window.VHL_TEAMS.find(club => club.slug === 'kaluga');
+const yuzhnyUral = vhlContext.window.VHL_TEAMS.find(club => club.slug === 'yuzhny-ural');
+assert.equal(kaluga.logo, 'https://www.vhlru.ru/upload/iblock/625/Калуга.png', 'Kaluga must use the current official VHL logo, not the outdated EliteProspects image');
+assert.equal(yuzhnyUral.logo, 'https://www.vhlru.ru/upload/iblock/cda/ЮУ.png', 'Yuzhny Ural must use the current official VHL image path');
 
 console.log('Offline club logo rendering checks passed.');
