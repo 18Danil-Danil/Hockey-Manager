@@ -97,5 +97,9 @@ window.getYouthClubLogoUrl = function(leagueId, clubId) {
   const club = league?.clubs.find(item => item.id === clubId);
   if (!league || !club) return null;
   if (league.id === 'mhl' && club.logoId) return league.logoProvider.replace('{logoId}', club.logoId);
+  if (league.id === 'rhl' && club.teamPage) {
+    const teamId = club.teamPage.match(/\\/teams\\/(\\d+)\\//)?.[1];
+    if (teamId) return 'https://ss.fhr.ru/files/images/league/teams/200_200/' + teamId + '.png?1=';
+  }
   return club.logoUrl || null;
 };
