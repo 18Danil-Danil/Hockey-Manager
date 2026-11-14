@@ -784,7 +784,7 @@ function recordLoanNegotiationEvent(event) {
   if (!G.league) return null;
   G.league.loanNegotiationHistory = Array.isArray(G.league.loanNegotiationHistory) ? G.league.loanNegotiationHistory : [];
   const entry = {
-    id: nextId(), round: Number(G.league.currentRound) || 0,
+    id: typeof nextId === 'function' ? nextId() : Date.now() + G.league.loanNegotiationHistory.length, round: Number(G.league.currentRound) || 0,
     timestamp: Date.now(), ...event
   };
   G.league.loanNegotiationHistory.push(entry);
