@@ -369,6 +369,34 @@ function buyVHLPlayer(sellingTeamId, playerId, negotiatedPrice = null) {
   saveGame({ immediate: true });
   return true;
 }
+
+function loanStatsSnapshot(player) {
+  const snapshot = {};
+  for (const source of [player.stats, player.playoffStats]) for (const key of ["gp","goals","assists","points","wins","losses","otl","saves","shotsAgainst","goalsAgainst","shutouts","shots","plusMinus","pim"]) snapshot[key] = (snapshot[key] || 0) + (Number(source?.[key]) || 0);
+  return snapshot;
+}
+function initializeLoanPerformance(player) {
+  player.loan.performance = { gp: 0, goals: 0, assists: 0, points: 0, wins: 0, saves: 0, shotsAgainst: 0, goalsAgainst: 0, shutouts: 0 };
+  player.loan.statsSnapshot = loanStatsSnapshot(player);
+}
+function updateLoanPerformance(team) {
+  for (const player of (team?.roster || [])) {
+    if (!player.loan || player.loan.borrowerTeamId !== team.id) continue;
+    if (!player.loan.performance) initializeLoanPerformance(player);
+    const current = loanStatsSnapshot(player), previous = player.loan.statsSnapshot || {};
+    const performance = player.loan.performance;
+    for (const key of Object.keys(performance)) {
+      const delta = Math.max(0, (current[key] || 0) - (previous[key] || 0));
+      performance[key] += delta;
+    }
+    player.loan.statsSnapshot = current;
+  }
+}
+function loanPerformanceSummary(player) {
+  const p = player?.loan?.performance || {};
+  return { gp: p.gp || 0, goals: p.goals || 0, assists: p.assists || 0, points: p.points || 0, wins: p.wins || 0, saves: p.saves || 0, shotsAgainst: p.shotsAgainst || 0, goalsAgainst: p.goalsAgainst || 0, shutouts: p.shutouts || 0 };
+}
+
 function getLoanTerms(player, parentTeam, borrowerTeam, rounds = 5, wageShare = 50) {
   const salary = Number(player?.contract?.salary) || 0.5;
   const fee = Math.round(Math.max(0.1, (Number(player?.ovr || 60) - 50) * 0.025) * 10) / 10;
@@ -399,6 +427,7 @@ function loanPlayerFromClub(parentTeamId, playerId, rounds = 5, wageShare = 50) 
   parent.roster.splice(parent.roster.indexOf(player), 1);
   player.loanOriginalContract = player.contract ? { ...player.contract } : null;
   player.loan = { parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, startRound: G.league.currentRound, endRound: G.league.currentRound + terms.rounds, wageShare: terms.wageShare, borrowerSalary: terms.borrowerSalary, parentSalary: terms.parentSalary, fee: terms.fee };
+  initializeLoanPerformance(player);
   player.contract = { ...(player.contract || {}), salary: terms.borrowerSalary };
   borrower.roster.push(player);
   borrower.finance.balance = Math.round((Number(borrower.finance.balance) - terms.fee) * 10) / 10;
@@ -428,7 +457,7 @@ function returnLoanPlayer(playerId, reason = 'early') {
   parent.roster.push(player);
   borrower.lines = null; parent.lines = null; syncLines(borrower); syncLines(parent);
   G.league.loanLog = Array.isArray(G.league.loanLog) ? G.league.loanLog : [];
-  G.league.loanLog.push({ playerId: player.id, playerName: player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, borrowerTeamName: borrower.name, returnedRound: G.league.currentRound, reason });
+  G.league.loanLog.push({ playerId: player.id, playerName: player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, borrowerTeamName: borrower.name, returnedRound: G.league.currentRound, reason, performance: loanPerformanceSummary(player) });
   addNews('signing', player.name + ' вернулся из аренды в ' + parent.name, 2);
   showToast(player.name + ' возвращён из аренды', 'success');
   render(); saveGame({ immediate: true }); return true;
@@ -459,6 +488,7 @@ function submitOutgoingLoanOffer() {
   parent.roster.splice(parent.roster.indexOf(player), 1);
   player.loanOriginalContract = player.contract ? { ...player.contract } : null;
   player.loan = { parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, borrowerTeamName: borrower.name, startRound: G.league.currentRound, endRound: G.league.currentRound + terms.rounds, wageShare: terms.wageShare, borrowerSalary: terms.borrowerSalary, parentSalary: terms.parentSalary, fee: 0, role, roleLabel: role === 'top' ? 'Ведущая роль' : role === 'rotation' ? 'Ротация' : 'Резерв' };
+  initializeLoanPerformance(player);
   player.contract = { ...(player.contract || {}), salary: terms.borrowerSalary };
   borrower.roster.push(player);
   borrower.lines = null; parent.lines = null; syncLines(borrower); syncLines(parent);
@@ -484,7 +514,7 @@ function processLoanExpirations() {
     parent.roster.push(item.player);
     item.team.lines = null; parent.lines = null; syncLines(item.team); syncLines(parent);
     G.league.loanLog = Array.isArray(G.league.loanLog) ? G.league.loanLog : [];
-    G.league.loanLog.push({ playerId: item.player.id, playerName: item.player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: item.team.id, borrowerTeamName: item.team.name, returnedRound: G.league.currentRound, reason: 'expired' });
+    G.league.loanLog.push({ playerId: item.player.id, playerName: item.player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: item.team.id, borrowerTeamName: item.team.name, returnedRound: G.league.currentRound, reason: 'expired', performance: loanPerformanceSummary(item.player) });
     addNews('signing', item.player.name + ' завершил аренду и вернулся в ' + parent.name, 2);
   }
 }
