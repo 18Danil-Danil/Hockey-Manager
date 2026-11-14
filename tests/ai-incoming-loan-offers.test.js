@@ -45,6 +45,7 @@ assert.equal(offer.fromTeamId, aiClub.id);
 assert.equal(context.generateAIIncomingLoanOffer(), false, 'the same player must not receive duplicate pending offers');
 
 assert.equal(context.acceptAIIncomingLoanOffer(offer.id), true);
+console.log('DEBUG LOAN', userPlayers[0].id, userPlayers[0].loan, userClub.roster.length, aiClub.roster.length, aiClub.roster.map(player => [player.id, !!player.loan]));
 const loaned = aiClub.roster.find(player => player.id === userPlayers[0].id);
 assert.ok(loaned && loaned.loan, 'accepting the offer must move the player to the borrowing club');
 assert.equal(loaned.loan.parentTeamId, userClub.id);
