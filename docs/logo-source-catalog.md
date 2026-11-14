@@ -282,3 +282,16 @@ FootyLogos публикует каталоги хоккейных эмблем �
 | SC Rapperswil-Jona Lakers | https://www.footylogos.com/logos/sc-rapperswil-jona-lakers | https://www.footylogos.com/sports-assets/logos/sc-rapperswil-jona-lakers/sc-rapperswil-jona-lakers-logo-footylogos.svg |
 
 Все шесть карточек подтверждают принадлежность к National League (Switzerland) сезона 2026/27. Прямые SVG-ссылки получены через функцию загрузки на индивидуальных страницах и закреплены тестами.
+## PNG-only emblems added — 14 November 2026
+
+Для этих клубов FootyLogos указывает, что SVG недоступен, поэтому подключены подтверждённые прозрачные PNG-файлы. В тестах фиксируются реальные форматы и точные URL.
+
+| Лига | Клуб | Страница-источник | Прямой PNG |
+|---|---|---|---|
+| Liiga | Jokerit | https://www.footylogos.com/logos/jokerit | https://www.footylogos.com/sports-assets/logos/jokerit/jokerit-logo-footylogos.png |
+| Liiga | SaiPa | https://www.footylogos.com/logos/saipa | https://www.footylogos.com/sports-assets/logos/saipa/saipa-logo-footylogos.png |
+| Liiga | KooKoo | https://www.footylogos.com/logos/kookoo | https://www.footylogos.com/sports-assets/logos/kookoo/kookoo-logo-footylogos.png |
+| Slovakia | HC ‘05 TAM Banská Bystrica | https://www.footylogos.com/logos/hc-05-tam-banska-bystrica | https://www.footylogos.com/sports-assets/logos/hc-05-tam-banska-bystrica/hc-05-tam-banska-bystrica-logo-footylogos.png |
+| Czechia | Rytíři Kladno | https://www.footylogos.com/logos/rytiri-kladno | https://www.footylogos.com/sports-assets/logos/rytiri-kladno/rytiri-kladno-logo-footylogos.png |
+
+Это не SVG, а растровые PNG с прозрачным фоном; они отображаются тем же компонентом эмблем, но для офлайн-сборки должны быть сохранены как отдельные PNG-файлы.
