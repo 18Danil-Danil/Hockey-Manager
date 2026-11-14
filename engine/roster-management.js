@@ -370,6 +370,15 @@ function buyVHLPlayer(sellingTeamId, playerId, negotiatedPrice = null) {
   return true;
 }
 
+function updateLoanClubRelationship(parentTeamId, borrowerTeamId, delta) {
+  const league = G.league;
+  league.loanClubRelations = league.loanClubRelations || {};
+  const ids = [Number(parentTeamId), Number(borrowerTeamId)].sort((a, b) => a - b);
+  const key = ids.join(':');
+  const current = Number(league.loanClubRelations[key] ?? 50);
+  league.loanClubRelations[key] = Math.max(0, Math.min(100, current + Number(delta || 0)));
+  return league.loanClubRelations[key];
+}
 function loanStatsSnapshot(player) {
   const snapshot = {};
   for (const source of [player.stats, player.playoffStats]) for (const key of ["gp","goals","assists","points","wins","losses","otl","saves","shotsAgainst","goalsAgainst","shutouts","shots","plusMinus","pim"]) snapshot[key] = (snapshot[key] || 0) + (Number(source?.[key]) || 0);
@@ -390,6 +399,16 @@ function updateLoanPerformance(team) {
       performance[key] += delta;
     }
     player.loan.statsSnapshot = current;
+    const report = loanPerformanceReport(player);
+    if (report.guaranteeAtRisk && !player.loan.guaranteeBreach) {
+      player.loan.guaranteeBreach = { round: G.league.currentRound, gamesPlayed: Number(player.loan.performance?.gp) || 0, guaranteedGames: report.guaranteedGames };
+      player.morale = Math.max(15, (Number(player.morale) || 60) - 8);
+      const parent = G.league.teams.find(item => Number(item.id) === Number(player.loan.parentTeamId));
+      const relation = updateLoanClubRelationship(player.loan.parentTeamId, player.loan.borrowerTeamId, -12);
+      const message = (parent?.name || player.loan.parentTeamName || 'Клуб-владелец') + ': клуб не выполняет обещание по игровому времени для ' + player.name + '. Гарантия — ' + report.guaranteedGames + ' матчей, сыграно — ' + (Number(player.loan.performance?.gp) || 0) + '. Мораль хоккеиста снизилась, отношения клубов ухудшились.';
+      addInboxMessage('league', parent?.name || 'Клуб-владелец', 'Нарушение условий аренды', message, []);
+      addNews('signing', player.loan.borrowerTeamName + ' не выполнил гарантию игрового времени для ' + player.name + '. Отношения клубов ухудшились.', 2);
+    }
   }
 }
 function loanPerformanceSummary(player) {
@@ -514,6 +533,35 @@ function loanPlayerFromClub(parentTeamId, playerId, rounds = 5, wageShare = 50) 
   addNews('signing', borrower.name + ' арендовал ' + player.name + ' у ' + parent.name + ' до ' + player.loan.endRound + '-го тура', 2);
   showToast(player.name + ' перешёл в аренду на ' + terms.rounds + ' туров', 'success');
   render(); saveGame({ immediate: true }); return true;
+}
+function requestLoanEarlyReturn(playerId) {
+  const userTeam = G.league?.teams.find(item => Number(item.id) === Number(G.playerTeamId));
+  const player = G.league?.teams.flatMap(item => item.roster || []).find(item => Number(item.id) === Number(playerId) && item.loan);
+  if (!userTeam || !player) { showToast('Игрок в аренде не найден', 'error'); return false; }
+  const loan = player.loan;
+  const isParent = Number(loan.parentTeamId) === Number(userTeam.id);
+  const isBorrower = Number(loan.borrowerTeamId) === Number(userTeam.id);
+  if (!isParent && !isBorrower) { showToast('Эта аренда не относится к твоему клубу', 'error'); return false; }
+  if (loan.earlyReturnRequest?.status === 'pending') { showToast('Запрос на досрочный возврат уже рассматривается', 'info'); return false; }
+  const other = G.league.teams.find(item => Number(item.id) === Number(isParent ? loan.borrowerTeamId : loan.parentTeamId));
+  if (!other) return false;
+  const report = loanPerformanceReport(player);
+  const relation = Number(G.league.loanClubRelations?.[[Number(loan.parentTeamId), Number(loan.borrowerTeamId)].sort((a,b)=>a-b).join(':')] ?? 50);
+  const breach = !!loan.guaranteeBreach || report.guaranteeAtRisk;
+  const chance = Math.max(0.12, Math.min(0.92, (isParent ? 0.38 : 0.42) + (breach ? 0.38 : 0) + (relation - 50) * 0.004 + (report.status === 'Мало игрового времени' ? 0.12 : 0)));
+  const accepted = rng() < chance;
+  loan.earlyReturnRequest = { status: accepted ? 'accepted' : 'rejected', requestedRound: G.league.currentRound, responseRound: G.league.currentRound, initiatorTeamId: userTeam.id, reason: breach ? 'guarantee-breach' : 'club-request', message: accepted ? other.name + ' согласился досрочно прекратить аренду ' + player.name + '.' : other.name + ' отказался досрочно прекращать аренду ' + player.name + '.' };
+  addInboxMessage('league', other.name, 'Запрос на досрочный возврат', loan.earlyReturnRequest.message, []);
+  addNews('signing', loan.earlyReturnRequest.message, 1);
+  if (accepted) {
+    const returned = returnLoanPlayer(player.id, isParent ? 'recall' : 'early');
+    if (!returned) return false;
+    showToast('Досрочный возврат согласован', 'success');
+  } else {
+    showToast('Клуб отказался досрочно прекращать аренду', 'error');
+    render(); saveGame({ immediate: true });
+  }
+  return accepted;
 }
 function returnLoanPlayer(playerId, reason = 'early') {
   const borrower = G.league?.teams.find(item => (item.roster || []).some(p => Number(p.id) === Number(playerId) && p.loan && (reason === 'recall' ? p.loan.parentTeamId === G.playerTeamId : p.loan.borrowerTeamId === G.playerTeamId)));
