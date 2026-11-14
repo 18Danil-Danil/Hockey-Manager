@@ -94,7 +94,7 @@ function renderTabs() {
   const groups = [
     {key:'club',label:'Клуб',items:[['overview','Обзор'],['roster','Состав'],['lines','Звенья'],['tactics','Тактика'],['lockerRoom','Раздевалка'],['training','Тренировки'],['staff','Штаб'],['infrastructure','Инфраструктура']]},
     {key:'league',label:'Лига',items:[['standings','Таблица'],['games','Матчи'],['calendar','Календарь'],['stats','Статистика'],['news','Новости']]},
-    {key:'transfers',label:'Трансферы',items:[['market','Рынок'],['trades','Обмены'],['waivers','Драфт отказов']]},
+    {key:'transfers',label:'Трансферы',items:[['market','Рынок'],['trades','Обмены'],['loans','Аренды'],['waivers','Драфт отказов']]},
     {key:'development',label:'Развитие',items:[['academy','Академия'],['youth','Молодёжные лиги']]},
     {key:'management',label:'Управление',items:[['finance','Финансы'],['career','Карьера'],['playoffs','Плей-офф'],['history','История'],['inbox',`📬 Почта${unread?' · '+unread:''}`]]}
   ];
