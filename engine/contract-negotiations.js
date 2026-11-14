@@ -25,12 +25,18 @@ function evaluatePlayerContractOffer(player, team, offer, mode = 'renewal') {
   const years = Math.floor(Number(offer.years) || 0);
   if (salary < 0.5 || years < 1 || years > 5) return { decision: 'reject', reason: 'terms', message: 'Срок должен быть от 1 до 5 лет, зарплата — не ниже 0,5 млн ₽' };
   const isRenewal = mode === 'renewal';
+  const isInternationalSigning = mode === 'international-signing';
   const currentIndex = team.roster?.findIndex(item => item.id === player.id) ?? -1;
   if (isRenewal && currentIndex < 0) return { decision: 'reject', reason: 'player-not-in-club', message: 'Игрок уже не состоит в клубе' };
   if (!isRenewal && currentIndex < 0) {
     if ((team.roster || []).length >= 25) return { decision: 'reject', reason: 'roster-full', message: 'В составе уже 25 игроков' };
     const foreigners = (team.roster || []).filter(item => item.nationality !== 'Россия').length;
     if (player.nationality !== 'Россия' && foreigners >= 3) return { decision: 'reject', reason: 'foreign-limit', message: 'Лимит легионеров исчерпан' };
+  }
+  if (isInternationalSigning) {
+    if (typeof isTradeDeadlinePassed === 'function' && isTradeDeadlinePassed()) return { decision: 'reject', reason: 'deadline', message: 'Трансферное окно закрыто' };
+    const fee = Number(G.contractNegotiation?.transferFee) || 0;
+    if (fee > Number(team.finance?.balance || 0)) return { decision: 'reject', reason: 'transfer-fee', message: 'Недостаточно средств для трансфера' };
   }
   const demand = getPlayerContractDemand(player, team, mode);
   const currentPayroll = (team.roster || []).reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0);
@@ -65,11 +71,30 @@ function applyPlayerContractAgreement(team, player, offer, mode = 'renewal') {
     player.contract.years = Math.min(5, Math.max(0, Number(player.contract.years) || 0) + years);
   } else {
     if (!Array.isArray(team.roster)) team.roster = [];
+    if (mode === 'international-signing') {
+      const found = typeof findInternationalPlayer === 'function' ? findInternationalPlayer(player.id) : null;
+      if (!found) return { decision: 'reject', reason: 'player-unavailable', message: 'Игрок больше не доступен в клубе' };
+      const fee = Number(G.contractNegotiation?.transferFee) || 0;
+      if (fee > Number(team.finance?.balance || 0)) return { decision: 'reject', reason: 'transfer-fee', message: 'Недостаточно средств для трансфера' };
+      const sourceClub = found.club;
+      sourceClub.roster = sourceClub.roster.filter(item => item.id !== player.id);
+      sourceClub.averageOvr = sourceClub.roster.reduce((sum, item) => sum + item.ovr, 0) / Math.max(1, sourceClub.roster.length);
+      player.originClub = sourceClub.name;
+      player.originLeague = sourceClub.leagueName;
+      player.originCountry = sourceClub.country;
+      player.internationalClubId = null;
+      team.finance.balance = Math.round((team.finance.balance - fee) * 10) / 10;
+      team.finance.expenses = team.finance.expenses || {};
+      team.finance.expenses.transfers = (team.finance.expenses.transfers || 0) + fee;
+      G.league.internationalMarket.transferLog = Array.isArray(G.league.internationalMarket.transferLog) ? G.league.internationalMarket.transferLog : [];
+      G.league.internationalMarket.transferLog.push({ season: G.league.season, playerId: player.id, playerName: player.name, fromClub: sourceClub.name, toClub: team.name, fee });
+    } else if (Array.isArray(G.league?.freeAgents)) {
+      G.league.freeAgents = G.league.freeAgents.filter(item => item.id !== player.id);
+    }
     player.contract = { ...(player.contract || {}), salary, years };
     player.status = 'contract';
     if (!team.roster.includes(player)) team.roster.push(player);
-    if (Array.isArray(G.league?.freeAgents)) G.league.freeAgents = G.league.freeAgents.filter(item => item.id !== player.id);
-    if (typeof markYouthGraduateSigned === 'function') markYouthGraduateSigned(player, team, 'negotiated-contract');
+    if (typeof markYouthGraduateSigned === 'function') markYouthGraduateSigned(player, team, mode === 'international-signing' ? 'international-transfer' : 'negotiated-contract');
   }
   player.morale = Math.min(100, (Number(player.morale) || 65) + 3);
   return { ...result, applied: true, salary, years: player.contract.years };
@@ -77,11 +102,15 @@ function applyPlayerContractAgreement(team, player, offer, mode = 'renewal') {
 
 function findNegotiationPlayer(playerId, mode) {
   const team = G.league?.teams?.find(item => item.id === G.playerTeamId);
-  if (!team) return { team: null, player: null };
-  if (mode === 'renewal') return { team, player: team.roster.find(item => item.id === playerId) || null };
-  return { team, player: (G.league.freeAgents || []).find(item => item.id === playerId) || null };
+  if (!team) return { team: null, player: null, club: null };
+  if (mode === 'renewal') return { team, player: team.roster.find(item => item.id === playerId) || null, club: null };
+  if (mode === 'international-signing') {
+    const found = typeof findInternationalPlayer === 'function' ? findInternationalPlayer(playerId) : null;
+    return { team, player: found?.player || null, club: found?.club || null };
+  }
+  return { team, player: (G.league.freeAgents || []).find(item => item.id === playerId) || null, club: null };
 }
-function openPlayerContractNegotiation(playerId, mode = 'renewal') {
+function openPlayerContractNegotiation(playerId, mode = 'renewal', context = {}) {
   const found = findNegotiationPlayer(playerId, mode);
   if (!found.team || !found.player) { if (typeof showToast === 'function') showToast('Игрок больше недоступен'); return false; }
   const demand = getPlayerContractDemand(found.player, found.team, mode);
@@ -89,6 +118,7 @@ function openPlayerContractNegotiation(playerId, mode = 'renewal') {
   G.contractNegotiation = {
     playerId, mode,
     offer: { salary: demand.salary, years: Math.min(maxYears, demand.years) },
+    transferFee: Number(context.transferFee) || 0, clubId: context.clubId || null,
     lastResult: null, completed: false
   };
   G.popupPlayerId = playerId;
