@@ -270,3 +270,15 @@ FootyLogos публикует каталоги хоккейных эмблем �
 | Krefeld Pinguine | https://www.footylogos.com/logos/krefeld-pinguine | https://www.footylogos.com/sports-assets/logos/krefeld-pinguine/krefeld-pinguine-logo-footylogos.svg |
 
 Все ссылки получены с индивидуальных карточек FootyLogos и зафиксированы тестами. Krefeld Pinguine оставлен в игровом каталоге как историческая команда; запись не означает, что клуб участвует в PENNY DEL 2026/27.
+## Swiss National League: шесть оставшихся эмблем — 14 ноября 2026
+
+| Клуб | Страница-источник | Прямой SVG |
+|---|---|---|
+| HC Ambrì-Piotta | https://www.footylogos.com/logos/hc-ambri-piotta | https://www.footylogos.com/sports-assets/logos/hc-ambri-piotta/hc-ambri-piotta-logo-footylogos.svg |
+| HC Ajoie | https://www.footylogos.com/logos/hc-ajoie | https://www.footylogos.com/sports-assets/logos/hc-ajoie/hc-ajoie-logo-footylogos.svg |
+| SCL Tigers | https://www.footylogos.com/logos/scl-tigers | https://www.footylogos.com/sports-assets/logos/scl-tigers/scl-tigers-logo-footylogos.svg |
+| EHC Kloten | https://www.footylogos.com/logos/ehc-kloten | https://www.footylogos.com/sports-assets/logos/ehc-kloten/ehc-kloten-logo-footylogos.svg |
+| EHC Biel-Bienne | https://www.footylogos.com/logos/ehc-biel-bienne | https://www.footylogos.com/sports-assets/logos/ehc-biel-bienne/ehc-biel-bienne-logo-footylogos.svg |
+| SC Rapperswil-Jona Lakers | https://www.footylogos.com/logos/sc-rapperswil-jona-lakers | https://www.footylogos.com/sports-assets/logos/sc-rapperswil-jona-lakers/sc-rapperswil-jona-lakers-logo-footylogos.svg |
+
+Все шесть карточек подтверждают принадлежность к National League (Switzerland) сезона 2026/27. Прямые SVG-ссылки получены через функцию загрузки на индивидуальных страницах и закреплены тестами.
