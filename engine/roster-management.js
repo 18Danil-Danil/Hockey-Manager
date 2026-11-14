@@ -930,7 +930,11 @@ function submitIncomingLoanCounter() {
         rivalBid.fee = Math.round(Math.min(affordableFee, currentFee + 0.3) * 10) / 10;
         const shares = [0, 25, 50, 60, 75, 100];
         const shareIndex = shares.indexOf(Number(rivalBid.wageShare));
-        if (shareIndex >= 0 && shareIndex < shares.length - 1) rivalBid.wageShare = shares[shareIndex + 1];
+        if (shareIndex >= 0 && shareIndex < shares.length - 1) {
+          const nextShare = shares[shareIndex + 1];
+          const revisedTerms = getLoanTerms(player, parent, rivalClub, Number(rivalBid.rounds), nextShare);
+          if (revisedTerms.allowed) rivalBid.wageShare = nextShare;
+        }
         rivalBid.expiresRound = Math.max(Number(rivalBid.expiresRound), Number(G.league.currentRound) + 1);
         addInboxMessage('league', rivalClub.name, 'Улучшенное предложение аренды',
           rivalClub.name + ' улучшил условия аренды хоккеиста ' + player.name +
