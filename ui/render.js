@@ -4,14 +4,10 @@
 function getInitials(name) { return (name || '?').split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase(); }
 function getTeamRatings(team) { return team.ratings || { att: 70, def: 70, gk: 70, st: 70 }; }
 function logoHeader(team) {
-  const initials = getInitials(team.name);
-  if (team.logo) return `<img src="${team.logo}" class="team-logo-header" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'"><span class="team-logo-fallback-small" style="display:none">${initials}</span>`;
-  return `<span class="team-logo-fallback-small">${initials}</span>`;
+  return clubLogoWithFallback(team, 32, 'team-logo-header');
 }
 function logoTiny(team) {
-  const initials = getInitials(team.name);
-  if (team.logo) return `<img src="${team.logo}" class="team-logo-tiny" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'"><span class="team-logo-fallback-tiny" style="display:none">${initials}</span>`;
-  return `<span class="team-logo-fallback-tiny">${initials}</span>`;
+  return clubLogoWithFallback(team, 20, 'team-logo-tiny');
 }
 
 function renderTeamSelect() {
@@ -25,8 +21,7 @@ function renderTeamSelect() {
   const teams = G.league.teams.slice().sort((a, b) => b.talent - a.talent);
   const cards = teams.map(t => {
     const trendDef = { up: '↗', down: '↘', stable: '→', newcomer: '🆕' };
-    const logoImg = t.logo
-      ? `<img src="${t.logo}" style="width:36px;height:36px;object-fit:contain;vertical-align:middle;margin-right:8px" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'"><span style="display:none;width:36px;height:36px;background:linear-gradient(135deg,#ff6b35,#fbbf24);color:#0f1117;border-radius:6px;align-items:center;justify-content:center;font-weight:900;font-size:12px;vertical-align:middle;margin-right:8px">${getInitials(t.name)}</span>`
+    const logoImg = clubLogoWithFallback(t, 36, 'team-logo-card');height:36px;object-fit:contain;vertical-align:middle;margin-right:8px" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'"><span style="display:none;width:36px;height:36px;background:linear-gradient(135deg,#ff6b35,#fbbf24);color:#0f1117;border-radius:6px;align-items:center;justify-content:center;font-weight:900;font-size:12px;vertical-align:middle;margin-right:8px">${getInitials(t.name)}</span>`
       : `<span style="display:inline-flex;width:36px;height:36px;background:linear-gradient(135deg,#ff6b35,#fbbf24);color:#0f1117;border-radius:6px;align-items:center;justify-content:center;font-weight:900;font-size:12px;vertical-align:middle;margin-right:8px">${getInitials(t.name)}</span>`;
     return `<div class="team-card" data-team-id="${t.id}">
       <div class="t-name">${logoImg}${t.name}</div>
@@ -628,7 +623,7 @@ function renderInternationalMarket(region) {
     return `<tr>
       <td><span class="pos ${player.position === 'G' ? 'G' : player.position === 'D' ? 'D' : 'F'}">${player.position}</span></td>
       <td><b>${player.name}</b> ${tag} ${listed}<small class="market-player-meta">${player.age} лет · ${player.nationality}</small></td>
-      <td>${club.name}<small class="market-player-meta">${club.city}, ${club.country}</small></td>
+      <td><span class="market-club-cell">${clubLogoWithFallback(club, 28, 'market-club-logo')}<span>${club.name}<small class="market-player-meta">${club.city}, ${club.country}</small></span></span></td>
       <td>${club.leagueName}</td>
       <td>${player.age}</td>
       <td class="ovr ${cls}">${player.ovr}</td>
