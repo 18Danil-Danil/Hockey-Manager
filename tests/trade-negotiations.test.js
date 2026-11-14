@@ -200,7 +200,8 @@ const ui = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8'
 assert.match(ui, /Г\/П\/О/, 'loan UI should show games, goals, assists and points');
 assert.match(ui, /player\.loan\.performance\?\.gp/, 'loan UI should show tracked appearances');
 assert.match(ui, /startOutgoingLoanNegotiation/, 'loan UI should allow sending players to other clubs');
-assert.match(ui, /Отозвать из аренды/, 'loan UI should allow recalling outgoing players');
+assert.match(ui, /requestLoanEarlyReturn/, 'loan UI should negotiate early returns instead of forcing them');
+assert.match(ui, /Потребовать возврат/, 'loan UI should let the parent club request its player back');
 assert.match(ui, /function renderLoans/, 'loan management UI should exist');
 assert.match(ui, /Вернуть досрочно/, 'loan UI should support early return');
 assert.match(ui, /ВХЛ · трансферный список/, 'market should include a VHL transfer-list tab');
