@@ -412,21 +412,19 @@ function loanPerformanceReport(player, currentRound = G.league?.currentRound || 
     ? (Number(performance.shotsAgainst) - (Number(performance.goalsAgainst) || 0)) / Number(performance.shotsAgainst)
     : null;
   const gaa = gp > 0 ? (Number(performance.goalsAgainst) || 0) / gp : null;
-  const enoughData = elapsed >= 3 && gp >= 3;
   let status = 'Пока рано оценивать';
   let recommendation = 'Продолжить наблюдение';
-  if (enoughData) {
-    const usageLow = usage < targetUsage * 0.55;
+  if (elapsed >= 4 && usage < targetUsage * 0.55) {
+    status = 'Мало игрового времени';
+    recommendation = 'Рассмотреть отзыв';
+  } else if (elapsed >= 3 && gp >= 3) {
     const performanceLow = goalie
       ? savePct !== null && (savePct < 0.87 || (gaa !== null && gaa > 4.2))
       : pointsPerGame < ({ top: 0.65, rotation: 0.35, reserve: 0.15 }[role] || 0.35) * 0.55;
     const performanceGood = goalie
       ? savePct !== null && savePct >= 0.91 && gaa !== null && gaa <= 3.2
       : pointsPerGame >= ({ top: 0.65, rotation: 0.35, reserve: 0.15 }[role] || 0.35);
-    if (usageLow && elapsed >= 4) {
-      status = 'Мало игрового времени';
-      recommendation = 'Рассмотреть отзыв';
-    } else if (performanceLow && elapsed >= 6) {
+    if (performanceLow && elapsed >= 6) {
       status = 'Результативность ниже ожиданий';
       recommendation = 'Обсудить отзыв';
     } else if (performanceGood && usage >= targetUsage * 0.8) {
