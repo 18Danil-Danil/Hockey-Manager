@@ -873,6 +873,70 @@ function submitIncomingLoanCounter() {
   showToast(borrower.name + ' согласился на встречные условия', 'success');
   saveGame({ immediate: true }); render(); return true;
 }
+function processAIRequestedLoanRecalls() {
+  const userTeam = G.league?.teams?.find(team => Number(team.id) === Number(G.playerTeamId));
+  if (!userTeam || Number(G.league.currentRound) >= 40) return;
+  for (const player of userTeam.roster || []) {
+    const loan = player.loan;
+    if (!loan || Number(loan.borrowerTeamId) !== Number(userTeam.id) ||
+        Number(loan.parentTeamId) === Number(userTeam.id) ||
+        loan.aiRecallRequest?.status === 'pending' ||
+        Number(loan.aiRecallRequest?.lastRequestRound) === Number(G.league.currentRound)) continue;
+    const parent = G.league.teams.find(team => Number(team.id) === Number(loan.parentTeamId));
+    if (!parent) continue;
+    const report = loanPerformanceReport(player);
+    const key = [Number(parent.id), Number(userTeam.id)].sort((a,b) => a-b).join(':');
+    const relation = Number(G.league.loanClubRelations?.[key] ?? 50);
+    const history = (G.league.loanLog || []).filter(item =>
+      Number(item.parentTeamId) === Number(parent.id) && Number(item.borrowerTeamId) === Number(userTeam.id));
+    const priorBadLoans = history.filter(item => item.assessment?.guaranteeAtRisk ||
+      item.assessment?.status === 'Мало игрового времени').length;
+    const concern = !!loan.guaranteeBreach || report.guaranteeAtRisk ||
+      report.status === 'Мало игрового времени' || report.status === 'Результативность ниже ожиданий';
+    const chance = Math.max(0.04, Math.min(0.78,
+      0.025 + (concern ? 0.34 : 0) + (loan.guaranteeBreach ? 0.18 : 0) +
+      (50 - relation) * 0.003 + Math.min(0.12, priorBadLoans * 0.04)));
+    if (rng() >= chance) continue;
+    loan.aiRecallRequest = {
+      status: 'pending', requestedRound: G.league.currentRound,
+      reason: loan.guaranteeBreach ? 'guarantee-breach' : concern ? 'performance' : 'club-plans',
+      message: parent.name + ' просит досрочно вернуть ' + player.name +
+        (concern ? ': клуб недоволен игровым временем или результативностью хоккеиста.' : ' из-за изменения планов команды.')
+    };
+    addInboxMessage('league', parent.name, 'Запрос клуба на возврат из аренды',
+      loan.aiRecallRequest.message + ' Решение можно принять во вкладке «Аренда».', []);
+    addNews('signing', parent.name + ' обратился с просьбой досрочно вернуть ' + player.name + ' из аренды.', 1);
+  }
+}
+function respondToAIRecallRequest(playerId, accept) {
+  const userTeam = G.league?.teams?.find(team => Number(team.id) === Number(G.playerTeamId));
+  const player = userTeam?.roster.find(item => Number(item.id) === Number(playerId) && item.loan);
+  const request = player?.loan?.aiRecallRequest;
+  if (!player || !request || request.status !== 'pending') return false;
+  const parent = G.league.teams.find(team => Number(team.id) === Number(player.loan.parentTeamId));
+  if (!parent) return false;
+  request.status = accept ? 'accepted' : 'rejected';
+  request.responseRound = G.league.currentRound;
+  const key = [Number(parent.id), Number(userTeam.id)].sort((a,b) => a-b).join(':');
+  G.league.loanClubRelations = G.league.loanClubRelations || {};
+  const relation = Number(G.league.loanClubRelations[key] ?? 50);
+  G.league.loanClubRelations[key] = Math.max(0, Math.min(100, relation + (accept ? 2 : -3)));
+  if (accept) {
+    request.message = userTeam.name + ' согласился вернуть ' + player.name + ' досрочно по просьбе ' + parent.name + '.';
+    addNews('signing', request.message, 1);
+    const returned = returnLoanPlayer(player.id, 'ai-recall');
+    if (!returned) return false;
+    showToast('Игрок возвращён клубу-владельцу', 'success');
+  } else {
+    request.message = userTeam.name + ' отказался досрочно возвращать ' + player.name + ' клубу ' + parent.name + '.';
+    addNews('signing', request.message, 1);
+    addInboxMessage('league', parent.name, 'Ответ на запрос о возврате', request.message, []);
+    showToast('Ты отказал клубу в досрочном возврате', 'info');
+    render(); saveGame({ immediate: true });
+  }
+  return true;
+}
+
 function processAIIncomingLoanOffers() {
   if (!G.league?.teams || G.league.currentRound >= 40) return;
   G.league.aiLoanOffers = (G.league.aiLoanOffers || []).filter(offer => Number(offer.expiresRound) >= Number(G.league.currentRound));
@@ -1101,6 +1165,7 @@ function runAIActions() {
   if (rng() < 0.15) generateAITradeOffer();
   G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.expiresRound > G.league.currentRound);
   processAIIncomingLoanOffers();
+  processAIRequestedLoanRecalls();
 }
 
 /* ============================================================
