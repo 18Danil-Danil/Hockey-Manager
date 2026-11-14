@@ -591,8 +591,10 @@ function startLoanExtensionNegotiation(playerId, extraRounds = 5) {
     showToast('Переговоры по этой аренде уже идут', 'info'); return false;
   }
   const remaining = Math.max(0, Number(loan.endRound) - Number(G.league.currentRound));
-  const extension = Math.max(1, Math.min(10 - Math.max(0, Number(loan.endRound) - Number(loan.startRound)), Math.round(Number(extraRounds) || 5)));
-  if (!extension || remaining > 3) { showToast('Продление можно обсуждать ближе к окончанию аренды', 'info'); return false; }
+  const availableExtension = Math.max(0, 10 - Math.max(0, Number(loan.endRound) - Number(loan.startRound)) - (Number(loan.extensions) || 0));
+  const extension = Math.min(availableExtension, Math.max(1, Math.round(Number(extraRounds) || 5)));
+  if (remaining > 3) { showToast('Продление можно обсуждать ближе к окончанию аренды', 'info'); return false; }
+  if (extension <= 0) { showToast('Максимальный срок этой аренды уже исчерпан', 'info'); return false; }
   loan.extensionNegotiation = {
     status: 'pending', requestedRounds: extension, requestedRound: G.league.currentRound,
     responseRound: G.league.currentRound + 1, initiatorTeamId: team.id,
