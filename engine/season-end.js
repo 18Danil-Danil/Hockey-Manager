@@ -161,7 +161,7 @@ function endSeason() {
   G.league.teams.forEach(t => {
     t.record = { w: 0, l: 0, otl: 0, pts: 0, gf: 0, ga: 0 }; t.sponsors = [];
     t.finance.income = { tickets: 0, matchdayExtras: 0, sponsors: 0, sponsorBonuses: 0, tv: 0, prizes: 0, transfers: 0, merch: 0, gov: 0 };
-    t.finance.expenses = { salaries: 0, staffSalaries: 0, operations: 0, transfers: 0, bonuses: 0 };
+    t.finance.expenses = { salaries: 0, staffSalaries: 0, operations: 0, transfers: 0, bonuses: 0, signingBonuses: 0 };
     t.finance.lastSponsorWins = 0; t.finance.sponsorOffers = null;
     t.scoutMission = null;
   });
