@@ -1385,7 +1385,8 @@ function renderLockerRoom() {
   const lastEvent = state.lastTeamEvent ? '<p class="subtitle">Последнее мероприятие: '+(LOCKER_ROOM_TEAM_EVENTS[state.lastTeamEvent.key]?.label||state.lastTeamEvent.key)+' · тур '+(state.lastTeamEvent.round+1)+'</p>' : '';
   return '<div class="locker-room-page"><h2>Раздевалка команды</h2>'+
     '<div class="finance-grid"><div class="finance-card"><div class="fc-title">Средняя мораль</div><div class="fc-value">'+averageMorale+'/100</div><div class="fc-sub">В составе '+team.roster.length+' хоккеистов</div></div><div class="finance-card"><div class="fc-title">Запланированные встречи</div><div class="fc-value">'+meetings.length+'</div><div class="fc-sub">Личные беседы с игроками</div></div><div class="finance-card"><div class="fc-title">Командные мероприятия</div><div class="fc-value">'+(eventCooldown>0?'Через '+eventCooldown+' тур.':'Доступно')+'</div><div class="fc-sub">Пауза между мероприятиями</div></div></div>'+
-    '<h2>Обращения игроков</h2><div class="finance-grid">'+requestRows+'</div>'+\n    '<h2>Личные встречи</h2><div class="dev-list">'+meetingRows+'</div>'+
+    '<h2>Обращения игроков</h2><div class="finance-grid">'+requestRows+'</div>'+
+    '<h2>Личные встречи</h2><div class="dev-list">'+meetingRows+'</div>'+
     '<h2>Командные мероприятия</h2><div class="finance-grid">'+eventCards+'</div>'+lastEvent+
     '<h2>Кому нужно внимание</h2><div class="dev-list">'+(playerRows||'<div class="subtitle">Состав пуст.</div>')+'</div>'+
     '<p class="profile-muted">Личные разговоры доступны в профиле каждого хоккеиста. Результат зависит от его формы, морали, роли и характера. Повторные разговоры и мероприятия ограничены по времени.</p></div>';
