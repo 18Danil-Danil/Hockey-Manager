@@ -591,7 +591,7 @@ function startLoanExtensionNegotiation(playerId, extraRounds = 5) {
     showToast('Переговоры по этой аренде уже идут', 'info'); return false;
   }
   const remaining = Math.max(0, Number(loan.endRound) - Number(G.league.currentRound));
-  const availableExtension = Math.max(0, 10 - Math.max(0, Number(loan.endRound) - Number(loan.startRound)) - (Number(loan.extensions) || 0));
+  const availableExtension = Math.max(0, 10 - Math.max(0, Number(loan.endRound) - Number(loan.startRound)) - (Number(loan.extendedRounds) || 0));
   const extension = Math.min(availableExtension, Math.max(1, Math.round(Number(extraRounds) || 5)));
   if (remaining > 3) { showToast('Продление можно обсуждать ближе к окончанию аренды', 'info'); return false; }
   if (extension <= 0) { showToast('Максимальный срок этой аренды уже исчерпан', 'info'); return false; }
@@ -628,6 +628,7 @@ function processLoanExtensionNegotiations() {
       negotiation.status = 'accepted';
       negotiation.message = decisionClub.name + ' согласился продлить аренду на ' + negotiation.requestedRounds + ' туров.';
       loan.extensions = (Number(loan.extensions) || 0) + 1;
+      loan.extendedRounds = (Number(loan.extendedRounds) || 0) + negotiation.requestedRounds;
       loan.extensionHistory = Array.isArray(loan.extensionHistory) ? loan.extensionHistory : [];
       loan.extensionHistory.push({ round: G.league.currentRound, rounds: negotiation.requestedRounds, result: 'accepted' });
       const log = (G.league.loanLog || []).slice().reverse().find(item => Number(item.playerId) === Number(player.id) && item.returnedRound === undefined);
@@ -651,6 +652,7 @@ function respondToLoanExtension(playerId, accept) {
   if (accept) {
     player.loan.endRound += negotiation.counterRounds;
     player.loan.extensions = (Number(player.loan.extensions) || 0) + 1;
+    player.loan.extendedRounds = (Number(player.loan.extendedRounds) || 0) + negotiation.counterRounds;
     player.loan.extensionHistory = Array.isArray(player.loan.extensionHistory) ? player.loan.extensionHistory : [];
     player.loan.extensionHistory.push({ round: G.league.currentRound, rounds: negotiation.counterRounds, result: 'counter-accepted' });
     const log = (G.league.loanLog || []).slice().reverse().find(item => Number(item.playerId) === Number(player.id) && item.returnedRound === undefined);
