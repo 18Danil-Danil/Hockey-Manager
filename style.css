@@ -1252,3 +1252,22 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
 .market-club-cell{display:flex;align-items:center;gap:2px}
 .market-club-cell .club-logo,.market-club-cell .club-logo-image{margin-right:6px}
 .market-club-cell small{display:block}
+
+
+/* Раздевалка: личные встречи и командные мероприятия */
+.locker-room-page { display:flex; flex-direction:column; gap:14px; }
+.locker-room-page h2 { margin:10px 0 2px; }
+.locker-room-page .finance-grid { margin-bottom:4px; }
+.locker-event-card { display:flex; flex-direction:column; gap:9px; min-height:150px; }
+.locker-event-card .btn { align-self:flex-start; margin-top:auto; }
+.locker-room-page .dev-list { display:flex; flex-direction:column; gap:8px; }
+.locker-room-page .dev-row { align-items:center; }
+.locker-room-page .danger-text { color:#ef4444; }
+.locker-room-page .warning-text { color:#f59e0b; }
+.profile-section .profile-action-group select { min-width:0; max-width:100%; }
+.profile-section .profile-action-group button:disabled { opacity:.45; cursor:not-allowed; }
+@media (max-width:640px) {
+  .locker-room-page .finance-grid { grid-template-columns:1fr; }
+  .locker-event-card { min-height:0; }
+  .profile-section .profile-action-group select { flex:1 1 100%; }
+}
