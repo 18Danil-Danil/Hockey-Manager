@@ -630,7 +630,7 @@ function renderInternationalMarket(region) {
       <td class="market-player-stats">${stats}</td>
       <td class="salary">${quote.salary.toFixed(1)}M</td>
       <td class="salary">${quote.price.toFixed(1)}M</td>
-      <td><button type="button" class="btn small" ${disabled} title="${title}" onclick="buyInternationalPlayer(${Number(player.id)})">Купить</button></td>
+      <td><button type="button" class="btn small" ${disabled} title="${title}" onclick="openInternationalClubNegotiation(${Number(player.id)})">Переговоры</button></td>
     </tr>`;
   }).join('');
   const title = region === 'kazakhstan' ? 'Клубы Казахстана' : region === 'belarus' ? 'Клубы Беларуси' : 'Европейские клубы';
@@ -1103,11 +1103,41 @@ function renderHistory() {
 /* ============================================================
    МОДАЛКА ИГРОКА (с кнопкой реабилитации — фиксы #4/#13)
    ============================================================ */
+
+function renderClubTransferNegotiationModal() {
+  const state = G.clubTransferNegotiation;
+  const found = state && findInternationalPlayer(state.playerId);
+  if (!found || found.club.id !== state.clubId) {
+    return '<div class="modal-overlay"><div class="modal"><p>Игрок или клуб больше недоступен.</p><button class="btn" onclick="closeClubTransferNegotiation()">Закрыть</button></div></div>';
+  }
+  const player = found.player, club = found.club;
+  const result = state.lastResult;
+  const resultHtml = result
+    ? '<div class="profile-contract-row"><span>Ответ клуба</span><b>' + (result.message || 'Получен ответ') + '</b></div>' +
+      (result.counteroffer ? '<div class="profile-contract-row"><span>Встречная сумма</span><b>' + result.counteroffer.fee.toFixed(1) + ' млн ₽</b></div>' : '')
+    : '';
+  const counterButton = result && result.decision === 'counter'
+    ? '<button class="btn" onclick="acceptClubTransferCounterOffer()">Принять встречную сумму</button>' : '';
+  return '<div class="modal-overlay" onclick="if(event.target===this)closeClubTransferNegotiation()"><div class="modal player-profile-modal">' +
+    '<button class="close-btn" onclick="closeClubTransferNegotiation()">✕</button>' +
+    '<span class="profile-eyebrow">ПЕРЕГОВОРЫ МЕЖДУ КЛУБАМИ</span><h2>' + player.name + '</h2>' +
+    '<p>' + club.name + ' · ' + club.leagueName + ' · ' + player.position + ' · ' + player.ovr + ' OVR</p>' +
+    '<div class="profile-contract-row"><span>Оценка трансфера</span><b>' + getInternationalTransferPrice(player, club).toFixed(1) + ' млн ₽</b></div>' +
+    '<div class="profile-contract-row"><span>Ожидание клуба</span><b>' + state.demand.toFixed(1) + ' млн ₽</b></div>' +
+    '<label class="profile-contract-row"><span>Ваше предложение, млн ₽</span><input type="number" min="0.5" step="0.1" value="' + Number(state.offerFee).toFixed(1) + '" onchange="updateClubTransferOffer(this.value)"></label>' +
+    resultHtml + '<div class="profile-action-group"><button class="btn" onclick="submitClubTransferOffer()">Отправить предложение</button>' + counterButton +
+    '<button class="btn secondary" onclick="closeClubTransferNegotiation()">Отмена</button></div>' +
+    '<p class="profile-muted">Если клуб согласится, начнутся отдельные переговоры с хоккеистом о зарплате и сроке контракта.</p>' +
+    '</div></div>';
+}
+
 function renderModal() {
+  if (G.clubTransferNegotiation) return renderClubTransferNegotiationModal();
   if (!G.popupPlayerId) return '';
   let p = null, team = null;
   for (const t of G.league.teams) { const found = t.roster.find(x => x.id === G.popupPlayerId); if (found) { p = found; team = t; break; } }
   if (!p) p = (G.league.freeAgents || []).find(x => x.id === G.popupPlayerId);
+  if (!p && typeof findInternationalPlayer === 'function') { const found = findInternationalPlayer(G.popupPlayerId); if (found) { p = found.player; team = found.club; } }
   if (!p) { G.popupPlayerId = null; return ''; }
   const isG = p.position === 'G', attrs = isG ? GOALIE_ATTRS : SKATER_ATTRS;
   const s = ensureStats(p), ps = ensurePlayoffStats(p), career = p.careerStats || {};
@@ -1305,7 +1335,8 @@ function renderContractNegotiationPanel(player, team) {
   const state = G.contractNegotiation;
   if (!state || state.playerId !== player.id) return '';
   const mode = state.mode === 'renewal' ? 'Продление контракта' : 'Предложение свободному агенту';
-  const demand = getPlayerContractDemand(player, team, state.mode);
+  const negotiationTeam = G.league?.teams?.find(item => item.id === G.playerTeamId) || team;
+  const demand = getPlayerContractDemand(player, negotiationTeam, state.mode);
   const result = state.lastResult;
   const resultHtml = result
     ? '<div class="profile-contract-row"><span>Ответ игрока</span><b>' + (result.message || 'Получен ответ') + '</b></div>' +
