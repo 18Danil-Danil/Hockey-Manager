@@ -402,7 +402,7 @@ function genLeague() {
   const league = {
     season, teams, schedule, scheduleMeta: makeScheduleMeta(season, schedule.length, teams), scheduleVersion: 4,
     currentRound: 0, results: [], playoffs: null, history: [], transferLog: [], freeAgents: [], staffPool: [], waivers: [],
-    aiTradeOffers: [], allTimeLeaders: { skaters: {} }, inbox: [], news: [], retiredPlayers: [],
+    aiTradeOffers: [], aiTransferOffers: [], aiTransferLog: [], allTimeLeaders: { skaters: {} }, inbox: [], news: [], retiredPlayers: [],
     openingCup: null, retroMatch: null, tradeDeadlineNotified: false, youth: initYouthLeagues(),
   };
   teams.forEach(t => { t.staff.headCoach = { id: nextId(), role: 'headCoach', name: pick(FIRST) + ' ' + pick(LAST), level: 2, xp: 0, salary: 2.4, age: randInt(38, 58) }; });
