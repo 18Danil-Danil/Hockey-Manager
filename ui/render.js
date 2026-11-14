@@ -859,12 +859,12 @@ function renderYouthLeagues() {
   html += '<h2>Турнирная таблица</h2><table><thead><tr><th>#</th><th>Команда</th><th>И</th><th>В</th><th>ВО</th><th>ПО</th><th>П</th><th>О</th><th>ЗШ</th><th>ЗП</th></tr></thead><tbody>';
   table.forEach((team, index) => {
     const r = team.record;
-    html += '<tr><td>' + (index + 1) + '</td><td>' + team.name + '</td><td>' + r.gp + '</td><td>' + r.w + '</td><td>' + r.otw + '</td><td>' + r.otl + '</td><td>' + r.l + '</td><td><b>' + r.pts + '</b></td><td>' + r.gf + '</td><td>' + r.ga + '</td></tr>';
+    html += '<tr><td>' + (index + 1) + '</td><td><span class="market-club-cell">' + clubLogoWithFallback(team, 24, 'youth-table-logo') + '<span>' + team.name + '</span></span></td><td>' + r.gp + '</td><td>' + r.w + '</td><td>' + r.otw + '</td><td>' + r.otl + '</td><td>' + r.l + '</td><td><b>' + r.pts + '</b></td><td>' + r.gf + '</td><td>' + r.ga + '</td></tr>';
   });
   html += '</tbody></table>';
   const rosterTeam = league.teams.find(team => String(team.id) === String(G.youthRosterTeamId)) || table[0] || league.teams[0];
   if (rosterTeam) {
-    html += '<h2>Игроки команды</h2><div class="inbox-filter"><select onchange="G.youthRosterTeamId=this.value;render()" style="max-width:100%">' + table.map(team => '<option value="' + team.id + '" ' + (team.id === rosterTeam.id ? 'selected' : '') + '>' + team.name + '</option>').join('') + '</select></div>' +
+    html += '<h2>Игроки команды</h2><div class="market-club-cell" style="margin:8px 0 12px">' + clubLogoWithFallback(rosterTeam, 30, 'youth-roster-logo') + '<b>' + rosterTeam.name + '</b></div><div class="inbox-filter"><select onchange="G.youthRosterTeamId=this.value;render()" style="max-width:100%">' + table.map(team => '<option value="' + team.id + '" ' + (team.id === rosterTeam.id ? 'selected' : '') + '>' + team.name + '</option>').join('') + '</select></div>' +
       '<table><thead><tr><th>Поз.</th><th>Игрок</th><th>Возраст</th><th>OVR</th><th>Пот.</th><th>И</th><th>О</th></tr></thead><tbody>' +
       rosterTeam.roster.slice().sort((a,b) => b.ovr-a.ovr).map(player => '<tr style="cursor:pointer" onclick="openYouthPlayerCard(\'youth\', null, \'' + leagueId + '\', \'' + rosterTeam.id + '\', ' + player.id + ')"><td>' + player.position + '</td><td>' + player.name + '</td><td>' + player.age + '</td><td>' + player.ovr + '</td><td>' + (player.pot || player.ovr) + '</td><td>' + (player.stats?.gp || 0) + '</td><td>' + (player.stats?.points || 0) + '</td></tr>').join('') + '</tbody></table>';
   }
