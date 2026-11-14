@@ -103,4 +103,23 @@ assert.equal(context.respondToAIRecallRequest(aiOwnedPlayer2.id, false), true, '
 assert.ok(parent.roster.some(item => item.id === aiOwnedPlayer2.id), 'rejected AI recall should keep the loan active');
 assert.equal(aiOwnedPlayer2.loan.aiRecallRequest.status, 'rejected');
 
+
+const baseline = context.getLoanPartnershipRating(1, 3);
+assert.equal(baseline.score, 50, 'clubs without loan history should start with neutral reputation');
+assert.equal(baseline.label, 'Нет истории');
+context.G.league.loanLog.push({
+  parentTeamId: 1, borrowerTeamId: 3, returnedRound: 8, reason: 'expired',
+  assessment: { guaranteeMet: true, status: 'Оправдывает ожидания' }
+});
+const reliable = context.getLoanPartnershipRating(1, 3);
+assert.ok(reliable.score > 50, 'honouring a loan guarantee should improve partnership reputation');
+assert.equal(reliable.successful, 1);
+context.G.league.loanLog.push({
+  parentTeamId: 1, borrowerTeamId: 3, returnedRound: 9, reason: 'recall',
+  assessment: { guaranteeAtRisk: true, status: 'Мало игрового времени' }
+});
+const damaged = context.getLoanPartnershipRating(1, 3);
+assert.ok(damaged.score < reliable.score, 'breaking a playing-time guarantee should damage partnership reputation');
+assert.equal(damaged.problematic, 1);
+
 console.log('Loan breach and early-return checks passed.');
