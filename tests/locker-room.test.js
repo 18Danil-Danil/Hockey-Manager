@@ -142,7 +142,7 @@ const appRenderSource = fs.readFileSync(path.join(__dirname, '..', 'ui', 'app-re
 const indexSource = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 assert.match(renderSource, /\['lockerRoom','Раздевалка'\]/, 'locker room must be available in club navigation');
 assert.match(appRenderSource, /G\.activeTab === 'lockerRoom' \? renderLockerRoom\(\)/, 'locker room tab must render its screen');
-assert.match(renderSource, /Назначить встречу/, 'player profile must offer appointment scheduling');
+assert.match(renderSource, /schedulePlayerMeeting\(/, 'player profile must offer appointment scheduling');
 assert.match(renderSource, /locker-attention-link/, 'locker room attention links must use dedicated neutral styling');
 assert.match(renderSource, /locker-topic-row/, 'conversation topics must use compact action rows');
 assert.match(renderSource, /locker-meeting-delay/, 'meeting delay must use the styled single selector');
