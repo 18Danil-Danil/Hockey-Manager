@@ -211,3 +211,20 @@ FootyLogos публикует каталоги хоккейных эмблем �
 | Swiss National League | HC Lugano | https://www.footylogos.com/logos/hc-lugano | https://www.footylogos.com/sports-assets/logos/hc-lugano/hc-lugano-logo-footylogos.svg |
 
 Индивидуальные карточки подтверждают хоккейную принадлежность клубов и соответствующие лиги сезона 2026/27. Прямые адреса SVG зафиксированы в тестах. Всего внесено 27 эмблем международного рынка вне КХЛ; все остальные клубы используют fallback до аналогичной проверки.
+## Дополнение: Kiekko-Espoo, KalPa и семь клубов SHL — 14 ноября 2026
+
+Девять прямых SVG-адресов получены через кнопку SVG на индивидуальных карточках FootyLogos. Для Kiekko-Espoo и KalPa страницы подтверждают Liiga 2026/27; для семи шведских клубов ссылки взяты из каталога SHL 2026/27 и индивидуальных карточек клубов.
+
+| Лига | Клуб | Страница-источник | Прямой SVG |
+|---|---|---|---|
+| Liiga | Kiekko-Espoo | https://www.footylogos.com/logos/kiekko-espoo | https://www.footylogos.com/sports-assets/logos/kiekko-espoo/kiekko-espoo-logo-footylogos.svg |
+| Liiga | KalPa | https://www.footylogos.com/logos/kalpa | https://www.footylogos.com/sports-assets/logos/kalpa/kalpa-logo-footylogos.svg |
+| SHL | Djurgårdens IF | https://www.footylogos.com/logos/djurgardens-if-hockey | https://www.footylogos.com/sports-assets/logos/djurgardens-if-hockey/djurgardens-if-hockey-logo-footylogos.svg |
+| SHL | HV71 | https://www.footylogos.com/logos/hv71 | https://www.footylogos.com/sports-assets/logos/hv71/hv71-logo-footylogos.svg |
+| SHL | Linköping HC | https://www.footylogos.com/logos/linkoping-hc | https://www.footylogos.com/sports-assets/logos/linkoping-hc/linkoping-hc-logo-footylogos.svg |
+| SHL | Luleå Hockey | https://www.footylogos.com/logos/lulea-hockey | https://www.footylogos.com/sports-assets/logos/lulea-hockey/lulea-hockey-logo-footylogos.svg |
+| SHL | Rögle BK | https://www.footylogos.com/logos/rogle-bk | https://www.footylogos.com/sports-assets/logos/rogle-bk/rogle-bk-logo-footylogos.svg |
+| SHL | Skellefteå AIK | https://www.footylogos.com/logos/skelleftea-aik | https://www.footylogos.com/sports-assets/logos/skelleftea-aik/skelleftea-aik-logo-footylogos.svg |
+| SHL | Växjö Lakers | https://www.footylogos.com/logos/vaxjo-lakers | https://www.footylogos.com/sports-assets/logos/vaxjo-lakers/vaxjo-lakers-logo-footylogos.svg |
+
+Все девять соответствий добавлены в tests/club-logos.test.js. FootyLogos просит указывать источник; включение в игру не означает передачу прав на клубные товарные знаки.
