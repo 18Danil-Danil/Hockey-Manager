@@ -998,7 +998,7 @@ function respondToAIRecallRequest(playerId, accept) {
 function processAIIncomingLoanOffers() {
   if (!G.league?.teams || G.league.currentRound >= 40) return;
   G.league.aiLoanOffers = (G.league.aiLoanOffers || []).filter(offer => Number(offer.expiresRound) >= Number(G.league.currentRound));
-  if (G.league.aiLoanOffers.length >= 3 || rng() > 0.38) return;
+  if (G.league.aiLoanOffers.length >= 8 || rng() > 0.42) return;
   generateAIIncomingLoanOffer();
 }
 
