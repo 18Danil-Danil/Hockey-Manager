@@ -1020,8 +1020,67 @@ function respondToAIRecallRequest(playerId, accept) {
 
 function processAIIncomingLoanOffers() {
   if (!G.league?.teams || G.league.currentRound >= 40) return;
-  G.league.aiLoanOffers = (G.league.aiLoanOffers || []).filter(offer => Number(offer.expiresRound) >= Number(G.league.currentRound));
-  if (G.league.aiLoanOffers.length >= 8 || rng() > 0.42) return;
+  const round = Number(G.league.currentRound) || 0;
+  const parent = G.league.teams.find(team => Number(team.id) === Number(G.playerTeamId));
+  G.league.aiLoanOffers = Array.isArray(G.league.aiLoanOffers) ? G.league.aiLoanOffers : [];
+  const active = [];
+  for (const offer of G.league.aiLoanOffers) {
+    const borrower = G.league.teams.find(team => Number(team.id) === Number(offer.fromTeamId));
+    const player = parent?.roster.find(item => Number(item.id) === Number(offer.playerId));
+    if (!parent || !borrower || !player || player.loan) continue;
+    if (Number(offer.expiresRound) < round) {
+      addInboxMessage('league', borrower.name, 'Предложение аренды истекло',
+        borrower.name + ' отозвал предложение по аренде хоккеиста ' + player.name +
+        ': срок ответа истёк. При необходимости клуб может обратиться повторно.', []);
+      addNews('signing', borrower.name + ' снял предложение об аренде хоккеиста ' + player.name + ' после истечения срока.', 1);
+      continue;
+    }
+    if (round > Number(offer.createdRound) && Number(offer.lastReviewedRound) !== round) {
+      offer.lastReviewedRound = round;
+      const rivals = G.league.aiLoanOffers.filter(item =>
+        Number(item.playerId) === Number(offer.playerId) && Number(item.id) !== Number(offer.id));
+      const rivalBest = rivals.reduce((best, item) =>
+        Math.max(best, Number(item.fee || 0) + Number(item.wageShare || 0) * 0.02 + Number(item.rounds || 0) * 0.04), 0);
+      const ownValue = Number(offer.fee || 0) + Number(offer.wageShare || 0) * 0.02 + Number(offer.rounds || 0) * 0.04;
+      const gap = rivalBest - ownValue;
+      const reviewChance = Math.max(0.12, Math.min(0.72, 0.2 + Math.max(0, gap) * 0.08 + rivals.length * 0.08));
+      if (rivals.length && gap > 0.15 && rng() < reviewChance) {
+        const feeRoom = Math.max(0, Number(borrower.finance?.balance) || 0);
+        const improvedFee = Math.round(Math.min(feeRoom, Number(offer.fee || 0) + 0.3) * 10) / 10;
+        const shares = [0, 25, 50, 60, 75, 100];
+        const shareIndex = shares.indexOf(Number(offer.wageShare));
+        let improvedShare = Number(offer.wageShare) || 0;
+        if (shareIndex >= 0 && shareIndex < shares.length - 1) {
+          const candidateShare = shares[shareIndex + 1];
+          const terms = getLoanTerms(player, parent, borrower, Number(offer.rounds), candidateShare);
+          if (terms.allowed) improvedShare = candidateShare;
+        }
+        const revisedTerms = getLoanTerms(player, parent, borrower, Number(offer.rounds), improvedShare);
+        if ((improvedFee > Number(offer.fee || 0) || improvedShare > Number(offer.wageShare || 0)) &&
+            revisedTerms.allowed && feeRoom >= improvedFee) {
+          offer.fee = improvedFee;
+          offer.wageShare = improvedShare;
+          offer.revisedRound = round;
+          offer.revisionCount = (Number(offer.revisionCount) || 0) + 1;
+          offer.expiresRound = Math.max(Number(offer.expiresRound) || 0, round + 2);
+          addInboxMessage('league', borrower.name, 'Клуб улучшил предложение по аренде',
+            borrower.name + ' пересмотрел условия аренды ' + player.name + ': теперь предлагает ' +
+            offer.fee.toFixed(1) + ' млн ₽ и оплачивает ' + offer.wageShare +
+            '% зарплаты. Предложение действует до ' + offer.expiresRound + '-го тура.', []);
+          addNews('signing', borrower.name + ' улучшил предложение по аренде хоккеиста ' + player.name + '.', 1);
+        }
+      } else if (!rivals.length && round >= Number(offer.createdRound) + 2 &&
+          rng() < 0.08 + (Number(offer.partnershipScore) < 35 ? 0.08 : 0)) {
+        addInboxMessage('league', borrower.name, 'Клуб снял предложение об аренде',
+          borrower.name + ' решил отказаться от переговоров по аренде хоккеиста ' + player.name + '.', []);
+        addNews('signing', borrower.name + ' отозвал предложение по аренде хоккеиста ' + player.name + '.', 1);
+        continue;
+      }
+    }
+    active.push(offer);
+  }
+  G.league.aiLoanOffers = active;
+  if (active.length >= 8 || rng() > 0.42) return;
   generateAIIncomingLoanOffer();
 }
 
