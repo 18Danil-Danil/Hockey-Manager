@@ -369,6 +369,88 @@ function buyVHLPlayer(sellingTeamId, playerId, negotiatedPrice = null) {
   saveGame({ immediate: true });
   return true;
 }
+function getLoanTerms(player, parentTeam, borrowerTeam, rounds = 5, wageShare = 50) {
+  const salary = Number(player?.contract?.salary) || 0.5;
+  const fee = Math.round(Math.max(0.1, (Number(player?.ovr || 60) - 50) * 0.025) * 10) / 10;
+  const share = Math.max(0, Math.min(100, Number(wageShare) || 0));
+  const duration = Math.max(1, Math.min(10, Math.round(Number(rounds) || 5)));
+  const borrowerSalary = Math.round(salary * share) / 100;
+  const parentSalary = Math.round(salary * (100 - share)) / 100;
+  const payroll = (borrowerTeam?.roster || []).reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0);
+  const foreigners = (borrowerTeam?.roster || []).filter(item => item.nationality !== 'Россия').length;
+  let reason = '';
+  if (!player || !parentTeam || !borrowerTeam) reason = 'Не удалось определить игрока или клуб';
+  else if (parentTeam.id === borrowerTeam.id) reason = 'Нельзя арендовать собственного игрока';
+  else if (player.loan) reason = 'Игрок уже находится в аренде';
+  else if ((borrowerTeam.roster || []).length >= 25) reason = 'В составе уже 25 игроков';
+  else if (player.nationality !== 'Россия' && foreigners >= 3) reason = 'Лимит легионеров (3) уже исчерпан';
+  else if (payroll + borrowerSalary > Number(borrowerTeam.finance?.salaryCap ?? Infinity)) reason = 'Не хватает места под потолком зарплат';
+  else if (Number(borrowerTeam.finance?.balance || 0) < fee) reason = 'Недостаточно средств для арендной платы';
+  return { allowed: !reason, reason, fee, rounds: duration, wageShare: share, borrowerSalary, parentSalary };
+}
+function loanPlayerFromClub(parentTeamId, playerId, rounds = 5, wageShare = 50) {
+  const borrower = G.league?.teams.find(item => item.id === G.playerTeamId);
+  const parent = G.league?.teams.find(item => Number(item.id) === Number(parentTeamId));
+  const player = parent?.roster.find(item => Number(item.id) === Number(playerId));
+  const terms = getLoanTerms(player, parent, borrower, rounds, wageShare);
+  if (!terms.allowed) { showToast(terms.reason, 'error'); return false; }
+  if (rng() > (player.ovr >= 82 ? 0.72 : player.ovr >= 72 ? 0.84 : 0.93)) { showToast(parent.name + ' отклонил предложение об аренде', 'error'); return false; }
+  parent.roster.splice(parent.roster.indexOf(player), 1);
+  player.loanOriginalContract = player.contract ? { ...player.contract } : null;
+  player.loan = { parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, startRound: G.league.currentRound, endRound: G.league.currentRound + terms.rounds, wageShare: terms.wageShare, borrowerSalary: terms.borrowerSalary, parentSalary: terms.parentSalary, fee: terms.fee };
+  player.contract = { ...(player.contract || {}), salary: terms.borrowerSalary };
+  borrower.roster.push(player);
+  borrower.finance.balance = Math.round((Number(borrower.finance.balance) - terms.fee) * 10) / 10;
+  parent.finance.balance = Math.round((Number(parent.finance?.balance || 0) + terms.fee) * 10) / 10;
+  borrower.finance.expenses = borrower.finance.expenses || {};
+  borrower.finance.expenses.loans = (Number(borrower.finance.expenses.loans) || 0) + terms.fee;
+  parent.finance.income = parent.finance.income || {};
+  parent.finance.income.loans = (Number(parent.finance.income.loans) || 0) + terms.fee;
+  G.league.loanLog = Array.isArray(G.league.loanLog) ? G.league.loanLog : [];
+  G.league.loanLog.push({ playerId: player.id, playerName: player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, borrowerTeamName: borrower.name, startRound: G.league.currentRound, endRound: player.loan.endRound, fee: terms.fee, wageShare: terms.wageShare });
+  borrower.lines = null; parent.lines = null; syncLines(borrower); syncLines(parent);
+  addNews('signing', borrower.name + ' арендовал ' + player.name + ' у ' + parent.name + ' до ' + player.loan.endRound + '-го тура', 2);
+  showToast(player.name + ' перешёл в аренду на ' + terms.rounds + ' туров', 'success');
+  render(); saveGame({ immediate: true }); return true;
+}
+function returnLoanPlayer(playerId, reason = 'early') {
+  const borrower = G.league?.teams.find(item => item.id === G.playerTeamId);
+  const player = borrower?.roster.find(item => Number(item.id) === Number(playerId) && item.loan);
+  if (!player) return false;
+  const loan = player.loan;
+  const parent = G.league.teams.find(item => item.id === loan.parentTeamId);
+  if (!parent) { showToast('Исходный клуб не найден', 'error'); return false; }
+  borrower.roster.splice(borrower.roster.indexOf(player), 1);
+  player.loan = null;
+  if (player.loanOriginalContract) player.contract = player.loanOriginalContract;
+  delete player.loanOriginalContract;
+  parent.roster.push(player);
+  borrower.lines = null; parent.lines = null; syncLines(borrower); syncLines(parent);
+  G.league.loanLog = Array.isArray(G.league.loanLog) ? G.league.loanLog : [];
+  G.league.loanLog.push({ playerId: player.id, playerName: player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: borrower.id, borrowerTeamName: borrower.name, returnedRound: G.league.currentRound, reason });
+  addNews('signing', player.name + ' вернулся из аренды в ' + parent.name, 2);
+  showToast(player.name + ' возвращён из аренды', 'success');
+  render(); saveGame({ immediate: true }); return true;
+}
+function processLoanExpirations() {
+  if (!G.league?.teams) return;
+  const due = [];
+  for (const team of G.league.teams) for (const player of (team.roster || [])) if (player.loan && player.loan.borrowerTeamId === team.id && G.league.currentRound >= player.loan.endRound) due.push({ team, player });
+  for (const item of due) {
+    const loan = item.player.loan;
+    const parent = G.league.teams.find(team => team.id === loan.parentTeamId);
+    if (!parent) continue;
+    item.team.roster.splice(item.team.roster.indexOf(item.player), 1);
+    item.player.loan = null;
+    if (item.player.loanOriginalContract) item.player.contract = item.player.loanOriginalContract;
+    delete item.player.loanOriginalContract;
+    parent.roster.push(item.player);
+    item.team.lines = null; parent.lines = null; syncLines(item.team); syncLines(parent);
+    G.league.loanLog = Array.isArray(G.league.loanLog) ? G.league.loanLog : [];
+    G.league.loanLog.push({ playerId: item.player.id, playerName: item.player.name, parentTeamId: parent.id, parentTeamName: parent.name, borrowerTeamId: item.team.id, borrowerTeamName: item.team.name, returnedRound: G.league.currentRound, reason: 'expired' });
+    addNews('signing', item.player.name + ' завершил аренду и вернулся в ' + parent.name, 2);
+  }
+}
 function prepareTradeForPlayer(teamId, playerId) {
   G.tradeTargetTeamId = Number(teamId);
   G.marketTargetPlayerId = Number(playerId);
