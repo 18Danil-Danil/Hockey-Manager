@@ -4,12 +4,13 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const negotiationSource = fs.readFileSync(path.join(__dirname, '..', 'engine', 'contract-negotiations.js'), 'utf8');
-const context = { markYouthGraduateSigned: (player, team, method) => { player.signingMethod = method; } };
+const context = { G: { league: { freeAgents: [] } }, markYouthGraduateSigned: (player, team, method) => { player.signingMethod = method; } };
 vm.createContext(context);
 vm.runInContext(negotiationSource, context);
 
 const player = { id: 1, name: 'Тестовый', age: 25, ovr: 80, morale: 80, nationality: 'Россия', contract: { salary: 5, years: 1 } };
 const team = { id: 1, roster: [player], finance: { salaryCap: 20 } };
+context.G.league.freeAgents = [ ];
 const demand = context.getPlayerContractDemand(player, team, 'renewal');
 assert.ok(demand.salary >= 5, 'renewal demand must not fall far below current salary');
 assert.ok(demand.years >= 1 && demand.years <= 5);
@@ -22,6 +23,7 @@ assert.equal(player.contract.years, 1 + demand.years);
 assert.equal(player.contract.salary, demand.salary);
 
 const freeAgent = { id: 2, name: 'Свободный', age: 22, ovr: 74, morale: 70, nationality: 'Россия', contract: { salary: 2, years: 0 }, status: 'ufa' };
+context.G.league.freeAgents = [freeAgent];
 const signingDemand = context.getPlayerContractDemand(freeAgent, team, 'signing');
 const signing = context.applyPlayerContractAgreement(team, freeAgent, { salary: signingDemand.salary, years: signingDemand.years }, 'signing');
 assert.equal(signing.decision, 'accept');
