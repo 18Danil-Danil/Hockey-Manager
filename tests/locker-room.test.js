@@ -99,6 +99,13 @@ assert.equal(result.success, true);
 assert.equal(p1.morale, leaderMorale + 3);
 assert.equal(p2.morale, egoistMorale + 3);
 
+team.bench = [2];
+context.G.league.currentRound = 24;
+const beforePromise = p2.morale;
+context.processPlayerRelations(team);
+assert.equal(p2.morale, beforePromise - 5, 'unfulfilled playing-time promises must reduce morale');
+assert.equal(p2.playingTimePromiseRound, undefined);
+
 const expired = context.createLockerRoomRequest(team, 'support', p2);
 const beforeExpiry = p2.morale;
 context.G.league.currentRound = expired.deadlineRound;
