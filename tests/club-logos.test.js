@@ -149,6 +149,12 @@ const verifiedMarketLogos = new Map([
   ['germany-del/straubing', 'https://www.footylogos.com/sports-assets/logos/straubing-tigers/straubing-tigers-logo-footylogos.svg'],
   ['germany-del/koelner-haie', 'https://www.footylogos.com/sports-assets/logos/kolner-haie/kolner-haie-logo-footylogos.svg'],
   ['germany-del/krefeld-pinguine', 'https://www.footylogos.com/sports-assets/logos/krefeld-pinguine/krefeld-pinguine-logo-footylogos.svg'],
+  ['switzerland-nl/ambri-piotta', 'https://www.footylogos.com/sports-assets/logos/hc-ambri-piotta/hc-ambri-piotta-logo-footylogos.svg'],
+  ['switzerland-nl/ajoie', 'https://www.footylogos.com/sports-assets/logos/hc-ajoie/hc-ajoie-logo-footylogos.svg'],
+  ['switzerland-nl/scl-tigers', 'https://www.footylogos.com/sports-assets/logos/scl-tigers/scl-tigers-logo-footylogos.svg'],
+  ['switzerland-nl/ehc-kloten', 'https://www.footylogos.com/sports-assets/logos/ehc-kloten/ehc-kloten-logo-footylogos.svg'],
+  ['switzerland-nl/biel-bienne', 'https://www.footylogos.com/sports-assets/logos/ehc-biel-bienne/ehc-biel-bienne-logo-footylogos.svg'],
+  ['switzerland-nl/rapperswil', 'https://www.footylogos.com/sports-assets/logos/sc-rapperswil-jona-lakers/sc-rapperswil-jona-lakers-logo-footylogos.svg'],
 ]);
 for (const [key, url] of verifiedMarketLogos) {
   const [leagueId, clubId] = key.split('/');
