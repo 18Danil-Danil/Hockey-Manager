@@ -228,3 +228,15 @@ FootyLogos публикует каталоги хоккейных эмблем �
 | SHL | Växjö Lakers | https://www.footylogos.com/logos/vaxjo-lakers | https://www.footylogos.com/sports-assets/logos/vaxjo-lakers/vaxjo-lakers-logo-footylogos.svg |
 
 Все девять соответствий добавлены в tests/club-logos.test.js. FootyLogos просит указывать источник; включение в игру не означает передачу прав на клубные товарные знаки.
+## Ещё эмблемы SHL и чешской Extraliga — 14 ноября 2026
+
+| Лига | Клуб | Страница-источник | Прямой SVG |
+|---|---|---|---|
+| SHL | Malmö Redhawks | https://www.footylogos.com/logos/malmo-redhawks | https://www.footylogos.com/sports-assets/logos/malmo-redhawks/malmo-redhawks-logo-footylogos.svg |
+| SHL | Örebro HK | https://www.footylogos.com/logos/orebro-hk | https://www.footylogos.com/sports-assets/logos/orebro-hk/orebro-hk-logo-footylogos.svg |
+| SHL | Timrå IK | https://www.footylogos.com/logos/timra-ik | https://www.footylogos.com/sports-assets/logos/timra-ik/timra-ik-logo-footylogos.svg |
+| Czech Extraliga | Oceláři Třinec | https://www.footylogos.com/logos/hc-ocelari-trinec | https://www.footylogos.com/sports-assets/logos/hc-ocelari-trinec/hc-ocelari-trinec-logo-footylogos.svg |
+| Czech Extraliga | HC Sparta Praha | https://www.footylogos.com/logos/hc-sparta-praha | https://www.footylogos.com/sports-assets/logos/hc-sparta-praha/hc-sparta-praha-logo-footylogos.svg |
+| Czech Extraliga | Motor České Budějovice | https://www.footylogos.com/logos/motor-ceske-budejovice | https://www.footylogos.com/sports-assets/logos/motor-ceske-budejovice/motor-ceske-budejovice-logo-footylogos.svg |
+
+Ссылки извлечены через SVG download на индивидуальных карточках FootyLogos. Malmö Redhawks присутствует в игровом файле под двумя ID (malmo и malmo-redhawks), поэтому один и тот же официальный SVG назначен обоим записям, чтобы обе карточки отображались корректно. Для внешнего использования необходимо отдельно проверить права на клубные знаки.
