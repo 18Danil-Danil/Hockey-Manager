@@ -71,4 +71,16 @@ team.staff.psychologist = null;
 assert.match(context.holdLockerRoomEvent('psychologist').message, /психолог/);
 assert.equal(context.holdLockerRoomEvent('psychologist').success, false, 'psychologist event requires a psychologist');
 
+
+const renderSource = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8');
+const appRenderSource = fs.readFileSync(path.join(__dirname, '..', 'ui', 'app-render.js'), 'utf8');
+const indexSource = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+assert.match(renderSource, /\['lockerRoom','Раздевалка'\]/, 'locker room must be available in club navigation');
+assert.match(appRenderSource, /G\.activeTab === 'lockerRoom' \? renderLockerRoom\(\)/, 'locker room tab must render its screen');
+assert.match(renderSource, /Назначить встречу/, 'player profile must offer appointment scheduling');
+assert.match(renderSource, /talkToPlayer\(/, 'player profile must expose direct conversations');
+assert.match(indexSource, /engine\/locker-room\.js/, 'locker room engine must load before UI');
+const seasonSource = fs.readFileSync(path.join(__dirname, '..', 'engine', 'season-simulation.js'), 'utf8');
+assert.equal((seasonSource.match(/processLockerRoomMeetings/g) || []).length, 2, 'scheduled meetings must process in both single-round and full-season simulation');
+
 console.log('Locker room talks, meetings and team events checks passed.');
