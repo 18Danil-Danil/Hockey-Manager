@@ -171,7 +171,7 @@ assert.equal(context.getVHLTransferQuote(foreignTarget, poorSeller, foreignBuyer
 
 const ui = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8');
 assert.match(ui, /Г\/П\/О/, 'loan UI should show games, goals, assists and points');
-assert.match(ui, /updateLoanPerformance/, 'loan performance should be updated after matches');
+assert.match(ui, /player\.loan\.performance\?\.gp/, 'loan UI should show tracked appearances');
 assert.match(ui, /startOutgoingLoanNegotiation/, 'loan UI should allow sending players to other clubs');
 assert.match(ui, /Отозвать из аренды/, 'loan UI should allow recalling outgoing players');
 assert.match(ui, /function renderLoans/, 'loan management UI should exist');
