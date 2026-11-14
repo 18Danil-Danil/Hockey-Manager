@@ -106,12 +106,12 @@ context.processPlayerRelations(team);
 assert.equal(p2.morale, beforePromise - 5, 'unfulfilled playing-time promises must reduce morale');
 assert.equal(p2.playingTimePromiseRound, undefined);
 
-const expired = context.createLockerRoomRequest(team, 'support', p2);
-const beforeExpiry = p2.morale;
+const expired = context.createLockerRoomRequest(team, 'support', p1);
+const beforeExpiry = p1.morale;
 context.G.league.currentRound = expired.deadlineRound;
 context.processPlayerRelations(team);
 assert.equal(expired.status, 'expired');
-assert.equal(p2.morale, beforeExpiry - 5, 'ignored requests must have delayed morale consequences');
+assert.equal(p1.morale, beforeExpiry - 5, 'ignored requests must have delayed morale consequences');
 
 // Contract renewal and transfer requests from players.
 p2.contract = { salary: 1, years: 1 };
