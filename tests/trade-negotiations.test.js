@@ -43,14 +43,14 @@ assert.equal(rejected.decision, 'reject', 'a clearly one-sided offer should be r
 const expensive = player(7, 'G', 75, { salary: 12 });
 const capTeam = team(7, [player(8, 'G', 60, { salary: 4 })], { salaryCap: 10 });
 const capOpponent = team(8, [expensive]);
-const capResult = context.evaluateTradeProposal(capTeam, capOpponent, [], [expensive], 0, 0);
+const capResult = context.evaluateTradeProposal(capTeam, capOpponent, [capTeam.roster[0]], [expensive], 0, 0);
 assert.equal(capResult.reason, 'salary-cap', 'trade evaluation must enforce both clubs salary caps');
 
 const foreign = player(9, 'RW', 70, { nationality: 'Канада' });
-const foreignRoster = [player(10, 'C', 60), player(11, 'LW', 60), player(12, 'D', 60)];
+const foreignRoster = [player(10, 'C', 60), player(11, 'LW', 60, { nationality: 'Канада' }), player(12, 'D', 60, { nationality: 'США' }), player(15, 'RW', 61, { nationality: 'Швеция' })];
 const foreignTeam = team(9, foreignRoster);
 const foreignOpponent = team(10, [foreign]);
-const foreignResult = context.evaluateTradeProposal(foreignTeam, foreignOpponent, [], [foreign], 0, 0);
+const foreignResult = context.evaluateTradeProposal(foreignTeam, foreignOpponent, [foreignTeam.roster[0]], [foreign], 0, 0);
 assert.equal(foreignResult.reason, 'foreign-limit', 'trade evaluation must enforce the foreign-player limit');
 
 const noBudgetTeam = team(11, [player(13, 'C', 65)], { balance: 1 });
