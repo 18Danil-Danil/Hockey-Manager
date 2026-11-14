@@ -556,6 +556,17 @@ function renderFreeAgentMarket() {
   return `<div class="market-toolbar"><div class="market-filters"><button class="${G.marketFilter === 'all' ? 'active' : ''}" onclick="G.marketFilter='all'; render();">Все</button><button class="${G.marketFilter === 'F' ? 'active' : ''}" onclick="G.marketFilter='F'; render();">Форварды</button><button class="${G.marketFilter === 'D' ? 'active' : ''}" onclick="G.marketFilter='D'; render();">Защитники</button><button class="${G.marketFilter === 'G' ? 'active' : ''}" onclick="G.marketFilter='G'; render();">Вратари</button></div>${sortControl}</div><h2>Свободные агенты (${sorted.length})</h2><table><thead><tr><th>Поз</th><th>Имя</th><th>Возраст</th><th>OVR</th><th>ЗП</th><th>Действия</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+function renderLoans() {
+  const team = G.league.teams.find(item => item.id === G.playerTeamId);
+  const incoming = (team.roster || []).filter(player => player.loan);
+  const available = G.league.teams.filter(club => club.id !== team.id).flatMap(club => (club.roster || []).filter(player => !player.loan && (player.transferListed || player.age <= 23)).map(player => ({ club, player })));
+  const rows = available.map(({club, player}) => {
+    const terms = getLoanTerms(player, club, team, 5, 50);
+    return '<tr><td>' + player.name + '</td><td>' + club.name + '</td><td>' + player.position + '</td><td>' + player.age + '</td><td>' + player.ovr + '</td><td>' + (Number(player.contract?.salary)||0).toFixed(1) + '</td><td>' + terms.fee.toFixed(1) + ' млн ₽</td><td><button class="btn small" ' + (terms.allowed ? '' : 'disabled title="' + terms.reason + '"') + ' onclick="loanPlayerFromClub(' + club.id + ',' + player.id + ',5,50)">Взять на 5 туров</button></td></tr>';
+  }).join('');
+  const active = incoming.map(player => '<tr><td>' + player.name + '</td><td>' + (player.loan.parentTeamName || '—') + '</td><td>' + player.position + '</td><td>' + player.ovr + '</td><td>' + player.loan.endRound + '</td><td>' + player.loan.wageShare + '%</td><td><button class="btn small secondary" onclick="returnLoanPlayer(' + player.id + ')">Вернуть досрочно</button></td></tr>').join('');
+  return '<section class="market-shell"><div class="market-intro"><h2>Аренды</h2><p>Арендуй игроков у клубов ВХЛ на 1–10 туров. Зарплата делится между клубами, по окончании срока игрок автоматически возвращается.</p></div><h3>Игроки в аренде у твоего клуба (' + incoming.length + ')</h3><div class="market-table-wrap"><table><thead><tr><th>Игрок</th><th>Клуб-владелец</th><th>Поз.</th><th>OVR</th><th>До тура</th><th>Твоя доля ЗП</th><th>Действие</th></tr></thead><tbody>' + (active || '<tr><td colspan="7">Пока нет арендованных игроков.</td></tr>') + '</tbody></table></div><h3>Доступны для аренды</h3><div class="market-table-wrap"><table><thead><tr><th>Игрок</th><th>Клуб</th><th>Поз.</th><th>Возраст</th><th>OVR</th><th>Зарплата</th><th>Плата</th><th>Действие</th></tr></thead><tbody>' + (rows || '<tr><td colspan="8">Сейчас нет подходящих игроков для аренды.</td></tr>') + '</tbody></table></div></section>';
+}
 function renderMarket() {
   const tabs = [
     ['free', 'Свободные агенты'],
