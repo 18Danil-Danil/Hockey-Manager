@@ -59,4 +59,48 @@ assert.equal(context.requestLoanEarlyReturn(second.id), false, 'the other club m
 assert.equal(second.loan.earlyReturnRequest.status, 'rejected');
 assert.ok(borrower.roster.some(item => item.id === second.id), 'rejected request must leave the loan active');
 
+
+const aiOwnedPlayer = {
+  id: 52, name: 'Игрок клуба ИИ', morale: 60, position: 'F',
+  contract: { salary: 1.2 }, stats: {}, playoffStats: {},
+  loan: {
+    parentTeamId: 2, parentTeamName: 'Клуб-партнёр',
+    borrowerTeamId: 1, borrowerTeamName: 'Наш клуб',
+    startRound: 5, endRound: 15, role: 'top', guaranteedGames: 7,
+    guaranteeBreach: { round: 8, gamesPlayed: 1, guaranteedGames: 7 },
+    performance: { gp: 1, goals: 0, assists: 0, points: 0 },
+    statsSnapshot: {}
+  }
+};
+parent.roster = [aiOwnedPlayer];
+borrower.roster = [];
+roll = 0;
+context.G.league.currentRound = 9;
+assert.equal(context.processAIRequestedLoanRecalls(), undefined);
+assert.equal(aiOwnedPlayer.loan.aiRecallRequest.status, 'pending', 'AI parent club should request a return after a guarantee breach');
+assert.ok(inbox.some(item => String(item[2]).includes('Запрос клуба на возврат')));
+assert.equal(context.respondToAIRecallRequest(aiOwnedPlayer.id, true), true, 'user should be able to accept the AI club recall request');
+assert.ok(borrower.roster.some(item => item.id === aiOwnedPlayer.id), 'accepted AI recall should return the player to the parent club');
+assert.equal(aiOwnedPlayer.loan, null);
+assert.equal(context.G.league.loanLog.at(-1).reason, 'ai-recall');
+
+const aiOwnedPlayer2 = {
+  id: 53, name: 'Второй игрок клуба ИИ', morale: 60, position: 'D',
+  contract: { salary: 1 }, stats: {}, playoffStats: {},
+  loan: {
+    parentTeamId: 2, parentTeamName: 'Клуб-партнёр',
+    borrowerTeamId: 1, borrowerTeamName: 'Наш клуб',
+    startRound: 5, endRound: 15, role: 'rotation', guaranteedGames: 5,
+    guaranteeBreach: { round: 8, gamesPlayed: 1, guaranteedGames: 5 },
+    performance: { gp: 1, goals: 0, assists: 0, points: 0 },
+    statsSnapshot: {}
+  }
+};
+parent.roster = [];
+borrower.roster = [aiOwnedPlayer2];
+aiOwnedPlayer2.loan.aiRecallRequest = { status: 'pending', requestedRound: 9 };
+assert.equal(context.respondToAIRecallRequest(aiOwnedPlayer2.id, false), true, 'user should be able to reject an AI recall request');
+assert.ok(borrower.roster.some(item => item.id === aiOwnedPlayer2.id), 'rejected AI recall should keep the loan active');
+assert.equal(aiOwnedPlayer2.loan.aiRecallRequest.status, 'rejected');
+
 console.log('Loan breach and early-return checks passed.');
