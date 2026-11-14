@@ -26,6 +26,8 @@ assert.match(renderSource, /clubLogoWithFallback\(team, 32, 'team-logo-header'\)
 assert.match(renderSource, /clubLogoWithFallback\(club, 28, 'market-club-logo'\)/);
 assert.match(youthEngineSource, /'mhl-academy-mikhailov': 'academy-mikhailov'/);
 assert.match(youthEngineSource, /'mhl-sputnik-al': 'sputnik-almetyevsk'/);
+assert.match(youthEngineSource, /'rhl-arktika': 'arktika'/);
+assert.match(youthEngineSource, /'rhl-ekoniva-bobrov': 'econiva-bobrov'/);
 assert.match(youthEngineSource, /logo: getYouthOfficialLogo\(meta\)/);
 assert.match(renderSource, /clubLogoWithFallback\(team, 24, 'youth-table-logo'\)/);
 
