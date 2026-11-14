@@ -68,8 +68,85 @@ function applyPlayerContractAgreement(team, player, offer, mode = 'renewal') {
     player.contract = { ...(player.contract || {}), salary, years };
     player.status = 'contract';
     if (!team.roster.includes(player)) team.roster.push(player);
+    if (Array.isArray(G.league?.freeAgents)) G.league.freeAgents = G.league.freeAgents.filter(item => item.id !== player.id);
     if (typeof markYouthGraduateSigned === 'function') markYouthGraduateSigned(player, team, 'negotiated-contract');
   }
   player.morale = Math.min(100, (Number(player.morale) || 65) + 3);
   return { ...result, applied: true, salary, years: player.contract.years };
+}
+
+function findNegotiationPlayer(playerId, mode) {
+  const team = G.league?.teams?.find(item => item.id === G.playerTeamId);
+  if (!team) return { team: null, player: null };
+  if (mode === 'renewal') return { team, player: team.roster.find(item => item.id === playerId) || null };
+  return { team, player: (G.league.freeAgents || []).find(item => item.id === playerId) || null };
+}
+function openPlayerContractNegotiation(playerId, mode = 'renewal') {
+  const found = findNegotiationPlayer(playerId, mode);
+  if (!found.team || !found.player) { if (typeof showToast === 'function') showToast('Игрок больше недоступен'); return false; }
+  const demand = getPlayerContractDemand(found.player, found.team, mode);
+  const maxYears = mode === 'renewal' ? Math.max(1, 5 - Math.max(0, Number(found.player.contract?.years) || 0)) : 5;
+  G.contractNegotiation = {
+    playerId, mode,
+    offer: { salary: demand.salary, years: Math.min(maxYears, demand.years) },
+    lastResult: null, completed: false
+  };
+  G.popupPlayerId = playerId;
+  if (typeof render === 'function') render();
+  return true;
+}
+function updatePlayerContractOffer(field, value) {
+  if (!G.contractNegotiation || !['salary', 'years'].includes(field)) return;
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return;
+  G.contractNegotiation.offer[field] = field === 'salary'
+    ? Math.max(0.5, Math.round(numeric * 10) / 10)
+    : Math.max(1, Math.min(5, Math.floor(numeric)));
+}
+function submitPlayerContractNegotiation() {
+  const state = G.contractNegotiation;
+  if (!state || state.completed) return false;
+  const found = findNegotiationPlayer(state.playerId, state.mode);
+  if (!found.team || !found.player) { state.lastResult = { decision: 'reject', message: 'Игрок больше недоступен' }; render(); return false; }
+  const result = evaluatePlayerContractOffer(found.player, found.team, state.offer, state.mode);
+  state.lastResult = result;
+  if (result.decision === 'accept') {
+    const applied = applyPlayerContractAgreement(found.team, found.player, state.offer, state.mode);
+    state.lastResult = applied;
+    state.completed = !!applied.applied;
+    if (state.completed) {
+      if (state.mode === 'renewal') addNews('contract', found.team.name + ' продлил контракт с ' + found.player.name, 1);
+      else addNews('signing', found.team.name + ' подписал ' + found.player.name + ' после переговоров', 2);
+      if (typeof syncLines === 'function') syncLines(found.team);
+      if (typeof showToast === 'function') showToast('Соглашение достигнуто: ' + found.player.name, 'success');
+      if (typeof saveGame === 'function') saveGame({ immediate: true });
+    }
+  } else if (typeof showToast === 'function') {
+    showToast(result.message || 'Предложение не принято', result.decision === 'reject' ? 'error' : 'info');
+  }
+  if (typeof render === 'function') render();
+  return result;
+}
+function acceptPlayerCounterOffer() {
+  const state = G.contractNegotiation;
+  if (!state || state.completed || state.lastResult?.decision !== 'counter' || !state.lastResult.counteroffer) return false;
+  const found = findNegotiationPlayer(state.playerId, state.mode);
+  if (!found.team || !found.player) return false;
+  const offer = state.lastResult.counteroffer;
+  const result = applyPlayerContractAgreement(found.team, found.player, offer, state.mode);
+  state.lastResult = result;
+  state.completed = !!result.applied;
+  if (state.completed) {
+    if (state.mode === 'renewal') addNews('contract', found.team.name + ' продлил контракт с ' + found.player.name, 1);
+    else addNews('signing', found.team.name + ' подписал ' + found.player.name + ' после переговоров', 2);
+    if (typeof syncLines === 'function') syncLines(found.team);
+    if (typeof showToast === 'function') showToast('Встречные условия приняты', 'success');
+    if (typeof saveGame === 'function') saveGame({ immediate: true });
+  }
+  if (typeof render === 'function') render();
+  return result;
+}
+function closePlayerContractNegotiation() {
+  G.contractNegotiation = null;
+  if (typeof render === 'function') render();
 }
