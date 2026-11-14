@@ -66,6 +66,33 @@ context.G = { playerTeamId: 99, league: { teams: [veteranSurplus] } };
 context.refreshAITransferLists();
 assert.equal(veteranSurplus.roster[4].transferListed, true, 'AI should list a surplus veteran with a lower rating');
 assert.equal(veteranSurplus.roster[5].transferListed, true, 'AI may list a second surplus veteran');
+// Аренда: переход к арендатору, разделение зарплаты и автоматический возврат.
+const loanPlayer = player(301, 'LW', 74, { salary: 4 });
+const parentLoanClub = team(301, [loanPlayer, ...Array.from({length:18}, (_,i) => player(3100+i, 'C', 55))], { balance: 20, salaryCap: 100 });
+const borrowerLoanClub = team(302, [], { balance: 20, salaryCap: 100 });
+context.G = { playerTeamId: 302, league: { currentRound: 4, teams: [parentLoanClub, borrowerLoanClub] } };
+context.rng = () => 0;
+context.addNews = () => {};
+context.showToast = () => {};
+context.render = () => {};
+context.saveGame = () => {};
+context.syncLines = () => {};
+const loanTerms = context.getLoanTerms(loanPlayer, parentLoanClub, borrowerLoanClub, 3, 50);
+assert.equal(loanTerms.allowed, true, 'eligible player should be available for loan');
+assert.equal(loanTerms.borrowerSalary, 2, 'salary should be split by the agreed share');
+assert.equal(context.loanPlayerFromClub(301, 301, 3, 50), true, 'loan should be completed');
+assert.equal(borrowerLoanClub.roster.includes(loanPlayer), true, 'loan player should join borrower');
+assert.equal(parentLoanClub.roster.includes(loanPlayer), false, 'loan player should leave parent club');
+assert.equal(loanPlayer.loan.endRound, 7, 'loan should store its expiry round');
+assert.equal(loanPlayer.contract.salary, 2, 'borrower salary should reflect its share');
+context.G.league.currentRound = 7;
+context.processLoanExpirations();
+assert.equal(parentLoanClub.roster.includes(loanPlayer), true, 'expired player should return to parent club');
+assert.equal(borrowerLoanClub.roster.includes(loanPlayer), false, 'expired player should leave borrower');
+assert.equal(loanPlayer.contract.salary, 4, 'original salary should be restored');
+assert.equal(loanPlayer.loan, null, 'loan marker should be cleared');
+assert.equal(context.G.league.loanLog.length, 2, 'loan and return should be recorded');
+
 // Переговоры о трансферной сумме: принятие, встречное предложение и отказ.
 const negotiationPlayer = player(150, 'C', 75);
 const negotiationSeller = team(151, [negotiationPlayer], { balance: 10 });
@@ -124,6 +151,8 @@ foreignTarget.transferListed = true;
 assert.equal(context.getVHLTransferQuote(foreignTarget, poorSeller, foreignBuyer).reason, 'Лимит легионеров (3) уже исчерпан');
 
 const ui = fs.readFileSync(path.join(__dirname, '..', 'ui', 'render.js'), 'utf8');
+assert.match(ui, /function renderLoans/, 'loan management UI should exist');
+assert.match(ui, /Вернуть досрочно/, 'loan UI should support early return');
 assert.match(ui, /ВХЛ · трансферный список/, 'market should include a VHL transfer-list tab');
 assert.match(ui, /buyVHLPlayer/, 'VHL market should support direct cash purchases');
 assert.match(ui, /startVHLTransferNegotiation/, 'VHL market should support transfer-fee negotiations');
