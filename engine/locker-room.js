@@ -207,3 +207,120 @@ function holdLockerRoomEvent(eventKey) {
   if (typeof saveGame === 'function') saveGame({ immediate: true });
   return { success: true, event: eventKey, cost: definition.cost, moraleDelta, fatigueDelta, formDelta };
 }
+
+
+/* ============================================================
+   ИНИЦИАТИВА ИГРОКОВ: просьбы, конфликты и отложенные последствия
+   ============================================================ */
+const LOCKER_ROOM_REQUESTS = {
+  playing_time: { title: 'Игрок просит больше игрового времени', choices: {
+    give_chance: 'Пообещать шанс в ближайших матчах',
+    explain: 'Объяснить конкуренцию за место',
+    refuse: 'Отказать'
+  }},
+  support: { title: 'Игрок просит поддержки', choices: {
+    support: 'Поддержать хоккеиста',
+    ignore: 'Оставить вопрос без внимания'
+  }},
+  conflict: { title: 'Напряжение внутри команды', choices: {
+    mediate: 'Провести общую беседу',
+    separate: 'Развести игроков и поговорить отдельно'
+  }}
+};
+function createLockerRoomRequest(team, type, player, otherPlayer = null) {
+  const state = getLockerRoomState(team);
+  if (state.requests.some(item => item.status === 'pending' && (item.playerId === player?.id || item.otherPlayerId === player?.id || item.playerId === otherPlayer?.id || item.otherPlayerId === otherPlayer?.id))) return null;
+  const request = {
+    id: nextId(), type, playerId: player?.id ?? null, playerName: player?.name ?? null,
+    otherPlayerId: otherPlayer?.id ?? null, otherPlayerName: otherPlayer?.name ?? null,
+    createdRound: G.league.currentRound, deadlineRound: G.league.currentRound + 3,
+    status: 'pending'
+  };
+  state.requests.push(request);
+  if (state.requests.length > 40) state.requests = state.requests.slice(-40);
+  const definition = LOCKER_ROOM_REQUESTS[type];
+  const body = type === 'playing_time'
+    ? player.name + ' недоволен количеством игрового времени и просит обсудить свою роль.'
+    : type === 'support'
+      ? player.name + ' переживает из-за своей формы и морального состояния и просит поддержки.'
+      : player.name + ' и ' + otherPlayer.name + ' испытывают напряжение в отношениях. Ситуация может повлиять на атмосферу в раздевалке.';
+  addInboxMessage('player', player?.name || 'Команда', definition.title, body, []);
+  addNews('player_story', body, 1);
+  return request;
+}
+function processPlayerRelations(team) {
+  if (!team || team.id !== G.playerTeamId) return [];
+  const state = getLockerRoomState(team);
+  const round = G.league.currentRound;
+  const created = [];
+  for (const request of state.requests) {
+    if (request.status !== 'pending' || round < request.deadlineRound) continue;
+    request.status = 'expired';
+    request.resolvedRound = round;
+    request.resolution = 'Игроки не получили ответа тренерского штаба.';
+    const affected = [request.playerId, request.otherPlayerId].filter(Boolean);
+    for (const id of affected) {
+      const player = team.roster.find(item => item.id === id);
+      if (player) player.morale = Math.max(20, (Number(player.morale) || 60) - 5);
+    }
+    addInboxMessage('player', request.playerName || 'Команда', 'Недовольство осталось нерешённым',
+      request.resolution + ' Мораль участников снизилась на 5.', []);
+    addNews('player_story', request.resolution, 1);
+  }
+  const pendingPlayers = new Set(state.requests.filter(item => item.status === 'pending').flatMap(item => [item.playerId, item.otherPlayerId]).filter(Boolean));
+  const bench = new Set(team.bench || []);
+  const unhappy = team.roster.filter(player => !pendingPlayers.has(player.id) && round - (Number(player.lastLockerRoomRequestRound) || -100) >= 10 && bench.has(player.id) && (Number(player.morale) || 60) <= 58);
+  if (unhappy.length && rng() < 0.28) {
+    const player = unhappy.sort((a,b) => (a.morale||0)-(b.morale||0))[0];
+    const request = createLockerRoomRequest(team, 'playing_time', player);
+    if (request) { player.lastLockerRoomRequestRound = round; created.push(request); }
+  }
+  const distressed = team.roster.filter(player => !pendingPlayers.has(player.id) && round - (Number(player.lastLockerRoomRequestRound) || -100) >= 10 && (Number(player.morale) || 60) <= 34);
+  if (!created.length && distressed.length && rng() < 0.18) {
+    const player = distressed.sort((a,b) => (a.morale||0)-(b.morale||0))[0];
+    const request = createLockerRoomRequest(team, 'support', player);
+    if (request) { player.lastLockerRoomRequestRound = round; created.push(request); }
+  }
+  const leaders = team.roster.filter(player => player.character === 'leader' && !bench.has(player.id));
+  const egoists = team.roster.filter(player => player.character === 'egoist' && !bench.has(player.id));
+  const conflictReady = !state.lastConflictRound || round - state.lastConflictRound >= 12;
+  if (!created.length && conflictReady && leaders.length && egoists.length && rng() < 0.025) {
+    const request = createLockerRoomRequest(team, 'conflict', egoists[0], leaders[0]);
+    if (request) { state.lastConflictRound = round; created.push(request); }
+  }
+  return created;
+}
+function resolveLockerRoomRequest(requestId, decision) {
+  const team = getLockerRoomTeam();
+  if (!team) return { success: false, message: 'Команда не найдена' };
+  const state = getLockerRoomState(team);
+  const request = state.requests.find(item => item.id === requestId && item.status === 'pending');
+  if (!request) return { success: false, message: 'Обращение уже закрыто или не найдено' };
+  const definition = LOCKER_ROOM_REQUESTS[request.type];
+  if (!definition || !Object.prototype.hasOwnProperty.call(definition.choices, decision)) return { success: false, message: 'Неизвестное решение' };
+  const player = team.roster.find(item => item.id === request.playerId);
+  const other = team.roster.find(item => item.id === request.otherPlayerId);
+  let message = '';
+  const changeMorale = (target, delta) => { if (target) target.morale = Math.max(20, Math.min(100, (Number(target.morale) || 60) + delta)); };
+  if (request.type === 'playing_time') {
+    if (decision === 'give_chance') { changeMorale(player, 6); if (player) player.playingTimePromiseRound = G.league.currentRound + 3; message = 'Тренер пообещал дать хоккеисту шанс в ближайших матчах. Мораль +6.'; }
+    else if (decision === 'explain') { changeMorale(player, 2); message = 'Тренер объяснил конкуренцию за место в составе. Игрок принял объяснение. Мораль +2.'; }
+    else { changeMorale(player, -5); message = 'Тренер отказал в просьбе. Игрок разочарован. Мораль -5.'; }
+  } else if (request.type === 'support') {
+    if (decision === 'support') { changeMorale(player, 7); message = 'Тренер поддержал хоккеиста. Мораль +7.'; }
+    else { changeMorale(player, -5); message = 'Игрок не получил ожидаемой поддержки. Мораль -5.'; }
+  } else if (request.type === 'conflict') {
+    if (decision === 'mediate') { changeMorale(player, 3); changeMorale(other, 3); message = 'Тренер провёл общую беседу. Напряжение снизилось, мораль обоих игроков +3.'; }
+    else { changeMorale(player, 1); changeMorale(other, 1); message = 'Игроков развели по разным группам и провели отдельные разговоры. Мораль обоих +1.'; }
+  }
+  request.status = 'resolved';
+  request.resolvedRound = G.league.currentRound;
+  request.decision = decision;
+  request.resolution = message;
+  addInboxMessage('coach', 'Тренерский штаб', 'Решение по обращению игрока', message, []);
+  addNews('player_story', message, 1);
+  if (typeof showToast === 'function') showToast('Решение принято', 'success');
+  if (typeof render === 'function') render();
+  if (typeof saveGame === 'function') saveGame({ immediate: true });
+  return { success: true, request, message };
+}
