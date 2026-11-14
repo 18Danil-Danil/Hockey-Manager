@@ -31,7 +31,7 @@ const userPlayers = Array.from({ length: 19 }, (_, i) => ({
 userPlayers[0].age = 22;
 userPlayers[0].name = 'Молодой игрок';
 const aiPlayers = Array.from({ length: 18 }, (_, i) => ({
-  id: 1000 + i, name: 'Игрок ИИ ' + i, age: 25, position: ['F','D','G'][i % 3],
+  id: 1000 + i, name: 'Игрок ИИ ' + i, age: 25, position: i < 3 ? 'F' : i < 10 ? 'D' : 'G',
   nationality: 'Россия', ovr: 62, contract: { salary: 1 }
 }));
 const userClub = { id: 1, name: 'Наш клуб', roster: userPlayers, finance: { balance: 20, salaryCap: 100, income: {}, expenses: {} } };
