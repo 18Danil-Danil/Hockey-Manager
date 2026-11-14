@@ -92,7 +92,7 @@ function renderHeader() {
 function renderTabs() {
   const unread = unreadInboxCount();
   const groups = [
-    {key:'club',label:'Клуб',items:[['overview','Обзор'],['roster','Состав'],['lines','Звенья'],['tactics','Тактика'],['training','Тренировки'],['staff','Штаб'],['infrastructure','Инфраструктура']]},
+    {key:'club',label:'Клуб',items:[['overview','Обзор'],['roster','Состав'],['lines','Звенья'],['tactics','Тактика'],['lockerRoom','Раздевалка'],['training','Тренировки'],['staff','Штаб'],['infrastructure','Инфраструктура']]},
     {key:'league',label:'Лига',items:[['standings','Таблица'],['games','Матчи'],['calendar','Календарь'],['stats','Статистика'],['news','Новости']]},
     {key:'transfers',label:'Трансферы',items:[['market','Рынок'],['trades','Обмены'],['waivers','Драфт отказов']]},
     {key:'development',label:'Развитие',items:[['academy','Академия'],['youth','Молодёжные лиги']]},
@@ -1322,6 +1322,7 @@ function renderModal() {
     (canExtend?'<div class="profile-action-group"><button class="btn" onclick="openPlayerContractNegotiation('+p.id+', \'renewal\')">Начать переговоры о продлении</button></div>':'')+
     (isFreeAgent?'<div class="profile-action-group"><button class="btn" onclick="openPlayerContractNegotiation('+p.id+', \'signing\')">Предложить контракт</button></div>':'')+
     (canRelease?'<div class="profile-action-group"><button class="btn danger" onclick="handleRelease('+p.id+')">Расторгнуть · '+releaseCost.toFixed(1)+' млн ₽</button></div>':'')+'</section>'+
+    (isMyTeam?renderPlayerConversationPanel(p,team):'')+
     (G.contractNegotiation&&G.contractNegotiation.playerId===p.id?renderContractNegotiationPanel(p,team):'')+
     (goalHtml?'<section class="profile-section"><span class="profile-eyebrow">ЛИЧНАЯ ЦЕЛЬ</span><h2>Задача на сезон</h2>'+goalHtml+'</section>':'')+
     (mentor?'<section class="profile-section"><span class="profile-eyebrow">РАЗВИТИЕ</span><h2>Наставник</h2><p class="profile-mentor">🎓 '+mentor.name+'</p></section>':'')+
@@ -1331,6 +1332,52 @@ function renderModal() {
     '</aside></div></div></div>';
 }
 
+
+function renderPlayerConversationPanel(player, team) {
+  const state = getLockerRoomState(team);
+  const pending = state.meetings.find(item => item.playerId === player.id);
+  const cooldown = getPlayerTalkCooldown(player);
+  const topics = Object.entries(LOCKER_ROOM_TOPICS);
+  const talkButtons = topics.map(([key, topic]) =>
+    '<button class="btn small secondary" '+(cooldown || pending ? 'disabled' : '')+' onclick="talkToPlayer('+player.id+', \''+key+'\')">'+topic.label+'</button>'
+  ).join('');
+  const topicOptions = topics.map(([key, topic]) => '<option value="'+key+'">'+topic.label+'</option>').join('');
+  const meetingInfo = pending
+    ? '<p class="profile-muted">Встреча назначена на тур '+(pending.scheduledRound+1)+'. Тема: '+LOCKER_ROOM_TOPICS[pending.topic].label+'.</p>'
+    : cooldown
+      ? '<p class="profile-muted">Следующий личный разговор доступен через '+cooldown+' тур.</p>'
+      : '<div class="profile-action-group"><select id="locker-topic-'+player.id+'">'+topicOptions+'</select><select id="locker-delay-'+player.id+'"><option value="1">Через 1 тур</option><option value="2">Через 2 тура</option><option value="3">Через 3 тура</option></select><button class="btn small" onclick="schedulePlayerMeeting('+player.id+',document.getElementById(\'locker-topic-'+player.id+'\').value,Number(document.getElementById(\'locker-delay-'+player.id+'\').value))">Назначить встречу</button></div>';
+  return '<section class="profile-section profile-contract"><span class="profile-eyebrow">РАЗДЕВАЛКА</span><h2>Личный разговор</h2>'+
+    '<p class="profile-muted">Мораль '+player.morale+'/100 · форма '+player.form+'/100. Повторный разговор — не чаще одного раза в 3 тура.</p>'+
+    '<div class="profile-action-group">'+talkButtons+'</div>'+meetingInfo+'</section>';
+}
+function renderLockerRoom() {
+  const team = getLockerRoomTeam();
+  if (!team) return '<div class="subtitle">Команда не найдена.</div>';
+  const state = getLockerRoomState(team);
+  const averageMorale = team.roster.length ? Math.round(team.roster.reduce((sum, player) => sum + (Number(player.morale)||0), 0) / team.roster.length) : 0;
+  const lowMorale = team.roster.slice().sort((a,b) => (a.morale||0)-(b.morale||0)).slice(0,8);
+  const meetings = state.meetings.slice().sort((a,b) => a.scheduledRound-b.scheduledRound);
+  const meetingRows = meetings.length ? meetings.map(meeting => {
+    const player = team.roster.find(item => item.id === meeting.playerId);
+    return '<div class="dev-row"><div class="dr-info"><div class="dr-name">'+(player?.name||meeting.playerName)+'</div><div class="dr-meta">'+LOCKER_ROOM_TOPICS[meeting.topic].label+' · тур '+(meeting.scheduledRound+1)+'</div></div><button class="btn small danger" onclick="cancelPlayerMeeting('+meeting.id+')">Отменить</button></div>';
+  }).join('') : '<div class="subtitle">Назначенных встреч пока нет. Открой профиль хоккеиста, чтобы запланировать беседу.</div>';
+  const eventCooldown = Math.max(0, 5-(G.league.currentRound-state.lastTeamEventRound));
+  const eventCards = Object.entries(LOCKER_ROOM_TEAM_EVENTS).map(([key,event]) => {
+    const cooldown = event.cooldown-(G.league.currentRound-state.lastTeamEventRound);
+    const locked = cooldown>0 || (event.requiresPsychologist&&!team.staff?.psychologist) || team.finance.balance<event.cost;
+    const note = event.requiresPsychologist&&!team.staff?.psychologist ? 'Нужен психолог в штабе' : cooldown>0 ? 'Доступно через '+cooldown+' тур.' : event.cost ? 'Стоимость: '+event.cost.toFixed(1)+' млн ₽' : 'Бесплатно';
+    return '<article class="finance-card locker-event-card"><div class="fc-title">'+event.label+'</div><div class="fc-sub">'+event.description+'</div><div class="fc-sub">'+note+'</div><button class="btn small" '+(locked?'disabled':'')+' onclick="holdLockerRoomEvent(\''+key+'\')">Провести</button></article>';
+  }).join('');
+  const playerRows = lowMorale.map(player => '<div class="dev-row"><div class="dr-info"><div class="dr-name"><a href="#" onclick="event.preventDefault();G.popupPlayerId='+player.id+';render();">'+player.name+'</a></div><div class="dr-meta">'+player.position+' · '+player.age+' лет · форма '+player.form+'/100</div></div><b class="'+(player.morale<45?'danger-text':player.morale<60?'warning-text':'')+'">☺ '+player.morale</b></div>').join('');
+  const lastEvent = state.lastTeamEvent ? '<p class="subtitle">Последнее мероприятие: '+(LOCKER_ROOM_TEAM_EVENTS[state.lastTeamEvent.key]?.label||state.lastTeamEvent.key)+' · тур '+(state.lastTeamEvent.round+1)+'</p>' : '';
+  return '<div class="locker-room-page"><h2>Раздевалка команды</h2>'+
+    '<div class="finance-grid"><div class="finance-card"><div class="fc-title">Средняя мораль</div><div class="fc-value">'+averageMorale+'/100</div><div class="fc-sub">В составе '+team.roster.length+' хоккеистов</div></div><div class="finance-card"><div class="fc-title">Запланированные встречи</div><div class="fc-value">'+meetings.length+'</div><div class="fc-sub">Личные беседы с игроками</div></div><div class="finance-card"><div class="fc-title">Командные мероприятия</div><div class="fc-value">'+(eventCooldown>0?'Через '+eventCooldown+' тур.':'Доступно')+'</div><div class="fc-sub">Пауза между мероприятиями</div></div></div>'+
+    '<h2>Личные встречи</h2><div class="dev-list">'+meetingRows+'</div>'+
+    '<h2>Командные мероприятия</h2><div class="finance-grid">'+eventCards+'</div>'+lastEvent+
+    '<h2>Кому нужно внимание</h2><div class="dev-list">'+(playerRows||'<div class="subtitle">Состав пуст.</div>')+'</div>'+
+    '<p class="profile-muted">Личные разговоры доступны в профиле каждого хоккеиста. Результат зависит от его формы, морали, роли и характера. Повторные разговоры и мероприятия ограничены по времени.</p></div>';
+}
 function renderContractNegotiationPanel(player, team) {
   const state = G.contractNegotiation;
   if (!state || state.playerId !== player.id) return '';
