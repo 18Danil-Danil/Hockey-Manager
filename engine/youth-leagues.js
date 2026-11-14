@@ -98,11 +98,9 @@ const RHL_OFFICIAL_LOGO_IDS = {
   'rhl-progress-glazov': 'progress',
   'rhl-proton': 'proton',
   'rhl-sokol-novocheboksarsk': 'sokol-chuvashia',
-  'rhl-krasnodar': 'krasnodar',
   'rhl-samara': 'samara',
-  'rhl-ekoniva-bobrov': 'econiva-bobrov',
-  'rhl-granit': 'ahmat-granit'
-};
+  'rhl-ekoniva-bobrov': 'econiva-bobrov'
+};;
 
 function getYouthOfficialLogo(meta) {
   if (!meta) return null;
