@@ -38,11 +38,13 @@ function processGovSupport(team) {
   team.finance.income.gov += perGame;
 }
 function paySalaries(team) {
-  const playerSalary = team.roster.reduce((s, p) => s + p.contract.salary, 0);
+  const playerSalary = team.roster.reduce((s, p) => s + (Number(p.contract?.salary) || 0), 0);
+  const loanSalaryShare = (G.league?.teams || []).reduce((sum, club) => sum + (club.roster || []).filter(p => p.loan && p.loan.parentTeamId === team.id).reduce((part, p) => part + (Number(p.loan.parentSalary) || 0), 0), 0);
   const staffSalary = Object.values(team.staff).filter(x => x).reduce((s, x) => s + x.salary, 0);
-  team.finance.expenses.salaries += playerSalary * (1 / 58);
+  const totalPlayerSalary = playerSalary + loanSalaryShare;
+  team.finance.expenses.salaries += totalPlayerSalary * (1 / 58);
   team.finance.expenses.staffSalaries += staffSalary * (1 / 58);
-  team.finance.balance -= (playerSalary + staffSalary) * (1 / 58);
+  team.finance.balance -= (totalPlayerSalary + staffSalary) * (1 / 58);
 }
 function processMerchRevenue(team) {
   if (!team.finance.merchLevel || team.finance.merchLevel < 5) return;
