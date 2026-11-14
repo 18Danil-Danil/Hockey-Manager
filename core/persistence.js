@@ -83,7 +83,7 @@ function getSaveSnapshot() {
   return {
     league: G.league, playerTeamId: G.playerTeamId, activeTab: G.activeTab, screen: G.screen,
     standingsSort: G.standingsSort, idCounter: _idCounter,
-    selectedDifficulty: G.selectedDifficulty, noFireMode: G.noFireMode, career: G.career,
+    selectedDifficulty: G.selectedDifficulty, startingBonusMillions: G.startingBonusMillions || 0, noFireMode: G.noFireMode, career: G.career,
     careerOffers: G.careerOffers, freeAgentOffers: G.freeAgentOffers,
     lastRegularChampionId: G.lastRegularChampionId, lastCupHolderId: G.lastCupHolderId, lastFinalistId: G.lastFinalistId,
     lastRoundResults: G.lastRoundResults, lastRoundNumber: G.lastRoundNumber,
@@ -148,6 +148,7 @@ async function loadGame() {
     // ⚙️ ФИКС #9: восстанавливаем RNG seed
     setSeed(data.seed || 20241111);
     G.selectedDifficulty = data.selectedDifficulty || 'normal';
+    G.startingBonusMillions = Math.max(0, Math.min(500, Math.round(Number(data.startingBonusMillions) || 0)));
     G.noFireMode = data.noFireMode || false;
     G.settings = normalizeGameSettings(data.settings);
     applyGameSettings();
