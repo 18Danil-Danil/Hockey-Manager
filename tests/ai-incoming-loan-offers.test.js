@@ -48,6 +48,7 @@ assert.equal(offer.playerId, targetPlayerId);
 assert.equal(context.G.league.aiLoanOffers.length, 2, 'two AI clubs should compete for the same eligible player');
 assert.deepEqual([...new Set(context.G.league.aiLoanOffers.map(item => item.fromTeamId))].sort(), [2, 3]);
 assert.ok(context.G.league.aiLoanOffers.every(item => item.competitionCount === 2), 'each bid should show the size of the bidding contest');
+assert.equal(context.G.league.loanNegotiationHistory.filter(item => item.type === 'offer-created').length, 2, 'each AI bid should be recorded in negotiation history');
 assert.equal(context.generateAIIncomingLoanOffer(), false, 'clubs that already bid must not submit duplicate offers');
 
 assert.equal(context.acceptAIIncomingLoanOffer(offer.id), true);
@@ -57,6 +58,7 @@ assert.equal(loaned.loan.parentTeamId, userClub.id);
 assert.equal(loaned.loan.borrowerTeamId, aiClub.id);
 assert.equal(context.G.league.aiLoanOffers.length, 0);
 assert.equal(context.G.league.loanLog.length, 1);
+assert.ok(context.G.league.loanNegotiationHistory.some(item => item.type === 'deal-completed' && item.playerId === targetPlayerId), 'completed loan deals should be recorded in negotiation history');
 assert.ok(userClub.finance.balance > 20, 'parent club should receive the loan fee');
 
 const second = { ...userPlayers[1], id: 55, age: 21, position: 'F', name: 'Игрок для торга' };
