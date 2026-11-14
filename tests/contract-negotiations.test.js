@@ -133,25 +133,25 @@ assert.match(rosterManagementSource, /evaluatePlayerContractOffer\(p, team, offe
 /* Contract add-ons: signing and performance bonuses. */
 const bonusFreeAgent = { id: 44, name: 'Бонусный игрок', age: 24, ovr: 76, morale: 75, nationality: 'Россия', contract: { salary: 2, years: 0 }, status: 'ufa' };
 context.G.league.freeAgents = [bonusFreeAgent];
-const bonusDemand = context.getPlayerContractDemand(bonusFreeAgent, team, 'signing');
+const bonusSigningTeam = { id: 48, roster: [], finance: { salaryCap: 100, balance: 100, expenses: {} } };\nconst bonusDemand = context.getPlayerContractDemand(bonusFreeAgent, bonusSigningTeam, 'signing');
 const bonusOffer = {
   salary: bonusDemand.salary, years: bonusDemand.years,
   signingBonus: 2.5, bonusGoal: 0.2, bonusAssist: 0.1,
   bonusGames: 0.3, bonusPlayoff: 1.5, bonusMvp: 4, bonusTopScorer: 2
 };
-const bonusEvaluation = context.evaluatePlayerContractOffer(bonusFreeAgent, team, bonusOffer, 'signing');
+const bonusEvaluation = context.evaluatePlayerContractOffer(bonusFreeAgent, bonusSigningTeam, bonusOffer, 'signing');
 assert.equal(bonusEvaluation.decision, 'accept', 'reasonable bonus package should improve a fair offer');
 const balanceBeforeSigningBonus = team.finance.balance;
 const bonusAgreement = context.applyPlayerContractAgreement(team, bonusFreeAgent, bonusOffer, 'signing');
 assert.equal(bonusAgreement.applied, true);
-assert.equal(team.finance.balance, balanceBeforeSigningBonus - 2.5, 'signing bonus must be paid immediately');
+assert.equal(bonusSigningTeam.finance.balance, balanceBeforeSigningBonus - 2.5, 'signing bonus must be paid immediately');
 assert.equal(bonusFreeAgent.contract.bonusGoal, 0.2);
 assert.equal(bonusFreeAgent.contract.bonusAssist, 0.1);
 assert.equal(bonusFreeAgent.contract.bonusGames, 0.3);
 assert.equal(bonusFreeAgent.contract.bonusPlayoff, 1.5);
 assert.equal(bonusFreeAgent.contract.bonusMvp, 4);
 assert.equal(bonusFreeAgent.contract.bonusTopScorer, 2);
-assert.equal(team.finance.expenses.signingBonuses, 2.5);
+assert.equal(bonusSigningTeam.finance.expenses.signingBonuses, 2.5);
 
 const renewalBonusPlayer = { id: 45, name: 'Продлеваемый', age: 27, ovr: 78, morale: 75, nationality: 'Россия', contract: { salary: 3, years: 1 } };
 const renewalBonusTeam = { id: 45, roster: [renewalBonusPlayer], finance: { salaryCap: 50, balance: 50 } };
