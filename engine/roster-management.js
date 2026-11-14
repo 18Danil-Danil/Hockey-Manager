@@ -938,6 +938,7 @@ function runAIActions() {
   if (rng() < 0.35) generateAITradeOffer();
   if (rng() < 0.15) generateAITradeOffer();
   G.league.aiTradeOffers = G.league.aiTradeOffers.filter(o => o.expiresRound > G.league.currentRound);
+  processAIIncomingLoanOffers();
 }
 
 /* ============================================================
