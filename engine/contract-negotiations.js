@@ -67,7 +67,8 @@ function normalizeContractBonusTerms(offer, mode = 'renewal') {
 function evaluatePlayerContractOffer(player, team, offer, mode = 'renewal', negotiationState = null) {
   if (!player || !team || !offer) return { decision: 'reject', reason: 'invalid', message: 'Некорректное предложение' };
   const salary = Math.round((Number(offer.salary) || 0) * 10) / 10;
-  const years = Math.floor(Number(offer.years) || 0);\n  const bonusTerms = normalizeContractBonusTerms(offer, mode);
+  const years = Math.floor(Number(offer.years) || 0);
+  const bonusTerms = normalizeContractBonusTerms(offer, mode);
   if (salary < 0.5 || years < 1 || years > 5) return { decision: 'reject', reason: 'terms', message: 'Срок должен быть от 1 до 5 лет, зарплата — не ниже 0,5 млн ₽' };
   const isRenewal = mode === 'renewal';
   const isInternationalSigning = mode === 'international-signing';
@@ -81,7 +82,7 @@ function evaluatePlayerContractOffer(player, team, offer, mode = 'renewal', nego
   if (isInternationalSigning) {
     if (typeof isTradeDeadlinePassed === 'function' && isTradeDeadlinePassed()) return { decision: 'reject', reason: 'deadline', message: 'Трансферное окно закрыто' };
     const fee = Number(G.contractNegotiation?.transferFee) || 0;
-    if (fee > Number(team.finance?.balance || 0)) return { decision: 'reject', reason: 'transfer-fee', message: 'Недостаточно средств для трансфера' };
+    if (fee + bonusTerms.signingBonus > Number(team.finance?.balance || 0)) return { decision: 'reject', reason: 'transfer-fee', message: 'Недостаточно средств для трансфера и подписного бонуса' };
   }
   const demand = getPlayerContractDemand(player, team, mode);
   const currentPayroll = (team.roster || []).reduce((sum, item) => sum + (Number(item.contract?.salary) || 0), 0);
@@ -89,7 +90,9 @@ function evaluatePlayerContractOffer(player, team, offer, mode = 'renewal', nego
   if (Number.isFinite(salaryRoom) && currentPayroll - (isRenewal ? Number(player.contract?.salary) || 0 : 0) + salary > salaryRoom) {
     return { decision: 'reject', reason: 'salary-cap', message: 'Предложение не помещается под потолок зарплат', demand };
   }
-  const salaryFit = salary / Math.max(0.5, demand.salary);\n  if (bonusTerms.signingBonus > Number(team.finance?.balance || 0)) return { decision: 'reject', reason: 'signing-bonus', message: 'Недостаточно средств для подписного бонуса', demand };\n  const bonusValue = Math.min(0.16, bonusTerms.signingBonus / Math.max(1, demand.salary) * 0.025 + bonusTerms.bonusGoal * 0.12 + bonusTerms.bonusAssist * 0.08 + bonusTerms.bonusGames * 0.08 + bonusTerms.bonusPlayoff * 0.012 + bonusTerms.bonusMvp * 0.006 + bonusTerms.bonusTopScorer * 0.006);
+  const salaryFit = salary / Math.max(0.5, demand.salary);
+  if (bonusTerms.signingBonus > Number(team.finance?.balance || 0)) return { decision: 'reject', reason: 'signing-bonus', message: 'Недостаточно средств для подписного бонуса', demand };
+  const bonusValue = Math.min(0.16, bonusTerms.signingBonus / Math.max(1, demand.salary) * 0.025 + bonusTerms.bonusGoal * 0.12 + bonusTerms.bonusAssist * 0.08 + bonusTerms.bonusGames * 0.08 + bonusTerms.bonusPlayoff * 0.012 + bonusTerms.bonusMvp * 0.006 + bonusTerms.bonusTopScorer * 0.006);
   const termFit = years / Math.max(1, demand.years);
   const prefs = demand.preferences || getPlayerContractPreferences(player);
   const fit = demand.fit || getPlayerContractClubFit(player, team, mode);
@@ -117,9 +120,12 @@ function applyPlayerContractAgreement(team, player, offer, mode = 'renewal') {
   if (result.decision !== 'accept') return result;
   const salary = Math.round(Number(offer.salary) * 10) / 10;
   const years = Math.floor(Number(offer.years));
+  const bonusTerms = normalizeContractBonusTerms(offer, mode);
+  if (bonusTerms.signingBonus > Number(team.finance?.balance || 0)) return { decision: 'reject', reason: 'signing-bonus', message: 'Недостаточно средств для подписного бонуса' };
   if (mode === 'renewal') {
     player.contract.salary = salary;
-    player.contract.years = Math.min(5, Math.max(0, Number(player.contract.years) || 0) + years);\n    Object.assign(player.contract, bonusTerms);
+    player.contract.years = Math.min(5, Math.max(0, Number(player.contract.years) || 0) + years);
+    Object.assign(player.contract, bonusTerms);
   } else {
     if (!Array.isArray(team.roster)) team.roster = [];
     if (mode === 'international-signing') {
@@ -147,7 +153,12 @@ function applyPlayerContractAgreement(team, player, offer, mode = 'renewal') {
     if (!team.roster.includes(player)) team.roster.push(player);
     if (typeof markYouthGraduateSigned === 'function') markYouthGraduateSigned(player, team, mode === 'international-signing' ? 'international-transfer' : 'negotiated-contract');
   }
-  if (bonusTerms.signingBonus > 0) {\n    team.finance.balance = Math.round((Number(team.finance.balance || 0) - bonusTerms.signingBonus) * 10) / 10;\n    team.finance.expenses = team.finance.expenses || {};\n    team.finance.expenses.signingBonuses = (Number(team.finance.expenses.signingBonuses) || 0) + bonusTerms.signingBonus;\n  }\n  player.morale = Math.min(100, (Number(player.morale) || 65) + 3);
+  if (bonusTerms.signingBonus > 0) {
+    team.finance.balance = Math.round((Number(team.finance.balance || 0) - bonusTerms.signingBonus) * 10) / 10;
+    team.finance.expenses = team.finance.expenses || {};
+    team.finance.expenses.signingBonuses = (Number(team.finance.expenses.signingBonuses) || 0) + bonusTerms.signingBonus;
+  }
+  player.morale = Math.min(100, (Number(player.morale) || 65) + 3);
   return { ...result, applied: true, salary, years: player.contract.years };
 }
 
