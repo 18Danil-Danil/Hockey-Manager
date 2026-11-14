@@ -88,8 +88,18 @@ assert.equal(liiga.clubs.length, 16, 'Liiga catalogue currently has 16 game entr
 assert.ok(!liiga.clubs.some(club => club.id === 'pelicans'), 'do not silently claim Liiga coverage is complete while Pelicans is absent');
 const verifiedMarketLogos = new Map([
   ['finland-liiga/assat', 'https://www.footylogos.com/sports-assets/logos/assat/assat-logo-footylogos.svg'],
+  ['finland-liiga/tappara', 'https://www.footylogos.com/sports-assets/logos/tappara/tappara-logo-footylogos.svg'],
+  ['finland-liiga/ilves', 'https://www.footylogos.com/sports-assets/logos/ilves-ice-hockey/ilves-ice-hockey-logo-footylogos.svg'],
+  ['finland-liiga/hifk-helsinki', 'https://www.footylogos.com/sports-assets/logos/hifk-ice-hockey/hifk-ice-hockey-logo-footylogos.svg'],
+  ['finland-liiga/hpk', 'https://www.footylogos.com/sports-assets/logos/hpk/hpk-logo-footylogos.svg'],
+  ['finland-liiga/tps', 'https://www.footylogos.com/sports-assets/logos/hc-tps/hc-tps-logo-footylogos.svg'],
   ['sweden-shl/brynas', 'https://www.footylogos.com/sports-assets/logos/brynas-if/brynas-if-logo-footylogos.svg'],
+  ['sweden-shl/frolunda', 'https://www.footylogos.com/sports-assets/logos/frolunda-hc/frolunda-hc-logo-footylogos.svg'],
+  ['sweden-shl/farjestad', 'https://www.footylogos.com/sports-assets/logos/farjestad-bk/farjestad-bk-logo-footylogos.svg'],
   ['switzerland-nl/davos', 'https://www.footylogos.com/sports-assets/logos/hc-davos/hc-davos-logo-footylogos.svg'],
+  ['switzerland-nl/zsc-lions', 'https://www.footylogos.com/sports-assets/logos/zsc-lions/zsc-lions-logo-footylogos.svg'],
+  ['switzerland-nl/ev-zug', 'https://www.footylogos.com/sports-assets/logos/ev-zug/ev-zug-logo-footylogos.svg'],
+  ['switzerland-nl/sc-bern', 'https://www.footylogos.com/sports-assets/logos/sc-bern/sc-bern-logo-footylogos.svg'],
 ]);
 for (const [key, url] of verifiedMarketLogos) {
   const [leagueId, clubId] = key.split('/');
