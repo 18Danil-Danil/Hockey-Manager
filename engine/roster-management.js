@@ -158,6 +158,7 @@ function executeMultiTrade(myIds, theirIds, aiTeamId, myCash = 0, theirCash = 0)
   const theirIncoming = myOut.filter(p => p.nationality !== 'Россия').length;
   if (myForeignKeep + myIncoming > 3) return { success: false, error: 'У тебя превысится лимит легионеров' };
   if (theirForeignKeep + theirIncoming > 3) return { success: false, error: 'У соперника превысится лимит легионеров' };
+  [...myOut, ...theirOut].forEach(player => { player.transferRequest = false; player.transferListed = false; });
   myTeam.roster = myTeam.roster.filter(p => !myIds.includes(p.id)).concat(theirOut);
   theirTeam.roster = theirTeam.roster.filter(p => !theirIds.includes(p.id)).concat(myOut);
   myTeam.finance.balance -= myCash; myTeam.finance.balance += theirCash;
@@ -187,7 +188,7 @@ function generateAITradeOffer() {
   const myTeam = G.league.teams.find(t => t.id === G.playerTeamId); if (!myTeam) return;
   const aiTeams = G.league.teams.filter(t => t.id !== G.playerTeamId); if (!aiTeams.length) return;
   const aiTeam = pick(aiTeams); if (aiTeam.roster.length < 18) return;
-  const myTargets = myTeam.roster.filter(p => p.ovr >= 70 && p.age <= 30).sort((a, b) => tradeValue(b) - tradeValue(a));
+  const myTargets = myTeam.roster.filter(p => p.transferRequest || (p.ovr >= 70 && p.age <= 30)).sort((a, b) => Number(!!b.transferRequest) - Number(!!a.transferRequest) || tradeValue(b) - tradeValue(a));
   if (!myTargets.length) return;
   const target = rng() < 0.5 ? myTargets[0] : pick(myTargets.slice(0, Math.min(5, myTargets.length)));
   const targetValue = tradeValue(target);
