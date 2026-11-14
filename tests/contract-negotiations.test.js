@@ -142,8 +142,8 @@ const bonusOffer = {
 };
 const bonusEvaluation = context.evaluatePlayerContractOffer(bonusFreeAgent, bonusSigningTeam, bonusOffer, 'signing');
 assert.equal(bonusEvaluation.decision, 'accept', 'reasonable bonus package should improve a fair offer');
-const balanceBeforeSigningBonus = team.finance.balance;
-const bonusAgreement = context.applyPlayerContractAgreement(team, bonusFreeAgent, bonusOffer, 'signing');
+const balanceBeforeSigningBonus = bonusSigningTeam.finance.balance;
+const bonusAgreement = context.applyPlayerContractAgreement(bonusSigningTeam, bonusFreeAgent, bonusOffer, 'signing');
 assert.equal(bonusAgreement.applied, true);
 assert.equal(bonusSigningTeam.finance.balance, balanceBeforeSigningBonus - 2.5, 'signing bonus must be paid immediately');
 assert.equal(bonusFreeAgent.contract.bonusGoal, 0.2);
