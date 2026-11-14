@@ -55,11 +55,11 @@ const expires = { id: 11, status: 'contract', contract: { salary: 1, years: 1 },
 const tryout = { id: 12, status: 'tryout', contract: { salary: 0.5, years: 0 } };
 const roster = { roster: [active, expires, tryout] };
 const released = expiryContext.processTeamContractExpirations(roster);
-assert.deepEqual(released.map(item => item.id), [11]);
+assert.deepEqual(Array.from(released, item => item.id), [11]);
 assert.equal(active.contract.years, 1);
 assert.equal(expires.status, 'ufa');
 assert.equal(expires.youthAvailable, true);
-assert.deepEqual(roster.roster.map(item => item.id), [10, 12]);
+assert.deepEqual(Array.from(roster.roster, item => item.id), [10, 12]);
 assert.equal(expiryContext.G.league.freeAgents[0], expires);
 assert.equal(tryout.status, 'tryout', 'tryout agreements must not expire through standard contract processing');
 
