@@ -1,6 +1,9 @@
 /* ============================================================
    UI — ВЫБОР КЛУБА / ХЕДЕР / ТАБЫ
    ============================================================ */
+function unreadInboxCount() {
+  return (G.league?.inbox || []).filter(message => !message.read).length;
+}
 function getInitials(name) { return (name || '?').split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase(); }
 function getTeamRatings(team) { return team.ratings || { att: 70, def: 70, gk: 70, st: 70 }; }
 function logoHeader(team) {
