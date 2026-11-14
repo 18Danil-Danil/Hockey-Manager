@@ -72,7 +72,7 @@ const sellerPlayer = player(102, 'D', 76, { pot: 82, salary: 3 });
 sellerPlayer.name = 'Тестовый защитник';
 sellerPlayer.transferListed = true;
 const buyerClub = team(101, [buyerPlayer], { balance: 50, salaryCap: 100 });
-const sellerClub = team(102, [sellerPlayer], { balance: 10, salaryCap: 100 });
+const sellerClub = team(102, [sellerPlayer, ...Array.from({length:18}, (_,i) => player(2000+i, 'C', 55))], { balance: 10, salaryCap: 100 });
 context.G = { playerTeamId: 101, league: { season: '2026/27', currentRound: 12, teams: [buyerClub, sellerClub] } };
 context.isTradeDeadlinePassed = () => false;
 context.syncLines = () => {};
@@ -94,7 +94,7 @@ assert.equal(context.G.league.vhlTransferLog.length, 1, 'completed transfer shou
 const poorBuyer = team(103, [], { balance: 0, salaryCap: 100 });
 const poorSellerPlayer = player(1031, 'LW', 75);
 poorSellerPlayer.transferListed = true;
-const poorSeller = team(104, [poorSellerPlayer], { balance: 10 });
+const poorSeller = team(104, [poorSellerPlayer, ...Array.from({length:18}, (_,i) => player(2100+i, 'C', 55))], { balance: 10 });
 assert.equal(context.getVHLTransferQuote(poorSellerPlayer, poorSeller, poorBuyer).reason, 'Недостаточно средств для трансфера');
 
 const fullBuyer = team(105, Array.from({length:25}, (_,i) => player(1100+i, 'C', 60)), { balance: 100, salaryCap: 200 });
