@@ -19,6 +19,7 @@ function leagueLeaders(league, mode = 'regular', limit = 10) {
   };
 }
 function applyResult(res) {
+  if (typeof updateLoanPerformance === 'function') { updateLoanPerformance(G.league.teams.find(t => t.id === res.homeId)); updateLoanPerformance(G.league.teams.find(t => t.id === res.awayId)); }
   const h = G.league.teams.find(t => t.id === res.homeId), a = G.league.teams.find(t => t.id === res.awayId);
   h.record.gf += res.hg; h.record.ga += res.ag; a.record.gf += res.ag; a.record.ga += res.hg;
   if (res.hg > res.ag) { h.record.w++; if (res.ot) a.record.otl++; else a.record.l++; }
